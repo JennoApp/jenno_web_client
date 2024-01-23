@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "^2.4.1",
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
 		"@types/eslint": "8.56.2",
+		"@types/jsonwebtoken": "^9.0.5",
 		"@typescript-eslint/eslint-plugin": "^6.19.1",
 		"@typescript-eslint/parser": "^6.19.1",
 		"autoprefixer": "^10.4.17",
@@ -39,6 +40,12 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"iconify-icon": "^1.0.8"
+		"bits-ui": "^0.15.1",
+		"clsx": "^2.1.0",
+		"iconify-icon": "^1.0.8",
+		"jsonwebtoken": "^9.0.2",
+		"lucide-svelte": "^0.314.0",
+		"tailwind-merge": "^2.2.1",
+		"tailwind-variants": "^0.1.20"
 	}
 }

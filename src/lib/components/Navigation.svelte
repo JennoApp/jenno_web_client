@@ -63,20 +63,24 @@
 
 			<!-- Right -->
 			<div>
-				<div>
-					<button
-						class="bg-[#202020] text-gray-200 w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
-						on:click={() => goto('/login')}
-					>
-						Login
-					</button>
-					<button
-						class="bg-[#202020] text-gray-200 w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer"
-						on:click={() => goto('/register')}
-					>
-						Register
-					</button>
-				</div>
+				{#if $page.data.user}
+					<h3 class="text-gray-200">Welcome {$page.data.user.username}!</h3>
+				{:else}
+					<div>
+						<button
+							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
+							on:click={() => goto('/login')}
+						>
+							Login
+						</button>
+						<button
+							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer"
+							on:click={() => goto('/register')}
+						>
+							Register
+						</button>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</nav>
