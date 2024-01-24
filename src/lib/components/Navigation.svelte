@@ -1,11 +1,13 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import Sidebar from './Sidebar.svelte';
 
 	const paths = ['/login', '/register'];
 
 	//verifica si la sesion de usuario esta activa
+	$: userInfo = $page.data.user;
 
 	// Estado de sidebar, por defecto es true,
 	// y funcion que actualiza este estado
@@ -13,6 +15,8 @@
 	function handleIsClose() {
 		isClose = !isClose;
 	}
+
+	function deleteSessionCookie(event) {} // arreglar funcion
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -63,8 +67,78 @@
 
 			<!-- Right -->
 			<div>
-				{#if $page.data.user}
-					<h3 class="text-gray-200">Welcome {$page.data.user.username}!</h3>
+				{#if userInfo}
+					<div class="flex items-center gap-3">
+						<div>
+							<iconify-icon
+								icon="mdi:bell"
+								height="1.3rem"
+								width="1.3rem"
+								class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+							/>
+						</div>
+						<div>
+							<iconify-icon
+								icon="mdi:message"
+								height="1.3rem"
+								width="1.3rem"
+								class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+							/>
+						</div>
+						<iconify-icon
+							icon="mdi:cart"
+							height="1.3rem"
+							width="1.3rem"
+							class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+						/>
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger>
+								<iconify-icon
+									icon="mdi:user"
+									height="1.5rem"
+									width="1.5rem"
+									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+								/>
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Content class="bg-[#202020] border-[#222222]">
+								<DropdownMenu.Item>
+									{#if userInfo.profileImg !== ''}
+										<img
+											src={userInfo.profileImg}
+											alt={userInfo.username}
+											class="h-9 w-9 object-cover ml-1 rounded-full"
+										/>
+									{:else}
+										<iconify-icon
+											icon="mdi:user"
+											height="1.5rem"
+											width="1.5rem"
+											class="flex justify-center items-center text-gray-200 h-14 w-14 ml-1 bg-background rounded-full"
+										/>
+									{/if}
+									<div class="flex flex-col justify-center ml-2">
+										<h2 class="text-base text-gray-200 font-semibold">{userInfo?.username}</h2>
+										<h3 class="text-sm text-[#707070]">{userInfo?.accountType}</h3>
+										<h3 class="text-sm text-[#707070]">{userInfo?.email}</h3>
+									</div>
+								</DropdownMenu.Item>
+								<DropdownMenu.Separator class="bg-[#303030]" />
+								<DropdownMenu.Group>
+									{#if userInfo.accountType === 'business'}
+										<DropdownMenu.Item href="/admin">
+											<span>Administrador</span>
+										</DropdownMenu.Item>
+									{/if}
+									<DropdownMenu.Item>
+										<span>Ajustes</span>
+									</DropdownMenu.Item>
+									<DropdownMenu.Item on:click={(event) => deleteSessionCookie(event)}>
+										<span>Cerrar Sesion</span>
+									</DropdownMenu.Item>
+								</DropdownMenu.Group>
+							</DropdownMenu.Content>
+						</DropdownMenu.Root>
+					</div>
 				{:else}
 					<div>
 						<button
