@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ params, fetch }) => {
+export const load: PageServerLoad = async ({ params }) => {
   try {
     // Obtener información del usuario
     const userFetch = await fetch(`http://localhost:3000/users/findOne/${params.username}`);
@@ -11,26 +11,26 @@ export const load: PageServerLoad = async ({ params, fetch }) => {
         return {
           status: 500,
           error: "Error interno del servidor"
-        };
+        }
       } else {
         return {
           status: userFetch.status,
           error: "Error en la solicitud"
-        };
+        }
       }
     }
 
     const userData = await userFetch.json();
 
     return {
-      user: userData
+      userData
     };
   } catch (error) {
     console.log(error);
     return {
       status: 500,
       error: "Error interno del servidor"
-    };
+    }
   }
 };
 

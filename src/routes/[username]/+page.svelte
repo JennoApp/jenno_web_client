@@ -1,12 +1,31 @@
-<script>
+<script lang="ts">
+	import { onMount } from 'svelte';
 	import Card from '$lib/components/Card.svelte';
 	import { Button } from '$lib/components/ui/button';
-	export let data;
+	import type { PageServerData } from './$types';
+	export let data: PageServerData;
 
+	let products: any[] = [];
+
+	async function loadProducts(userId: string) {
+		const response = await fetch(`http://localhost:3000/products/user/${userId}`);
+		const data = await response.json();
+		console.log({ data });
+		products = data;
+	}
+	if (data.status === 500) {
+		console.log("usuario no existe")
+	} else {
+		onMount(() => {
+			loadProducts(data.userData._id);
+		});
+	}
+
+	$: console.log({ products });
 </script>
 
-{#if data?.user}
-	{#await data?.user}
+{#if data?.userData}
+	{#await data?.userData}
 		<p>Waiting...</p>
 	{:then user}
 		<!-- user Information -->
@@ -63,14 +82,15 @@
 		<p class="text-red-500">{error.message}</p>
 	{/await}
 
-	
-
 	<!-- Error al encontrar la informacion del usuario -->
-{:else if data?.user?.error}
-	<h1>{data?.user?.error}</h1>
+{:else if data?.userData?.error}
+	<h1>{data?.userData?.error}</h1>
+{:else}
+	<h1>El usuario no existe</h1>
 {/if}
 
-<!-- User products or services -->
+<!--  
+ User products or services 
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 m-5 gap-5 grid-flow-row">
 	<Card />
 	<Card />
@@ -84,4 +104,4 @@
 	<Card />
 	<Card />
 	<Card />
-</div>
+</div> -->
