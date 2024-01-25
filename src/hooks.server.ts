@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 export async function handle({ event, resolve }) {
   // Obtenemos token de session de la cookies
   const session = event.cookies.get('session')
-
   const decodedToken = jwt.decode(session)
 
   // Obtenemos la informacion de la base de datos

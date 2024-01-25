@@ -1,6 +1,6 @@
 <script>
-	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import Sidebar from './Sidebar.svelte';
 
@@ -15,8 +15,6 @@
 	function handleIsClose() {
 		isClose = !isClose;
 	}
-
-	function deleteSessionCookie(event) {} // arreglar funcion
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -69,14 +67,6 @@
 			<div>
 				{#if userInfo}
 					<div class="flex items-center gap-3">
-						<div>
-							<iconify-icon
-								icon="mdi:bell"
-								height="1.3rem"
-								width="1.3rem"
-								class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
-							/>
-						</div>
 						<div>
 							<iconify-icon
 								icon="mdi:message"
@@ -132,7 +122,7 @@
 									<DropdownMenu.Item>
 										<span>Ajustes</span>
 									</DropdownMenu.Item>
-									<DropdownMenu.Item on:click={(event) => deleteSessionCookie(event)}>
+									<DropdownMenu.Item>
 										<span>Cerrar Sesion</span>
 									</DropdownMenu.Item>
 								</DropdownMenu.Group>

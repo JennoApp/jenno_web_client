@@ -24,7 +24,11 @@ export const actions: Actions = {
     }
 
     cookies.set('session', result.acces_token, {
-      path: '/'
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: false,
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7
     })
 
     return {
