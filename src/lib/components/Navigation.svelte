@@ -115,7 +115,7 @@
 								<DropdownMenu.Separator class="bg-[#303030]" />
 								<DropdownMenu.Group>
 									{#if userInfo.accountType === 'business'}
-										<DropdownMenu.Item href="/admin">
+										<DropdownMenu.Item href="/admin/dashboard">
 											<span>Administrador</span>
 										</DropdownMenu.Item>
 									{/if}
