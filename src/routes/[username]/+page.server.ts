@@ -33,28 +33,3 @@ export const load: PageServerLoad = async ({ params }) => {
     }
   }
 };
-
-
-
-/*
-    // Obtener los productos del usuario usando la información del usuario
-    const productsFetch = await fetch(`http://localhost:3000/products/users/${userData._id}`);
-
-    // Verificar el estado de la respuesta de productos
-    if (!productsFetch.ok) {
-      if (productsFetch.status === 500) {
-        return {
-          status: 500,
-          error: "Error interno del servidor al obtener productos del usuario",
-        };
-      } else {
-        return {
-          status: productsFetch.status,
-          error: "Error en la solicitud al obtener productos del usuario",
-        };
-      }
-    }
-
-    const productsData = await productsFetch.json();
-
-*/
