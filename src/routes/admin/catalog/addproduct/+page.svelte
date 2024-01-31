@@ -4,19 +4,30 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { Button } from '$lib/components/ui/button';
+	import { Label } from '$lib/components/ui/label';
 	import * as Select from '$lib/components/ui/select';
-	import { enhance } from '$app/forms'
+	import * as Table from '$lib/components/ui/table';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { enhance } from '$app/forms';
 
-	// cargar imagenes
-	let files: FileList;
+	let fileList: any[] = [];
 
-	$: if (files) {
-		console.log(files);
-
-		for (const file of files) {
-			console.log(`${file.name}: ${file.size} bytes`);
-		}
+	function handleFiles(event) {
+		const files = event.target.files;
+		fileList = Array.from(files).map((file) => ({
+			name: file.name,
+			size: file.size
+		}));
 	}
+
+	function formatFileSize(size) {
+		if (size === 0) return '0 bytes';
+		const units = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+		const i = Math.floor(Math.log(size) / Math.log(1024));
+		return `${parseFloat((size / Math.pow(1024, i)).toFixed(2))} ${units[i]}`;
+	}
+
+	let handleCheck = true;
 </script>
 
 <div class="flex p-5">
@@ -39,7 +50,7 @@
 	</div>
 </div>
 
-<form method="POST" enctype="multipart/form-data" action="?/addProduct" use:enhance>
+<form method="POST" enctype="multipart/form-data" action="?/addProduct">
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Columna 1 -->
 		<div class="w-full">
@@ -50,11 +61,11 @@
 				<Card.Content>
 					<div>
 						<lebel for="productname">Product name</lebel>
-						<Input type="text" name="productname" />
+						<Input type="text" name="productname" required />
 					</div>
 					<div>
 						<lebel for="productname">Description</lebel>
-						<Textarea class="resize-y" />
+						<Textarea class="resize-y" name="description" />
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -66,7 +77,7 @@
 				<Card.Content>
 					<div>
 						<lebel>Price</lebel>
-						<Input type="number" placeholder="Price" min={0} />
+						<Input type="number" name="price" placeholder="Price" min={0} />
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -78,11 +89,11 @@
 				<Card.Content>
 					<div>
 						<lebel>Quantity</lebel>
-						<Input type="number" />
+						<Input type="number" name="quantity" />
 					</div>
 					<div>
 						<lebel for="SKU">SKU</lebel>
-						<Input type="text" />
+						<Input type="text" name="SKU" />
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -94,7 +105,7 @@
 				<Card.Content>
 					<div>
 						<lebel>Category</lebel>
-						<Input />
+						<Input name="category" />
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -108,15 +119,28 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel>Upload multiples files of any type:</lebel>
-						<Input name="files" multiple type="file" />
-						{#if files}
-							<h2>Selected Files</h2>
-							{#each Array.from(files) as file}
-								<p>{file.name} ({file.size} bytes)</p>
-							{/each}
-						{/if}
+						<Input name="files" multiple type="file" on:change={handleFiles} />
 					</div>
+					{#if fileList.length !== 0}
+						<Table.Root class="mt-3">
+							<Table.Header>
+								<Table.Row>
+									<Table.Head>#</Table.Head>
+									<Table.Head>Name</Table.Head>
+									<Table.Head>Size</Table.Head>
+								</Table.Row>
+							</Table.Header>
+							<Table.Body>
+								{#each fileList as file, i}
+									<Table.Row>
+										<Table.Cell>{i + 1}</Table.Cell>
+										<Table.Cell>{file.name}</Table.Cell>
+										<Table.Cell>{formatFileSize(file.size)}</Table.Cell>
+									</Table.Row>
+								{/each}
+							</Table.Body>
+						</Table.Root>
+					{/if}
 				</Card.Content>
 			</Card.Root>
 
@@ -127,20 +151,20 @@
 				<Card.Content>
 					<div>
 						<lebel>Weight</lebel>
-						<Input type="number" />
+						<Input type="number" name="weight" />
 					</div>
 					<div class="flex gap-1">
 						<div>
 							<lebel>Length</lebel>
-							<Input type="number" />
+							<Input type="number" name="length" />
 						</div>
 						<div>
 							<lebel>Width</lebel>
-							<Input type="number" />
+							<Input type="number" name="width" />
 						</div>
 						<div>
 							<lebel>Height</lebel>
-							<Input type="number" />
+							<Input type="number" name="height" />
 						</div>
 					</div>
 				</Card.Content>
@@ -152,19 +176,22 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel>Status</lebel>
+						<Label>Status</Label>
 						<Select.Root>
 							<Select.Trigger>
 								<Select.Value placeholder="Select product status" />
 							</Select.Trigger>
 							<Select.Content>
-								<Select.Item value="in_stock">in stock</Select.Item>
-								<Select.Item value="sold_out">sold out</Select.Item>
-								<Select.Item value="on_sale">on sale</Select.Item>
-								<Select.Item value="active">active</Select.Item>
-								<Select.Item value="paused">paused</Select.Item>
-								<Select.Item value="inactive">inactive</Select.Item>
+								<Select.Group>
+									<Select.Item value="in_stock">in stock</Select.Item>
+									<Select.Item value="sold_out">sold out</Select.Item>
+									<Select.Item value="on_sale">on sale</Select.Item>
+									<Select.Item value="active">active</Select.Item>
+									<Select.Item value="paused">paused</Select.Item>
+									<Select.Item value="inactive">inactive</Select.Item>
+								</Select.Group>
 							</Select.Content>
+							<Select.Input name="status" />
 						</Select.Root>
 					</div>
 				</Card.Content>
@@ -176,13 +203,14 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
+						<input type="checkbox" name="visibility" checked />
 						<span class="ml-2">visibility</span>
 					</div>
 				</Card.Content>
 			</Card.Root>
 
 			<div class="w-full flex justify-end">
-				<Button  type="submit" class="px-5 rounded-sm">Add Product</Button>
+				<Button type="submit" class="px-5 rounded-sm">Add Product</Button>
 			</div>
 		</div>
 	</div>
