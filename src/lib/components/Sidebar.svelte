@@ -17,6 +17,7 @@
 		'/admin/dashboard',
 		'/admin/sales',
 		'/admin/catalog',
+		'/admin/catalog/addproduct',
 		'/admin/customers',
 		'/admin/marketing'
 	];
