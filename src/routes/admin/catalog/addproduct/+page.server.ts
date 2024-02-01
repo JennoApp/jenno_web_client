@@ -1,12 +1,31 @@
 import type { Actions } from './$types'
+import { supabase } from '$lib/supabaseClient'
+import { v4 as uuidv4 } from 'uuid'
 
 export const actions: Actions = {
   addProduct: async ({ request, cookies, fetch }) => {
     const formData = await request.formData()
     const tokenJwt = cookies.get('session')
 
-    const uploadedFile = formData?.getAll('files')
-    console.log({ uploadedFile })
+    const uploadedFiles = formData?.getAll('files')
+    console.log({ uploadedFiles })
+    const imagesUrls: string[] = []
+
+    const uploadPromises = uploadedFiles.map(async (file) => {
+      const { data, error } = await supabase.storage.from('products').upload(uuidv4(), file)
+      if (error) {
+        console.log({ supabaseError: error })
+      } else {
+        console.log("imagen subida")
+        console.log({ image: data })
+        const publicUrl = supabase.storage.from('products').getPublicUrl(data.path)
+        console.log(publicUrl)
+        imagesUrls.push(publicUrl.data.publicUrl)
+      }
+    })
+
+    await Promise.all(uploadPromises)
+    console.log({ imagesUrls })
 
     const productname = formData?.get('productname')
     const description = formData.get('description')
@@ -35,6 +54,7 @@ export const actions: Actions = {
         },
         body: JSON.stringify({
           productname,
+          imgs: imagesUrls,
           price,
           quantity,
           SKU,
@@ -46,7 +66,7 @@ export const actions: Actions = {
         })
       })
 
-      const result = await response.json()
+      // const result = await response.json()
 
       if (response.status === 401) {
         console.log("el producto no se ha podido crear")
@@ -62,7 +82,7 @@ export const actions: Actions = {
       }
 
     } catch (error) {
-      console.log({error})
+      console.log({ error })
     }
   }
 }
