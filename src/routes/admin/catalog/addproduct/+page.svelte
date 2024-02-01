@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import type { ActionData } from './$types';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Textarea } from '$lib/components/ui/textarea';
@@ -7,8 +8,16 @@
 	import { Label } from '$lib/components/ui/label';
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
-	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { enhance } from '$app/forms';
+	import { toast } from 'svelte-sonner';
+	import { enhance } from '$app/forms'
+
+	export let form: ActionData;
+
+	$: if (form?.status === 201) {
+		console.log(`formStatus: ${form.status}`)
+		toast.success("Producto creado!")
+		goto('/admin/catalog')
+	} 
 
 	let fileList: any[] = [];
 
@@ -26,8 +35,6 @@
 		const i = Math.floor(Math.log(size) / Math.log(1024));
 		return `${parseFloat((size / Math.pow(1024, i)).toFixed(2))} ${units[i]}`;
 	}
-
-	let handleCheck = true;
 </script>
 
 <div class="flex p-5">
@@ -50,7 +57,12 @@
 	</div>
 </div>
 
-<form method="POST" enctype="multipart/form-data" action="?/addProduct">
+<form
+	method="POST"
+	enctype="multipart/form-data"
+	action="?/addProduct"
+	use:enhance
+>
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Columna 1 -->
 		<div class="w-full">
@@ -127,6 +139,7 @@
 								<Table.Row>
 									<Table.Head>#</Table.Head>
 									<Table.Head>Name</Table.Head>
+									<Table.Head>Type</Table.Head>
 									<Table.Head>Size</Table.Head>
 								</Table.Row>
 							</Table.Header>
@@ -134,7 +147,8 @@
 								{#each fileList as file, i}
 									<Table.Row>
 										<Table.Cell>{i + 1}</Table.Cell>
-										<Table.Cell>{file.name}</Table.Cell>
+										<Table.Cell>{file.name.split('.')[0]}</Table.Cell>
+										<Table.Cell>{file.name.split('.')[1]}</Table.Cell>
 										<Table.Cell>{formatFileSize(file.size)}</Table.Cell>
 									</Table.Row>
 								{/each}

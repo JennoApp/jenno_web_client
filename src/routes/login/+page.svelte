@@ -29,7 +29,7 @@
 		<!-- Password Input -->
 		<div class="flex flex-col">
 			<label for="password" class="text-base dark:text-gray-200 font-medium">Password</label>
-			<input type="password" name="password" class="h-8 border rounded-md" />
+			<input type="password" name="password" class="h-8 border text-black rounded-md" />
 		</div>
 
 		<!-- Login Submit -->

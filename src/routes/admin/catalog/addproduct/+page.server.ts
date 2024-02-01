@@ -1,8 +1,9 @@
 import type { Actions } from './$types'
 
 export const actions: Actions = {
-  addProduct: async ({ request }) => {
+  addProduct: async ({ request, cookies, fetch }) => {
     const formData = await request.formData()
+    const tokenJwt = cookies.get('session')
 
     const uploadedFile = formData?.getAll('files')
     console.log({ uploadedFile })
@@ -24,9 +25,44 @@ export const actions: Actions = {
       productname, description, price,
       quantity, SKU, category, weight, length, width, height, status, visibility
     })
-      
-    return {
-      success: true
+
+    try {
+      const response = await fetch("http://localhost:3000/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${tokenJwt}`
+        },
+        body: JSON.stringify({
+          productname,
+          price,
+          quantity,
+          SKU,
+          description,
+          category,
+          weight,
+          status,
+          visibility
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.status === 401) {
+        console.log("el producto no se ha podido crear")
+        return {
+          success: false,
+          status: response.status
+        }
+      }
+
+      return {
+        success: true,
+        status: response.status
+      }
+
+    } catch (error) {
+      console.log({error})
     }
   }
 }
