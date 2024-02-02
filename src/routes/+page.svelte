@@ -1,6 +1,15 @@
-<script>
+<script lang="ts">
+	import type { PageServerData } from './$types';
 	import Card from '$lib/components/Card.svelte';
+
+	export let data: PageServerData;
+
+	$: console.log({ data });
 </script>
+
+<svelte:head>
+	<title>YouShop</title>
+</svelte:head>
 
 <div class="fixed top-12 flex items-center bg-[#121212] gap-3 w-full h-12 px-5 my-1 z-50">
 	<button
@@ -35,22 +44,10 @@
 </div>
 
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 mx-5 mt-14 gap-5 grid-flow-row">
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
+
+{#each data?.products as productData}
+	<Card data={productData}/>	
+{/each}
 </div>
 
 <br />

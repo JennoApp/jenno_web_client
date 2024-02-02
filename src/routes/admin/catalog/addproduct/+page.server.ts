@@ -8,7 +8,6 @@ export const actions: Actions = {
     const tokenJwt = cookies.get('session')
 
     const uploadedFiles = formData?.getAll('files')
-    console.log({ uploadedFiles })
     const imagesUrls: string[] = []
 
     const uploadPromises = uploadedFiles.map(async (file) => {
@@ -16,8 +15,7 @@ export const actions: Actions = {
       if (error) {
         console.log({ supabaseError: error })
       } else {
-        console.log("imagen subida")
-        console.log({ image: data })
+        console.log("imagen subida")     
         const publicUrl = supabase.storage.from('products').getPublicUrl(data.path)
         console.log(publicUrl)
         imagesUrls.push(publicUrl.data.publicUrl)
@@ -40,17 +38,17 @@ export const actions: Actions = {
     const status = formData.get('status')
     const visibility = formData.get('visibility')
 
-    console.log({
+    /*console.log({
       productname, description, price,
       quantity, SKU, category, weight, length, width, height, status, visibility
-    })
+    })*/
 
     try {
       const response = await fetch("http://localhost:3000/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${tokenJwt}`
+          "Authorization": `Bearer ${tokenJwt}` // autorizaicion jwt token
         },
         body: JSON.stringify({
           productname,
@@ -61,6 +59,9 @@ export const actions: Actions = {
           description,
           category,
           weight,
+          length,
+          width,
+          height,
           status,
           visibility
         })

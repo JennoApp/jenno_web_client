@@ -10,7 +10,6 @@
 	async function loadProducts(userId: string) {
 		const response = await fetch(`http://localhost:3000/products/user/${userId}`);
 		const data = await response.json();
-		console.log({ data });
 		products = data;
 	}
 	if (data.status === 500) {
@@ -89,19 +88,9 @@
 	<h1>El usuario no existe</h1>
 {/if}
 
-<!--  
- User products or services 
+
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 m-5 gap-5 grid-flow-row">
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-	<Card />
-</div> -->
+	{#each products as productData}
+		<Card data={productData}/>	
+	{/each}
+</div>
