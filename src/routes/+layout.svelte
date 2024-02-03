@@ -6,7 +6,7 @@
 </script>
 
 
-<Toaster richColors />
+<Toaster richColors theme="dark"/>
 <Navigation>
 	<slot />
 </Navigation>

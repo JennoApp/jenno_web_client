@@ -3,6 +3,7 @@
 	import Card from '$lib/components/Card.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { PageServerData } from './$types';
+
 	export let data: PageServerData;
 
 	let products: any[] = [];
@@ -13,7 +14,7 @@
 		products = data;
 	}
 	if (data.status === 500) {
-		console.log("usuario no existe")
+		console.log('usuario no existe');
 	} else {
 		onMount(() => {
 			loadProducts(data.userData._id);
@@ -88,9 +89,8 @@
 	<h1>El usuario no existe</h1>
 {/if}
 
-
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 m-5 gap-5 grid-flow-row">
 	{#each products as productData}
-		<Card data={productData}/>	
+		<Card data={productData} />
 	{/each}
 </div>

@@ -8,14 +8,15 @@
 	}
 
 	import type { PageServerData } from './$types';
-	import * as Card from '$lib/components/ui/card';
 	import * as Carousel from '$lib/components/ui/carousel/index';
 	import * as Accordion from '$lib/components/ui/accordion';
+	import {addToCart} from '$lib/stores/cartStore'
 
 	export let data: PageServerData;
 	const product: CardData = data.product;
 
 	$: console.log({ product: data.product });
+
 </script>
 
 <div class="flex flex-row p-7">
@@ -75,9 +76,8 @@
 				>Buy</button
 			>
 			<button
-				on:click={(e) => {
-					e.preventDefault();
-					alert(`${product._id}`);
+				on:click|preventDefault={() => {
+					addToCart(product)
 				}}
 				class="dark:bg-[#202020] border-none rounded w-1/2 ml-3 h-12 dark:text-gray-200 text-base cursor-pointer hover:dark:bg-[#252525]"
 				>Add to Cart</button

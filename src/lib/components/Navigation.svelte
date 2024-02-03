@@ -2,7 +2,22 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as HoverCard from '$lib/components/ui/hover-card';
 	import Sidebar from './Sidebar.svelte';
+	import { cartItems, addToCart, decrementCartItem, removeFromCart, getTotal } from '$lib/stores/cartStore';
+	import { onDestroy } from 'svelte'
+
+	/// Total reactivo basado en svelte/store
+	let total = getTotal()
+
+	const unsubscribe = cartItems.subscribe(() => {
+		total = getTotal()
+	})
+
+	onDestroy(() => {
+		unsubscribe()
+	})
+	///
 
 	const paths = ['/login', '/register'];
 
@@ -75,12 +90,76 @@
 								class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
 							/>
 						</div>
-						<iconify-icon
-							icon="mdi:cart"
-							height="1.3rem"
-							width="1.3rem"
-							class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
-						/>
+						<HoverCard.Root openDelay={100}>
+							<HoverCard.Trigger class="relative">
+								<iconify-icon
+									icon="mdi:cart"
+									height="1.3rem"
+									width="1.3rem"
+									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+								/>
+								<span class="absolute top-[-0.2rem] right-[-0.2rem] dark:bg-gray-200 dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+									{$cartItems.length}
+								</span>
+							</HoverCard.Trigger>
+							<HoverCard.Content class="flex flex-col gap-2 w-80">
+								{#if $cartItems.length === 0}
+									<div class="w-full flex justify-center">
+										<h2>Agregar items al Carrito!</h2>
+									</div>
+								{:else}
+									{#each $cartItems as cartItem}
+										<div
+											class="flex flex-row gap-3 items-center rounded-sm p-3 relative dark:bg-[#202020] hover:dark:bg-[#252525]"
+										>
+											<img
+												class="w-12 h-12 object-cover rounded-sm mr-2"
+												src={`${cartItem.imgs[0]}`}
+												alt={`${cartItem.productname}`}
+											/>
+											<div class="flex">
+												<div class="flex flex-col items-start">
+													<h2 class="text-lg">{cartItem.productname}</h2>
+													<p class="text-base text-white">${cartItem.price}</p>
+												</div>
+
+												<div class="flex w-full justify-center items-center mt-2">
+													<button
+														on:click|preventDefault={() => decrementCartItem(cartItem._id)}
+														class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+													>
+														<!-- Minus Icon -->
+														<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"
+														></iconify-icon>
+													</button>
+													<span class="mx-2">{cartItem.amount}</span>
+													<button
+														on:click|preventDefault={() => addToCart(cartItem)}
+														class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+													>
+														<!-- Plus Icon -->
+														<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"
+														></iconify-icon>
+													</button>
+												</div>
+											</div>
+											<button
+												on:click|preventDefault={() => removeFromCart(cartItem._id)}
+												class="absolute top-2 right-2 text-white hover:text-primary cursor-pointer"
+											>
+												<!-- Close Icon -->
+												<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem"
+												></iconify-icon>
+											</button>
+										</div>
+									{/each}
+									<div class="flex justify-end">
+										<h2>Total: {total.toFixed(0)}</h2>
+									</div>
+								{/if}
+							</HoverCard.Content>
+						</HoverCard.Root>
+
 						<DropdownMenu.Root>
 							<DropdownMenu.Trigger>
 								<iconify-icon
@@ -90,7 +169,7 @@
 									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
 								/>
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="bg-[#202020] border-[#222222]">
+							<DropdownMenu.Content>
 								<DropdownMenu.Item>
 									{#if userInfo.profileImg !== ''}
 										<img

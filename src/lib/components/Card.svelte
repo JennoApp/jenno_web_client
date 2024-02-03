@@ -7,6 +7,8 @@
 		price: number;
 	}
 
+	import { addToCart } from '$lib/stores/cartStore';
+
 	export let data: CardData;
 </script>
 
@@ -76,13 +78,13 @@
 		<div class="flex justify-evenly mx-2">
 			<button
 				class="bg-[#404040] rounded max-w-[140px] min-w-[120px] h-8 text-gray-200 text-base cursor-pointer z-10"
-				on:click={() => alert('Buy Button')}
+				on:click|preventDefault={() => alert(data._id)}
 			>
 				Buy
 			</button>
 			<button
 				class="bg-[#404040] rounded max-w-[140px] min-w-[120px] h-8 text-gray-200 text-base cursor-pointer"
-				on:click|preventDefault={() => alert(`${data._id}`)}
+				on:click|preventDefault={() => addToCart(data)}
 			>
 				Add to Cart
 			</button>

@@ -1,26 +1,27 @@
 <script lang="ts">
-	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
+	import { LinkPreview as HoverCardPrimitive } from "bits-ui";
 	import { cn, flyAndScale } from "$lib/utils";
 
-	type $$Props = DropdownMenuPrimitive.ContentProps;
+	type $$Props = HoverCardPrimitive.ContentProps;
 
 	let className: $$Props["class"] = undefined;
+	export let align: $$Props["align"] = "center";
 	export let sideOffset: $$Props["sideOffset"] = 4;
 	export let transition: $$Props["transition"] = flyAndScale;
 	export let transitionConfig: $$Props["transitionConfig"] = undefined;
 	export { className as class };
 </script>
 
-<DropdownMenuPrimitive.Content
+<HoverCardPrimitive.Content
 	{transition}
 	{transitionConfig}
 	{sideOffset}
+	{align}
 	class={cn(
-		"z-50 min-w-[8rem] rounded-md border border-[#252525] dark:bg-[#121212] p-1 text-popover-foreground shadow-md focus:outline-none",
+		"z-50 w-64 rounded-md border border-[#252525] bg-[#121212] p-4 text-popover-foreground shadow-md outline-none",
 		className
 	)}
 	{...$$restProps}
-	on:keydown
 >
 	<slot />
-</DropdownMenuPrimitive.Content>
+</HoverCardPrimitive.Content>
