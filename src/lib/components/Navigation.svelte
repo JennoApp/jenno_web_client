@@ -4,19 +4,25 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as HoverCard from '$lib/components/ui/hover-card';
 	import Sidebar from './Sidebar.svelte';
-	import { cartItems, addToCart, decrementCartItem, removeFromCart, getTotal } from '$lib/stores/cartStore';
-	import { onDestroy } from 'svelte'
+	import {
+		cartItems,
+		addToCart,
+		decrementCartItem,
+		removeFromCart,
+		getTotal
+	} from '$lib/stores/cartStore';
+	import { onDestroy } from 'svelte';
 
 	/// Total reactivo basado en svelte/store
-	let total = getTotal()
+	let total = getTotal();
 
 	const unsubscribe = cartItems.subscribe(() => {
-		total = getTotal()
-	})
+		total = getTotal();
+	});
 
 	onDestroy(() => {
-		unsubscribe()
-	})
+		unsubscribe();
+	});
 	///
 
 	const paths = ['/login', '/register'];
@@ -91,14 +97,16 @@
 							/>
 						</div>
 						<HoverCard.Root openDelay={100}>
-							<HoverCard.Trigger class="relative">
+							<HoverCard.Trigger href="/cart" class="relative">
 								<iconify-icon
 									icon="mdi:cart"
 									height="1.3rem"
 									width="1.3rem"
 									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
 								/>
-								<span class="absolute top-[-0.2rem] right-[-0.2rem] dark:bg-gray-200 dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">
+								<span
+									class="absolute top-[-0.2rem] right-[-0.2rem] dark:bg-gray-200 dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+								>
 									{$cartItems.length}
 								</span>
 							</HoverCard.Trigger>
@@ -153,8 +161,9 @@
 											</button>
 										</div>
 									{/each}
-									<div class="flex justify-end">
-										<h2>Total: {total.toFixed(0)}</h2>
+									<div class="flex justify-between">
+										<a href="/cart" class="hover:underline">Ir al carrito</a>
+										<h2>Subtotal: ${total.toFixed(0)}</h2>
 									</div>
 								{/if}
 							</HoverCard.Content>
@@ -198,7 +207,7 @@
 											<span>Administrador</span>
 										</DropdownMenu.Item>
 									{/if}
-									<DropdownMenu.Item>
+									<DropdownMenu.Item href="/settings/profile">
 										<span>Ajustes</span>
 									</DropdownMenu.Item>
 									<DropdownMenu.Item>
