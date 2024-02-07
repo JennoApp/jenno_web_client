@@ -5,6 +5,7 @@
 		productname: string;
 		imgs: [string];
 		price: number;
+		user: string;
 	}
 
 	import type { PageServerData } from './$types';
@@ -12,6 +13,7 @@
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { addToCart } from '$lib/stores/cartStore';
 	import { goto } from '$app/navigation';
+	import {onMount} from 'svelte'
 
 	export let data: PageServerData;
 	const product: CardData = data.product;
@@ -23,6 +25,28 @@
 	function syncCarousel(index: number) {
 		indexCarousel = index;
 	}
+
+	let profileImg = '';
+
+	onMount(async () => {
+		if (!product || !product?.user) {
+			console.error(
+				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
+			);
+			return;
+		}
+
+		try {
+			const response = await fetch(`http://localhost:3000/users/getprofileimg/${product?.user}`);
+
+			const userData = await response.json();
+			console.log({ userData });
+
+			profileImg = userData?.profileImg;
+		} catch (error: any) {
+			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
+		}
+	});
 </script>
 
 <div class="flex flex-row p-7">
@@ -80,12 +104,12 @@
 			</div>
 			<a href={`/${product.username}`}>
 				<div
-					class="flex justify-between px-3 items-center min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
+					class="flex justify-evenly px-3 items-center gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
 				>
-					{#if product?.profileImg}
+					{#if profileImg}
 						<img
 							class="w-14 h-14 object-cover rounded-full"
-							src={product?.profileImg}
+							src={profileImg}
 							alt={product?.username}
 							height={20}
 							width={20}
@@ -95,7 +119,7 @@
 							<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" />
 						</div>
 					{/if}
-					<h2 class="text-lg">@{product.username}</h2>
+					<h2 class="text-lg">{product.username}</h2>
 				</div>
 			</a>
 		</div>

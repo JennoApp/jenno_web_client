@@ -3,15 +3,30 @@ import jwt from 'jsonwebtoken'
 export async function handle({ event, resolve }) {
   // Obtenemos token de session de la cookies
   const session = event.cookies.get('session')
-  const decodedToken = jwt.decode(session)
 
-  // Obtenemos la informacion de la base de datos
-  if (decodedToken !== null) {
-    const result = await fetch(`http://localhost:3000/users/${decodedToken.sub}`)
-    const userData = await result.json()
-    console.log({ userData })
+  if (session) {
+    try {
+      const decodedToken = jwt.verify(session, 'secretKey_crb331')
+      console.log({decodedToken})
 
-    event.locals.user = userData
+      if (decodedToken?.exp * 1000 < Date.now()) {
+        event.cookies.delete('session', {
+          path: '/'
+        })
+        event.locals.sessionExpired = true
+      } else {
+        const result = await fetch(`http://localhost:3000/users/${decodedToken.sub}`)
+        const userData = await result.json()
+        console.log({ userData })
+
+        // asignar la informacion del usuario a event.locals
+        event.locals.user = userData
+      }
+    } catch (error: any) {
+      console.log("Error al verificar el token JWT:", error.message)
+
+      event.cookies.set('session', '', { path: '/',maxAge: 0 })
+    }
   }
 
   return resolve(event)

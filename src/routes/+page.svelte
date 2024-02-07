@@ -5,6 +5,8 @@
 	export let data: PageServerData;
 
 	$: console.log({ data });
+
+	
 </script>
 
 <svelte:head>

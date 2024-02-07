@@ -29,6 +29,9 @@
 
 	//verifica si la sesion de usuario esta activa
 	$: userInfo = $page.data.user;
+	
+	$: sessionExpired = $page.data.sessionExpired
+	$: console.log({sessionExpired})
 
 	// Estado de sidebar, por defecto es true,
 	// y funcion que actualiza este estado
@@ -171,12 +174,20 @@
 
 						<DropdownMenu.Root>
 							<DropdownMenu.Trigger>
-								<iconify-icon
-									icon="mdi:user"
-									height="1.5rem"
-									width="1.5rem"
-									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
-								/>
+								{#if userInfo.profileImg !== ''}
+									<img
+										src={userInfo.profileImg}
+										alt={userInfo.username}
+										class="h-9 w-9 object-cover ml-1 rounded-full"
+									/>
+								{:else}
+									<iconify-icon
+										icon="mdi:user"
+										height="1.5rem"
+										width="1.5rem"
+										class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+									/>
+								{/if}
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
 								<DropdownMenu.Item>
