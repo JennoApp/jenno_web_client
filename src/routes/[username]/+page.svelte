@@ -21,7 +21,33 @@
 		});
 	}
 
+	$: updateData = () => loadProducts(data.userData._id)
+
 	$: console.log({ products });
+
+	const handleFollow = async (customerId: string) => {
+		try {
+			const followingResponse = await fetch(`http://localhost:3000/users/following/${customerId}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${data.session}`
+				}
+			});
+
+			if (!followingResponse.ok) {
+				throw new Error('Error al seguir al usuario');
+			}
+
+			// actualiza la informacion del usuario
+			await updateData()
+
+			const followingData = await followingResponse.json();
+			console.log({ followingData });
+		} catch (error) {
+			console.log(error);
+		}
+	};
 </script>
 
 {#if data?.userData}
@@ -59,9 +85,22 @@
 
 			<div class="flex flex-col items-center gap-5 w-4/12">
 				<div class="flex items-center gap-5 ml-10">
-					<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
-						<span class="text-gray-200">Seguir</span>
-					</Button>
+					{#if user?.following.includes(user?._id)}
+						<Button
+							on:click={() => handleFollow(user?._id)}
+							class="dark:bg-[#202020] dark:hover:bg-[#252525]"
+						>
+							<span class="text-gray-200">Siguiendo</span>
+						</Button>
+					{:else}
+						<Button
+							on:click={() => handleFollow(user?._id)}
+							class="dark:bg-[#202020] dark:hover:bg-[#252525]"
+						>
+							<span class="text-gray-200">Seguir</span>
+						</Button>
+					{/if}
+
 					<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
 						<span class="text-gray-200">Send Message</span></Button
 					>

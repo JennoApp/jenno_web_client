@@ -22,6 +22,8 @@ export async function handle({ event, resolve }) {
         // asignar la informacion del usuario a event.locals
         event.locals.user = userData
       }
+
+      event.locals.session = session
     } catch (error: any) {
       console.log("Error al verificar el token JWT:", error.message)
 
