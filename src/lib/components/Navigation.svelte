@@ -190,7 +190,7 @@
 								{/if}
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
-								<DropdownMenu.Item>
+								<DropdownMenu.Item href={`/${userInfo.username}`}>
 									{#if userInfo.profileImg !== ''}
 										<img
 											src={userInfo.profileImg}
