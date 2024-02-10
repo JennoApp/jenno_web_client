@@ -99,7 +99,7 @@
 	<div class="flex flex-col justify-between w-1/2 ml-2">
 		<div class="flex justify-between">
 			<div>
-				<h1 class="text-3xl">{product.productname}</h1>
+				<h1 class="text-3xl">{product?.productname}</h1>
 				<h2 class="mt-2">⭐⭐⭐⭐⭐</h2>
 			</div>
 			<a href={`/${product.username}`}>

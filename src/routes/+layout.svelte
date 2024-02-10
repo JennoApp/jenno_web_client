@@ -2,11 +2,14 @@
 	import '../app.css';
 	import 'iconify-icon';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import { Toaster } from 'svelte-sonner'
+	import { Toaster } from 'svelte-sonner';
+	import { ParaglideJS } from '@inlang/paraglide-js-adapter-sveltekit';
+	import { i18n } from '$lib/i18n';
 </script>
 
-
-<Toaster richColors theme="dark"/>
-<Navigation>
-	<slot />
-</Navigation>
+<ParaglideJS i18n={i18n}>
+	<Toaster richColors theme="dark" />
+	<Navigation>
+		<slot />
+	</Navigation>
+</ParaglideJS>
