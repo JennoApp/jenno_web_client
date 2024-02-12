@@ -258,10 +258,10 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
-							href="/subscriptions"
+							href="/following"
 							class={!closeMenu
-								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('subscriptions', currentPath)}`
-								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('subscriptions', currentPath)}`}
+								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`
+								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`}
 						>
 							<iconify-icon
 								icon="eos-icons:product-subscriptions"
@@ -274,7 +274,7 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
-									: 'hidden'}>Subscripción</span
+									: 'hidden'}>siguiendo</span
 							>
 						</a>
 					</Tooltip.Trigger>

@@ -21,6 +21,7 @@ const sessionHandle = (async ({ event, resolve }) => {
           path: '/'
         })
         event.locals.sessionExpired = true
+        event.locals.isSession = false
       } else {
         const result = await fetch(`http://localhost:3000/users/${decodedToken.sub}`)
         const userData = await result.json()
@@ -28,6 +29,7 @@ const sessionHandle = (async ({ event, resolve }) => {
 
         // asignar la informacion del usuario a event.locals
         event.locals.user = userData
+        event.locals.isSession = true
       }
 
       event.locals.session = session
@@ -35,6 +37,7 @@ const sessionHandle = (async ({ event, resolve }) => {
       console.log("Error al verificar el token JWT:", error.message)
 
       event.cookies.set('session', '', { path: '/',maxAge: 0 })
+      event.locals.isSession = false
     }
   }
 

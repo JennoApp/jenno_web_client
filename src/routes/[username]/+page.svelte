@@ -1,13 +1,17 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import Card from '$lib/components/Card.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { PageServerData } from './$types';
+	import { toast } from 'svelte-sonner';
 
 	export let data: PageServerData;
 
-	$: dataStatus = data.status
+	$: dataStatus = data.status;
 	$: userData = data.userData;
 	let products: any[] = [];
+
+	$: console.log({ isSession: $page.data.isSession });
 
 	async function loadUserData(userId: string) {
 		const response = await fetch(`http://localhost:3000/users/${userId}`);
@@ -24,33 +28,40 @@
 	// Carga los datos si el resutaldo del data.Status es diferente a 500
 	$: if (dataStatus === 500) {
 		console.log('usuario no existe');
-		products = [] // vacia la lista de productos cuando el usuario no existe
+		products = []; // vacia la lista de productos cuando el usuario no existe
 	} else {
-		loadProducts(data.userData._id);	
+		loadProducts(data.userData._id);
 	}
 
-	$: console.log({userData });
+	$: console.log({ userData });
 
 	const handleFollow = async (customerId: string) => {
-		try {
-			const followingResponse = await fetch(`http://localhost:3000/users/following/${customerId}`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${data.session}`
+		if ($page.data.isSession) {
+			try {
+				const followingResponse = await fetch(
+					`http://localhost:3000/users/following/${customerId}`,
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: `Bearer ${data.session}`
+						}
+					}
+				);
+
+				if (!followingResponse.ok) {
+					throw new Error('Error al seguir al usuario');
 				}
-			});
 
-			if (!followingResponse.ok) {
-				throw new Error('Error al seguir al usuario');
+				// actualiza la informacion del usuario
+				await loadUserData(customerId);
+
+				console.log('Usuario seguido exitosamente');
+			} catch (error) {
+				console.log(error);
 			}
-
-			// actualiza la informacion del usuario
-			await loadUserData(customerId);
-
-			console.log('Usuario seguido exitosamente');
-		} catch (error) {
-			console.log(error);
+		} else {
+			toast.info("Debes iniciar sesion para seguir a este usuario!!!")
 		}
 	};
 </script>

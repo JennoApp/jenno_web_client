@@ -1,8 +1,9 @@
 <script>
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as HoverCard from '$lib/components/ui/hover-card';
+	import { toast } from 'svelte-sonner';
 	import Sidebar from './Sidebar.svelte';
 	import {
 		cartItems,
@@ -29,9 +30,9 @@
 
 	//verifica si la sesion de usuario esta activa
 	$: userInfo = $page.data.user;
-	
-	$: sessionExpired = $page.data.sessionExpired
-	$: console.log({sessionExpired})
+
+	$: sessionExpired = $page.data.sessionExpired;
+	$: console.log({ sessionExpired });
 
 	// Estado de sidebar, por defecto es true,
 	// y funcion que actualiza este estado
@@ -39,6 +40,25 @@
 	function handleIsClose() {
 		isClose = !isClose;
 	}
+
+	$: console.log($page.url.pathname);
+
+	// logout function
+	const logout = async () => {
+		const response = await fetch('/api/auth/logout', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
+
+		if (response.ok) {
+			invalidateAll();
+			toast.success('Sesión Cerrada')
+		} else {
+			toast.error('No se ha podido cerrar sesion')
+		}
+	};
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -221,7 +241,7 @@
 									<DropdownMenu.Item href="/settings/profile">
 										<span>Ajustes</span>
 									</DropdownMenu.Item>
-									<DropdownMenu.Item>
+									<DropdownMenu.Item on:click={() => logout()}>
 										<span>Cerrar Sesion</span>
 									</DropdownMenu.Item>
 								</DropdownMenu.Group>

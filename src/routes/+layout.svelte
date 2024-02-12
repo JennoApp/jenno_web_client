@@ -8,7 +8,7 @@
 </script>
 
 <ParaglideJS i18n={i18n}>
-	<Toaster richColors theme="dark" />
+	<Toaster richColors theme="dark" duration={3000} />
 	<Navigation>
 		<slot />
 	</Navigation>

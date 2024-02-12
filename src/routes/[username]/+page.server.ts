@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
+export const load: PageServerLoad = async ({ params, cookies, locals }) => {
   try {
     const session = cookies.get('session')
 
@@ -26,7 +26,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
     return {
       userData,
-      session
+      session,
+      isSession : locals.isSession
     };
   } catch (error) {
     console.log(error);
