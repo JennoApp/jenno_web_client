@@ -9,7 +9,7 @@
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
 	import { toast } from 'svelte-sonner';
-	import { enhance } from '$app/forms'
+	import { enhance } from '$app/forms';
 
 	export let form: ActionData;
 
