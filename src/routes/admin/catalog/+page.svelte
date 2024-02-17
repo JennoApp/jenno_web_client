@@ -3,7 +3,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addTableFilter } from 'svelte-headless-table/plugins';
+	import { addTableFilter, addPagination } from 'svelte-headless-table/plugins';
 	import { readable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
@@ -13,6 +13,7 @@
 	export let data: PageServerData;
 
 	const table = createTable(readable(data.products), {
+		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		})
@@ -92,9 +93,11 @@
 		})
 	]);
 
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } = table.createViewModel(columns);
+	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
+		table.createViewModel(columns);
 
-  const { filterValue } = pluginStates.filter
+	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
+	const { filterValue } = pluginStates.filter;
 
 	$: console.log({ products: data.products });
 </script>
@@ -115,9 +118,9 @@
 {#if data.sucess === false}
 	<h1>Error al hacer la solicitud</h1>
 {:else}
-  <div class="flex items-center mx-10 mt-5">
-    <Input class="max-w-sm" placeholder="Filter names..." type="text" bind:value={$filterValue} />
-  </div>
+	<div class="flex items-center mx-10 mt-5">
+		<Input class="max-w-sm" placeholder="Filter names..." type="text" bind:value={$filterValue} />
+	</div>
 	<div class="rounded-md border border-[#202020] mx-10 my-5">
 		<Table.Root {...$tableAttrs}>
 			<Table.Header>
@@ -151,5 +154,21 @@
 				{/each}
 			</Table.Body>
 		</Table.Root>
+	</div>
+	<div class="flex items-center justify-end space-x-4 mx-10">
+		<Button
+			class="border-[#252525]"
+			variant="outline"
+			size="sm"
+			on:click={() => ($pageIndex = $pageIndex - 1)}
+			disabled={!$hasPreviousPage}>Previous</Button
+		>
+		<Button
+			class="border-[#252525]"
+			variant="outline"
+			size="sm"
+			disabled={!$hasNextPage}
+			on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
+		>
 	</div>
 {/if}
