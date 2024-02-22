@@ -23,6 +23,10 @@
   $: console.log({productsSearch})
 </script>
 
+{#if productsSearch.length === 0}
+	<h1>No ahi productos que considan con la busquedad: "{$search}"</h1>	
+{/if}
+
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 mx-5 mt-14 gap-5 grid-flow-row">
 	{#each productsSearch as productData}
 		<Card data={productData}/>

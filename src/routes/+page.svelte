@@ -54,7 +54,7 @@
 	<title>YouShop</title>
 </svelte:head>
 
-<div class="fixed top-12 flex items-center bg-[#121212] gap-3 w-full h-12 px-5 my-1 z-50">
+<div class="fixed top-12 flex items-center bg-[#121212] gap-3 w-full h-12 px-5 my-1 z-20">
 	<button
 		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
 		>All</button

@@ -3,6 +3,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as HoverCard from '$lib/components/ui/hover-card';
+	import * as Command from '$lib/components/ui/command';
 	import { toast } from 'svelte-sonner';
 	import Sidebar from './Sidebar.svelte';
 	import {
@@ -14,10 +15,16 @@
 	} from '$lib/stores/cartStore';
 	import { onDestroy } from 'svelte';
 	import { setSearch, search } from '$lib/stores/searchStore';
+	import Autocomplete from './Autocomplete.svelte';
 
 	const rutasExcluidas = ['', 'admin', 'search', 'personal'];
 
 	let searchInputValue = '';
+	let isActiveSearchInput = false
+
+	function activeSearchInput() {
+		activeSearchInput = !isActiveSearchInput
+	}
 
 	const handleSearch = () => {
 		if (searchInputValue !== '') {
@@ -77,6 +84,14 @@
 			toast.error('No se ha podido cerrar sesion');
 		}
 	};
+
+
+
+	const autocompleteOptions = ['Opción 1', 'Opción 2', 'Opción 3']
+	let selectedIndex = -1
+	function selectOption(option) {
+		alert(option)
+	}
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -118,7 +133,7 @@
 						{/if}
 						<input
 							id="searchInput"
-							class="flex items-center w-full h-full text-base text-gray-200 px-2 bg-[#121212] outline-none border border-[#222222] {!rutasExcluidas.includes(
+							class="flex items-center w-full h-10 text-base text-gray-200 px-2 bg-[#121212] outline-none border border-[#222222] {!rutasExcluidas.includes(
 								$page.url.pathname.split('/')[1]
 							)
 								? ''
@@ -126,8 +141,9 @@
 							type="text"
 							placeholder="Search"
 							name="search"
-							autoComplete="off"
+							autocomplete="off"
 							bind:value={searchInputValue}
+							on:click={activeSearchInput}
 						/>
 						<div
 							class="grid place-items-center text-2xl text-white w-16 h-full bg-[#202020] border border-[#222222] rounded-r-2xl"
@@ -306,9 +322,14 @@
 			class={!isClose
 				? 'relative top-0 left-52 w-[calc(100%-208px)] bg-bkg'
 				: 'relative top-0 left-20 w-[calc(100%-80px)] bg-bkg'}
-		>
+		>	
 			<slot />
 		</main>
+		{#if isActiveSearchInput}
+			{#if autocompleteOptions.length > 0}
+				<Autocomplete options={autocompleteOptions} {selectedIndex} {selectOption} />
+			{/if}
+		{/if}
 	</div>
 {:else}
 	<slot />
