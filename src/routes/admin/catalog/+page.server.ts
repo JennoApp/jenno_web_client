@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
 
       const response = await fetch(`http://localhost:3000/products/user/${user?.sub}`)
 
-      const data = await response.json()
+      const { data } = await response.json()
 
       return {
         products: data,

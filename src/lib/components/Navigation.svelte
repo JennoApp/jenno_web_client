@@ -13,6 +13,24 @@
 		getTotal
 	} from '$lib/stores/cartStore';
 	import { onDestroy } from 'svelte';
+	import { setSearch, search } from '$lib/stores/searchStore';
+
+	const rutasExcluidas = ['', 'admin', 'search', 'personal'];
+
+	let searchInputValue = '';
+
+	const handleSearch = () => {
+		if (searchInputValue !== '') {
+			if (!rutasExcluidas.includes($page.url.pathname.split('/')[1])) {
+				setSearch(searchInputValue);
+				goto(`/${$page.url.pathname.split('/')[1]}/search`);
+			} else {
+				setSearch(searchInputValue);
+				console.log($search);
+				goto('/search');
+			}
+		}
+	};
 
 	/// Total reactivo basado en svelte/store
 	let total = getTotal();
@@ -54,9 +72,9 @@
 
 		if (response.ok) {
 			invalidateAll();
-			toast.success('Sesión Cerrada')
+			toast.success('Sesión Cerrada');
 		} else {
-			toast.error('No se ha podido cerrar sesion')
+			toast.error('No se ha podido cerrar sesion');
 		}
 	};
 </script>
@@ -90,20 +108,34 @@
 			<!-- Center -->
 			<div>
 				<div class="flex w-[600px] h-10 relative cursor-pointer">
-					<input
-						id="searchInput"
-						class="flex items-center w-full h-full text-base text-gray-200 px-2 bg-[#121212] outline-none border border-[#222222] border-r-0 rounded-l-2xl"
-						type="text"
-						placeholder="Search"
-						name="search"
-						autoComplete="off"
-					/>
-					<div
-						class="grid place-items-center text-2xl text-white w-16 h-full bg-[#202020] border border-[#222222] rounded-r-2xl"
-					>
-						<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
-						></iconify-icon>
-					</div>
+					<form on:submit|preventDefault={handleSearch} class="flex w-[600px] h-10">
+						{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
+							<div
+								class="flex items-center rounded-l-2xl h-10 px-2 dark:bg-[#202020] cursor-default"
+							>
+								{$page.url.pathname.split('/')[1]}
+							</div>
+						{/if}
+						<input
+							id="searchInput"
+							class="flex items-center w-full h-full text-base text-gray-200 px-2 bg-[#121212] outline-none border border-[#222222] {!rutasExcluidas.includes(
+								$page.url.pathname.split('/')[1]
+							)
+								? ''
+								: 'border-r-0 rounded-l-2xl'}"
+							type="text"
+							placeholder="Search"
+							name="search"
+							autoComplete="off"
+							bind:value={searchInputValue}
+						/>
+						<div
+							class="grid place-items-center text-2xl text-white w-16 h-full bg-[#202020] border border-[#222222] rounded-r-2xl"
+						>
+							<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
+							></iconify-icon>
+						</div>
+					</form>
 				</div>
 			</div>
 

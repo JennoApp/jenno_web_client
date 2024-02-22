@@ -5,17 +5,26 @@
 
 	export let data: PageServerData;
 
+	let products: any[] = data.products;
+	let page = 1;
+
 	$: console.log({ data });
-	
+
 	////////
 	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
-		const response = await fetch('http://localhost:3000/products');
+		const response = await fetch(`http://localhost:3000/products?page=${page + 1}`);
 
-		const data = await response.json();
+		const newData = await response.json();
 
-		return data
+		// Agregar los nuevos productos a la variable products
+		products = [...products, newData.data];
+
+		// incrementar el numero de pagina para la siguiente carga
+			page++;
+
+		return newData;
 	};
 
 	onMount(() => {
@@ -29,7 +38,10 @@
 			console.log(element.isIntersecting);
 
 			if (element.isIntersecting) {
-				console.log("Loading new products")	
+				if (data.meta.hasNextPage) {
+					console.log('Loading new products');
+					await loadingProducts();
+				}
 			}
 		});
 
@@ -75,11 +87,14 @@
 </div>
 
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 mx-5 mt-14 gap-5 grid-flow-row">
-	{#each data?.products as productData}
+	{#each products as productData}
 		<Card data={productData} />
 	{/each}
 </div>
 
 <br />
 
-<div bind:this={loadingRef}>Loading...</div>
+{#if data.meta.hasNextPage}
+	<div bind:this={loadingRef}>Loading...</div>
+{/if}
+

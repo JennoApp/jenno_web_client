@@ -21,7 +21,7 @@
 
 	async function loadProducts(userId: string) {
 		const response = await fetch(`http://localhost:3000/products/user/${userId}`);
-		const data = await response.json();
+		const { data } = await response.json();
 		products = data;
 	}
 
