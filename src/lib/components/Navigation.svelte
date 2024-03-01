@@ -17,7 +17,7 @@
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
 
-	const rutasExcluidas = ['', 'admin', 'search', 'personal'];
+	const rutasExcluidas = ['', 'admin', 'search', 'personal', 'settings', 'explore', 'following'];
 
 	let searchInputValue = '';
 	let isActiveSearchInput = false
@@ -51,7 +51,7 @@
 	});
 	///
 
-	const paths = ['/login', '/register'];
+	const paths = ['/login', '/register', '/register/personal', '/register/business'];
 
 	//verifica si la sesion de usuario esta activa
 	$: userInfo = $page.data.user;

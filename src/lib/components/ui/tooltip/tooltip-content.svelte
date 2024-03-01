@@ -9,7 +9,7 @@
 	export let transition: $$Props['transition'] = flyAndScale;
 	export let transitionConfig: $$Props['transitionConfig'] = {
 		y: 8,
-		duration: 100
+		duration: 10
 	};
 	export { className as class };
 </script>
