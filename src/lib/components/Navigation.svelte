@@ -258,7 +258,7 @@
 								{/if}
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
-								<DropdownMenu.Item href={`/${userInfo.username}`}>
+								<DropdownMenu.Item href={userInfo.accountType === 'personal' ? `/personal/${userInfo?._id}` : `/${userInfo.username}`}>
 									{#if userInfo.profileImg !== ''}
 										<img
 											src={userInfo.profileImg}

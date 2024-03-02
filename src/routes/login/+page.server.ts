@@ -5,7 +5,7 @@ export const actions: Actions = {
     const data = await request.formData()
     const email = data.get('email')
     const password = data.get('password')
-    const response = await fetch("http:localhost:3000/auth/login", {
+    const response = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
