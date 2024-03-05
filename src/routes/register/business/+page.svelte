@@ -5,7 +5,6 @@
 	import { goto } from '$app/navigation';
 
 	export let form: ActionData;
-
 </script>
 
 <div class="flex flex-col items-center justify-center h-screen w-full">
@@ -22,13 +21,15 @@
 			<input
 				type="text"
 				name="username"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.username ? 'border border-red-500': ''}"
+				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.username
+					? 'border border-red-500'
+					: ''}"
 				value={form?.data?.username ?? ''}
 			/>
 			<label for="username">
 				{#if form?.errors?.username}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.username[0]}</span>
-				{/if}	
+				{/if}
 			</label>
 		</div>
 
@@ -38,14 +39,79 @@
 			<input
 				type="email"
 				name="email"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email ? 'border border-red-500': ''} "
+				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+					? 'border border-red-500'
+					: ''} "
 				value={form?.data?.email ?? ''}
 			/>
 			<label for="username">
 				{#if form?.errors?.email}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
-				{/if}	
+				{/if}
 			</label>
+		</div>
+
+		<!-- Legal information -->
+		<h2 class="font-semibold text-lg mt-1">Legal Information</h2>
+		<div class="border border-white my-1 p-2 rounded-md">
+			<div class="flex">
+				<!-- Name Input -->
+				<div class="flex flex-col w-1/2">
+					<label for="name" class="text-base dark:text-gray-200 font-medium">Name</label>
+					<input
+						type="text"
+						name="name"
+						class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+							? 'border border-red-500'
+							: ''} "
+						value={form?.data?.email ?? ''}
+					/>
+					<label for="username">
+						{#if form?.errors?.email}
+							<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
+						{/if}
+					</label>
+				</div>
+
+				<!-- Lastname Input -->
+				<div class="flex flex-col w-1/2">
+					<label for="lastname" class="text-base dark:text-gray-200 font-medium">Lastname</label>
+					<input
+						type="text"
+						name="lastname"
+						class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+							? 'border border-red-500'
+							: ''} "
+						value={form?.data?.email ?? ''}
+					/>
+					<label for="username">
+						{#if form?.errors?.email}
+							<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
+						{/if}
+					</label>
+				</div>
+			</div>
+
+			<!---------------------------------------------->
+			<!-- Tax Id Input -->
+			<div class="flex">
+				<div class="flex flex-col w-full">
+					<label for="email" class="text-base dark:text-gray-200 font-medium">Tax Id</label>
+					<input
+						type="email"
+						name="email"
+						class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+							? 'border border-red-500'
+							: ''} "
+						value={form?.data?.email ?? ''}
+					/>
+					<label for="username">
+						{#if form?.errors?.email}
+							<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
+						{/if}
+					</label>
+				</div>
+			</div>
 		</div>
 
 		<!-- Password Input -->
@@ -54,12 +120,14 @@
 			<input
 				type="password"
 				name="password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.password ? 'border border-red-500': ''}"
+				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.password
+					? 'border border-red-500'
+					: ''}"
 			/>
 			<label for="username">
 				{#if form?.errors?.password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.password[0]}</span>
-				{/if}	
+				{/if}
 			</label>
 		</div>
 
@@ -71,12 +139,15 @@
 			<input
 				type="password"
 				name="verified_password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.verified_password ? 'border border-red-500': ''}"
+				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors
+					?.verified_password
+					? 'border border-red-500'
+					: ''}"
 			/>
 			<label for="username">
 				{#if form?.errors?.verified_password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.verified_password[0]}</span>
-				{/if}	
+				{/if}
 			</label>
 		</div>
 
