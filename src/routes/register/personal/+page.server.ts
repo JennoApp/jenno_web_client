@@ -52,7 +52,7 @@ export const actions: Actions = {
           success: false
         }
       } else {
-        // Crear Usuario
+        // Crear Usuario Personal
         const responseCreateUser = await fetch("http://localhost:3000/users", {
           method: "POST",
           headers: {
