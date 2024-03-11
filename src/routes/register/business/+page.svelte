@@ -10,6 +10,7 @@
 
 	$: if (form?.success) {
 		toast.success("Usuario creado!")
+		goto('/')
 	}
 </script>
 

@@ -95,7 +95,7 @@ export const actions: Actions = {
           sameSite: 'strict',
           secure: false,
           path: '/',
-          maxAge: 60 * 60 * 24 * 7
+          maxAge: 60 * 60 * 24 * 45
         })
 
         return {
