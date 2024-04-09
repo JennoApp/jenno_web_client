@@ -5,6 +5,15 @@
 	import { Toaster } from 'svelte-sonner';
 	import { ParaglideJS } from '@inlang/paraglide-js-adapter-sveltekit';
 	import { i18n } from '$lib/i18n';
+  import { onMount } from 'svelte'  
+	import socket from '$lib/socket/index';
+
+  onMount(() => {
+    socket.on("connect", () => {
+      console.log("Successful connect to socket")
+    })
+  })
+
 </script>
 
 <ParaglideJS i18n={i18n}>
@@ -13,3 +22,4 @@
 		<slot />
 	</Navigation>
 </ParaglideJS>
+

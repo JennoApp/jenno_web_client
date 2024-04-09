@@ -1,6 +1,4 @@
-<script>
-	// @ts-nocheck
-
+<script lang="ts">
 	import {
 		cartItems,
 		addToCart,
@@ -10,6 +8,8 @@
 	} from '$lib/stores/cartStore';
 	import { onDestroy } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 
 	/// Total reactivo basado en svelte/store
 	let total = getTotal();
@@ -23,6 +23,7 @@
 	});
 	///
 </script>
+
 
 <div>
 	<h1 class="text-2xl m-5">Shopping Cart</h1>
@@ -99,7 +100,10 @@
 					{#each $cartItems as cartItem}
 						<Table.Row>
 							<Table.Cell>{cartItem.productname}</Table.Cell>
-							<Table.Cell><a href={`/${cartItem.username}`} class="hover:underline">@{cartItem.username}</a></Table.Cell>
+							<Table.Cell
+								><a href={`/${cartItem.username}`} class="hover:underline">@{cartItem.username}</a
+								></Table.Cell
+							>
 							<Table.Cell>${cartItem.price}</Table.Cell>
 							<Table.Cell class="flex justify-center">{cartItem.amount}</Table.Cell>
 							<Table.Cell>${cartItem.price * cartItem.amount}</Table.Cell>
@@ -137,6 +141,7 @@
 
 			<button
 				class="dark:bg-[#303030] border-none rounded w-full h-12 text-white text-base cursor-pointer hover:dark:bg-[#353535]"
+				on:click={() => goto('/cart/shipping')}
 			>
 				Checkout
 			</button>

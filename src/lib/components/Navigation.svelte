@@ -17,13 +17,23 @@
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
 
-	const rutasExcluidas = ['', 'admin', 'search', 'personal', 'settings', 'explore', 'following'];
+	const rutasExcluidas = [
+		'',
+		'admin',
+		'search',
+		'personal',
+		'settings',
+		'explore',
+		'following',
+		'cart',
+		'chat'
+	];
 
 	let searchInputValue = '';
-	let isActiveSearchInput = false
+	let isActiveSearchInput = false;
 
 	function activeSearchInput() {
-		activeSearchInput = !isActiveSearchInput
+		activeSearchInput = !isActiveSearchInput;
 	}
 
 	const handleSearch = () => {
@@ -85,12 +95,10 @@
 		}
 	};
 
-
-
-	const autocompleteOptions = ['Opción 1', 'Opción 2', 'Opción 3']
-	let selectedIndex = -1
+	const autocompleteOptions = ['Opción 1', 'Opción 2', 'Opción 3'];
+	let selectedIndex = -1;
 	function selectOption(option) {
-		alert(option)
+		alert(option);
 	}
 </script>
 
@@ -160,12 +168,14 @@
 				{#if userInfo}
 					<div class="flex items-center gap-3">
 						<div>
-							<iconify-icon
-								icon="mdi:message"
-								height="1.3rem"
-								width="1.3rem"
-								class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
-							/>
+							<a href="/chat">
+								<iconify-icon
+									icon="mdi:message"
+									height="1.3rem"
+									width="1.3rem"
+									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+								/>
+							</a>
 						</div>
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger href="/cart" class="relative">
@@ -258,7 +268,11 @@
 								{/if}
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
-								<DropdownMenu.Item href={userInfo.accountType === 'personal' ? `/personal/${userInfo?._id}` : `/${userInfo.username}`}>
+								<DropdownMenu.Item
+									href={userInfo.accountType === 'personal'
+										? `/personal/${userInfo?._id}`
+										: `/${userInfo.username}`}
+								>
 									{#if userInfo.profileImg !== ''}
 										<img
 											src={userInfo.profileImg}
@@ -316,13 +330,13 @@
 		</div>
 	</nav>
 
-	<div class="flex relative top-16 left-0">
+	<div class="flex relative top-12 left-0">
 		<Sidebar closeMenu={isClose} />
 		<main
 			class={!isClose
 				? 'relative top-0 left-52 w-[calc(100%-208px)] bg-bkg'
 				: 'relative top-0 left-20 w-[calc(100%-80px)] bg-bkg'}
-		>	
+		>
 			<slot />
 		</main>
 		{#if isActiveSearchInput}
