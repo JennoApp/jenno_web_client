@@ -1,6 +1,25 @@
-<script>
+<script lang="ts">
 	import Conversation from '$lib/components/Conversation.svelte';
 	import Message from '$lib/components/Message.svelte';
+	import { page } from '$app/stores';
+
+	let conversations: any[] = [];
+
+	const getConversations = async (userid: string) => {
+		try {
+			const response = await fetch(`http://localhost:3000/chat/conversations/${userid}`);
+			const data = await response.json();
+			// conversations.push(data.conversation);
+			// console.log(conversations);
+			return data.conversation;
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	$: {
+		getConversations($page.data.user._id).then(data => console.log(data))
+	}
 </script>
 
 <div class="flex m-0 p-0">
@@ -12,10 +31,13 @@
 				placeholder="Search for users"
 				class="w-[90%] py-3 border-t-0 border-b-2 border-b-[#202020] bg-[#121212] placeholder:text-[#707070] outline-none"
 			/>
-			<Conversation />
-			<Conversation />
-			<Conversation />
-			<Conversation />
+			{#await getConversations($page.data.user._id)}
+				<p>fetching...</p>
+			{:then data}
+				{#each data as result}
+          <Conversation conversation={result} userId={$page.data.user._id}/>
+				{/each}
+			{/await}
 		</div>
 	</div>
 

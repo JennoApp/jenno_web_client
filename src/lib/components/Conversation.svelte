@@ -1,7 +1,40 @@
+<script lang="ts">
+	export let conversation: any[];
+	export let userId: string;
 
+	let user: any = null;
 
+	$: {
+		const friendId = conversation?.members.find((m) => m !== userId);
+
+		const getUser = async () => {
+			try {
+				const response = await fetch(`http://localhost:3000/users/${friendId}`);
+				const data = await response.json();
+				user = data;
+				console.log(data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+		getUser();
+	}
+</script>
 
 <div class="flex items-center p-3 mt-3 rounded-md cursor-pointer hover:bg-[#202020]">
-  <img src="https://img.freepik.com/foto-gratis/retrato-hermoso-mujer-joven-posicion-pared-gris_231208-10760.jpg?size=626&ext=jpg&ga=GA1.1.1488620777.1712534400&semt=sph" alt="user" class="w-10 h-10 rounded-full object-cover mr-5">
-  <span class="font-medium">Jhon Doe</span> 
+	{#if user?.profileImg !== ''}
+		<img
+			src={user?.profileImg}
+			alt={user?.username}
+			class="w-10 h-10 rounded-full object-cover mr-5"
+		/>
+	{:else}
+		<iconify-icon
+			icon="mdi:user"
+			height="1.5rem"
+			width="1.5rem"
+			class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#181818] rounded-full mr-5"
+		/>
+	{/if}
+	<span class="font-medium">{user?.username}</span>
 </div>
