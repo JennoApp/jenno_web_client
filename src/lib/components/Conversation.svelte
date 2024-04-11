@@ -20,7 +20,6 @@
 		getUser();
 	}
 </script>
-
 <div class="flex items-center p-3 mt-3 rounded-md cursor-pointer hover:bg-[#202020]">
 	{#if user?.profileImg !== ''}
 		<img
