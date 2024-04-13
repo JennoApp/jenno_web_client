@@ -8,11 +8,11 @@
   import { onMount } from 'svelte'  
 	import socket from '$lib/socket/index';
 
-  onMount(() => {
+  /*onMount(() => {
     socket.on("connect", () => {
       console.log("Successful connect to socket")
     })
-  })
+  })*/
 
 </script>
 

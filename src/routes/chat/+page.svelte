@@ -2,6 +2,25 @@
 	import Conversation from '$lib/components/Conversation.svelte';
 	import Message from '$lib/components/Message.svelte';
 	import { page } from '$app/stores';
+	import { io, type Socket } from 'socket.io-client';
+
+	let socket: Socket;
+
+	$: {
+		socket = io('http://localhost:3000');
+		socket?.on('connect', () => {
+			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
+			socket?.emit('addUser', $page.data.user._id); // se agrega el usuario la nueva conexion
+			console.log('Successful connect socket');
+		});
+
+		socket?.on('disconnect', () => {
+			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
+			console.log('Succesful disconnect socket');
+		});
+	}	
+
+	$: console.log(socket);
 
 	let messages: any[] = [];
 	let currentChat: any = null;
@@ -70,26 +89,24 @@
 
 	$: console.log({ messages });
 
+	import { afterUpdate } from 'svelte';
 
-  import { afterUpdate } from 'svelte'
+	// get element
+	let element: HTMLDivElement;
 
-  // get element
-  let element: HTMLDivElement
+	const scrollToBottom = async (node: HTMLDivElement) => {
+		node?.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+	};
 
-  const scrollToBottom = async (node: HTMLDivElement) => {
-    node?.scroll({top: node.scrollHeight, behavior: 'smooth'})
-  }
+	afterUpdate(() => {
+		if (messages) scrollToBottom(element);
+	});
 
-  afterUpdate(() => {
-    if (messages) scrollToBottom(element) 
-  })
+	$: if (messages && element) {
+		scrollToBottom(element);
+	}
 
-  $: if(messages && element) {
-    scrollToBottom(element)
-  }
-
-  $: console.log({element})
-  
+	$: console.log({ element });
 </script>
 
 <div class="flex m-0 p-0">
