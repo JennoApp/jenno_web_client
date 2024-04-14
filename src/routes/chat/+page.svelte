@@ -4,7 +4,12 @@
 	import { page } from '$app/stores';
 	import { io, type Socket } from 'socket.io-client';
 
+  let conversations: any[]
+	let messages: any[] = [];
+	let currentChat: any = null;
+	let newMessage: string = '';
 	let socket: Socket;
+  let arrivalMessage: any = null
 
 	$: {
 		socket = io('http://localhost:3000');
@@ -18,19 +23,25 @@
 			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
 			console.log('Succesful disconnect socket');
 		});
+
+    socket?.on("getMessage", (data) => {
+      arrivalMessage = {
+        sender: data.senderId,
+        text: data.text,
+        createAt: Date.now()
+      }
+    })
 	}	
 
 	$: console.log(socket);
-
-	let messages: any[] = [];
-	let currentChat: any = null;
-	let newMessage: string = '';
+  $: console.log({conversations})
+  $: console.log({arrivalMessage})
 
 	const getConversations = async (userid: string) => {
 		try {
 			const response = await fetch(`http://localhost:3000/chat/conversations/${userid}`);
 			const data = await response.json();
-			// conversations.push(data.conversation);
+			conversations = data.conversation
 			// console.log(conversations);
 			return data.conversation;
 		} catch (error) {
@@ -64,6 +75,14 @@
 			conversationId: currentChat._id
 		};
 
+    const receiverId = currentChat?.members.find(member => member !== $page.data.user._id)
+
+    socket?.emit("sendMessage", {
+      senderId: $page.data.user._id,
+      receiverId: receiverId,
+      text: newMessage
+    })
+
 		try {
 			const response = await fetch(`http://localhost:3000/chat/messages`, {
 				method: 'POST',
@@ -88,6 +107,11 @@
 	};
 
 	$: console.log({ messages });
+  $: console.log({ currentChat })
+
+  $: if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
+     messages = [...messages, arrivalMessage]
+  }
 
 	import { afterUpdate } from 'svelte';
 
