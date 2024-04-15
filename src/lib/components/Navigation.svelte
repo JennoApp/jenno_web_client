@@ -330,7 +330,7 @@
 		</div>
 	</nav>
 
-	<div class="flex relative top-12 left-0">
+	<div class="flex relative top-[50px] left-0">
 		<Sidebar closeMenu={isClose} />
 		<main
 			class={!isClose
