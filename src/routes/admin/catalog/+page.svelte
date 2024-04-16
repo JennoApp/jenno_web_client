@@ -12,6 +12,8 @@
 
 	export let data: PageServerData;
 
+  $: console.log({data})
+
 	const table = createTable(readable(data.products), {
 		page: addPagination(),
 		filter: addTableFilter({
