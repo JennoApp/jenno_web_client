@@ -1,69 +1,78 @@
 <script lang="ts">
-	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addTableFilter, addPagination } from 'svelte-headless-table/plugins';
-	import { readable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
-	import Image from '$lib/components/Image.svelte';
 	import { Input } from '$lib/components/ui/input';
 
+	export let datalist: any[];
+	export let NextPage: boolean = false;
+	export let PreviousPage: boolean = false;
+  export let itemsCount: number
+  export let pageCount: number
 
+	export let modifier: Record<string, { header: string; accessor: (data: any) => any }> | null =
+		null;
+
+	let modifierData: { [key: string]: any }[] = [];
+
+	$: modifierData = modifier
+		? datalist.map((item) => {
+				const modifierItem: { [key: string]: any } = {};
+				for (const columnKey in modifier) {
+					const columnConfig = modifier[columnKey];
+					modifierItem[columnKey] = columnConfig.accessor(item);
+				}
+				return modifierItem;
+			})
+		: [];
 </script>
 
 <div class="flex items-center mx-10 mt-5">
-	<Input class="max-w-sm" placeholder="Filter names..." type="text" bind:value={$filterValue} />
+	<Input class="max-w-sm" placeholder="Filter names..." type="text" />
 </div>
+
 <div class="rounded-md border border-[#202020] mx-10 my-5">
-	<Table.Root {...$tableAttrs}>
+	<Table.Root>
 		<Table.Header>
-			{#each $headerRows as headerRow}
-				<Subscribe rowAttrs={headerRow.attrs()}>
-					<Table.Row>
-						{#each headerRow.cells as cell (cell.id)}
-							<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
-								<Table.Head {...attrs}>
-									<Render of={cell.render()} />
-								</Table.Head>
-							</Subscribe>
-						{/each}
-					</Table.Row>
-				</Subscribe>
-			{/each}
+			<Table.Row>
+				{#each Object.values(modifier) as column}
+					<Table.Head>{column.header}</Table.Head>
+				{/each}
+			</Table.Row>
 		</Table.Header>
-		<Table.Body {...$tableBodyAttrs}>
-			{#each $pageRows as row (row.id)}
-				<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-					<Table.Row {...rowAttrs}>
-						{#each row.cells as cell (cell.id)}
-							<Subscribe attrs={cell.attrs()} let:attrs>
-								<Table.Cell {...attrs}>
-									<Render of={cell.render()} />
-								</Table.Cell>
-							</Subscribe>
-						{/each}
-					</Table.Row>
-				</Subscribe>
+		<Table.Body>
+			{#each modifierData as item}
+				<Table.Row>
+					{#each Object.keys(modifier) as columnKey}
+						<Table.Cell>{@html item[columnKey]}</Table.Cell>
+					{/each}
+				</Table.Row>
 			{/each}
 		</Table.Body>
 	</Table.Root>
 </div>
-<div class="flex items-center justify-end space-x-4 mx-10">
-	<Button
-		class="border-[#252525]"
-		variant="outline"
-		size="sm"
-		disabled={!$hasPreviousPage}
-		on:click={() => ($pageIndex -= 1)}
-	>
-		Previous
-	</Button>
-	<Button
-		class="border-[#252525]"
-		variant="outline"
-		size="sm"
-		disabled={!$hasNextPage}
-		on:click={() => ($pageIndex += 1)}
-	>
-		Next
-	</Button>
+
+<div class="flex justify-between mx-10">
+  <div class="">
+    <h3 class="text-sm text-[#707070]">items: {itemsCount} - pages: {pageCount}</h3>
+  </div>
+	<div class="flex items-center justify-end space-x-4">
+		<Button
+			class="border-[#252525]"
+			variant="outline"
+			size="sm"
+			disabled={!PreviousPage}
+			on:click={() => {}}
+		>
+			Previous
+		</Button>
+		<Button
+			class="border-[#252525]"
+			variant="outline"
+			size="sm"
+			disabled={!NextPage}
+			on:click={() => {}}
+		>
+			Next
+		</Button>
+	</div>
 </div>
