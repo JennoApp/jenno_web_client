@@ -55,4 +55,8 @@
 	<h2 class="text-xl font-semibold">Customers</h2>
 </div>
 
+<!-- <div class="flex items-center mx-10 mt-5">
+	<Input class="max-w-sm" placeholder="Filter names..." type="text" />
+</div> -->
+
 <TableData datalist={followersList} {modifier} {NextPage} {PreviousPage} {itemsCount} {pageCount} />

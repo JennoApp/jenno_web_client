@@ -26,9 +26,10 @@
 		: [];
 </script>
 
+<!-- 
 <div class="flex items-center mx-10 mt-5">
 	<Input class="max-w-sm" placeholder="Filter names..." type="text" />
-</div>
+</div> -->
 
 <div class="rounded-md border border-[#202020] mx-10 my-5">
 	<Table.Root>

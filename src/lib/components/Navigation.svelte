@@ -118,7 +118,7 @@
 				<a href="/">
 					<div class="relative flex gap-1">
 						<div class="flex">
-							<h1 class="text-xl font-bold text-gray-100">YouShop</h1>
+							<h1 class="text-xl font-extrabold text-gray-100">Shop<span class="font-black">+</span></h1>
 							<span
 								class="absolute top-4 right-[-25px] text-gray-600 h-5 w-5 text-sm flex items-center justify-center"
 								>beta</span

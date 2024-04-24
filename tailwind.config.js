@@ -13,6 +13,9 @@ const config = {
 				"2xl": "1400px"
 			}
 		},
+    fontFamily: {
+      'versos': ['Versos Test']
+    },
 		extend: {
 			colors: {
 				border: "hsl(var(--border) / <alpha-value>)",
