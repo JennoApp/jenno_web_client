@@ -141,7 +141,7 @@
 
 			<button
 				class="dark:bg-[#303030] border-none rounded w-full h-12 text-white text-base cursor-pointer hover:dark:bg-[#353535]"
-				on:click={() => goto('/cart/shipping')}
+				on:click={() => goto('/cart/paymentroute/shipping')}
 			>
 				Checkout
 			</button>

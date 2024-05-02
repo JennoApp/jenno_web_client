@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
   import { Progress } from '$lib/components/ui/progress'
 
-	$: pathnameRoutes = $page.url.pathname.split('/').splice(1);
-	$: console.log({ pathnameRoutes });
+	$: pathnameRoute = $page.url.pathname
+	$: console.log({ pathnameRoute });
 </script>
 
 <div class="flex flex-col justify-center items-center">
@@ -18,22 +18,28 @@
 		<!-- step 2 -->
 		<div class="flex flex-col justify-center items-center">
 			<span class="border border-white rounded-full p-1 w-10 h-10 text-center text-lg font-semibold"
-				>1</span
+				>2</span
 			>
-			<h3>Shipping Info</h3>
+			<h3>Payment method</h3>
 		</div>
 		<!-- step 3 -->
 		<div class="flex flex-col justify-center items-center">
 			<span class="border border-white rounded-full p-1 w-10 h-10 text-center text-lg font-semibold"
-				>1</span
+				>3</span
 			>
-			<h3>Shipping Info</h3>
+			<h3>Confirm order</h3>
 		</div>
 		
 	</div>
   
-  <div class="flex items-center px-16 bg-[#252525] w-3/5 h-10 rounded-b-md">
-    <Progress color="" value={50}/>
+  <div class="flex items-center px-14 bg-[#252525] w-3/5 h-10 rounded-b-md">
+    {#if pathnameRoute === '/cart/paymentroute/shipping'}
+     <Progress value={33.3}/>
+     {:else if pathnameRoute === '/cart/paymentroute/payment'}
+     <Progress value={66.6}/>
+      {:else if pathnameRoute === '/cart/paymentroute/confirm'}
+     <Progress value={100}/>
+    {/if} 
   </div>
 </div>
 
