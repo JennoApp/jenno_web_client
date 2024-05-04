@@ -3,11 +3,15 @@
 	import { toast } from 'svelte-sonner'
   import { goto } from '$app/navigation'
   import type { ActionData } from './$types'
+  import { page } from '$app/stores'
 
   export let form: ActionData
+  let userData = $page.data.user
+
+  // $: console.log(userData)
 
   $: if (form?.success) {
-    toast.success("Informacion actualizada!!!")
+    toast.success("Informacion guardada!!")
     goto('/cart/paymentroute/payment') 
   }
 </script>
@@ -27,7 +31,7 @@
 				class="h-8 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.address
 					? 'border border-red-500'
 					: ''}"
-				value={form?.data?.address ?? ''}
+				value={userData?.shippingInfo?.address ?? ''}
 			/>
 			<label for="address">
 				{#if form?.errors?.address}
@@ -45,7 +49,7 @@
 				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.country
 					? 'border border-red-500'
 					: ''}"
-				value={form?.data?.country ?? ''}
+				value={userData?.shippingInfo?.country ?? ''}
 			/>
 			<label for="country">
 				{#if form?.errors?.country}
@@ -63,7 +67,7 @@
 				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.state
 					? 'border border-red-500'
 					: ''}"
-				value={form?.data?.state ?? ''}
+				value={userData?.shippingInfo?.state ?? ''}
 			/>
 			<label for="state">
 				{#if form?.errors?.state}
@@ -81,7 +85,7 @@
 				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.city
 					? 'border border-red-500'
 					: ''}"
-				value={form?.data?.city ?? ''}
+				value={userData?.shippingInfo?.city ?? ''}
 			/>
 			<label for="city">
 				{#if form?.errors?.city}
@@ -99,7 +103,7 @@
 				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.postalcode
 					? 'border border-red-500'
 					: ''}"
-				value={form?.data?.postalCode ?? ''}
+				value={userData?.shippingInfo?.postalCode ?? ''}
 			/>
 			<label for="postalCode">
 				{#if form?.errors?.postalCode}
@@ -117,7 +121,7 @@
 				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.phoneNumber
 					? 'border border-red-500'
 					: ''}"
-				value={form?.data?.phonenNumber ?? ''}
+				value={userData?.shippingInfo?.phoneNumber ?? ''}
 			/>
 			<label for="phoneNumber">
 				{#if form?.errors?.phoneNumber}
