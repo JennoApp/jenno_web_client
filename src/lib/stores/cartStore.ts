@@ -75,3 +75,7 @@ export function getTotal() {
 
   return total
 }
+
+export function removeTotal() {
+  cartItems.set([])
+}
