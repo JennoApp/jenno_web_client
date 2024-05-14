@@ -1,9 +1,6 @@
 <script lang="ts">
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import { page } from '$app/stores';
 	import TableData from '$lib/components/Table.svelte';
+  import { page } from '$app/stores'
 
 	let followersList: any = [];
 	let currentPage = 1;
@@ -42,12 +39,12 @@
 	const modifier = {
 		profileImg: {
 			header: 'Profile Image',
-			accessor: (data) =>
-				`<img class="h-10 w-10 rounded-md" src="${data.profileImg}" alt="${data.username}"/>`
+			accessor: (data: any) =>
+				`<img class="h-10 w-10 ml-5 rounded-md" src="${data.profileImg}" alt="${data.username}"/>`
 		},
-		username: { header: 'Name', accessor: (data) => data.username },
-		email: { header: 'Email', accessor: (data) => data.email },
-		accountType: { header: 'Account Type', accessor: (data) => data.accountType }
+		username: { header: 'Name', accessor: (data: any) => data.username },
+		email: { header: 'Email', accessor: (data: any) => data.email },
+		accountType: { header: 'Account Type', accessor: (data: any) => data.accountType }
 	};
 </script>
 

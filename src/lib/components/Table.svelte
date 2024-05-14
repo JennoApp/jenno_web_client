@@ -24,6 +24,8 @@
 				return modifierItem;
 			})
 		: [];
+
+  $: console.log({ modifierData })
 </script>
 
 <!-- 
