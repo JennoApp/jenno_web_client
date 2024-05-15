@@ -66,15 +66,15 @@
 		buyer: {
 			header: 'Comprador',
 			accessor: (data: any) => {
-        if (data.buyerProfileImg) {
-				  return `<a href="/personal/${data.buyerId}">
+				if (data.buyerProfileImg) {
+					return `<a href="/personal/${data.buyerId}">
                     <div class="flex gap-2 items-center">
                       <img class="h-10 w-10 rounded-full" src="${data.buyerProfileImg}" alt="${data.buyerName}"/>
                       <h3>${data.buyerName}</h3>
                     </div>
-                  </a>`
-        } else  {
-          return `<a href="/personal/${data.buyerId}">
+                  </a>`;
+				} else {
+					return `<a href="/personal/${data.buyerId}">
                     <div class="flex gap-2 items-center"> 
                       <iconify-icon
 										    icon="mdi:user"
@@ -84,17 +84,29 @@
 									    ></iconify-icon>
                       <h3>${data.buyerName}</h3>
                     </div>
-                  </a>`
-        }
-
+                  </a>`;
+				}
 			}
 		},
 		date: { header: 'Fecha', accessor: (data: any) => `${format(data.createdAt)}` }
 	};
 </script>
 
-<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-	<h2 class="text-xl font-semibold">Ventas</h2>
-</div>
+{#if salesList.length !== 0}
+	<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
+		<h2 class="text-xl font-semibold">Ventas</h2>
+	</div>
+	<TableData datalist={salesList} {modifier} {NextPage} {PreviousPage} {itemsCount} {pageCount} />
+{:else}
+	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+		<iconify-icon
+			icon="mdi:cash"
+			height="5rem"
+			width="5rem"
+			class="text-[#707070] mb-4"
+		/>
 
-<TableData datalist={salesList} {modifier} {NextPage} {PreviousPage} {itemsCount} {pageCount} />
+    <h1 class="text-xl font-semibold text-[#707070] mb-2">¡Aún no has realizado ventas!</h1>
+    <p class="text-lg text-[#707070]">¡Empieza a vender tus productos y mira cómo crecen tus ventas!</p>
+	</div>
+{/if}

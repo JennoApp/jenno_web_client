@@ -26,7 +26,8 @@
 		'explore',
 		'following',
 		'cart',
-		'chat'
+		'chat',
+    'shopping'
 	];
 
 	let searchInputValue = '';

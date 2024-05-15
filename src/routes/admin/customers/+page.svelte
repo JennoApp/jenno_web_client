@@ -1,6 +1,6 @@
 <script lang="ts">
 	import TableData from '$lib/components/Table.svelte';
-  import { page } from '$app/stores'
+	import { page } from '$app/stores';
 
 	let followersList: any = [];
 	let currentPage = 1;
@@ -48,12 +48,28 @@
 	};
 </script>
 
-<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-	<h2 class="text-xl font-semibold">Customers</h2>
-</div>
-
 <!-- <div class="flex items-center mx-10 mt-5">
 	<Input class="max-w-sm" placeholder="Filter names..." type="text" />
 </div> -->
 
-<TableData datalist={followersList} {modifier} {NextPage} {PreviousPage} {itemsCount} {pageCount} />
+{#if followersList.length !== 0}
+	<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
+		<h2 class="text-xl font-semibold">Customers</h2>
+	</div>
+	<TableData
+		datalist={followersList}
+		{modifier}
+		{NextPage}
+		{PreviousPage}
+		{itemsCount}
+		{pageCount}
+	/>
+{:else}
+	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+		<iconify-icon icon="f7:person-3-fill" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">¡Construye tu Comunidad!</h1>
+		<p class="text-lg text-[#707070]">
+			¡Aún no tienes seguidores! Sé el primero en construir una comunidad en torno a tu tienda.
+		</p>
+	</div>
+{/if}
