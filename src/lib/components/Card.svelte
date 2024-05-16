@@ -36,6 +36,24 @@
 			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
 		}
 	});
+
+  let rating: number = 3.5
+
+  const getStartColor = (rating: number) => {
+    if (rating >= 5) {
+      return 'text-yellow-600'
+    } else if (rating >= 4.5) {
+      return 'text-yellow-500'
+    } else if (rating >= 3.5) {
+      return 'text-yellow-400'
+    } else if (rating >= 2.5) {
+      return 'text-yellow-300'
+    } else if (rating >= 1.5) {
+      return 'text-yellow-200'
+    } else {
+      return 'text-yellow-100'
+    }
+  }
 </script>
 
 <a href={`/${data.username}/${data._id}`}>
@@ -56,7 +74,7 @@
 					<h4 class="ml-2">{data.username}</h4>
 				</a>
 			</div>
-			<div>
+			<div class="hidden"> <!-- oculto los simbolos para agregar funcionalidad posteriormente -->
 				<iconify-icon
 					class="mr-1 cursor-pointer"
 					icon="mdi:dots-vertical"
@@ -72,17 +90,24 @@
 		</div>
 
 		<!-- Social -->
-		<div class="flex flex-row justify-between w-full h-8 mt-2 mx-2">
-			<div class="flex text-2xl">
-				<iconify-icon class="px-1" icon="mdi:star-outline" height="1.5rem" width="1.5rem"
+		<div class="flex items-center justify-between w-full h-8 mt-1 mx-3">
+			<div class="flex gap-2 items-center text-2xl text-center">
+        <div class="flex gap-1 items-center justify-center bg-[#303030] px-1 rounded-lg">
+          <iconify-icon 
+            class={getStartColor(rating)} 
+            icon="mdi:star" 
+            height="1.5rem"
+            width="1.5rem"
 				></iconify-icon>
-				<iconify-icon class="px-1" icon="ic:outline-reviews" height="1.5rem" width="1.5rem"
+        <span class="text-sm font-medium">{rating}</span>
+        </div>	
+				<iconify-icon class="" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
 				></iconify-icon>
-				<iconify-icon class="px-1" icon="material-symbols:share" height="1.5rem" width="1.5rem"
+				<iconify-icon class="" icon="bitcoin-icons:share-filled" height="1.5rem" width="1.5rem"
 				></iconify-icon>
 			</div>
 
-			<div class="save">
+			<div class="save hidden"> <!-- oculto los simbolos para agregar funcionalidad posteriormente -->
 				<iconify-icon
 					class="px-1 mr-4"
 					icon="material-symbols:bookmark-outline"
@@ -96,12 +121,12 @@
 		<div class="w-full h-[70px] mx-3">
 			<div>
 				<h3 class="m-1 text-xl">{data.productname}</h3>
-				<h2 class="m-1 text-lg font-semibold">${data.price}</h2>
+				<h2 class="m-1 mt-1 text-lg font-semibold">${data.price}</h2>
 			</div>
 		</div>
 
 		<!-- Commerce -->
-		<div class="flex justify-evenly mx-2">
+		<div class="flex justify-evenly mx-2 mt-2">
 			<button
 				class="bg-[#404040] rounded max-w-[140px] min-w-[120px] h-8 text-gray-200 text-base cursor-pointer z-10"
 				on:click|preventDefault={() => {

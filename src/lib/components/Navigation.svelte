@@ -27,7 +27,7 @@
 		'following',
 		'cart',
 		'chat',
-    'shopping'
+		'shopping'
 	];
 
 	let searchInputValue = '';
@@ -120,10 +120,11 @@
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<h1 class="text-xl font-extrabold text-gray-100">
-								Shop<span class="font-black">+</span>
+								Shop
 							</h1>
+							<span class="text-xl font-extrabold text-purple-500">in</span>
 							<span
-								class="absolute top-4 right-[-25px] text-gray-600 h-5 w-5 text-sm flex items-center justify-center"
+								class="absolute top-4 right-[-25px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
 								>beta</span
 							>
 						</div>
