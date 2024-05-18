@@ -51,7 +51,7 @@
 </script>
 
 <svelte:head>
-	<title>Shop+</title>
+	<title>ShopIn</title>
 </svelte:head>
 
 <div class="fixed top-12 flex items-center bg-[#121212] gap-3 w-full h-12 px-5 my-1 z-20">

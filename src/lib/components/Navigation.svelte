@@ -16,6 +16,7 @@
 	import { onDestroy } from 'svelte';
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
+	import { formatPrice } from '$lib/utils/formatprice';
 
 	const rutasExcluidas = [
 		'',
@@ -122,7 +123,7 @@
 							<h1 class="text-xl font-extrabold text-gray-100">
 								Shop
 							</h1>
-							<span class="text-xl font-extrabold text-purple-500">in</span>
+							<span class="text-xl font-extrabold text-purple-500">In</span>
 							<span
 								class="absolute top-4 right-[-25px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
 								>beta</span
@@ -248,7 +249,7 @@
 									{/each}
 									<div class="flex justify-between">
 										<a href="/cart" class="hover:underline">Ir al carrito</a>
-										<h2>Subtotal: ${total.toFixed(0)}</h2>
+										<h2>Subtotal: {formatPrice(total, 'es-CO', 'COP')}</h2>
 									</div>
 								{/if}
 							</HoverCard.Content>
