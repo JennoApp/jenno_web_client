@@ -12,13 +12,14 @@
 	import type { PageServerData } from './$types';
 	import * as Carousel from '$lib/components/ui/carousel/index';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context';
-	import * as Accordion from '$lib/components/ui/accordion';
 	import { addToCart, decrementCartItem, getTotal, cartItems } from '$lib/stores/cartStore';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import * as Select from '$lib/components/ui/select';
+	import * as Table from '$lib/components/ui/table';
+  import RandomProducts from '$lib/components/Randomuserproducts.svelte'
 
 	export let data: PageServerData;
 	const product: CardData = data.product;
@@ -57,6 +58,7 @@
 	// product
 	let rating = 4.3;
 	let quantity: number = 1;
+
 </script>
 
 <div class="flex flex-row gap-3 p-7">
@@ -138,10 +140,16 @@
 			</a>
 		</div>
 
-		<div class="flex gap-1 items-center justify-center w-16 h-8 bg-[#303030] px-1 mt-1 rounded-lg">
-			<iconify-icon class={getStartColor(rating)} icon="mdi:star" height="1.5rem" width="1.5rem"
-			></iconify-icon>
-			<span class="text-base font-semibold">{rating}</span>
+		<div class="flex gap-5 items-center">
+			<div
+				class="flex gap-1 items-center justify-center w-16 h-8 bg-[#303030] px-1 mt-1 rounded-lg"
+			>
+				<iconify-icon class={getStartColor(rating)} icon="mdi:star" height="1.5rem" width="1.5rem"
+				></iconify-icon>
+				<span class="text-base font-semibold">{rating}</span>
+			</div>
+
+			<h3 class="text-[#707070] font-semibold underline cursor-pointer">Reseñas</h3>
 		</div>
 
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
@@ -213,17 +221,36 @@
 	</div>
 </div>
 
-<div class="flex justify-center">
-	<Accordion.Root class="w-full sm:max-w-[70%]">
-		<Accordion.Item value="item-1">
-			<Accordion.Trigger>Especificaciones</Accordion.Trigger>
-			<Accordion.Content>Yes. It adheres to the WAI-ARIA design pattern.</Accordion.Content>
-		</Accordion.Item>
-		<Accordion.Item value="item-2">
-			<Accordion.Trigger>Caracteristicas</Accordion.Trigger>
-			<Accordion.Content>
-				Yes. It comes with default styles that matches the other components' aesthetic.
-			</Accordion.Content>
-		</Accordion.Item>
-	</Accordion.Root>
+<div class="flex flex-col m-10 mt-14">
+	<h2 class="text-xl font-bold">Especificaciones</h2>
+
+	<Table.Root class="mt-7 overflow-x-auto">
+		<Table.Header class="bg-[#202020] h-14">
+			<Table.Row>
+				<Table.Head>Conectividad/Conexion</Table.Head>
+				<Table.Head>Detalle de la garantia</Table.Head>
+				<Table.Head>Condicion del producto</Table.Head>
+				<Table.Head>Modelo</Table.Head>
+				<Table.Head>Material</Table.Head>
+			</Table.Row>
+		</Table.Header>
+		<Table.Body>
+			<Table.Row class="h-14 bg-none hover:bg-none font-base">
+				<Table.Cell>Bluetooth</Table.Cell>
+				<Table.Cell
+					>Este producto cuenta con 1 año de garantia Sony en Colombia por defector de fabricacion.</Table.Cell
+				>
+				<Table.Cell>Nuevo</Table.Cell>
+				<Table.Cell>SRS-XE300</Table.Cell>
+				<Table.Cell>ABS</Table.Cell>
+			</Table.Row>
+		</Table.Body>
+	</Table.Root>
 </div>
+
+<div class="flex flex-col m-10 mt-14">
+	<h2 class="text-xl font-bold">Mas Productos</h2>
+</div>
+
+<!-- Lista de productos del mismo vendedor -->
+<RandomProducts user={product.user}/>
