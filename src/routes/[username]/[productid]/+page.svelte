@@ -3,6 +3,8 @@
 		_id: string;
 		username: string;
 		productname: string;
+		description: String;
+		options: []
 		imgs: [string];
 		price: number;
 		category: string;
@@ -19,7 +21,7 @@
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
-  import RandomProducts from '$lib/components/Randomuserproducts.svelte'
+	import RandomProducts from '$lib/components/Randomuserproducts.svelte';
 
 	export let data: PageServerData;
 	const product: CardData = data.product;
@@ -58,7 +60,6 @@
 	// product
 	let rating = 4.3;
 	let quantity: number = 1;
-
 </script>
 
 <div class="flex flex-row gap-3 p-7">
@@ -76,7 +77,7 @@
 					{#each product.imgs as image, i}
 						<Carousel.Item>
 							<div class="flex justify-center">
-								<img class="w-11/12 h-96 object-cover rounded-md" src={image} alt={`${i}`} />
+								<img class="w-11/12 h-96 object-contain rounded-md" src={image} alt={`${i}`} />
 							</div>
 						</Carousel.Item>
 					{/each}
@@ -156,27 +157,30 @@
 
 		<!-- Product Description -->
 		<div class="h-auto max-h-40 w-full mt-1">
-			<p>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque eget erat ornare, aliquet
-				mi eu, consectetur ipsum. Nam nec auctor sem. Fusce egestas placerat libero eget tempor.
-				Donec eu vulputate mi. Vivamus commodo ornare ligula, ac posuere felis commodo id.
-			</p>
+			<p>{product.description}</p>
 		</div>
 
-		<!-- Product Options -->
-		<div class="flex gap-5 mt-5">
-			<h3 class="text-lg font-medium">Color:</h3>
-			<Select.Root>
-				<Select.Trigger class="w-[180px]">
-					<Select.Value placeholder="Select a color" />
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Item value="light">Light</Select.Item>
-					<Select.Item value="dark">Dark</Select.Item>
-					<Select.Item value="system">System</Select.Item>
-				</Select.Content>
-			</Select.Root>
-		</div>
+    <!-- {#if product.options?.optionsList.length === 0} -->
+      <!-- Product Options -->
+		{#each product.options as option}
+			<div class="flex gap-5 mt-5">
+				<h3 class="text-lg font-medium">{option?.name}:</h3>
+        <Select.Root>
+					<Select.Trigger class="w-[180px]">
+						<Select.Value placeholder="Select a color" />
+					</Select.Trigger>
+					<Select.Content>
+						<!-- {#each option?.optionsList as o} -->
+							<!-- <Select.Item value={`${o}`}>{o}</Select.Item> -->
+							<Select.Item value="dark">Dark</Select.Item>
+					  <Select.Item value="system">System</Select.Item>       
+						<!-- {/each} -->
+					</Select.Content>
+				</Select.Root>
+			</div>
+		{/each}    
+    <!-- {/if} -->
+		
 
 		<div class="flex flex-col gap-3">
 			<div class="flex mt-5 gap-3">
@@ -253,4 +257,4 @@
 </div>
 
 <!-- Lista de productos del mismo vendedor -->
-<RandomProducts user={product.user}/>
+<RandomProducts user={product.user} />

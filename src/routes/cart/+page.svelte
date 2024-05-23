@@ -24,16 +24,19 @@
 	///
 </script>
 
-
-<div>
-	<h1 class="text-2xl m-5">Shopping Cart</h1>
-</div>
-
 {#if $cartItems.length === 0}
-	<div class="w- full flex m-5">
-		<h2>Agregar Items al Carrito!</h2>
+	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+		<iconify-icon icon="mdi:cart" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">¡Tu carrito está vacío!</h1>
+		<p class="text-lg text-[#707070]">
+			¡Agrega productos a tu carrito y prepárate para comprar!
+		</p>
 	</div>
 {:else}
+	<div>
+		<h1 class="text-2xl m-5">Shopping Cart</h1>
+	</div>
 	<div class="flex">
 		<!-- Shopping cart List -->
 		<div class="mx-5 w-4/6">

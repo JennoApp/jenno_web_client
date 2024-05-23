@@ -12,12 +12,16 @@
 	import { enhance } from '$app/forms';
 
 	export let form: ActionData;
+	let optionsItems: any[] = [];
+	let especificationsItems: any[] = [];
 
 	$: if (form?.status === 201) {
-		console.log(`formStatus: ${form.status}`)
-		toast.success("Producto creado!")
-		goto('/admin/catalog')
-	} 
+		console.log(`formStatus: ${form.status}`);
+		toast.success('Producto creado!');
+		goto('/admin/catalog');
+	}
+
+	$: console.log({ errors: form?.errors });
 
 	let fileList: any[] = [];
 
@@ -34,6 +38,26 @@
 		const units = ['bytes', 'KB', 'MB', 'GB', 'TB'];
 		const i = Math.floor(Math.log(size) / Math.log(1024));
 		return `${parseFloat((size / Math.pow(1024, i)).toFixed(2))} ${units[i]}`;
+	}
+
+	function addOptionsItem() {
+		if (optionsItems.length < 2) {
+			optionsItems = [...optionsItems, optionsItems];
+		}
+	}
+
+	function removeOptionItem(index: number) {
+		optionsItems = optionsItems.filter((_, i) => i != index);
+	}
+
+	function addEspecificationsItem() {
+		if (especificationsItems.length < 10) {
+			especificationsItems = [...especificationsItems, especificationsItems];
+		}
+	}
+
+	function removeEspecificationItem(index: number) {
+		especificationsItems = especificationsItems.filter((_, i) => i != index);
 	}
 </script>
 
@@ -57,12 +81,7 @@
 	</div>
 </div>
 
-<form
-	method="POST"
-	enctype="multipart/form-data"
-	action="?/addProduct"
-	use:enhance
->
+<form method="POST" enctype="multipart/form-data" action="?/addProduct" use:enhance>
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Columna 1 -->
 		<div class="w-full">
@@ -72,12 +91,22 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel for="productname">Product name</lebel>
+						<label for="productname">Product name</label>
 						<Input type="text" name="productname" required />
+						<label for="productname">
+							{#if form?.errors?.productname}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.productname[0]}</span>
+							{/if}
+						</label>
 					</div>
 					<div>
-						<lebel for="productname">Description</lebel>
+						<label for="description">Description</label>
 						<Textarea class="resize-y" name="description" />
+						<label for="description">
+							{#if form?.errors?.description}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.description[0]}</span>
+							{/if}
+						</label>
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -88,8 +117,13 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel>Price</lebel>
+						<label for="price">Price</label>
 						<Input type="number" name="price" placeholder="Price" min={0} />
+						<label for="price">
+							{#if form?.errors?.price}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.price[0]}</span>
+							{/if}
+						</label>
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -100,12 +134,22 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel>Quantity</lebel>
+						<label for="quantity">Quantity</label>
 						<Input type="number" name="quantity" />
+						<label for="quantity">
+							{#if form?.errors?.quantity}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.quantity[0]}</span>
+							{/if}
+						</label>
 					</div>
 					<div>
-						<lebel for="SKU">SKU</lebel>
+						<label for="SKU">SKU</label>
 						<Input type="text" name="SKU" />
+						<label for="SKU">
+							{#if form?.errors?.SKU}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.SKU[0]}</span>
+							{/if}
+						</label>
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -116,10 +160,46 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel>Category</lebel>
+						<label for="category">Category</label>
 						<Input name="category" />
+						<label for="category">
+							{#if form?.errors?.category}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.category[0]}</span>
+							{/if}
+						</label>
 					</div>
 				</Card.Content>
+			</Card.Root>
+
+			<Card.Root class="mb-4">
+				<Card.Header>
+					<div class="flex justify-between">
+						<h3 class="font-semibold">Opciones</h3>
+						<button
+							class="bg-[#303030] h-8 w-32 rounded-md"
+							on:click|preventDefault={addOptionsItem}>Agregar</button
+						>
+					</div>
+				</Card.Header>
+				<!-- Options List -->
+				{#each optionsItems as _, i}
+					<Card.Content class="flex gap-5 items-center">
+						<div class="flex gap-3 items-center">
+							<label for="optionname">Nombre: </label>
+							<Input type="text" name={`optionname${i}`} />
+						</div>
+						<div class="flex gap-3 w-full items-center">
+							<label for="options">Opciones:</label>
+							<Input type="text" name={`options${i}`}/>
+						</div>
+						<button
+							class="flex items-center justify-center bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
+							on:click|preventDefault={() => removeOptionItem(i)}
+						>
+							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
+						</button>
+					</Card.Content>
+				{/each}
 			</Card.Root>
 		</div>
 
@@ -132,6 +212,11 @@
 				<Card.Content>
 					<div>
 						<Input name="files" multiple type="file" on:change={handleFiles} />
+						<label for="files">
+							{#if form?.errors?.files}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.files[0]}</span>
+							{/if}
+						</label>
 					</div>
 					{#if fileList.length !== 0}
 						<Table.Root class="mt-3">
@@ -164,24 +249,75 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<lebel>Weight</lebel>
+						<label for="weight">Weight</label>
 						<Input type="number" name="weight" />
+						<label for="weight">
+							{#if form?.errors?.weight}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.weight[0]}</span>
+							{/if}
+						</label>
 					</div>
 					<div class="flex gap-1">
 						<div>
-							<lebel>Length</lebel>
+							<label for="length">Length</label>
 							<Input type="number" name="length" />
+							<label for="length">
+								{#if form?.errors?.length}
+									<span class="dark:text-red-500 font-medium">{form?.errors?.length[0]}</span>
+								{/if}
+							</label>
 						</div>
 						<div>
-							<lebel>Width</lebel>
+							<label for="width">Width</label>
 							<Input type="number" name="width" />
+							<label for="width">
+								{#if form?.errors?.width}
+									<span class="dark:text-red-500 font-medium">{form?.errors?.width[0]}</span>
+								{/if}
+							</label>
 						</div>
 						<div>
-							<lebel>Height</lebel>
+							<label for="height">Height</label>
 							<Input type="number" name="height" />
+							<label for="height">
+								{#if form?.errors?.height}
+									<span class="dark:text-red-500 font-medium">{form?.errors?.height[0]}</span>
+								{/if}
+							</label>
 						</div>
 					</div>
 				</Card.Content>
+			</Card.Root>
+
+			<Card.Root class="mb-4">
+				<Card.Header>
+					<div class="flex justify-between">
+						<h3 class="font-semibold">Especificaciones</h3>
+						<button
+							class="bg-[#303030] h-8 w-32 rounded-md"
+							on:click|preventDefault={addEspecificationsItem}>Agregar</button
+						>
+					</div>
+				</Card.Header>
+				<!-- Especification List -->
+				{#each especificationsItems as _, i}
+					<Card.Content class="flex gap-5 items-center">
+						<div class="flex gap-3 items-center">
+							<label for="optionname">Titulo: </label>
+							<Input type="text" name={`especificationtitle${i}`} />
+						</div>
+						<div class="flex gap-3 w-full items-center">
+							<label for="options">Contenido:</label>
+							<Textarea class="bg-[#121212]" name={`especificationcontent${i}`}/>
+						</div>
+						<button
+							class="flex items-center justify-center bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
+							on:click|preventDefault={() => removeEspecificationItem(i)}
+						>
+							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
+						</button>
+					</Card.Content>
+				{/each}
 			</Card.Root>
 
 			<Card.Root class="mb-4">
@@ -190,7 +326,7 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<Label>Status</Label>
+						<Label for="status">Status</Label>
 						<Select.Root>
 							<Select.Trigger>
 								<Select.Value placeholder="Select product status" />
@@ -208,6 +344,11 @@
 							<Select.Input name="status" />
 						</Select.Root>
 					</div>
+					<label for="status">
+						{#if form?.errors?.status}
+							<span class="dark:text-red-500 font-medium">{form?.errors?.status[0]}</span>
+						{/if}
+					</label>
 				</Card.Content>
 			</Card.Root>
 
@@ -224,7 +365,7 @@
 			</Card.Root>
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm">Add Product</Button>
+				<Button type="submit" class="px-5 rounded-sm">Save Product</Button>
 			</div>
 		</div>
 	</div>

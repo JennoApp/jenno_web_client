@@ -126,21 +126,21 @@
 		</div>
 
 		<!-- Commerce -->
-		<div class="flex justify-evenly mx-2 mt-2">
+		<div class="flex justify-evenly mx-2 mt-2 gap-1">	
 			<button
-				class="bg-[#404040] rounded max-w-[140px] min-w-[120px] h-8 text-gray-200 text-base cursor-pointer z-10"
+				class="bg-[#404040] rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer"
+				on:click|preventDefault={() => addToCart(data)}
+			>
+				Add to Cart
+			</button>
+      <button
+				class="bg-purple-800 rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer z-10"
 				on:click|preventDefault={() => {
 					addToCart(data);
 					goto('/cart');
 				}}
 			>
-				Buy
-			</button>
-			<button
-				class="bg-[#404040] rounded max-w-[140px] min-w-[120px] h-8 text-gray-200 text-base cursor-pointer"
-				on:click|preventDefault={() => addToCart(data)}
-			>
-				Add to Cart
+				Buy Now
 			</button>
 		</div>
 	</div>

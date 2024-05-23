@@ -123,7 +123,7 @@
 							<h1 class="text-xl font-extrabold text-gray-100">
 								Shop
 							</h1>
-							<span class="text-xl font-extrabold text-purple-500">In</span>
+							<span class="text-xl font-extrabold text-purple-600">In</span>
 							<span
 								class="absolute top-4 right-[-25px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
 								>beta</span
@@ -190,11 +190,15 @@
 									width="1.3rem"
 									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
 								/>
-								<span
+
+                {#if $cartItems.length !== 0}
+                  <span
 									class="absolute top-[-0.2rem] right-[-0.2rem] dark:bg-gray-200 dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
 								>
 									{$cartItems.length}
 								</span>
+                {/if}
+								
 							</HoverCard.Trigger>
 							<HoverCard.Content class="flex flex-col gap-2 w-80">
 								{#if $cartItems.length === 0}
