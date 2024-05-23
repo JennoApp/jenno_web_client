@@ -12,6 +12,7 @@
 	}
 
 	import { addToCart } from '$lib/stores/cartStore';
+	import { formatPrice } from '$lib/utils/formatprice';
 
 	export let data: CardData;
 
@@ -54,6 +55,7 @@
       return 'text-yellow-100'
     }
   }
+
 </script>
 
 <a href={`/${data.username}/${data._id}`}>
@@ -121,7 +123,7 @@
 		<div class="w-full h-[70px] mx-3">
 			<div>
 				<h3 class="m-1 text-xl">{data.productname}</h3>
-				<h2 class="m-1 mt-1 text-lg font-semibold">${data.price}</h2>
+				<h2 class="m-1 mt-1 text-lg font-semibold">{formatPrice(data.price, 'es-CO', 'COP')}</h2>
 			</div>
 		</div>
 

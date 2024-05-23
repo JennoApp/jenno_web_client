@@ -1,11 +1,22 @@
 <script lang="ts">
+	interface Option {
+		name: string;
+		optionslist: string[];
+	}
+
+	interface Especification {
+		title: string;
+		content: string;
+	}
+
 	interface CardData {
 		_id: string;
 		username: string;
 		productname: string;
 		description: String;
-		options: []
-		imgs: [string];
+		options: Option[];
+		especifications: Especification[];
+		imgs: string[];
 		price: number;
 		category: string;
 		user: string;
@@ -15,47 +26,53 @@
 	import * as Carousel from '$lib/components/ui/carousel/index';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context';
 	import { addToCart, decrementCartItem, getTotal, cartItems } from '$lib/stores/cartStore';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
 	import RandomProducts from '$lib/components/Randomuserproducts.svelte';
+	import { page } from '$app/stores';
 
 	export let data: PageServerData;
-	const product: CardData = data.product;
+  let product: CardData
+	$: product = data.product
 
 	$: console.log({ product: data.product });
 
 	/// Sync Corousels index
-	let api: CarouselAPI;
-	let indexCarousel = 0;
+	let api: CarouselAPI
+	let indexCarousel = 0
 	function syncCarousel(index: number) {
-		indexCarousel = index;
+		indexCarousel = index
 	}
 
-	let profileImg = '';
+	let profileImg = ''
 
 	onMount(async () => {
 		if (!product || !product?.user) {
 			console.error(
 				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
-			);
-			return;
+			)
+			return
 		}
 
 		try {
-			const response = await fetch(`http://localhost:3000/users/getprofileimg/${product?.user}`);
+			const response = await fetch(`http://localhost:3000/users/getprofileimg/${product?.user}`)
 
 			const userData = await response.json();
-			console.log({ userData });
+			console.log({ userData })
 
-			profileImg = userData?.profileImg;
+			profileImg = userData?.profileImg
 		} catch (error: any) {
-			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
+			console.error(`Error al obtener la imagen de perfil: ${error.message}`)
 		}
-	});
+	})
+
+  $: console.log($page.url.pathname)
+  $: console.log(`/${product.username}/${product._id}`)
+
 
 	// product
 	let rating = 4.3;
@@ -160,27 +177,26 @@
 			<p>{product.description}</p>
 		</div>
 
-    <!-- {#if product.options?.optionsList.length === 0} -->
-      <!-- Product Options -->
-		{#each product.options as option}
-			<div class="flex gap-5 mt-5">
-				<h3 class="text-lg font-medium">{option?.name}:</h3>
-        <Select.Root>
-					<Select.Trigger class="w-[180px]">
-						<Select.Value placeholder="Select a color" />
-					</Select.Trigger>
-					<Select.Content>
-						<!-- {#each option?.optionsList as o} -->
-							<!-- <Select.Item value={`${o}`}>{o}</Select.Item> -->
-							<Select.Item value="dark">Dark</Select.Item>
-					  <Select.Item value="system">System</Select.Item>       
-						<!-- {/each} -->
-					</Select.Content>
-				</Select.Root>
-			</div>
-		{/each}    
-    <!-- {/if} -->
-		
+		<!-- Product Options -->
+		{#if product?.options}
+			{#each product.options as option}
+				{#if option?.optionslist}
+					<div class="flex gap-5 mt-5">
+						<h3 class="text-lg font-medium">{option.name}:</h3>
+						<Select.Root>
+							<Select.Trigger class="w-[180px]">
+								<Select.Value placeholder={`Select ${option.name}`} />
+							</Select.Trigger>
+							<Select.Content>
+								{#each option.optionslist as op}
+									<Select.Item value={`${op}`}>{op}</Select.Item>
+								{/each}
+							</Select.Content>
+						</Select.Root>
+					</div>
+				{/if}
+			{/each}
+		{/if}
 
 		<div class="flex flex-col gap-3">
 			<div class="flex mt-5 gap-3">
@@ -225,32 +241,28 @@
 	</div>
 </div>
 
-<div class="flex flex-col m-10 mt-14">
-	<h2 class="text-xl font-bold">Especificaciones</h2>
+{#if product.especifications.length !== 0}
+	<div class="flex flex-col m-10 mt-14">
+		<h2 class="text-xl font-bold">Especificaciones</h2>
 
-	<Table.Root class="mt-7 overflow-x-auto">
-		<Table.Header class="bg-[#202020] h-14">
-			<Table.Row>
-				<Table.Head>Conectividad/Conexion</Table.Head>
-				<Table.Head>Detalle de la garantia</Table.Head>
-				<Table.Head>Condicion del producto</Table.Head>
-				<Table.Head>Modelo</Table.Head>
-				<Table.Head>Material</Table.Head>
-			</Table.Row>
-		</Table.Header>
-		<Table.Body>
-			<Table.Row class="h-14 bg-none hover:bg-none font-base">
-				<Table.Cell>Bluetooth</Table.Cell>
-				<Table.Cell
-					>Este producto cuenta con 1 año de garantia Sony en Colombia por defector de fabricacion.</Table.Cell
-				>
-				<Table.Cell>Nuevo</Table.Cell>
-				<Table.Cell>SRS-XE300</Table.Cell>
-				<Table.Cell>ABS</Table.Cell>
-			</Table.Row>
-		</Table.Body>
-	</Table.Root>
-</div>
+		<Table.Root class="mt-7 overflow-x-auto">
+			<Table.Header class="bg-[#202020] h-14">
+				<Table.Row>
+					{#each product.especifications as especification}
+						<Table.Head>{especification.title}</Table.Head>
+					{/each}
+				</Table.Row>
+			</Table.Header>
+			<Table.Body>
+				<Table.Row class="h-14 bg-none hover:bg-none font-base">
+					{#each product.especifications as especification}
+						<Table.Cell>{especification.content}</Table.Cell>
+					{/each}
+				</Table.Row>
+			</Table.Body>
+		</Table.Root>
+	</div>
+{/if}
 
 <div class="flex flex-col m-10 mt-14">
 	<h2 class="text-xl font-bold">Mas Productos</h2>
