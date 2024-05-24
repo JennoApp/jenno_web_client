@@ -9,8 +9,14 @@ interface Product {
   price: number;
 }
 
+interface SelectedOption {
+  name: string
+  value: string
+}
+
 interface CartItem extends Product {
   amount: number;
+  selectedOptions: SelectedOption[]
 }
 
 export const cartItems = writable<CartItem[]>([])
@@ -24,21 +30,39 @@ if (browser) {
 
 // No solo agrega el producto al carrito sino que tambien
 // incrementa una unidad cuando este ya esta agregado 
-export function addToCart(product: Product) {
+export function addToCart(product: Product, selectedOptions: SelectedOption[] = [], quantity: number = 1) {
   let items = get(cartItems)
+  let found = false
 
-  // Increment amount if it exists
-  for (let item of items) {
-    if (item._id === product._id) {
-      item.amount++
-      cartItems.set(items)
-      return
+  items = items.map((item) => {
+    if (item._id === product._id && JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)) {
+      item.amount += quantity
+      found = true
     }
+    return item
+  })
+
+  if (!found) {
+    const cartItem: CartItem = {...product, amount: quantity, selectedOptions}
+    items = [...items, cartItem]
   }
 
+
+  cartItems.set(items)
+
+
+  // // Increment amount if it exists
+  // for (let item of items) {
+  //   if (item._id === product._id) {
+  //     item.amount++
+  //     cartItems.set(items)
+  //     return
+  //   }
+  // }
+
   // Otherwise, append it to cart
-  const cartItem = { ...product, amount: 1 }
-  cartItems.set([...items, cartItem])
+  // const cartItem = { ...product, amount: 1 }
+  // cartItems.set([...items, cartItem])
 }
 
 export function decrementCartItem(id: string) {

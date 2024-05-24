@@ -77,6 +77,23 @@
 	// product
 	let rating = 4.3;
 	let quantity: number = 1;
+  let selectedOptions: any[] = []
+
+  function handleAddToCart() {
+    addToCart(product, selectedOptions, quantity)
+  }
+
+
+  function handleOptionChange(optionName: string, optionValue: string) {
+    const optionIndex = selectedOptions.findIndex(opt => opt.name === optionName)
+    if (optionIndex !== -1) {
+      selectedOptions[optionIndex].value = optionValue
+    } else {
+      selectedOptions.push({ name: optionName, value: optionValue });
+    }
+  }
+  
+  $: console.log($cartItems)
 </script>
 
 <div class="flex flex-row gap-3 p-7">
@@ -189,7 +206,7 @@
 							</Select.Trigger>
 							<Select.Content>
 								{#each option.optionslist as op}
-									<Select.Item value={`${op}`}>{op}</Select.Item>
+									<Select.Item value={`${op}`} on:click={() => handleOptionChange(option.name, op)}>{op}</Select.Item>
 								{/each}
 							</Select.Content>
 						</Select.Root>
@@ -222,16 +239,14 @@
 					</button>
 				</div>
 				<button
-					on:click|preventDefault={() => {
-						addToCart(product);
-					}}
+					on:click|preventDefault={() => handleAddToCart()}
 					class="dark:bg-[#202020] border-none rounded w-3/5 h-12 dark:text-gray-200 text-base cursor-pointer hover:dark:bg-[#252525]"
 					>Add to Cart</button
 				>
 			</div>
 			<button
 				on:click={() => {
-					addToCart(product);
+					handleAddToCart()
 					goto('/cart');
 				}}
 				class="dark:bg-purple-900 border-none rounded w-full h-12 dark:text-gray-200 text-base cursor-pointer hover:dark:bg-purple-800"
