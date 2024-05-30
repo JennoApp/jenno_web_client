@@ -92,9 +92,7 @@
 				<div class="flex flex-col gap-3 items-start">
 					<h2 class="text-2xl font-medium">{user?.username}</h2>
 					<p class="flex flex-wrap">
-						Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a
-						piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard
-						McClintock.
+            {user?.bio}
 					</p>
 				</div>
 			</div>

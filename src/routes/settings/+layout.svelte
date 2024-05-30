@@ -8,13 +8,13 @@
 			title: 'Profile',
 			href: '/settings/profile'
 		},
+    {
+      title: 'Shipping',
+      href: '/settings/shipping'
+    },
 		{
 			title: 'Apariencia',
 			href: '/settings/appearance'
-		},
-		{
-			title: 'Terminos y condiciones',
-			href: '/settings/termsconditions'
 		},
 		{
 			title: 'Acerca',
