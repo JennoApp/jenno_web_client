@@ -5,18 +5,19 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
   import { toast } from 'svelte-sonner'
+  import { invalidate } from '$app/navigation'
 
 	export let data: PageServerData;
   export let form: ActionData
 
-	let userInfo;
-	$: userInfo = $page.data.user;
+	let userInfo: any = null;
 
+  $: userInfo = $page.data.user
 	$: console.log({ userInfo });
 
 	$: if (form?.success) {
 		toast.success('Informacion Actualizada!');
-    // invalidateAll()
+    invalidate((url) => url.pathname === '/settings/profile')
 	}
 </script>
 
@@ -51,11 +52,11 @@
 	</form>
 </div>
 
-<div class="flex flex-col">
+<div class="flex flex-col items-center w-full">
 	<!-- Personal Information -->
-	<form method="post" action="?/uploadUserInfo" use:enhance>
+	<form class="w-1/2" method="post" action="?/uploadUserInfo" use:enhance>
 		<h2 class="mt-5 text-xl font-semibold">
-			Informacion {userInfo.accountType === 'personal' ? 'Personal' : 'Empresa'}
+			Informacion {userInfo?.accountType === 'personal' ? 'Personal' : 'Empresa'}
 		</h2>
 		<div class="flex gap-5 items-center mt-5">
 			<label for="username" class="text-base font-medium">Nombre:</label>
@@ -63,7 +64,7 @@
 				type="text"
 				name="username"
 				class="h-8 border rounded-md text-black font-semibold px-2"
-				value={userInfo.username}
+				bind:value={userInfo.username}
 			/>
 		</div>
 		<div class="flex gap-5 items-center mt-5">
@@ -72,7 +73,7 @@
 				type="text"
 				name="email"
 				class="h-8 border rounded-md text-black font-semibold px-2"
-				value={userInfo.email}
+				bind:value={userInfo.email}
 			/>
 		</div>
 		<div class="flex gap-5 items-center mt-5">
@@ -80,7 +81,7 @@
 			<textarea
 				name="bio"
 				class="h-20 w-80 border rounded-md text-black font-semibold px-2"
-				value={userInfo.bio !== undefined ? userInfo.bio : ''}
+				bind:value={userInfo.bio}
 			/>
 		</div>
 		<div class="hidden">
@@ -95,7 +96,7 @@
 		</div>
 
 		<!-- Bussines Legal Information -->
-		{#if userInfo.accountType === 'business'}
+		{#if userInfo?.accountType === 'business'}
 			<div class="mt-10">
 				<h2 class="mt-5 text-xl font-semibold">Informacion Legal</h2>
 				<div class="flex gap-5 items-center mt-5">
@@ -104,7 +105,7 @@
 						type="text"
 						name="legal_name"
 						class="h-8 border rounded-md text-black font-semibold px-2"
-            value={userInfo.legalname !== undefined ? userInfo.legalname : ''}
+            bind:value={userInfo.legalname}
 					/>
 				</div>
 				<div class="flex gap-5 items-center mt-5">
@@ -113,7 +114,7 @@
 						type="text"
 						name="legal_lastname"
 						class="h-8 border rounded-md text-black font-semibold px-2"
-            value={userInfo.legallastname !== undefined ? userInfo.legallastname : ''}
+            bind:value={userInfo.legallastname}
 					/>
 				</div>
 				<div class="flex gap-5 items-center mt-5">
@@ -122,7 +123,7 @@
 						type="text"
 						name="taxid"
 						class="h-8 border rounded-md text-black font-semibold px-2"
-            value={userInfo.taxid !== undefined ? userInfo.taxid : ''}
+            bind:value={userInfo.taxid}
 					/>
 				</div>
 			</div>
