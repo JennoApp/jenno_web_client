@@ -60,20 +60,20 @@
 
 <a href={`/${data.username}/${data._id}`}>
 	<div
-		class="h-[420px] min-w-[250px] max-w-[300px] rounded-xl bg-[#202020] text-gray-200 shadow-md hover:bg-[#252525]"
+		class="h-[420px] min-w-[250px] max-w-[300px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300  dark:shadow-none hover:dark:bg-[#252525]"
 	>
 		<!-- Header -->
 		<div class="flex w-full h-12 mt-1 items-center justify-between">
 			<div class="flex items-center">
 				{#if profileImg !== ''}
-					<img class="h-7 w-7 object-cover ml-4 rounded-xl" src={profileImg} alt="logo" />
+					<img class="h-7 w-7 object-cover ml-4 rounded-full" src={profileImg} alt="logo" />
 				{:else}
-					<div class="flex justify-center items-center h-9 w-9 ml-2 rounded-xl">
+					<div class="flex justify-center items-center h-9 w-9 ml-2 rounded-full">
 						<iconify-icon icon="mdi:user" height="1.5rem" width="1.5rem"></iconify-icon>
 					</div>
 				{/if}
 				<a href={data.username}>
-					<h4 class="ml-2">{data.username}</h4>
+					<h4 class="ml-2 font-medium">{data.username}</h4>
 				</a>
 			</div>
 			<div class="hidden"> <!-- oculto los simbolos para agregar funcionalidad posteriormente -->
@@ -94,7 +94,7 @@
 		<!-- Social -->
 		<div class="flex items-center justify-between w-full h-8 mt-1 mx-3">
 			<div class="flex gap-2 items-center text-2xl text-center">
-        <div class="flex gap-1 items-center justify-center bg-[#303030] px-1 rounded-lg">
+        <div class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg">
           <iconify-icon 
             class={getStartColor(rating)} 
             icon="mdi:star" 
@@ -103,7 +103,7 @@
 				></iconify-icon>
         <span class="text-sm font-medium">{rating}</span>
         </div>	
-				<iconify-icon class="" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
+				<iconify-icon class="text-gray-800" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
 				></iconify-icon>
 				<iconify-icon class="" icon="bitcoin-icons:share-filled" height="1.5rem" width="1.5rem"
 				></iconify-icon>
@@ -130,13 +130,13 @@
 		<!-- Commerce -->
 		<div class="flex justify-evenly mx-2 mt-2 gap-1">	
 			<button
-				class="bg-[#404040] rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer"
+				class="bg-gray-300 text-black dark:bg-[#404040] rounded max-w-[140px] min-w-[130px] h-8 dark:text-gray-200 text-base cursor-pointer"
 				on:click|preventDefault={() => addToCart(data)}
 			>
 				Add to Cart
 			</button>
       <button
-				class="bg-purple-800 rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer z-10"
+				class="bg-purple-600 rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer z-10"
 				on:click|preventDefault={() => {
 					addToCart(data);
 					goto('/cart');

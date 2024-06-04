@@ -112,11 +112,11 @@
 {#if !paths.includes($page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
-		<div class="flex items-center justify-between bg-white dark:bg-[#121212] w-full h-14 px-7">
+		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] w-full h-14 px-7">
 			<!-- Left -->
 			<div class="flex items-center">
 				<button
-					class="flex justify-center items-center text-white text-xl mr-6"
+					class="flex justify-center items-center dark:text-white text-xl mr-6"
 					on:click={handleIsClose}
 				>
 					<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -125,7 +125,7 @@
 				<a href="/">
 					<div class="relative flex gap-1">
 						<div class="flex">
-							<h1 class="text-xl font-extrabold text-gray-100">
+							<h1 class="text-xl font-extrabold dark:text-gray-100">
 								Shop
 							</h1>
 							<span class="text-xl font-extrabold text-purple-600">In</span>
@@ -347,7 +347,7 @@
 							Login
 						</button>
 						<button
-							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer"
+							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
 							on:click={() => goto('/register')}
 						>
 							Register
@@ -362,8 +362,8 @@
 		<Sidebar closeMenu={isClose} />
 		<main
 			class={!isClose
-				? 'relative top-0 left-52 w-[calc(100%-208px)] bg-bkg'
-				: 'relative top-0 left-20 w-[calc(100%-80px)] bg-bkg'}
+				? 'relative top-0 left-52 w-[calc(100%-208px)]'
+				: 'relative top-0 left-20 w-[calc(100%-80px)]'}
 		>
 			<slot />
 		</main>

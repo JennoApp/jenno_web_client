@@ -28,8 +28,8 @@
 {#if paths.includes(pathName)}
 	<nav
 		class={!closeMenu
-			? 'bg-white dark:bg-[#121212] fixed top-14 left-0 w-52 h-[calc(100vh-56px)] z-50'
-			: 'bg-white dark:bg-[#121212] fixed top-14 left-0 w-20 h-[calc(100vh-56px)] z-50'}
+			? 'fixed top-14 left-0 w-52 h-[calc(100vh-56px)] z-50'
+			: 'fixed top-14 left-0 w-20 h-[calc(100vh-56px)] z-50'}
 	>
 		<div
 			class={!closeMenu ? 'flex flex-col justify-between items-center mx-3' : 'flex flex-col mx-4'}
@@ -200,8 +200,8 @@
 {:else}
 	<nav
 		class={!closeMenu
-			? 'bg-white dark:bg-[#121212] fixed top-14 left-0 w-52 h-[calc(100vh-56px)] z-50'
-			: 'bg-white dark:bg-[#121212] fixed top-14 left-0 w-20 h-[calc(100vh-56px)] z-50'}
+			? 'fixed top-14 left-0 w-52 h-[calc(100vh-56px)] z-50'
+			: 'fixed top-14 left-0 w-20 h-[calc(100vh-56px)] z-50'}
 	>
 		<div
 			class={!closeMenu ? 'flex flex-col justify-between items-center mx-3' : 'flex flex-col mx-4'}
