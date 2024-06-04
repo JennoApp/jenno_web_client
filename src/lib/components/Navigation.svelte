@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -17,6 +17,7 @@
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
+  import { theme } from '$lib/stores/themeStore'
 
 	const rutasExcluidas = [
 		'',
@@ -101,6 +102,10 @@
 	let selectedIndex = -1;
 	function selectOption(option) {
 		alert(option);
+	}
+
+  function setTheme(newTheme: string) {
+		theme.set(newTheme);
 	}
 </script>
 
@@ -315,6 +320,17 @@
 									<DropdownMenu.Item href="/settings/profile">
 										<span>Ajustes</span>
 									</DropdownMenu.Item>
+
+                  
+                  <DropdownMenu.Sub>
+                    <DropdownMenu.SubTrigger>Tema</DropdownMenu.SubTrigger>
+                    <DropdownMenu.SubContent>
+                      <DropdownMenu.Item on:click={() => setTheme('light')}>Claro</DropdownMenu.Item>
+                      <DropdownMenu.Item on:click={() => setTheme('dark')}>Oscuro</DropdownMenu.Item>
+                      <DropdownMenu.Item on:click={() => setTheme('system')}>Sistema</DropdownMenu.Item>
+                    </DropdownMenu.SubContent>
+                  </DropdownMenu.Sub>
+
 									<DropdownMenu.Item on:click={() => logout()}>
 										<span>Cerrar Sesion</span>
 									</DropdownMenu.Item>
