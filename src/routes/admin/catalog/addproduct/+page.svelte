@@ -70,12 +70,12 @@
 			icon="material-symbols:chevron-left-rounded"
 			heigth="2.5rem"
 			width="2.5rem"
-			class="text-gray-200"
+			class="dark:text-gray-200"
 		></iconify-icon>
 	</button>
 	<div>
 		<div class="flex flex-col ml-3">
-			<h4 class="text-sm text-slate-300">Back to product list</h4>
+			<h4 class="text-sm dark:text-slate-300">Back to product list</h4>
 			<h2 class="text-xl font-semibold">Nuevo producto</h2>
 		</div>
 	</div>
@@ -176,7 +176,7 @@
 					<div class="flex justify-between">
 						<h3 class="font-semibold">Opciones</h3>
 						<button
-							class="bg-[#303030] h-8 w-32 rounded-md"
+							class="bg-purple-600 text-white dark:bg-[#303030] h-8 w-32 rounded-md"
 							on:click|preventDefault={addOptionsItem}>Agregar</button
 						>
 					</div>
@@ -193,7 +193,7 @@
 							<Input type="text" name={`options${i}`}/>
 						</div>
 						<button
-							class="flex items-center justify-center bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
+							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
 							on:click|preventDefault={() => removeOptionItem(i)}
 						>
 							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
@@ -294,7 +294,7 @@
 					<div class="flex justify-between">
 						<h3 class="font-semibold">Especificaciones</h3>
 						<button
-							class="bg-[#303030] h-8 w-32 rounded-md"
+							class="bg-purple-600 dark:bg-[#303030] text-white h-8 w-32 rounded-md"
 							on:click|preventDefault={addEspecificationsItem}>Agregar</button
 						>
 					</div>
@@ -308,10 +308,10 @@
 						</div>
 						<div class="flex gap-3 w-full items-center">
 							<label for="options">Contenido:</label>
-							<Textarea class="bg-[#121212]" name={`especificationcontent${i}`}/>
+							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`}/>
 						</div>
 						<button
-							class="flex items-center justify-center bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
+							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
 							on:click|preventDefault={() => removeEspecificationItem(i)}
 						>
 							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
@@ -365,7 +365,7 @@
 			</Card.Root>
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm">Save Product</Button>
+				<Button type="submit" class="px-5 rounded-sm bg-purple-600">Guardar Producto</Button>
 			</div>
 		</div>
 	</div>

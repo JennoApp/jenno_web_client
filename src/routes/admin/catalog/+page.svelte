@@ -107,12 +107,12 @@
 </script>
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-	<h2 class="text-xl font-semibold text-gray-200">Catalogo</h2>
+	<h2 class="text-xl font-semibold dark:text-gray-200">Catalogo</h2>
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
-			<Button class="dark:bg-[#202020] dark:text-gray-200 hover:dark:bg-[#252525]">Agregar</Button>
+			<Button class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200               hover:bg-purple-700 dark:hover:bg-[#252525]">Agregar</Button>
 		</DropdownMenu.Trigger>
-		<DropdownMenu.Content class="bg-background mt-2 border border-[#222222]">
+		<DropdownMenu.Content class="bg-background mt-2">
 			<DropdownMenu.Item href="/admin/catalog/addproduct">Agregar Producto</DropdownMenu.Item>
 			<DropdownMenu.Item disabled>Agregar Servicio</DropdownMenu.Item>
 		</DropdownMenu.Content>
@@ -126,7 +126,7 @@
 		<div class="flex items-center mx-10 mt-5">
 			<Input class="max-w-sm placeholder:text-[#707070]" placeholder="Filter names..." type="text" bind:value={$filterValue} />
 		</div>
-		<div class="rounded-md border border-[#202020] mx-10 my-5">
+		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
 				<Table.Header>
 					{#each $headerRows as headerRow}

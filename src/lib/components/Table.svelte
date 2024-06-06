@@ -33,7 +33,7 @@
 	<Input class="max-w-sm" placeholder="Filter names..." type="text" />
 </div> -->
 
-<div class="rounded-md border border-[#202020] mx-10 my-5">
+<div class="rounded-md border mx-10 my-5">
 	<Table.Root>
 		<Table.Header>
 			<Table.Row>
@@ -56,11 +56,11 @@
 
 <div class="flex justify-between mx-10">
   <div class="">
-    <h3 class="text-sm text-[#707070]">items: {itemsCount} - pages: {pageCount}</h3>
+    <h3 class="text-sm dark:text-[#707070]">items: {itemsCount} - pages: {pageCount}</h3>
   </div>
 	<div class="flex items-center justify-end space-x-4">
 		<Button
-			class="border-[#252525]"
+			class="border-gray-400 dark:border-[#252525]"
 			variant="outline"
 			size="sm"
 			disabled={!PreviousPage}
@@ -69,7 +69,7 @@
 			Previous
 		</Button>
 		<Button
-			class="border-[#252525]"
+			class="border-gray-400 dark:border-[#252525]"
 			variant="outline"
 			size="sm"
 			disabled={!NextPage}
