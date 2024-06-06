@@ -137,10 +137,11 @@
 	<!-- ChatMenu -->
 	<div class="w-1/4 h-[calc(100vh-56px)]">
 		<div class="p-3">
+      <!-- Buscador de usuarios de mensajes dejado para despues; se agrega 'hidden' -->
 			<input
 				type="text"
 				placeholder="Search for users"
-				class="w-[90%] py-3 border-t-0 border-b-2 border-b-[#202020] bg-[#121212] placeholder:text-[#707070] outline-none"
+				class="w-[90%] py-3 border-t-0 border-b-2 border-b-gray-300 dark:border-b-[#202020] dark:bg-[#121212] placeholder:text-[#707070] placeholder:pl-3 outline-none hidden"
 			/>
 			{#await getConversations($page.data.user._id)}
 				<p>fetching...</p>
@@ -176,16 +177,16 @@
 				</div>
 
 				<!-- Chatbox SendMessages -->
-				<div class="bg-[#121212] w-full">
+				<div class="dark:bg-[#121212] w-full">
 					<!-- <div class="flex items-center justify-evenly mt-1 h-20"> -->
 					<form class="flex items-center justify-evenly mt-1 h-20" on:submit={handleSendMessage}>
 						<textarea
-							class="flex flex-wrap w-4/5 p-1 h-10 bg-[#121212] border border-[#202020] rounded-2xl placeholder:px-1"
+							class="flex flex-wrap w-4/5 p-1 h-10 dark:bg-[#121212] border border-gray-200 dark:border-[#202020] rounded-2xl placeholder:px-1"
 							placeholder="write something"
 							id=""
 							bind:value={newMessage}
 						></textarea>
-						<button class="w-20 h-10 border-none rounded-lg bg-[#202020]"> Send </button>
+						<button class="w-20 h-10 border-none rounded-lg bg-purple-600 dark:bg-[#202020] text-white"> Send </button>
 					</form>
 				</div>
 				<!-- </div> -->

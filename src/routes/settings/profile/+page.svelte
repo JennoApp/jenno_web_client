@@ -21,7 +21,7 @@
 	}
 </script>
 
-<div class="flex items-center w-11/12 h-32 border-2 border-[#141414] rounded-md">
+<div class="flex items-center w-11/12 h-32">
 	<form
 		method="POST"
 		enctype="multipart/form-data"
@@ -48,7 +48,7 @@
 
 			<Input type="file" name="profile" class="ml-10" />
 		</div>
-		<Button type="submit" class="ml-5">Upload Image</Button>
+		<Button type="submit" class="ml-5 bg-purple-600 hover:bg-purple-700 text-white">Upload Image</Button>
 	</form>
 </div>
 
@@ -130,7 +130,7 @@
 		{/if}
 
 		<button
-			class="h-10 w-96 mt-10 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
+			class="h-10 w-96 mt-10 border border-gray-200 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
 		>
 			<span class="text-lg font-semibold">Actualizar</span>
 		</button>

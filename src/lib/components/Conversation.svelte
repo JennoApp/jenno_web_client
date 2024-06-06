@@ -20,7 +20,7 @@
 		getUser();
 	}
 </script>
-<div class="flex items-center p-3 mt-3 rounded-md cursor-pointer hover:bg-[#202020]">
+<div class="flex items-center p-3 mt-3 rounded-md cursor-pointer hover:bg-gray-200 dark:hover:bg-[#202020]">
 	{#if user?.profileImg !== ''}
 		<img
 			src={user?.profileImg}
@@ -32,7 +32,7 @@
 			icon="mdi:user"
 			height="1.5rem"
 			width="1.5rem"
-			class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#181818] rounded-full mr-5"
+			class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#181818] rounded-full mr-5"
 		/>
 	{/if}
 	<span class="font-medium">{user?.username}</span>

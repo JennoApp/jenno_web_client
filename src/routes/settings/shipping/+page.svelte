@@ -127,7 +127,7 @@
 
 		<!-- Shipping Submit -->
 		<button
-			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
+			class="h-10 w-full mt-4 border border-purple-600 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-white hover:bg-purple-700 dark:hover:bg-[#252525]"
 		>
 			Guardar
 		</button>

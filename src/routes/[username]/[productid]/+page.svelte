@@ -177,14 +177,14 @@
 
 		<div class="flex gap-5 items-center">
 			<div
-				class="flex gap-1 items-center justify-center w-16 h-8 bg-[#303030] px-1 mt-1 rounded-lg"
+				class="flex gap-1 items-center justify-center w-16 h-8 bg-gray-200 dark:bg-[#303030] px-1 mt-1 rounded-lg"
 			>
 				<iconify-icon class={getStartColor(rating)} icon="mdi:star" height="1.5rem" width="1.5rem"
 				></iconify-icon>
 				<span class="text-base font-semibold">{rating}</span>
 			</div>
 
-			<h3 class="text-[#707070] font-semibold underline cursor-pointer">Reseñas</h3>
+			<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">Reseñas</h3>
 		</div>
 
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
@@ -217,14 +217,14 @@
 
 		<div class="flex flex-col gap-3">
 			<div class="flex mt-5 gap-3">
-				<div class="flex items-center justify-around w-2/5 border border-[#202020] rounded-md">
+				<div class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md">
 					<button
 						on:click|preventDefault={() => {
 							if (quantity > 1) {
 								quantity--;
 							}
 						}}
-						class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+						class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 					>
 						<!-- Minus Icon -->
 						<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -232,7 +232,7 @@
 					<span class="mx-2 text-xl font-semibold">{quantity}</span>
 					<button
 						on:click|preventDefault={() => quantity++}
-						class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+						class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 					>
 						<!-- Plus Icon -->
 						<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -240,7 +240,7 @@
 				</div>
 				<button
 					on:click|preventDefault={() => handleAddToCart()}
-					class="dark:bg-[#202020] border-none rounded w-3/5 h-12 dark:text-gray-200 text-base cursor-pointer hover:dark:bg-[#252525]"
+					class="dark:bg-[#202020] border-none rounded w-3/5 h-12 bg-gray-200 dark:text-gray-200 text-black text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#252525]"
 					>Add to Cart</button
 				>
 			</div>
@@ -249,7 +249,7 @@
 					handleAddToCart()
 					goto('/cart');
 				}}
-				class="dark:bg-purple-900 border-none rounded w-full h-12 dark:text-gray-200 text-base cursor-pointer hover:dark:bg-purple-800"
+				class="bg-purple-600 dark:bg-purple-600 border-none rounded w-full h-12 text-white text-base cursor-pointer hover:bg-purple-700 hover:dark:bg-purple-700"
 				>Buy Now</button
 			>
 		</div>
@@ -261,7 +261,7 @@
 		<h2 class="text-xl font-bold">Especificaciones</h2>
 
 		<Table.Root class="mt-7 overflow-x-auto">
-			<Table.Header class="bg-[#202020] h-14">
+			<Table.Header class="bg-gray-200 dark:bg-[#202020] h-14">
 				<Table.Row>
 					{#each product.especifications as especification}
 						<Table.Head>{especification.title}</Table.Head>
