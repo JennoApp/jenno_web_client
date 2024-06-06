@@ -48,6 +48,10 @@
 		loadingObserver.observe(loadingRef);
 	});
 	/////////
+
+
+  const list = ['All', 'Electrodomesticos', 'Electronica', 'Salud y Belleza', 'Libros', 'Entretenimiento', 'Automotriz']
+
 </script>
 
 <svelte:head>
@@ -55,35 +59,12 @@
 </svelte:head>
 
 <div class="fixed top-12 flex items-center dark:bg-[#121212] gap-3 w-full h-12 px-5 my-1 z-20">
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>All</button
-	>
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>Electrodomesticos</button
-	>
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>Electrónica</button
-	>
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>Salud y Belleza</button
-	>
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>Libros</button
-	>
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-	>
-		Entretenimiento</button
-	>
-	<button
-		class="bg-[#202020] text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>Automotriz</button
-	>
+  {#each list as l}
+    <button
+		class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
+		>{l}</button
+	>   
+  {/each}
 </div>
 
 <div class="grid lg:grid-cols-4 sm:grid-cols-3 mx-5 mt-14 gap-5 grid-flow-row">

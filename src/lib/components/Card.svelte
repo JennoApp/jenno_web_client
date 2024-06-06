@@ -103,9 +103,9 @@
 				></iconify-icon>
         <span class="text-sm font-medium">{rating}</span>
         </div>	
-				<iconify-icon class="text-gray-800" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
+				<iconify-icon class="text-[#707070] dark:text-white" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
 				></iconify-icon>
-				<iconify-icon class="" icon="bitcoin-icons:share-filled" height="1.5rem" width="1.5rem"
+				<iconify-icon class="text-[#707070] dark:text-white" icon="bitcoin-icons:share-filled" height="1.5rem" width="1.5rem"
 				></iconify-icon>
 			</div>
 
@@ -130,13 +130,13 @@
 		<!-- Commerce -->
 		<div class="flex justify-evenly mx-2 mt-2 gap-1">	
 			<button
-				class="bg-gray-300 text-black dark:bg-[#404040] rounded max-w-[140px] min-w-[130px] h-8 dark:text-gray-200 text-base cursor-pointer"
+				class="bg-gray-200 hover:bg-gray-300 text-black dark:bg-[#404040] font-normal rounded max-w-[140px] min-w-[130px] h-8 dark:text-gray-200 text-base cursor-pointer"
 				on:click|preventDefault={() => addToCart(data)}
 			>
 				Add to Cart
 			</button>
       <button
-				class="bg-purple-600 rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer z-10"
+				class="bg-purple-600 hover:bg-purple-700 font-normal rounded max-w-[140px] min-w-[130px] h-8 text-gray-200 text-base cursor-pointer z-10"
 				on:click|preventDefault={() => {
 					addToCart(data);
 					goto('/cart');

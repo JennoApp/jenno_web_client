@@ -144,14 +144,14 @@
 					<form on:submit|preventDefault={handleSearch} class="flex w-[600px] h-10">
 						{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
 							<div
-								class="flex items-center rounded-l-2xl h-10 px-2 dark:bg-[#202020] cursor-default"
+								class="flex items-center rounded-l-2xl h-10 px-2 dark:text-white font-medium bg-gray-200 dark:bg-[#202020] cursor-default"
 							>
 								{$page.url.pathname.split('/')[1]}
 							</div>
 						{/if}
 						<input
 							id="searchInput"
-							class="flex items-center w-full h-10 text-base text-gray-200 px-2 bg-[#121212] outline-none border border-[#222222] {!rutasExcluidas.includes(
+							class="flex items-center w-full h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
 								$page.url.pathname.split('/')[1]
 							)
 								? ''
@@ -164,7 +164,7 @@
 							on:click={activeSearchInput}
 						/>
 						<div
-							class="grid place-items-center text-2xl text-white w-16 h-full bg-[#202020] border border-[#222222] rounded-r-2xl"
+							class="grid place-items-center text-2xl dark:text-white w-16 h-full bg-gray-200 dark:bg-[#202020] border border-gray-200 dark:border-[#222222] rounded-r-2xl"
 						>
 							<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
 							></iconify-icon>
@@ -183,7 +183,7 @@
 									icon="mdi:message"
 									height="1.3rem"
 									width="1.3rem"
-									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
 							</a>
 						</div>
@@ -193,12 +193,12 @@
 									icon="mdi:cart"
 									height="1.3rem"
 									width="1.3rem"
-									class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
 
                 {#if $cartItems.length !== 0}
                   <span
-									class="absolute top-[-0.2rem] right-[-0.2rem] dark:bg-gray-200 dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+									class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
 								>
 									{$cartItems.length}
 								</span>
@@ -213,7 +213,7 @@
 								{:else}
 									{#each $cartItems as cartItem}
 										<div
-											class="flex flex-row gap-3 items-center rounded-sm p-3 relative dark:bg-[#202020] hover:dark:bg-[#252525]"
+											class="flex flex-row gap-3 items-center rounded-sm p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
 										>
 											<img
 												class="w-12 h-12 object-cover rounded-sm mr-2"
@@ -223,22 +223,22 @@
 											<div class="flex">
 												<div class="flex flex-col items-start">
 													<h2 class="text-lg">{cartItem.productname}</h2>
-													<p class="text-base text-white">${cartItem.price}</p>
+													<p class="text-base dark:text-white">${cartItem.price}</p>
 												</div>
 
 												<div class="flex w-full justify-center items-center mt-2">
 													<button
 														on:click|preventDefault={() => decrementCartItem(cartItem._id)}
-														class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 													>
 														<!-- Minus Icon -->
 														<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"
 														></iconify-icon>
 													</button>
-													<span class="mx-2">{cartItem.amount}</span>
+													<span class="mx-2 text-black dark:text-white font-medium">{cartItem.amount}</span>
 													<button
 														on:click|preventDefault={() => addToCart(cartItem)}
-														class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 													>
 														<!-- Plus Icon -->
 														<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"
@@ -248,7 +248,7 @@
 											</div>
 											<button
 												on:click|preventDefault={() => removeFromCart(cartItem._id)}
-												class="absolute top-2 right-2 text-white hover:text-primary cursor-pointer"
+												class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 											>
 												<!-- Close Icon -->
 												<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem"
@@ -302,12 +302,12 @@
 										/>
 									{/if}
 									<div class="flex flex-col justify-center ml-2">
-										<h2 class="text-base text-gray-200 font-semibold">{userInfo?.username}</h2>
-										<h3 class="text-sm text-[#707070]">{userInfo?.accountType}</h3>
-										<h3 class="text-sm text-[#707070]">{userInfo?.email}</h3>
+										<h2 class="text-base dark:text-gray-200 font-semibold">{userInfo?.username}</h2>
+										<h3 class="text-sm dark:text-[#707070]">{userInfo?.accountType}</h3>
+										<h3 class="text-sm dark:text-[#707070]">{userInfo?.email}</h3>
 									</div>
 								</DropdownMenu.Item>
-								<DropdownMenu.Separator class="bg-[#303030]" />
+								<DropdownMenu.Separator />
 								<DropdownMenu.Group>
 									{#if userInfo.accountType === 'business'}
 										<DropdownMenu.Item href="/admin/dashboard">

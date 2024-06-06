@@ -43,7 +43,7 @@
 			{#each $cartItems as cartItem}
 				<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
 					<div
-						class="flex gap-3 items-center rounded-sm mb-3 p-3 relative dark:bg-[#202020] hover:dark:bg-[#252525]"
+						class="flex gap-3 items-center rounded-sm mb-3 p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
 					>
 						<img
 							class="w-12 h-12 object-cover rounded-sm mr-2"
@@ -53,13 +53,13 @@
 						<div class="flex w-full mx-7 justify-between">
 							<div class="flex gap-5 items-center">
 								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-								<p class="text-base text-white">${cartItem.price}</p>
+								<p class="text-base dark:text-white">${cartItem.price}</p>
 							</div>
 
 							<div class="flex justify-center items-center mt-2 mr-14">
 								<button
 									on:click|preventDefault={() => decrementCartItem(cartItem._id)}
-									class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 								>
 									<!-- Minus Icon -->
 									<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -67,7 +67,7 @@
 								<span class="mx-2">{cartItem.amount}</span>
 								<button
 									on:click|preventDefault={() => addToCart(cartItem)}
-									class="rounded-sm text-white p-1 cursor-pointer hover:text-primary"
+									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 								>
 									<!-- Plus Icon -->
 									<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -76,7 +76,7 @@
 						</div>
 						<button
 							on:click|preventDefault={() => removeFromCart(cartItem._id)}
-							class="absolute top-2 right-2 text-white hover:text-primary cursor-pointer"
+							class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 						>
 							<!-- Close Icon -->
 							<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -87,7 +87,7 @@
 		</div>
 
 		<!-- Shopping cart Order Summary -->
-		<div class="w-2/6 h-auto mr-5 p-2 bg-[#202020] rounded-sm">
+		<div class="w-2/6 h-auto mr-5 p-2 bg-gray-200 dark:bg-[#202020] rounded-sm">
 			<h2 class="text-lg">Order Summary</h2>
 			<Table.Root>
 				<Table.Header>
@@ -143,7 +143,7 @@
 			</div>
 
 			<button
-				class="dark:bg-[#303030] border-none rounded w-full h-12 text-white text-base cursor-pointer hover:dark:bg-[#353535]"
+				class="bg-purple-600 hover:bg-purple-500 dark:bg-[#303030] border-none rounded w-full h-12 text-white text-base cursor-pointer hover:dark:bg-[#353535]"
 				on:click={() => goto('/cart/paymentroute/shipping')}
 			>
 				Checkout

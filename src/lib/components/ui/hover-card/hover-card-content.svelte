@@ -18,7 +18,7 @@
 	{sideOffset}
 	{align}
 	class={cn(
-		"z-50 w-64 rounded-md border border-[#252525] bg-[#121212] p-4 text-popover-foreground shadow-md outline-none",
+		"z-50 w-64 rounded-md border border-gray-300 dark:border-[#252525] bg-white dark:bg-[#121212] p-4 text-popover-foreground shadow-md outline-none",
 		className
 	)}
 	{...$$restProps}

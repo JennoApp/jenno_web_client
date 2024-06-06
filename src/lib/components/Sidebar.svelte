@@ -9,7 +9,7 @@
 	$: currentPath = $page.url.pathname.split('/').filter(Boolean).pop() || '/';
 
 	function setBgColor(path: string, currentPath: string): string {
-		return path === currentPath ? 'bg-[#252525]' : '';
+		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : '';
 	}
 
 	$: pathName = $page.url.pathname;
@@ -48,12 +48,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>Dashboard</span
 							>
 						</a>
@@ -78,12 +78,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>Sales</span
 							>
 						</a>
@@ -108,12 +108,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>Catalog</span
 							>
 						</a>
@@ -138,12 +138,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>Customers</span
 							>
 						</a>
@@ -169,12 +169,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>Marketing</span
 							>
 						</a>
@@ -220,12 +220,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
 									: 'hidden'}>Inicio</span
 							>
 						</a>
@@ -250,12 +250,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>Explorar</span
 							>
 						</a>
@@ -280,12 +280,12 @@
 								height="1.3rem"
 								width="1.3rem"
 								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-[#fff]'}
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
 							/>
 							<span
 								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-[#fff]'
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>siguiendo</span
 							>
 						</a>

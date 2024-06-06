@@ -7,7 +7,7 @@
 	let className: $$Props["class"] = undefined;
 	export let transition: $$Props["transition"] = flyAndScale;
 	export let transitionConfig: $$Props["transitionConfig"] = {
-		x: -10,
+		x: -15,
 		y: 0
 	};
 	export { className as class };
@@ -17,7 +17,7 @@
 	{transition}
 	{transitionConfig}
 	class={cn(
-		"z-50 min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-lg focus:outline-none",
+		"z-50 min-w-[8rem] rounded-md border border-gray-300 dark:border-[#252525] bg-white dark:bg-[#121212] p-1 text-popover-foreground shadow-lg focus:outline-none",
 		className
 	)}
 	{...$$restProps}
