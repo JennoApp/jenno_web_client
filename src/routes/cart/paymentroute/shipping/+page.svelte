@@ -132,7 +132,7 @@
 
 		<!-- Shipping Submit -->
 		<button
-			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
+			class="h-10 w-full my-4 border border-gray-200 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
 		>
 			Save & Next
 		</button>

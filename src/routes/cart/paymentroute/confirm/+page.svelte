@@ -57,7 +57,7 @@
 		{#each $cartItems as cartItem}
 			<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
 				<div
-					class="flex gap-3 items-center rounded-lg mb-3 p-3 relative dark:bg-[#202020] hover:dark:bg-[#252525]"
+					class="flex gap-3 items-center rounded-lg mb-3 p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
 				>
 					<img
 						class="w-12 h-12 object-cover rounded-sm mr-2"
@@ -67,7 +67,7 @@
 					<div class="flex w-full mx-7 justify-between">
 						<div class="flex gap-5 items-center">
 							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-							<p class="text-base text-white">${cartItem.price}</p>
+							<p class="text-base dark:text-white">${cartItem.price}</p>
 						</div>
 					</div>
 				</div>
@@ -76,7 +76,7 @@
 	</div>
 
 	<div class="flex flex-col items-center w-2/5 h-full mx-2">
-		<div class="dark:bg-[#202020] w-10/12 h-5/6 m-3 p-3 rounded-lg">
+		<div class="bg-gray-200 dark:bg-[#202020] w-10/12 h-5/6 m-3 p-3 rounded-lg">
 			<h3 class="text-md font-semibold">Shipping Info</h3>
 			<div class="flex justify-between gap-2">
 				<h3>Address:</h3>
@@ -122,7 +122,7 @@
 		<!-- Cofirm Button -->
 			<!-- Shipping Submit -->
 			<button
-				class="h-10 w-10/12 mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
+				class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
         on:click={() => handleSubmitPayment()}
 			>
 				Confirm Payment
