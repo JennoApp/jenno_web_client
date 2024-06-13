@@ -64,7 +64,7 @@
 	<title>ShopIn</title>
 </svelte:head>
 
-<div class="fixed top-12 flex items-center dark:bg-[#121212] gap-3 md:w-full h-12 px-4 md:px-5 my-1 z-20">
+<div class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 md:w-full h-12 px-0 my-1 z-20">
 	{#each list as l}
 		<button
 			class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"

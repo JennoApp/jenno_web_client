@@ -143,7 +143,7 @@
 
 			<!-- Center -->
 			<div class="hidden md:block">
-				<div class="flex md:w-[600px] h-10 relative cursor-pointer">
+				<div class="flex w-full max-w-sm md:max-w-md lg:max-w-xl h-10 relative cursor-pointer">
 					<form on:submit|preventDefault={handleSearch} class="flex md:w-[600px] h-10">
 						{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
 							<div
@@ -154,7 +154,7 @@
 						{/if}
 						<input
 							id="searchInput"
-							class="flex items-center md:w-full h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
+							class="flex-grow h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
 								$page.url.pathname.split('/')[1]
 							)
 								? ''
@@ -361,15 +361,15 @@
 		</div>
 	</nav>
 
-	<div class="flex justify-center relative top-[50px] md:left-0">
+	<div class="flex justify-center relative top-[50px]">
     <div class="hidden md:block lg:block">
       <Sidebar closeMenu={isClose} />
     </div>
 
 		<main
 			class={!isClose
-				? 'relative top-0 md:left-52 md:w-[calc(100%-208px)]'
-				: 'relative top-0 md:left-20 md:w-[calc(100%-80px)]'}
+				? 'relative top-0 md:left-20 md:w-[calc(100%-208px)] px-3'
+				: 'relative top-0 md:left-7 md:w-[calc(100%-80px)] px-3'}
 		>
 			<slot />
 		</main>
