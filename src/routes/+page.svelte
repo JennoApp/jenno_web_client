@@ -22,7 +22,7 @@
 		products = [...products, newData.data];
 
 		// incrementar el numero de pagina para la siguiente carga
-			page++;
+		page++;
 
 		return newData;
 	};
@@ -49,25 +49,33 @@
 	});
 	/////////
 
-
-  const list = ['All', 'Electrodomesticos', 'Electronica', 'Salud y Belleza', 'Libros', 'Entretenimiento', 'Automotriz']
-
+	const list = [
+		'All',
+		'Electrodomesticos',
+		'Electronica',
+		'Salud',
+		'Libros',
+		'Entretenimiento',
+		'Automotriz'
+	];
 </script>
 
 <svelte:head>
 	<title>ShopIn</title>
 </svelte:head>
 
-<div class="fixed top-12 flex items-center dark:bg-[#121212] gap-3 w-full h-12 px-5 my-1 z-20">
-  {#each list as l}
-    <button
-		class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		>{l}</button
-	>   
-  {/each}
+<div class="fixed top-12 flex items-center dark:bg-[#121212] gap-3 md:w-full h-12 px-4 md:px-5 my-1 z-20">
+	{#each list as l}
+		<button
+			class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
+			>{l}</button
+		>
+	{/each}
 </div>
 
-<div class="grid lg:grid-cols-4 sm:grid-cols-3 mx-5 mt-14 gap-5 grid-flow-row">
+<div
+	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
+>
 	{#each products as productData}
 		<Card data={productData} />
 	{/each}
@@ -78,4 +86,3 @@
 {#if data.meta.hasNextPage}
 	<div bind:this={loadingRef}>Loading...</div>
 {/if}
-

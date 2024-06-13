@@ -112,15 +112,18 @@
 {#if !paths.includes($page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
-		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] w-full h-14 px-7">
+		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14  px-4 md:px-7">
 			<!-- Left -->
 			<div class="flex items-center">
-				<button
+        <div class="hidden md:block lg:block">
+          <button
 					class="flex justify-center items-center dark:text-white text-xl mr-6"
 					on:click={handleIsClose}
 				>
 					<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
 				</button>
+        </div>
+				
 
 				<a href="/">
 					<div class="relative flex gap-1">
@@ -139,9 +142,9 @@
 			</div>
 
 			<!-- Center -->
-			<div>
-				<div class="flex w-[600px] h-10 relative cursor-pointer">
-					<form on:submit|preventDefault={handleSearch} class="flex w-[600px] h-10">
+			<div class="hidden md:block">
+				<div class="flex md:w-[600px] h-10 relative cursor-pointer">
+					<form on:submit|preventDefault={handleSearch} class="flex md:w-[600px] h-10">
 						{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
 							<div
 								class="flex items-center rounded-l-2xl h-10 px-2 dark:text-white font-medium bg-gray-200 dark:bg-[#202020] cursor-default"
@@ -151,7 +154,7 @@
 						{/if}
 						<input
 							id="searchInput"
-							class="flex items-center w-full h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
+							class="flex items-center md:w-full h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
 								$page.url.pathname.split('/')[1]
 							)
 								? ''
@@ -358,15 +361,19 @@
 		</div>
 	</nav>
 
-	<div class="flex relative top-[50px] left-0">
-		<Sidebar closeMenu={isClose} />
+	<div class="flex justify-center relative top-[50px] md:left-0">
+    <div class="hidden md:block lg:block">
+      <Sidebar closeMenu={isClose} />
+    </div>
+
 		<main
 			class={!isClose
-				? 'relative top-0 left-52 w-[calc(100%-208px)]'
-				: 'relative top-0 left-20 w-[calc(100%-80px)]'}
+				? 'relative top-0 md:left-52 md:w-[calc(100%-208px)]'
+				: 'relative top-0 md:left-20 md:w-[calc(100%-80px)]'}
 		>
 			<slot />
 		</main>
+
 		{#if isActiveSearchInput}
 			{#if autocompleteOptions.length > 0}
 				<Autocomplete options={autocompleteOptions} {selectedIndex} {selectOption} />
