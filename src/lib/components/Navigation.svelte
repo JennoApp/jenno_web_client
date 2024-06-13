@@ -107,6 +107,14 @@
   function setTheme(newTheme: string) {
 		theme.set(newTheme);
 	}
+
+  //////
+  let isSearchOpen = false
+
+  const openSearh = () => {
+    isSearchOpen = !isSearchOpen
+    alert(`search open: ${isSearchOpen}`)
+  }
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -141,7 +149,7 @@
 				</a>
 			</div>
 
-			<!-- Center -->
+			<!-- Center (hidden in small screens) -->
 			<div class="hidden md:block">
 				<div class="flex w-full max-w-sm md:max-w-md lg:max-w-xl h-10 relative cursor-pointer">
 					<form on:submit|preventDefault={handleSearch} class="flex md:w-[600px] h-10">
@@ -177,7 +185,14 @@
 			</div>
 
 			<!-- Right -->
-			<div>
+			<div class="flex items-center gap-3">
+        <!-- Search Icon for small screens -->
+        <div class="md:hidden">
+          <button class="flex justify-center items-center h-9 w-9 bg-gray-200 dark:bg-[#202020] rounded-full dark:text-gray-200 text-xl" on:click={() => openSearh()}>
+            <iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"></iconify-icon>
+          </button>
+        </div>
+
 				{#if userInfo}
 					<div class="flex items-center gap-3">
 						<div>
