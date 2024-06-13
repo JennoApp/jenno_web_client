@@ -1,4 +1,5 @@
 <script>
+  import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 	import '../app.css';
 	import 'iconify-icon';
 	import Navigation from '$lib/components/Navigation.svelte';
@@ -14,6 +15,8 @@
       console.log("Successful connect to socket")
     })
   })*/
+
+  injectSpeedInsights()
 
   $: {
     setupTheme()
