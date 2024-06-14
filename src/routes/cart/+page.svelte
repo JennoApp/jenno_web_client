@@ -37,9 +37,9 @@
 	<div>
 		<h1 class="text-2xl m-5">Shopping Cart</h1>
 	</div>
-	<div class="flex">
+	<div class="flex flex-col md:flex-row gap-3">
 		<!-- Shopping cart List -->
-		<div class="mx-5 w-4/6">
+		<div class="mx-5 md:w-4/6">
 			{#each $cartItems as cartItem}
 				<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
 					<div
@@ -87,7 +87,7 @@
 		</div>
 
 		<!-- Shopping cart Order Summary -->
-		<div class="w-2/6 h-auto mr-5 p-2 bg-gray-200 dark:bg-[#202020] rounded-sm">
+		<div class="md:w-2/6 h-auto md:mr-5 p-2 bg-gray-200 dark:bg-[#202020] rounded-sm">
 			<h2 class="text-lg">Order Summary</h2>
 			<Table.Root>
 				<Table.Header>
