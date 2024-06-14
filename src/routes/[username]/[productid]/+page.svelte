@@ -96,8 +96,8 @@
   $: console.log($cartItems)
 </script>
 
-<div class="flex flex-row gap-3 p-7">
-	<div class="flex flex-col w-1/2">
+<div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
+	<div class="flex flex-col w-full md:w-1/2">
 		<div class="flex justify-center items-center">
 			<Carousel.Root
 				class="w-5/6"
@@ -125,7 +125,7 @@
 			<Carousel.Root id="carousel2" class="w-full max-w-sm">
 				<Carousel.Content class="-ml-1">
 					{#each product.imgs as image, i (i)}
-						<Carousel.Item class="md:basis-1/2 lg:basis-1/3">
+						<Carousel.Item class="basis-1/3">
 							<div class="flex justify-center">
 								<button class="pl-1 w-11/12 h-24" on:click|preventDefault={() => syncCarousel(i)}>
 									<img
@@ -144,7 +144,7 @@
 		</div>
 	</div>
 
-	<div class="flex flex-col justify-between w-1/2 ml-2">
+	<div class="flex flex-col justify-between w-full md:w-1/2 ml-2">
 		<div class="flex justify-between">
 			<div>
 				<h1 class="text-3xl">{product?.productname}</h1>

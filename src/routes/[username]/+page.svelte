@@ -66,13 +66,14 @@
 	};
 </script>
 
+
 {#if userData}
 	{#await userData}
 		<p>Waiting...</p>
 	{:then user}
 		<!-- user Information -->
-		<div class="flex mt-5 w-full h-48">
-			<div class="flex justify-center w-3/12">
+		<div class="flex flex-col md:flex-row gap-3 mt-5 w-full">
+			<div class="flex justify-center md:w-3/12">
 				{#if user?.profileImg}
 					<img
 						class="w-32 h-32 object-cover rounded-full"
@@ -88,7 +89,7 @@
 				{/if}
 			</div>
 
-			<div class="w-5/12">
+			<div class="mx-5 md:w-5/12">
 				<div class="flex flex-col gap-3 items-start">
 					<h2 class="text-2xl font-medium">{user?.username}</h2>
 					<p class="flex flex-wrap">
@@ -97,7 +98,7 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col items-center gap-5 w-4/12">
+			<div class="flex flex-col items-center gap-5 md:w-4/12">
 				<div class="flex items-center gap-5 ml-10">
 					{#if !(user?._id === data?.user?._id)}
 						{#if data?.user?.following.includes(user?._id)}
@@ -141,7 +142,7 @@
 	<h1>El usuario no existe</h1>
 {/if}
 
-<div class="grid lg:grid-cols-4 sm:grid-cols-3 m-5 gap-5 grid-flow-row">
+<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
 	{#each products as productData}
 		<Card data={productData} />
 	{/each}

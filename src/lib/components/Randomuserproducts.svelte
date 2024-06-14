@@ -22,7 +22,7 @@
 </script>
 
 {#if products !== undefined}
-	<div class="grid lg:grid-cols-4 sm:grid-cols-3 m-10 gap-5 grid-flow-row">
+	<div class="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 m-10 gap-5 grid-flow-row">
 		{#each products as productData}
 			<Card data={productData} />
 		{/each}
