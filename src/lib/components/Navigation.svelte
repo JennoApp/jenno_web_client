@@ -383,8 +383,8 @@
 
 		<main
 			class={!isClose
-				? 'relative top-0 md:left-20 md:w-[calc(100%-208px)] px-3'
-				: 'relative top-0 md:left-7 md:w-[calc(100%-80px)] px-3'}
+				? 'relative top-0 md:left-20 w-full md:w-[calc(100%-208px)] px-3'
+				: 'relative top-0 md:left-7 w-full md:w-[calc(100%-80px)] px-3'}
 		>
 			<slot />
 		</main>

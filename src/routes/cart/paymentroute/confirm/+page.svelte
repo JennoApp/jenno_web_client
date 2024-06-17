@@ -52,8 +52,8 @@
 	$: console.log(shippingData);
 </script>
 
-<div class="flex w-8/12 mx-auto mt-5">
-	<div class="w-3/5 p-3">
+<div class="flex flex-col lg:flex-row md:w-3/5 lg:w-8/12 mx-auto mt-5">
+	<div class="lg:w-3/5 p-3">
 		{#each $cartItems as cartItem}
 			<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
 				<div
@@ -75,8 +75,8 @@
 		{/each}
 	</div>
 
-	<div class="flex flex-col items-center w-2/5 h-full mx-2">
-		<div class="bg-gray-200 dark:bg-[#202020] w-10/12 h-5/6 m-3 p-3 rounded-lg">
+	<div class="flex flex-col items-center lg:w-2/5 h-full mx-2">
+		<div class="bg-gray-200 dark:bg-[#202020] w-full lg:w-10/12 h-5/6 m-3 p-3 rounded-lg">
 			<h3 class="text-md font-semibold">Shipping Info</h3>
 			<div class="flex justify-between gap-2">
 				<h3>Address:</h3>
