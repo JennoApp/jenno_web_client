@@ -8,7 +8,7 @@
 </script>
 
 
-<div class="flex gap-3 items-center m-10 mt-20 w-1/2">
+<div class="flex gap-3 items-center m-10 w-1/2">
 	<h3 class="font-medium">Tema:</h3>
 	<Select.Root>
 		<Select.Trigger>

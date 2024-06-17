@@ -1,1 +1,0 @@
-<h1>Legal Page !!!</h1>
