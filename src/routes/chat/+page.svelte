@@ -188,7 +188,7 @@
 					<!-- Chatbox Body -->
 					<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
 						{#each messages as message}
-							<Message own={message?.sender === $page.data.user._id} {message} />
+							<Message own={message?.sender === $page.data.user._id} friendId={currentChat?.members[1]} {message} />
 						{/each}
 					</div>
 
