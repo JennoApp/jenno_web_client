@@ -3,7 +3,6 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as HoverCard from '$lib/components/ui/hover-card';
-	import * as Command from '$lib/components/ui/command';
 	import { toast } from 'svelte-sonner';
 	import Sidebar from './Sidebar.svelte';
 	import {
@@ -17,7 +16,8 @@
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
-  import { theme } from '$lib/stores/themeStore'
+	import { theme } from '$lib/stores/themeStore';
+	import * as Dialog from '$lib/components/ui/dialog';
 
 	const rutasExcluidas = [
 		'',
@@ -43,10 +43,12 @@
 		if (searchInputValue !== '') {
 			if (!rutasExcluidas.includes($page.url.pathname.split('/')[1])) {
 				setSearch(searchInputValue);
+        dialogOpen = false
 				goto(`/${$page.url.pathname.split('/')[1]}/search`);
 			} else {
 				setSearch(searchInputValue);
 				console.log($search);
+        dialogOpen = false
 				goto('/search');
 			}
 		}
@@ -104,41 +106,40 @@
 		alert(option);
 	}
 
-  function setTheme(newTheme: string) {
+	function setTheme(newTheme: string) {
 		theme.set(newTheme);
 	}
 
-  //////
-  let isSearchOpen = false
+	//////
+	let isSearchOpen = false;
 
-  const openSearh = () => {
-    isSearchOpen = !isSearchOpen
-    alert(`search open: ${isSearchOpen}`)
-  }
+	const openSearh = () => {
+		isSearchOpen = !isSearchOpen;
+		alert(`search open: ${isSearchOpen}`);
+	};
+
+  let dialogOpen = false
 </script>
 
 {#if !paths.includes($page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
-		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14  px-4 md:px-7">
+		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-7">
 			<!-- Left -->
 			<div class="flex items-center">
-        <div class="hidden md:block lg:block">
-          <button
-					class="flex justify-center items-center dark:text-white text-xl mr-6"
-					on:click={handleIsClose}
-				>
-					<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
-				</button>
-        </div>
-				
+				<div class="hidden md:block lg:block">
+					<button
+						class="flex justify-center items-center dark:text-white text-xl mr-6"
+						on:click={handleIsClose}
+					>
+						<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
+					</button>
+				</div>
 
 				<a href="/">
 					<div class="relative flex gap-1">
 						<div class="flex">
-							<h1 class="text-xl font-extrabold dark:text-gray-100">
-								Shop
-							</h1>
+							<h1 class="text-xl font-extrabold dark:text-gray-100">Shop</h1>
 							<span class="text-xl font-extrabold text-purple-600">In</span>
 							<span
 								class="absolute top-4 right-[-25px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
@@ -186,12 +187,53 @@
 
 			<!-- Right -->
 			<div class="flex items-center gap-3">
-        <!-- Search Icon for small screens -->
-        <div class="md:hidden">
-          <button class="flex justify-center items-center h-9 w-9 bg-gray-200 dark:bg-[#202020] rounded-full dark:text-gray-200 text-xl" on:click={() => openSearh()}>
-            <iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"></iconify-icon>
-          </button>
-        </div>
+				<!-- Search Icon for small screens -->
+				<div class="md:hidden">
+					<Dialog.Root bind:open={dialogOpen}>
+						<Dialog.Trigger>
+							<button
+								class="flex justify-center items-center h-9 w-9 bg-gray-200 dark:bg-[#202020] rounded-full dark:text-gray-200 text-xl"
+							>
+								<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
+								></iconify-icon>
+							</button>
+						</Dialog.Trigger>
+						<Dialog.Content class="top-10 w-full m-0 px-0 py-1">
+							<form on:submit|preventDefault={handleSearch} class="flex w-full">
+								{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
+									<div
+										class="flex items-center rounded-l-2xl h-10 px-2 dark:text-white font-medium bg-gray-200 dark:bg-[#202020] cursor-default"
+									>
+										{$page.url.pathname.split('/')[1]}
+									</div>
+								{/if}
+								<input
+									id="searchInput"
+									class="flex-grow h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
+										$page.url.pathname.split('/')[1]
+									)
+										? ''
+										: 'border-r-0 rounded-l-2xl'}"
+									type="text"
+									placeholder="Search"
+									name="search"
+									autocomplete="off"
+									bind:value={searchInputValue}
+									on:click={activeSearchInput}
+								/>
+								<div
+									class="grid place-items-center text-2xl dark:text-white w-16 h-full bg-gray-200 dark:bg-[#202020] border border-gray-200 dark:border-[#222222] rounded-r-2xl"
+								>
+									<iconify-icon
+										icon="material-symbols:search-rounded"
+										height="1.5rem"
+										width="1.5rem"
+									></iconify-icon>
+								</div>
+							</form>
+						</Dialog.Content>
+					</Dialog.Root>
+				</div>
 
 				{#if userInfo}
 					<div class="flex items-center gap-3">
@@ -214,14 +256,13 @@
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
 
-                {#if $cartItems.length !== 0}
-                  <span
-									class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
-								>
-									{$cartItems.length}
-								</span>
-                {/if}
-								
+								{#if $cartItems.length !== 0}
+									<span
+										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+									>
+										{$cartItems.length}
+									</span>
+								{/if}
 							</HoverCard.Trigger>
 							<HoverCard.Content class="flex flex-col gap-2 w-80">
 								{#if $cartItems.length === 0}
@@ -253,7 +294,9 @@
 														<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"
 														></iconify-icon>
 													</button>
-													<span class="mx-2 text-black dark:text-white font-medium">{cartItem.amount}</span>
+													<span class="mx-2 text-black dark:text-white font-medium"
+														>{cartItem.amount}</span
+													>
 													<button
 														on:click|preventDefault={() => addToCart(cartItem)}
 														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
@@ -339,15 +382,18 @@
 										<span>Ajustes</span>
 									</DropdownMenu.Item>
 
-                  
-                  <DropdownMenu.Sub>
-                    <DropdownMenu.SubTrigger>Tema</DropdownMenu.SubTrigger>
-                    <DropdownMenu.SubContent>
-                      <DropdownMenu.Item on:click={() => setTheme('light')}>Claro</DropdownMenu.Item>
-                      <DropdownMenu.Item on:click={() => setTheme('dark')}>Oscuro</DropdownMenu.Item>
-                      <DropdownMenu.Item on:click={() => setTheme('system')}>Sistema</DropdownMenu.Item>
-                    </DropdownMenu.SubContent>
-                  </DropdownMenu.Sub>
+									<DropdownMenu.Sub>
+										<DropdownMenu.SubTrigger>Tema</DropdownMenu.SubTrigger>
+										<DropdownMenu.SubContent>
+											<DropdownMenu.Item on:click={() => setTheme('light')}>Claro</DropdownMenu.Item
+											>
+											<DropdownMenu.Item on:click={() => setTheme('dark')}>Oscuro</DropdownMenu.Item
+											>
+											<DropdownMenu.Item on:click={() => setTheme('system')}
+												>Sistema</DropdownMenu.Item
+											>
+										</DropdownMenu.SubContent>
+									</DropdownMenu.Sub>
 
 									<DropdownMenu.Item on:click={() => logout()}>
 										<span>Cerrar Sesion</span>
@@ -377,9 +423,9 @@
 	</nav>
 
 	<div class="flex justify-center relative top-[50px]">
-    <div class="hidden md:block lg:block">
-      <Sidebar closeMenu={isClose} />
-    </div>
+		<div class="hidden md:block lg:block">
+			<Sidebar closeMenu={isClose} />
+		</div>
 
 		<main
 			class={!isClose

@@ -28,7 +28,7 @@
 	<h1>No ahi productos que considan con la busquedad: "{$search}"</h1>	
 {/if}
 
-<div class="grid lg:grid-cols-4 sm:grid-cols-3 mx-5 mt-14 gap-5 grid-flow-row">
+<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0">
 	{#each productsSearch as productData}
 		<Card data={productData}/>
 	{/each}
