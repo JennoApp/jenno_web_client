@@ -3,7 +3,7 @@
 	import Bar from '$lib/components/Bar.svelte';
 </script>
 
-<div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-4">
+<div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-3">
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 			<Card.Title class="text-md font-medium">Total Revenue</Card.Title>
@@ -34,17 +34,6 @@
 		<Card.Content>
 			<div class="text-2xl font-bold">+12,234</div>
 			<p class="text-xs text-muted-foreground">+19% from last month</p>
-		</Card.Content>
-	</Card.Root>
-
-	<Card.Root>
-		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-sm font-medium">Active Now</Card.Title>
-			<iconify-icon icon="tabler:activity" height="1.5rem" width="1.5rem"></iconify-icon>
-		</Card.Header>
-		<Card.Content>
-			<div class="text-2xl font-bold">+573</div>
-			<p class="text-xs text-muted-foreground">+201 since last hour</p>
 		</Card.Content>
 	</Card.Root>
 </div>
