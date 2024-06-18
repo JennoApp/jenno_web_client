@@ -52,7 +52,7 @@
 		<div class="flex">
 			{#if friendImg?.profileImg !== ''}
 				<img
-					src={friendId?.profileImg}
+					src={friendImg?.profileImg}
 					alt=""
 					class="w-8 h-8 rounded-full object-cover mr-3"
 				/>

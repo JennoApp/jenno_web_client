@@ -134,6 +134,13 @@
 
 	////
 	let isSmallview: boolean = false;
+  
+  let friendId: string
+
+  $: if (currentChat !== null) {
+    friendId = currentChat.members.find((member: any) => member !== $page.data.user._id)
+    console.log(friendId)
+  }
 </script>
 
 <div class="flex m-0 p-0">
@@ -188,7 +195,7 @@
 					<!-- Chatbox Body -->
 					<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
 						{#each messages as message}
-							<Message own={message?.sender === $page.data.user._id} friendId={currentChat?.members[1]} {message} />
+							<Message own={message?.sender === $page.data.user._id} friendId={friendId} {message} />
 						{/each}
 					</div>
 
