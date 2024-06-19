@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 	import '../app.css';
 	import 'iconify-icon';
@@ -6,9 +6,9 @@
 	import { Toaster } from 'svelte-sonner';
 	import { ParaglideJS } from '@inlang/paraglide-js-adapter-sveltekit';
 	import { i18n } from '$lib/i18n';
-  import { onMount } from 'svelte'  
 	import socket from '$lib/socket/index';
   import { setupTheme } from '$lib/theme'
+  import { addIpAddress, addLocationData, location_data } from '$lib/stores/ipaddressStore'
 
   /*onMount(() => {
     socket.on("connect", () => {
@@ -21,6 +21,18 @@
   $: {
     setupTheme()
   }
+
+  export let data
+
+  $: {
+    addIpAddress(data.clientAddress as string)
+    addLocationData(data.locationData as Object)
+  }
+
+
+  $: console.log({locationData: $location_data})
+  // $: console.log(data.locationData)
+
 </script>
 
 

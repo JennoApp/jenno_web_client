@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ fetch, url}) => {
+export const load: PageServerLoad = async ({ fetch, url, getClientAddress}) => {
 
   const limit: number = 20
   
@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ fetch, url}) => {
     }
   }
 
-
+  
   const { data, meta } = await response.json()
 
   return {
@@ -21,3 +21,4 @@ export const load: PageServerLoad = async ({ fetch, url}) => {
     meta
   }
 }
+

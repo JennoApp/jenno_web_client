@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { PageServerData } from './$types';
+	import type { PageServerData, RequestEvent } from './$types';
 	import Card from '$lib/components/Card.svelte';
 	import { onMount } from 'svelte';
 
 	export let data: PageServerData;
-
+  
 	let products: any[] = data.products;
 	let page = 1;
 
