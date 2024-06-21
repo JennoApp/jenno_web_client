@@ -10,7 +10,7 @@ export async function load({ locals, getClientAddress, fetch }) {
   }
 
     // fetch location data
-  const locationResponse = await fetch(`https://ipapi.co/${requestIp}/json`)
+  const locationResponse = await fetch(`https://ipapi.co/181.61.209.148/json`)
   const locationData = await locationResponse.json()
    
 

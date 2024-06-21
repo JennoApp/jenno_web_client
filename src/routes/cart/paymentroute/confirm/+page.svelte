@@ -3,6 +3,8 @@
 	import { page } from '$app/stores';
   import { Separator } from '$lib/components/ui/separator'
   import { toast } from 'svelte-sonner'
+  import { formatPrice } from '$lib/utils/formatprice'
+
 	let shippingData = $page.data?.user?.shippingInfo;
 
   function getTotalFormatted() {
@@ -67,7 +69,7 @@
 					<div class="flex w-full mx-7 justify-between">
 						<div class="flex gap-5 items-center">
 							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-							<p class="text-base dark:text-white">${cartItem.price}</p>
+							<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
 						</div>
 					</div>
 				</div>
@@ -111,12 +113,12 @@
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>Delivery price</h3>
-				<p>${1212425}</p>
+				<p>{formatPrice(1212, 'es-CO', 'COP')}</p>
 			</div>
       <Separator class="bg-[#707070] my-1"/>
 			<div class="flex justify-between gap-2">
 				<h3 class="font-bold">Payment amount</h3>
-				<p>${1212545}</p>
+				<p>{getTotalFormatted()}</p>
 			</div>
 		</div>
 		<!-- Cofirm Button -->

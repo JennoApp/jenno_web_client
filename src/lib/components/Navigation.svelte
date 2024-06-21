@@ -143,7 +143,11 @@
 							<h1 class="text-xl font-extrabold dark:text-gray-100">Shop</h1>
 							<span class="text-xl font-extrabold text-purple-600">In</span>
 							<span
-								class="absolute top-4 right-[-25px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
+								class="absolute top-4 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
+								>{$page.data.locationData.country_code}</span
+							>
+              <span
+								class="absolute top-4 right-[-50px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
 								>beta</span
 							>
 						</div>

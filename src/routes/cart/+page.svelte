@@ -124,7 +124,7 @@
 				<!-- Close Icon -->
 				<iconify-icon icon="tabler:map-pin-filled" height="1.5rem" width="1.5rem"></iconify-icon>
 				<h3 class="ml-1">Deliver to</h3>
-				<h3 class="ml-1 font-bold">Bogota - Colombia</h3>
+				<h3 class="ml-1 font-bold">{$page.data.locationData.country_name}</h3>
 			</div>
 
 			<!-- Amount and tax -->

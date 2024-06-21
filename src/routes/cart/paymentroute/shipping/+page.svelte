@@ -12,7 +12,7 @@
 
   $: if (form?.success) {
     toast.success("Informacion guardada!!")
-    goto('/cart/paymentroute/payment') 
+    goto('/cart/paymentroute/confirm') 
   }
 </script>
 
@@ -22,7 +22,7 @@
 
 	<!-- Form -->
 	<form class="flex flex-col gap-2 min-w-xs w-96 mx-auto" action="?/shipping" method="POST" use:enhance>
-		Address Input
+		<!-- Address Input -->
 		<div class="flex flex-col">
 			<label for="address" class="text-base dark:text-gray-200 font-medium">Address</label>
 			<input
