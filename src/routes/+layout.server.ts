@@ -9,21 +9,15 @@ export async function load({ locals, getClientAddress, fetch }) {
     console.log('Error reading Ip')
   }
 
-  try {
     // fetch location data
   const locationResponse = await fetch(`https://ipapi.co/${requestIp}/json`)
   const locationData = await locationResponse.json()
-
-    return {
-      locationData: locationData
-    }
-  } catch (error) {
-    console.log(error)
-  } 
+   
 
   return {
     user: locals.user,
     sessionExpired: locals.sessionExpired,
-    clientAddress: requestIp
+    clientAddress: requestIp,
+    locationData: locationData 
   }
 }

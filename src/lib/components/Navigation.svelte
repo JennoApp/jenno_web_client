@@ -82,6 +82,7 @@
 	}
 
 	$: console.log($page.url.pathname);
+  $: console.log($page.data.user)
 
 	// logout function
 	const logout = async () => {

@@ -10,6 +10,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+  import { formatPrice } from '$lib/utils/formatprice'
 
 	/// Total reactivo basado en svelte/store
 	let total = getTotal();
@@ -53,7 +54,7 @@
 						<div class="flex w-full mx-7 justify-between">
 							<div class="flex gap-5 items-center">
 								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-								<p class="text-base dark:text-white">${cartItem.price}</p>
+								<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-CO', 'COP')}</p>
 							</div>
 
 							<div class="flex justify-center items-center mt-2 mr-14">
@@ -107,9 +108,9 @@
 								><a href={`/${cartItem.username}`} class="hover:underline">@{cartItem.username}</a
 								></Table.Cell
 							>
-							<Table.Cell>${cartItem.price}</Table.Cell>
+							<Table.Cell>{formatPrice(cartItem.price, 'es-CO', 'COP')}</Table.Cell>
 							<Table.Cell class="flex justify-center">{cartItem.amount}</Table.Cell>
-							<Table.Cell>${cartItem.price * cartItem.amount}</Table.Cell>
+							<Table.Cell>{formatPrice(cartItem.price * cartItem.amount, 'es-CO', 'COP')}</Table.Cell>
 						</Table.Row>
 					{/each}
 				</Table.Body>
@@ -129,17 +130,17 @@
 			<!-- Amount and tax -->
 			<div class="flex justify-between my-2 mt-5 mr-5">
 				<h3>Amount</h3>
-				<p>${total.toFixed(0)}</p>
+				<p>{formatPrice(Number(total.toFixed(0)), 'es-CO', 'COP')}</p>
 			</div>
 			<div class="flex justify-between my-2 mr-5">
 				<h3>Tax</h3>
-				<p>${(total * 0.15).toFixed(2)}</p>
+				<p>{formatPrice(Number((total * 0.15).toFixed(2)), 'es-CO', 'COP')}</p>
 			</div>
 
 			<!-- Total -->
 			<div class="flex justify-between my-2 mr-5 mt-5">
 				<h3>Order Total</h3>
-				<p>${total + total * 0.15}</p>
+				<p>{formatPrice(total + (total * 0.15), 'es-CO', 'COP')}</p>
 			</div>
 
 			<button
