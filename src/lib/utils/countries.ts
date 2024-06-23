@@ -1,4 +1,4 @@
-export const coutryList = [
+export const countryList = [
   "Afghanistan",
   "Albania",
   "Algeria",

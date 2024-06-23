@@ -64,7 +64,7 @@ export const actions: Actions = {
     const formData = Object.fromEntries(await request.formData())
 
     try {
-      const { businessname, email, name, lastname, taxid, password, verified_password } = registerBusinessSchema.parse(formData)
+      const { businessname, email, country, name, lastname, taxid, password, verified_password } = registerBusinessSchema.parse(formData)
 
       if (verified_password !== password) {
         return {
@@ -78,7 +78,7 @@ export const actions: Actions = {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username: businessname, email, name, lastname, taxid, password, accountType: 'business' })
+          body: JSON.stringify({ username: businessname, email, country, name, lastname, taxid, password, accountType: 'business' })
         })
 
         const result = await responseCreateUser.json()

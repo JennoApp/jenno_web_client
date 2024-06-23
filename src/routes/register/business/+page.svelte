@@ -4,10 +4,14 @@
 	import type { ActionData } from './$types';
 	import { goto } from '$app/navigation';
 	import * as Select from '$lib/components/ui/select';
-	import { coutryList } from '$lib/utils/countries';
-	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
+	import { countryList } from '$lib/utils/countries';
+  import { location_data } from '$lib/stores/ipaddressStore'
 
 	export let form: ActionData;
+
+  let selectedCountry: any = ''
+
+  // $: console.log({selectedCountry})
 
 	$: console.log(form?.success);
 
@@ -66,20 +70,23 @@
 		<!-- Country Input -->
 		<div class="flex flex-col">
 			<label for="email" class="text-base dark:text-gray-200 font-medium">Country</label>
-			<Select.Root>
+			<Select.Root onSelectedChange={(v) => {
+        selectedCountry = v?.value
+        }}>
 				<Select.Trigger>
-					<Select.Value placeholder="Escoge un Pais" />
+					<Select.Value placeholder="Escoge un Pais"/>
 				</Select.Trigger>	
 					<Select.Content class="overflow-y-auto max-h-[20rem]">
-						{#each coutryList as country}
+						{#each countryList as country}
 							<Select.Item value={`${country}`}>{country}</Select.Item>
 						{/each}
 					</Select.Content>
 			</Select.Root>
+      <input hidden name="country" bind:value={selectedCountry}>
 
 			<label for="country">
-				{#if form?.errors?.email}
-					<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
+				{#if form?.errors?.country}
+					<span class="dark:text-red-500 font-medium">{form?.errors?.country[0]}</span>
 				{/if}
 			</label>
 		</div>
