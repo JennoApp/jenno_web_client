@@ -12,6 +12,10 @@ const registerBusinessSchema = z.object({
     .min(1, { message: 'Email is required' })
     .max(64, { message: 'Email must be less than 64 characters' })
     .email({ message: 'Email nust be a valid email address' }),
+  country: z
+    .string({ required_error: 'Country is required' })
+    .min(1, { message: 'Country is required' })
+    .max(64, { message: 'Country must be less than 64 characters' }),
   // Legal Information
   name: z
     .string({ required_error: 'Name is required' })

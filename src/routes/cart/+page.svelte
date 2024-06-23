@@ -11,6 +11,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
   import { formatPrice } from '$lib/utils/formatprice'
+  import { location_data } from '$lib/stores/ipaddressStore'
 
 	/// Total reactivo basado en svelte/store
 	let total = getTotal();
@@ -120,12 +121,15 @@
 				<h3>Envio</h3>
 				<p>$0.00</p>
 			</div>
-			<div class="flex my-2 mr-5">
+
+      {#if $location_data !== undefined}
+        <div class="flex my-2 mr-5">
 				<!-- Close Icon -->
 				<iconify-icon icon="tabler:map-pin-filled" height="1.5rem" width="1.5rem"></iconify-icon>
 				<h3 class="ml-1">Deliver to</h3>
-				<h3 class="ml-1 font-bold">{$page.data.locationData.country_name}</h3>
-			</div>
+				<h3 class="ml-1 font-bold">{$location_data?.data[0].country}</h3>
+			</div>     
+      {/if}
 
 			<!-- Amount and tax -->
 			<div class="flex justify-between my-2 mt-5 mr-5">

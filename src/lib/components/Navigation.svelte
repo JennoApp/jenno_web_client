@@ -18,6 +18,7 @@
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { theme } from '$lib/stores/themeStore';
 	import * as Dialog from '$lib/components/ui/dialog';
+  import { location_data } from '$lib/stores/ipaddressStore'
 
 	const rutasExcluidas = [
 		'',
@@ -43,12 +44,12 @@
 		if (searchInputValue !== '') {
 			if (!rutasExcluidas.includes($page.url.pathname.split('/')[1])) {
 				setSearch(searchInputValue);
-        dialogOpen = false
+				dialogOpen = false;
 				goto(`/${$page.url.pathname.split('/')[1]}/search`);
 			} else {
 				setSearch(searchInputValue);
 				console.log($search);
-        dialogOpen = false
+				dialogOpen = false;
 				goto('/search');
 			}
 		}
@@ -82,7 +83,7 @@
 	}
 
 	$: console.log($page.url.pathname);
-  $: console.log($page.data.user)
+	$: console.log($page.data.user);
 
 	// logout function
 	const logout = async () => {
@@ -119,7 +120,7 @@
 		alert(`search open: ${isSearchOpen}`);
 	};
 
-  let dialogOpen = false
+	let dialogOpen = false;
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -142,12 +143,13 @@
 						<div class="flex">
 							<h1 class="text-xl font-extrabold dark:text-gray-100">Shop</h1>
 							<span class="text-xl font-extrabold text-purple-600">In</span>
+							{#if $location_data !== undefined}
+								<span
+									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
+									>{$location_data?.data[0]?.country_module?.global?.alpha2}</span>
+							{/if}
 							<span
-								class="absolute top-4 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
-								>{$page.data.locationData.country_code}</span
-							>
-              <span
-								class="absolute top-4 right-[-50px] text-gray-500 h-5 w-5 text-sm flex items-center justify-center"
+								class="absolute top-2 text-gray-500 h-5 w-5 text-sm flex items-center justify-center {$location_data !== undefined ? "right-[-50px]": "right-[-30px]"}"
 								>beta</span
 							>
 						</div>

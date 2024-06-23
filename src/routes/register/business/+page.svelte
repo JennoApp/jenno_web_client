@@ -3,14 +3,17 @@
 	import { toast } from 'svelte-sonner';
 	import type { ActionData } from './$types';
 	import { goto } from '$app/navigation';
+	import * as Select from '$lib/components/ui/select';
+	import { coutryList } from '$lib/utils/countries';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 
 	export let form: ActionData;
 
-	$: console.log(form?.success)
+	$: console.log(form?.success);
 
 	$: if (form?.success) {
-		toast.success("Usuario creado!")
-		goto('/')
+		toast.success('Usuario creado!');
+		goto('/');
 	}
 </script>
 
@@ -24,7 +27,9 @@
 	<form method="POST" action="?/business" class="flex-col gap-2 min-w-xs w-96 mx-auto" use:enhance>
 		<!-- Businessname Input -->
 		<div class="flex flex-col">
-			<label for="businessname" class="text-base dark:text-gray-200 font-medium">Businnes name</label>
+			<label for="businessname" class="text-base dark:text-gray-200 font-medium"
+				>Businnes name</label
+			>
 			<input
 				type="text"
 				name="businessname"
@@ -52,6 +57,27 @@
 				value={form?.data?.email ?? ''}
 			/>
 			<label for="username">
+				{#if form?.errors?.email}
+					<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
+				{/if}
+			</label>
+		</div>
+
+		<!-- Country Input -->
+		<div class="flex flex-col">
+			<label for="email" class="text-base dark:text-gray-200 font-medium">Country</label>
+			<Select.Root>
+				<Select.Trigger>
+					<Select.Value placeholder="Escoge un Pais" />
+				</Select.Trigger>	
+					<Select.Content class="overflow-y-auto max-h-[20rem]">
+						{#each coutryList as country}
+							<Select.Item value={`${country}`}>{country}</Select.Item>
+						{/each}
+					</Select.Content>
+			</Select.Root>
+
+			<label for="country">
 				{#if form?.errors?.email}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
 				{/if}
