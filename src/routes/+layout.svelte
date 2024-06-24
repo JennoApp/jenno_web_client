@@ -8,7 +8,7 @@
 	import { i18n } from '$lib/i18n';
 	import socket from '$lib/socket/index';
 	import { setupTheme } from '$lib/theme';
-	import { addIpAddress, addLocationData, location_data } from '$lib/stores/ipaddressStore';
+	import { addIpAddress, addLocationData, ip_address, location_data } from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
 
 	/*onMount(() => {
@@ -33,7 +33,7 @@
 	$: console.log({ locationData: $location_data });
 	// $: console.log(data.locationData)
 
-	const getLocationData = async () => {
+	const getLocationData = async (ip: string) => {
 		try {
 			const response = await fetch(
 				`http://api.positionstack.com/v1/reverse?access_key=e5d24e10dc3df5aff3692fa9db8665cf&query=181.61.209.148&country_module=1&limit=1`
@@ -51,7 +51,12 @@
 	};
 
 	onMount(() => {
-    getLocationData()
+    const storedIp = $ip_address
+    const storedLocationData = $location_data
+
+    if (!storedLocationData || storedIp !== data.clientAddress) {
+      getLocationData(data.clientAddress as string)
+    } 
     // addLocationData(locationData)
   });
 </script>

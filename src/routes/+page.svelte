@@ -2,6 +2,8 @@
 	import type { PageServerData, RequestEvent } from './$types';
 	import Card from '$lib/components/Card.svelte';
 	import { onMount } from 'svelte';
+	import { location_data } from '$lib/stores/ipaddressStore';
+	import { goto } from '$app/navigation';
 
 	export let data: PageServerData;
   
@@ -58,6 +60,22 @@
 		'Entretenimiento',
 		'Automotriz'
 	];
+
+  // country setup
+  let country = ''
+
+  $: {
+    if ($location_data && $location_data.data && $location_data.data[0].country) {
+      country = $location_data.data[0].country
+    }
+  }
+
+  onMount(() => {
+    if (country) {
+      goto(`/?country=${country}`, { replaceState: true })
+    }
+  })
+
 </script>
 
 <svelte:head>

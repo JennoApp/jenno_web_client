@@ -1,10 +1,11 @@
 import type { PageServerLoad } from './$types'
+import { location_data } from '$lib/stores/ipaddressStore'
 
-export const load: PageServerLoad = async ({ fetch, url, getClientAddress}) => {
-
+export const load: PageServerLoad = async ({ fetch, url }) => {
+  const country = url.searchParams.get('country') || ''
   const limit: number = 20
   
-  const response = await fetch(`http://localhost:3000/products?page=${1}&limit=${limit}`)
+  const response = await fetch(`http://localhost:3000/products?page=${1}&limit=${limit}&country=${country}`)
 
   if (!response.ok) {
     return {
