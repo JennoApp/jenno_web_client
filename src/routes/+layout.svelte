@@ -9,7 +9,6 @@
 	import socket from '$lib/socket/index';
 	import { setupTheme } from '$lib/theme';
 	import { addIpAddress, addLocationData, ip_address, location_data } from '$lib/stores/ipaddressStore';
-	import { onMount } from 'svelte';
 
 	/*onMount(() => {
     socket.on("connect", () => {
@@ -24,6 +23,8 @@
 	}
 
 	export let data;
+  const storedIp = $ip_address
+  let storedLocationData = $location_data
 
 	$: {
 		addIpAddress(data.clientAddress as string);
@@ -50,15 +51,14 @@
 		}
 	};
 
-	onMount(() => {
-    const storedIp = $ip_address
-    const storedLocationData = $location_data
-
-    if (!storedLocationData || storedIp !== data.clientAddress) {
+	$: if (!storedLocationData || storedIp !== data.clientAddress) {
       getLocationData(data.clientAddress as string)
-    } 
+
+    // if (!storedLocationData || storedIp !== data.clientAddress) {
+      // getLocationData(data.clientAddress as string)
+    // } 
     // addLocationData(locationData)
-  });
+  }
 </script>
 
 <svelte:head>

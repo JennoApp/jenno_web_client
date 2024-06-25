@@ -4,14 +4,18 @@
 	import { Button } from '$lib/components/ui/button';
 	import type { PageServerData } from './$types';
 	import { toast } from 'svelte-sonner';
+  import { location_data } from '$lib/stores/ipaddressStore'
 
 	export let data: PageServerData;
 
 	$: dataStatus = data.status;
 	$: userData = data.userData;
+  $: console.log($location_data)
+
 	let products: any[] = [];
 
-	$: console.log({ isSession: $page.data.isSession });
+  // $: console.log({products})
+	// $: console.log({ isSession: $page.data.isSession });
 
 	async function loadUserData(userId: string) {
 		const response = await fetch(`http://localhost:3000/users/${userId}`);
@@ -19,10 +23,16 @@
 		userData = user;
 	}
 
-	async function loadProducts(userId: string) {
-		const response = await fetch(`http://localhost:3000/products/user/${userId}`);
-		const { data } = await response.json();
-		products = data;
+	async function loadProducts(userId: any, country?: string) {
+    const limit: number = 20
+    try {
+      const response = await fetch(`http://localhost:3000/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`);
+		  const { data } = await response.json();
+		  
+      products = data;
+    } catch (error) {
+      console.log('Error al cargar los productos del usuario: ', error)
+    }	
 	}
 
 	// Carga los datos si el resutaldo del data.Status es diferente a 500
@@ -30,7 +40,10 @@
 		console.log('usuario no existe');
 		products = []; // vacia la lista de productos cuando el usuario no existe
 	} else {
-		loadProducts(data.userData._id);
+    if ($location_data) {
+
+    }
+		loadProducts(data.userData._id, $location_data.data[0].country);
 	}
 
 	$: console.log({ userData });
@@ -135,15 +148,18 @@
 		<p class="text-red-500">{error.message}</p>
 	{/await}
 
-	<!-- Error al encontrar la informacion del usuario -->
-{:else if data?.userData?.error}
-	<h1>{data?.userData?.error}</h1>
-{:else}
-	<h1>El usuario no existe</h1>
-{/if}
 
+<!-- Lista de prod -->
 <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
 	{#each products as productData}
 		<Card data={productData} />
 	{/each}
 </div>
+
+
+<!-- Error al encontrar la informacion del usuario -->
+{:else if data?.userData?.error}
+	<h1>{data?.userData?.error}</h1>
+{:else}
+	<h1>El usuario no existe</h1>
+{/if}

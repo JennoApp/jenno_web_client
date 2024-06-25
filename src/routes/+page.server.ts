@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types'
-import { location_data } from '$lib/stores/ipaddressStore'
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
   const country = url.searchParams.get('country') || ''
