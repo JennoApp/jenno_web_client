@@ -9,6 +9,7 @@
 	import socket from '$lib/socket/index';
 	import { setupTheme } from '$lib/theme';
 	import { addIpAddress, addLocationData, ip_address, location_data } from '$lib/stores/ipaddressStore';
+	import { onMount } from 'svelte';
 
 	/*onMount(() => {
     socket.on("connect", () => {
@@ -23,13 +24,28 @@
 	}
 
 	export let data;
-  const storedIp = $ip_address
-  let storedLocationData = $location_data
 
-	$: {
-		addIpAddress(data.clientAddress as string);
-		// addLocationData(data.locationData as Object);
-	}
+  let storedIp: string | null = null
+  let storedLocationData: any | null = null
+
+  // Recuperar los datos del store
+  $: {
+    ip_address.subscribe(value => {
+      storedIp = value
+    })
+
+    location_data.subscribe(value => {
+      storedLocationData = value
+    })
+  }
+
+  // const storedIp = $ip_address
+  // let storedLocationData = $location_data
+
+	// $: {
+	// 	addIpAddress(data.clientAddress as string);
+	// 	// addLocationData(data.locationData as Object);
+	// }
 
 	$: console.log({ locationData: $location_data });
 	// $: console.log(data.locationData)
@@ -51,14 +67,23 @@
 		}
 	};
 
-	$: if (!storedLocationData || storedIp !== data.clientAddress) {
-      getLocationData(data.clientAddress as string)
+	// $: if (!storedLocationData || storedIp !== data.clientAddress) {
+  //     getLocationData(data.clientAddress as string)
 
-    // if (!storedLocationData || storedIp !== data.clientAddress) {
-      // getLocationData(data.clientAddress as string)
-    // } 
-    // addLocationData(locationData)
-  }
+  //   // if (!storedLocationData || storedIp !== data.clientAddress) {
+  //     // getLocationData(data.clientAddress as string)
+  //   // } 
+  //   // addLocationData(locationData)
+  // }
+
+  onMount(() => {
+    if (!storedLocationData || storedIp !== data.clientAddress) {
+      addIpAddress(data.clientAddress as string)
+      getLocationData(data.clientAddress as string)
+    } else {
+      console.log('Using stored location data', storedLocationData)
+    }
+  })
 </script>
 
 <svelte:head>

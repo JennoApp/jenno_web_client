@@ -2,20 +2,23 @@ import { writable } from 'svelte/store'
 import { browser } from '$app/environment'
 
 export const ip_address = writable<string | null>(null)
-export const location_data = writable<any |null>(null)
+export const location_data = writable<any | null>(null)
 
 if (browser) {
   try {
-    if (localStorage.getItem('ip_address')) {
-    ip_address.set(JSON.parse(localStorage.getItem('ip_address')!))
-  }
-  if (localStorage.getItem('location_data')) {
-    location_data.set(JSON.parse(localStorage.getItem('location_data')!))
-  }
+    const storedIp = localStorage.getItem('ip_address')
+    const storedLocationData = localStorage.getItem('location_data')
+
+    if (storedIp) {
+      ip_address.set(JSON.parse(storedIp))
+    }
+    if (storedLocationData) {
+      location_data.set(JSON.parse(storedLocationData))
+    }
   } catch (error) {
     console.error('Error parsing local storage data: ', error)
   }
-  
+
 
   ip_address.subscribe((ip) => {
     if (ip !== null) {
