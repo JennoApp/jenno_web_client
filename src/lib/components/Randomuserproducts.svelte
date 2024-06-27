@@ -14,11 +14,9 @@
 		console.log({ products });
 	}
 
-	onMount(() => {
-		if (user) {
-			loadProducts(user);
-		}
-	});
+	$: if (user) {
+		loadProducts(user);
+	}
 </script>
 
 {#if products !== undefined}

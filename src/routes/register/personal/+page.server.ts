@@ -12,6 +12,10 @@ const registerPersonalSchema = z.object({
     .min(1, { message: 'Email is required' })
     .max(64, { message: 'Email must be less than 64 characters' })
     .email({ message: 'Email must be a valid email address' }),
+  country: z
+    .string({ required_error: 'Country is required' })
+    .min(1, { message: 'Country is required' })
+    .max(64, { message: 'Country must be less than 64 characters' }),
   password: z
     .string({ required_error: 'Password is required' })
     .min(6, { message: 'Password must be at least 6 characters' })
@@ -42,9 +46,9 @@ export const actions: Actions = {
     const formData = Object.fromEntries(await request.formData())
 
     try {
-      const { username, email, password, verified_password } = registerPersonalSchema.parse(formData)
+      const { username, email, country, password, verified_password } = registerPersonalSchema.parse(formData)
 
-      console.log({ username, email, password, verified_password })
+      console.log({ username, email, country, password, verified_password })
 
       if (verified_password !== password) {
         return {
@@ -58,7 +62,7 @@ export const actions: Actions = {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username, email, password, accountType: 'personal' })
+          body: JSON.stringify({ username, email, country, password, accountType: 'personal' })
         })
 
         const result = await responseCreateUser.json()

@@ -3,14 +3,17 @@
 	import { toast } from 'svelte-sonner';
 	import type { ActionData } from './$types';
 	import { goto } from '$app/navigation';
+  import * as Select from '$lib/components/ui/select';
+	import { countryList } from '$lib/utils/countries'
 
 	export let form: ActionData;
+  let selectedCountry: any = ''
 
-	$: console.log(form?.success)
+	$: console.log(form?.success);
 
 	$: if (form?.success) {
-		toast.success("Usuario creado!")
-		goto('/')
+		toast.success('Usuario creado!');
+		goto('/');
 	}
 </script>
 
@@ -28,13 +31,15 @@
 			<input
 				type="text"
 				name="username"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.username ? 'border border-red-500': ''}"
+				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.username
+					? 'border border-red-500'
+					: ''}"
 				value={form?.data?.username ?? ''}
 			/>
 			<label for="username">
 				{#if form?.errors?.username}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.username[0]}</span>
-				{/if}	
+				{/if}
 			</label>
 		</div>
 
@@ -44,13 +49,41 @@
 			<input
 				type="email"
 				name="email"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email ? 'border border-red-500': ''} "
+				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+					? 'border border-red-500'
+					: ''} "
 				value={form?.data?.email ?? ''}
 			/>
 			<label for="username">
 				{#if form?.errors?.email}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.email[0]}</span>
-				{/if}	
+				{/if}
+			</label>
+		</div>
+
+		<!-- Country Input -->
+		<div class="flex flex-col">
+			<label for="email" class="text-base dark:text-gray-200 font-medium">Country</label>
+			<Select.Root
+				onSelectedChange={(v) => {
+					selectedCountry = v?.value;
+				}}
+			>
+				<Select.Trigger>
+					<Select.Value placeholder="Escoge un Pais" />
+				</Select.Trigger>
+				<Select.Content class="overflow-y-auto max-h-[20rem]">
+					{#each countryList as country}
+						<Select.Item value={`${country}`}>{country}</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+			<input hidden name="country" bind:value={selectedCountry} />
+
+			<label for="country">
+				{#if form?.errors?.country}
+					<span class="dark:text-red-500 font-medium">{form?.errors?.country[0]}</span>
+				{/if}
 			</label>
 		</div>
 
@@ -60,12 +93,14 @@
 			<input
 				type="password"
 				name="password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.password ? 'border border-red-500': ''}"
+				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.password
+					? 'border border-red-500'
+					: ''}"
 			/>
 			<label for="username">
 				{#if form?.errors?.password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.password[0]}</span>
-				{/if}	
+				{/if}
 			</label>
 		</div>
 
@@ -77,12 +112,15 @@
 			<input
 				type="password"
 				name="verified_password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.verified_password ? 'border border-red-500': ''}"
+				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors
+					?.verified_password
+					? 'border border-red-500'
+					: ''}"
 			/>
 			<label for="username">
 				{#if form?.errors?.verified_password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.verified_password[0]}</span>
-				{/if}	
+				{/if}
 			</label>
 		</div>
 
