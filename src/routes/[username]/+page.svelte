@@ -5,31 +5,32 @@
 	import type { PageServerData } from './$types';
 	import { toast } from 'svelte-sonner';
   import { location_data } from '$lib/stores/ipaddressStore'
+  import { onMount } from 'svelte'
 
 	export let data: PageServerData;
 
-	$: dataStatus = data.status;
-	$: userData = data.userData;
+	$: dataStatus = data.status
+	$: userData = data.userData
   $: console.log($location_data)
 
-	let products: any[] = [];
+	let products: any[] = []
 
   // $: console.log({products})
-	// $: console.log({ isSession: $page.data.isSession });
+	// $: console.log({ isSession: $page.data.isSession })
 
 	async function loadUserData(userId: string) {
-		const response = await fetch(`http://localhost:3000/users/${userId}`);
-		const user = await response.json();
-		userData = user;
+		const response = await fetch(`http://localhost:3000/users/${userId}`)
+		const user = await response.json()
+		userData = user
 	}
 
 	async function loadProducts(userId: any, country?: string) {
     const limit: number = 20
     try {
-      const response = await fetch(`http://localhost:3000/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`);
-		  const { data } = await response.json();
+      const response = await fetch(`http://localhost:3000/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`)
+		  const { data } = await response.json()
 		  
-      products = data;
+      products = data
     } catch (error) {
       console.log('Error al cargar los productos del usuario: ', error)
     }	
@@ -41,9 +42,9 @@
 		products = []; // vacia la lista de productos cuando el usuario no existe
 	} else {
     if ($location_data) {
-
+      loadProducts(data.userData._id, $location_data.data[0].country)
     }
-		loadProducts(data.userData._id, $location_data.data[0].country);
+		
 	}
 
 	$: console.log({ userData });
@@ -77,6 +78,12 @@
 			toast.info("Debes iniciar sesion para seguir a este usuario!!!")
 		}
 	};
+
+  onMount(() => {
+    if ($location_data) {
+      loadProducts(data.userData._id, $location_data.data[0].country);
+    }
+  })
 </script>
 
 
