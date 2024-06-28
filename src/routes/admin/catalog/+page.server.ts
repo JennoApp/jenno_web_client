@@ -7,12 +7,13 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
     if (session) {
       const user = jwt.decode(session)
 
-      const response = await fetch(`http://localhost:3000/products/user/${user?.sub}`)
+      const response = await fetch(`http://localhost:3000/products/admin/user/${user?.sub}?page=${1}&limit=${20}&country=Colombia`)
 
-      const { data } = await response.json()
+      const { data, meta } = await response.json()
 
       return {
         products: data,
+        meta: meta,
         sucess: true
       }
     } else {

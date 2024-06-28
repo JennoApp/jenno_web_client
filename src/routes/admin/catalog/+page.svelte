@@ -72,7 +72,7 @@
 				}
 			}
 		}),
-    /*
+		/*
 		table.column({
 			accessor: 'visibility',
 			header: 'Visibility',
@@ -110,7 +110,10 @@
 	<h2 class="text-xl font-semibold dark:text-gray-200">Catalogo</h2>
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
-			<Button class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200               hover:bg-purple-700 dark:hover:bg-[#252525]">Agregar</Button>
+			<Button
+				class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200               hover:bg-purple-700 dark:hover:bg-[#252525]"
+				>Agregar</Button
+			>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content class="bg-background mt-2">
 			<DropdownMenu.Item href="/admin/catalog/addproduct">Agregar Producto</DropdownMenu.Item>
@@ -124,7 +127,12 @@
 		<h1>Error al hacer la solicitud</h1>
 	{:else}
 		<div class="flex items-center mx-10 mt-5">
-			<Input class="max-w-sm placeholder:text-[#707070]" placeholder="Filter names..." type="text" bind:value={$filterValue} />
+			<Input
+				class="max-w-sm placeholder:text-[#707070]"
+				placeholder="Filter names..."
+				type="text"
+				bind:value={$filterValue}
+			/>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
@@ -160,7 +168,33 @@
 				</Table.Body>
 			</Table.Root>
 		</div>
-		<div class="flex items-center justify-end space-x-4 mx-10">
+		<div class="flex justify-between mx-10">
+			<div class="">
+				<h3 class="text-sm dark:text-[#707070]">items: {data.meta.itemCount} - pages: {data.meta.pageCount}</h3>
+			</div>
+			<div class="flex items-center justify-end space-x-4">
+				<Button
+					class="border-gray-400 dark:border-[#252525]"
+					variant="outline"
+					size="sm"
+					disabled={!data.meta.hasPreviousPage}
+					on:click={() => {}}
+				>
+					Previous
+				</Button>
+				<Button
+					class="border-gray-400 dark:border-[#252525]"
+					variant="outline"
+					size="sm"
+					disabled={!data.meta.hasNextPage}
+					on:click={() => {}}
+				>
+					Next
+				</Button>
+			</div>
+		</div>
+
+		<!-- <div class="flex items-center justify-end space-x-4 mx-10">
 			<Button
 				class="border-[#252525]"
 				variant="outline"
@@ -175,12 +209,14 @@
 				disabled={!$hasNextPage}
 				on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
 			>
-		</div>
+		</div> -->
 	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
 		<iconify-icon icon="solar:box-bold" height="5rem" width="5rem" class="text-[#707070] mb-4" />
-    <h1 class="text-xl font-semibold text-[#707070] mb-2">¡Catálogo Vacío!</h1>
-    <p class="text-lg text-[#707070]">Añade productos a tu catálogo para que los clientes puedan explorar y comprar.</p>
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">¡Catálogo Vacío!</h1>
+		<p class="text-lg text-[#707070]">
+			Añade productos a tu catálogo para que los clientes puedan explorar y comprar.
+		</p>
 	</div>
 {/if}

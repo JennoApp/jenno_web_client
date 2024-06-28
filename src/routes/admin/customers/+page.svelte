@@ -39,8 +39,18 @@
 	const modifier = {
 		profileImg: {
 			header: 'Profile Image',
-			accessor: (data: any) =>
-				`<img class="h-10 w-10 ml-5 rounded-md" src="${data.profileImg}" alt="${data.username}"/>`
+			accessor: (data: any) => {
+				if (data.profileImg !== '') {
+					return `<img class="h-10 w-10 ml-5 rounded-md" src="${data.profileImg}" alt="${data.username}"/>`
+				} else {
+					return `<iconify-icon
+										icon="mdi:user"
+										height="1.5rem"
+										width="1.5rem"
+										class="text-gray-200 flex justify-center items-center h-9 w-9 ml-5 bg-[#202020] rounded-full hover:bg-[#252525]"
+									/>`
+				}
+			}
 		},
 		username: { header: 'Name', accessor: (data: any) => data.username },
 		email: { header: 'Email', accessor: (data: any) => data.email },
