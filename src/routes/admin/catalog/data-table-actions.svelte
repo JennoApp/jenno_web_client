@@ -2,6 +2,7 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { MoreHorizontal } from 'lucide-svelte';
+  import { goto } from '$app/navigation'
 
 	export let id: string;
 </script>
@@ -15,14 +16,41 @@
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
 			<DropdownMenu.Label>Actions</DropdownMenu.Label>
-			<DropdownMenu.Item on:click={() => {
-          navigator.clipboard.writeText(id)
-        }}>
+			<!-- <DropdownMenu.Item
+				on:click={() => {
+					navigator.clipboard.writeText(id);
+				}}
+			>
 				Copy payment ID
+			</DropdownMenu.Item> -->
+			<DropdownMenu.Item on:click={() => {
+        goto(`/admin/catalog/addproduct?id=${id}`)
+      }}>
+        <iconify-icon
+					icon="material-symbols:update"
+					height="1.1rem"
+					width="1.1rem"
+					class="text-gray-200 flex justify-center items-center"
+				/>
+				<span class="ml-3">Actualizar</span>
+      </DropdownMenu.Item>
+			<DropdownMenu.Item 
+        class="bg-red-500 bg-opacity-60"
+        on:click={() => {
+          alert(`Eliminar producto: ${id}`)
+        }}
+      >
+				<iconify-icon
+					icon="material-symbols:delete"
+					height="1.1rem"
+					width="1.1rem"
+					class="text-gray-200 flex justify-center items-center"
+				/>
+				<span class="ml-3">Eliminar</span>
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
-		<DropdownMenu.Separator />
+		<!-- <DropdownMenu.Separator />
 		<DropdownMenu.Item>View customer</DropdownMenu.Item>
-		<DropdownMenu.Item>View payment details</DropdownMenu.Item>
+		<DropdownMenu.Item>View payment details</DropdownMenu.Item> -->
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

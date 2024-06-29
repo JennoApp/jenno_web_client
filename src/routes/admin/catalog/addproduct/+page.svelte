@@ -10,6 +10,8 @@
 	import * as Table from '$lib/components/ui/table';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
+	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -59,6 +61,29 @@
 	function removeEspecificationItem(index: number) {
 		especificationsItems = especificationsItems.filter((_, i) => i != index);
 	}
+
+	/// load product data for update
+
+	let product: any
+
+  $: console.log(product)
+
+	onMount(async () => {
+		const queryParams = $page.url;
+		const productId = queryParams.searchParams.get('id');
+
+		if (productId !== null) {
+			try {
+				const response = await fetch(`http://localhost:3000/products/${productId}`);
+				const productData = await response.json();
+
+				product = productData;
+				console.log({ productData });
+			} catch (error) {
+				console.log('Error al cargar los datos del producto:', error);
+			}
+		}
+	});
 </script>
 
 <div class="flex p-5">
@@ -92,7 +117,12 @@
 				<Card.Content>
 					<div>
 						<label for="productname">Product name</label>
-						<Input type="text" name="productname" required />
+						<Input 
+              type="text" 
+              name="productname"
+              value={`${product !== undefined ? product.productname: ""}`}
+              required 
+            />
 						<label for="productname">
 							{#if form?.errors?.productname}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.productname[0]}</span>
@@ -101,7 +131,11 @@
 					</div>
 					<div>
 						<label for="description">Description</label>
-						<Textarea class="resize-y" name="description" />
+						<Textarea 
+              class="resize-y" 
+              name="description" 
+              value={`${product !== undefined ? product.description: ""}`}
+            />
 						<label for="description">
 							{#if form?.errors?.description}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.description[0]}</span>
@@ -118,7 +152,13 @@
 				<Card.Content>
 					<div>
 						<label for="price">Price</label>
-						<Input type="number" name="price" placeholder="Price" min={0} />
+						<Input 
+              type="number" 
+              name="price" 
+              placeholder="Price" 
+              min={0} 
+              value={`${product !== undefined ? product.price: ""}`}
+            />
 						<label for="price">
 							{#if form?.errors?.price}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.price[0]}</span>
@@ -135,7 +175,11 @@
 				<Card.Content>
 					<div>
 						<label for="quantity">Quantity</label>
-						<Input type="number" name="quantity" />
+						<Input 
+              type="number" 
+              name="quantity" 
+              value={`${product !== undefined ? product.quantity: ""}`}
+            />
 						<label for="quantity">
 							{#if form?.errors?.quantity}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.quantity[0]}</span>
@@ -144,7 +188,11 @@
 					</div>
 					<div>
 						<label for="SKU">SKU</label>
-						<Input type="text" name="SKU" />
+						<Input 
+              type="text" 
+              name="SKU" 
+              value={`${product !== undefined ? product.SKU: ""}`}
+            />
 						<label for="SKU">
 							{#if form?.errors?.SKU}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.SKU[0]}</span>
@@ -161,7 +209,10 @@
 				<Card.Content>
 					<div>
 						<label for="category">Category</label>
-						<Input name="category" />
+						<Input 
+              name="category"
+              value={`${product !== undefined ? product.category: ""}`}
+            />
 						<label for="category">
 							{#if form?.errors?.category}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.category[0]}</span>
@@ -181,6 +232,7 @@
 						>
 					</div>
 				</Card.Header>
+
 				<!-- Options List -->
 				{#each optionsItems as _, i}
 					<Card.Content class="flex gap-5 items-center">
@@ -190,7 +242,7 @@
 						</div>
 						<div class="flex gap-3 w-full items-center">
 							<label for="options">Opciones:</label>
-							<Input type="text" name={`options${i}`}/>
+							<Input type="text" name={`options${i}`} />
 						</div>
 						<button
 							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
@@ -250,7 +302,11 @@
 				<Card.Content>
 					<div>
 						<label for="weight">Weight</label>
-						<Input type="number" name="weight" />
+						<Input 
+              type="number" 
+              name="weight"
+              value={`${product !== undefined ? product.weight: ""}`}
+            />
 						<label for="weight">
 							{#if form?.errors?.weight}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.weight[0]}</span>
@@ -260,7 +316,11 @@
 					<div class="flex gap-1">
 						<div>
 							<label for="length">Length</label>
-							<Input type="number" name="length" />
+							<Input 
+                type="number" 
+                name="length" 
+                value={`${product !== undefined ? product.length : ""}`}
+              />
 							<label for="length">
 								{#if form?.errors?.length}
 									<span class="dark:text-red-500 font-medium">{form?.errors?.length[0]}</span>
@@ -308,7 +368,7 @@
 						</div>
 						<div class="flex gap-3 w-full items-center">
 							<label for="options">Contenido:</label>
-							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`}/>
+							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`} />
 						</div>
 						<button
 							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
@@ -327,9 +387,11 @@
 				<Card.Content>
 					<div>
 						<Label for="status">Status</Label>
-						<Select.Root>
+						<Select.Root selected={{
+              value: product !== undefined ? product.status: ""
+            }} >
 							<Select.Trigger>
-								<Select.Value placeholder="Select product status" />
+								<Select.Value placeholder="Select product status"/>
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Group>
