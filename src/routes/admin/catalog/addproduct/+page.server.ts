@@ -1,4 +1,4 @@
-// import type { Actions } from './$types'
+import type { Actions } from './$types'
 import { supabase } from '$lib/supabaseClient'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
@@ -111,7 +111,7 @@ export const actions: Actions = {
     // }
 
 
-    
+
 
     // const { productname, description, category, price, quantity, SKU, weight, height, length, width, status } = formData
 
@@ -168,7 +168,7 @@ export const actions: Actions = {
       if (title && content) {
         especificationsItems.push({
           title: title.toString(),
-          content: content.toString() 
+          content: content.toString()
         });
       }
     }
@@ -190,9 +190,11 @@ export const actions: Actions = {
           description,
           category,
           weight,
-          length,
-          width,
-          height,
+          dimensions: {
+            length,
+            width,
+            height
+          },
           status,
           // visibility
           options: optionsItems,

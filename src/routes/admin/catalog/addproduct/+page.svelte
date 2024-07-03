@@ -12,6 +12,7 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import CurrencyInput from '@canutin/svelte-currency-input';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -64,9 +65,9 @@
 
 	/// load product data for update
 
-	let product: any
+	let product: any;
 
-  $: console.log(product)
+	$: console.log(product);
 
 	onMount(async () => {
 		const queryParams = $page.url;
@@ -84,6 +85,20 @@
 			}
 		}
 	});
+
+	$: if (product && product.options) {
+		optionsItems = product.options.map((option: any) => ({
+			name: option.name,
+			optionslist: option.optionslist
+		}));
+	}
+
+  $: if (product && product.especifications) {
+    especificationsItems = product.especifications.map((especification: any) => ({
+      title: especification.title,
+      content: especification.content
+    }))
+  }
 </script>
 
 <div class="flex p-5">
@@ -117,12 +132,12 @@
 				<Card.Content>
 					<div>
 						<label for="productname">Product name</label>
-						<Input 
-              type="text" 
-              name="productname"
-              value={`${product !== undefined ? product.productname: ""}`}
-              required 
-            />
+						<Input
+							type="text"
+							name="productname"
+							value={`${product !== undefined ? product.productname : ''}`}
+							required
+						/>
 						<label for="productname">
 							{#if form?.errors?.productname}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.productname[0]}</span>
@@ -131,11 +146,11 @@
 					</div>
 					<div>
 						<label for="description">Description</label>
-						<Textarea 
-              class="resize-y" 
-              name="description" 
-              value={`${product !== undefined ? product.description: ""}`}
-            />
+						<Textarea
+							class="resize-y"
+							name="description"
+							value={`${product !== undefined ? product.description : ''}`}
+						/>
 						<label for="description">
 							{#if form?.errors?.description}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.description[0]}</span>
@@ -150,15 +165,27 @@
 					<Card.Title>Pricing</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div>
-						<label for="price">Price</label>
-						<Input 
+					<div class="flex gap-3 items-center w-full">
+						<label for="price">Price:</label>
+						<CurrencyInput
+							name="total"
+							value={product !== undefined ? product.price : 0}
+							locale="es-CO"
+							currency="COP"
+							fractionDigits={0}
+							required
+							inputClasses={{
+								formatted: 'bg-[#121212] h-9 rounded-md p-2'
+							}}
+						/>
+
+						<!-- <Input 
               type="number" 
               name="price" 
               placeholder="Price" 
               min={0} 
               value={`${product !== undefined ? product.price: ""}`}
-            />
+            /> -->
 						<label for="price">
 							{#if form?.errors?.price}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.price[0]}</span>
@@ -175,11 +202,11 @@
 				<Card.Content>
 					<div>
 						<label for="quantity">Quantity</label>
-						<Input 
-              type="number" 
-              name="quantity" 
-              value={`${product !== undefined ? product.quantity: ""}`}
-            />
+						<Input
+							type="number"
+							name="quantity"
+							value={`${product !== undefined ? product.quantity : ''}`}
+						/>
 						<label for="quantity">
 							{#if form?.errors?.quantity}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.quantity[0]}</span>
@@ -188,11 +215,7 @@
 					</div>
 					<div>
 						<label for="SKU">SKU</label>
-						<Input 
-              type="text" 
-              name="SKU" 
-              value={`${product !== undefined ? product.SKU: ""}`}
-            />
+						<Input type="text" name="SKU" value={`${product !== undefined ? product.SKU : ''}`} />
 						<label for="SKU">
 							{#if form?.errors?.SKU}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.SKU[0]}</span>
@@ -209,10 +232,7 @@
 				<Card.Content>
 					<div>
 						<label for="category">Category</label>
-						<Input 
-              name="category"
-              value={`${product !== undefined ? product.category: ""}`}
-            />
+						<Input name="category" value={`${product !== undefined ? product.category : ''}`} />
 						<label for="category">
 							{#if form?.errors?.category}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.category[0]}</span>
@@ -234,15 +254,23 @@
 				</Card.Header>
 
 				<!-- Options List -->
-				{#each optionsItems as _, i}
+				{#each optionsItems as option, i}
 					<Card.Content class="flex gap-5 items-center">
 						<div class="flex gap-3 items-center">
 							<label for="optionname">Nombre: </label>
-							<Input type="text" name={`optionname${i}`} />
+							<Input
+								type="text"
+								name={`optionname${i}`}
+								value={option !== undefined ? option.name : ''}
+							/>
 						</div>
 						<div class="flex gap-3 w-full items-center">
 							<label for="options">Opciones:</label>
-							<Input type="text" name={`options${i}`} />
+							<Input
+								type="text"
+								name={`options${i}`}
+								value={option !== undefined ? option.optionslist : ''}
+							/>
 						</div>
 						<button
 							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
@@ -291,6 +319,12 @@
 								{/each}
 							</Table.Body>
 						</Table.Root>
+          {:else if product !== undefined}
+            <div class="flex gap-3 mt-5">
+            {#each product.imgs as image, i}
+              <img class="h-14 w-14 rounded-md object-fill" src={image} alt={`image ${i}`}/>
+            {/each}
+            </div>
 					{/if}
 				</Card.Content>
 			</Card.Root>
@@ -302,11 +336,11 @@
 				<Card.Content>
 					<div>
 						<label for="weight">Weight</label>
-						<Input 
-              type="number" 
-              name="weight"
-              value={`${product !== undefined ? product.weight: ""}`}
-            />
+						<Input
+							type="number"
+							name="weight"
+							value={`${product !== undefined ? product.weight : ''}`}
+						/>
 						<label for="weight">
 							{#if form?.errors?.weight}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.weight[0]}</span>
@@ -316,11 +350,11 @@
 					<div class="flex gap-1">
 						<div>
 							<label for="length">Length</label>
-							<Input 
-                type="number" 
-                name="length" 
-                value={`${product !== undefined ? product.length : ""}`}
-              />
+							<Input
+								type="number"
+								name="length"
+								value={`${product !== undefined ? product.length : ''}`}
+							/>
 							<label for="length">
 								{#if form?.errors?.length}
 									<span class="dark:text-red-500 font-medium">{form?.errors?.length[0]}</span>
@@ -360,15 +394,15 @@
 					</div>
 				</Card.Header>
 				<!-- Especification List -->
-				{#each especificationsItems as _, i}
+				{#each especificationsItems as especification, i}
 					<Card.Content class="flex gap-5 items-center">
 						<div class="flex gap-3 items-center">
 							<label for="optionname">Titulo: </label>
-							<Input type="text" name={`especificationtitle${i}`} />
+							<Input class="overflow-x-scroll" type="text" name={`especificationtitle${i}`} value={product !== undefined ? especification?.title : ""} />
 						</div>
 						<div class="flex gap-3 w-full items-center">
 							<label for="options">Contenido:</label>
-							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`} />
+							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`} value={product !== undefined ? especification?.content : ""} />
 						</div>
 						<button
 							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
@@ -387,11 +421,13 @@
 				<Card.Content>
 					<div>
 						<Label for="status">Status</Label>
-						<Select.Root selected={{
-              value: product !== undefined ? product.status: ""
-            }} >
+						<Select.Root
+							selected={{
+								value: product !== undefined ? product.status : ''
+							}}
+						>
 							<Select.Trigger>
-								<Select.Value placeholder="Select product status"/>
+								<Select.Value placeholder="Select product status" />
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Group>
@@ -427,7 +463,7 @@
 			</Card.Root>
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm bg-purple-600">Guardar Producto</Button>
+				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700">Guardar Producto</Button>
 			</div>
 		</div>
 	</div>
