@@ -71,7 +71,7 @@ const filesSchema = z.object({ files: z.array(fileSchema) })
 */
 
 export const actions: Actions = {
-  addProduct: async ({ request, cookies, fetch }) => {
+  saveProduct: async ({ request, cookies, fetch }) => {
     const formData = await request.formData()
     const uploadedFiles = formData.getAll('files') as File[]
 
@@ -132,8 +132,8 @@ export const actions: Actions = {
     await Promise.all(uploadPromises)
     console.log({ imagesUrls })
 
-
-
+    
+    const productId = formData?.get('productId')
     const productname = formData?.get('productname')
     const description = formData.get('description')
     const price = formData.get('price')
@@ -145,7 +145,7 @@ export const actions: Actions = {
     const width = formData.get('width')
     const height = formData.get('height')
     const status = formData.get('status')
-    // const visibility = formData.get('visibility')
+    const visibility = formData.get('visibility')
 
     // Extraer las opciones
     const optionsItems = []
@@ -182,6 +182,7 @@ export const actions: Actions = {
           "Authorization": `Bearer ${tokenJwt}` // autorizaicion jwt token
         },
         body: JSON.stringify({
+          productId,
           productname,
           imgs: imagesUrls,
           price,
@@ -196,7 +197,7 @@ export const actions: Actions = {
             height
           },
           status,
-          // visibility
+          visibility,
           options: optionsItems,
           especifications: especificationsItems
         })

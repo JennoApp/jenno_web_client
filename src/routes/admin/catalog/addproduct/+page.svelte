@@ -13,6 +13,8 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import CurrencyInput from '@canutin/svelte-currency-input';
+  import { location_data } from '$lib/stores/ipaddressStore'
+	import { Target } from 'radix-icons-svelte';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -20,7 +22,11 @@
 
 	$: if (form?.status === 201) {
 		console.log(`formStatus: ${form.status}`);
-		toast.success('Producto creado!');
+    if (product) {
+      toast.success('Producto Actualizado!');
+    } else {
+      toast.success('Producto creado!');
+    }	
 		goto('/admin/catalog');
 	}
 
@@ -68,6 +74,7 @@
 	let product: any;
 
 	$: console.log(product);
+  $: console.log($location_data)
 
 	onMount(async () => {
 		const queryParams = $page.url;
@@ -121,8 +128,13 @@
 	</div>
 </div>
 
-<form method="POST" enctype="multipart/form-data" action="?/addProduct" use:enhance>
+<form method="POST" enctype="multipart/form-data" action="?/saveProduct" use:enhance>
 	<div class="flex flex-row gap-4 p-5">
+    <!-- Product Id hidden -->
+    {#if product}
+      <input type="hidden" name="productId" value={product._id}> 
+    {/if}
+
 		<!-- Columna 1 -->
 		<div class="w-full">
 			<Card.Root class="mb-4">
@@ -168,24 +180,17 @@
 					<div class="flex gap-3 items-center w-full">
 						<label for="price">Price:</label>
 						<CurrencyInput
-							name="total"
+							name="price"
 							value={product !== undefined ? product.price : 0}
 							locale="es-CO"
-							currency="COP"
+							currency={$location_data.data[0].country_module.currencies
+                        [0].code}
 							fractionDigits={0}
 							required
 							inputClasses={{
 								formatted: 'bg-[#121212] h-9 rounded-md p-2'
 							}}
 						/>
-
-						<!-- <Input 
-              type="number" 
-              name="price" 
-              placeholder="Price" 
-              min={0} 
-              value={`${product !== undefined ? product.price: ""}`}
-            /> -->
 						<label for="price">
 							{#if form?.errors?.price}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.price[0]}</span>
@@ -434,9 +439,9 @@
 									<Select.Item value="in_stock">in stock</Select.Item>
 									<Select.Item value="sold_out">sold out</Select.Item>
 									<Select.Item value="on_sale">on sale</Select.Item>
-									<Select.Item value="active">active</Select.Item>
+									<!-- <Select.Item value="active">active</Select.Item>
 									<Select.Item value="paused">paused</Select.Item>
-									<Select.Item value="inactive">inactive</Select.Item>
+									<Select.Item value="inactive">inactive</Select.Item> -->
 								</Select.Group>
 							</Select.Content>
 							<Select.Input name="status" />
@@ -455,8 +460,8 @@
 					<Card.Title>Visibility</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div>
-						<input type="checkbox" name="visibility" checked />
+					<div class="flex items-center">
+						<input class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-purple-600" type="checkbox" name="visibility" checked  />
 						<span class="ml-2">visibility</span>
 					</div>
 				</Card.Content>
