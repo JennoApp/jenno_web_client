@@ -1,6 +1,23 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import Bar from '$lib/components/Bar.svelte';
+  import { page } from '$app/stores'
+  import { formatPrice } from '$lib/utils/formatprice'
+
+  $: console.log($page.data.user)
+
+  let totalRevenue = 0
+
+  const getTotalRevenue = async (id: string) => {
+    const result = await fetch(`http://localhost:3000/orders/totalrevenue/${id}`)
+    const data = await result.json()
+
+    totalRevenue = data
+  }
+
+  $: getTotalRevenue($page.data.user._id)
+
+
 </script>
 
 <div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-3">
@@ -10,8 +27,8 @@
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">$45,231.89</div>
-			<p class="text-xs text-muted-foreground">+20.1% from last month</p>
+			<div class="text-2xl font-bold">{formatPrice(totalRevenue, 'es-CO', 'COP')}</div>
+			<!-- <p class="text-xs text-muted-foreground">+20.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
 
@@ -21,8 +38,8 @@
 			<iconify-icon icon="gravity-ui:persons" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">+2350</div>
-			<p class="text-xs text-muted-foreground">+180.1% from last month</p>
+			<div class="text-2xl font-bold">{$page.data.user.followers.length}</div>
+			<!-- <p class="text-xs text-muted-foreground">+180.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
 
@@ -32,8 +49,8 @@
 			<iconify-icon icon="mdi:credit-card-outline" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">+12,234</div>
-			<p class="text-xs text-muted-foreground">+19% from last month</p>
+			<div class="text-2xl font-bold">{$page.data.user.historicalOrders.length}</div>
+			<!-- <p class="text-xs text-muted-foreground">+19% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
 </div>

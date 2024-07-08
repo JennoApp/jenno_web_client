@@ -1,138 +1,37 @@
 import type { Actions } from './$types'
 import { supabase } from '$lib/supabaseClient'
 import { v4 as uuidv4 } from 'uuid'
-import { z } from 'zod'
-
-/*
-const createProductSchema = z.object({
-  productname: z
-    .string({ required_error: 'product name is required' })
-    .min(1, { message: 'product name is required' })
-    .max(64, { message: 'product name must be less than 64 characters' })
-    .trim(),
-  description: z
-    .string({ required_error: 'Description is required' })
-    .min(1, { message: 'Description is required' })
-    .max(240, { message: 'product name must be less than 240 characters' })
-    .trim(),
-  price: z
-    .number({ required_error: 'Price is required' })
-    .min(1, { message: 'Price is required' })
-    .max(64, { message: 'Price must be less than 64 numbers' }),
-  quantity: z
-    .number({ required_error: 'Quantity is required' })
-    .min(1, { message: 'Quantity is required' })
-    .max(32, { message: 'Quantity must be less than 32 numbers' }),
-  SKU: z
-    .string({ required_error: 'SKU is required' })
-    .min(1, { message: 'SKU is required' })
-    .max(32, { message: 'SKU must be less than 32 characters' })
-    .optional()
-    .transform(e => e === "" ? undefined : e),
-  category: z
-    .string({ required_error: 'Category is required' })
-    .min(1, { message: 'Category is required' })
-    .max(32, { message: 'Category must be less than 32 characters' })
-    .trim(),
-  weight: z
-    .number({ required_error: 'Weight is required' })
-    .min(1, { message: 'Weight is required' })
-    .max(64, { message: 'Weight must be less than 64 numbers' })
-    .optional(),
-  length: z
-    .number({ required_error: 'Length is required' })
-    .min(1, { message: 'Lngth is required' })
-    .max(64, { message: 'Length must be less than 64 numbers' })
-    .optional(),
-  width: z
-    .number({ required_error: 'Width is required' })
-    .min(1, { message: 'Width is required' })
-    .max(64, { message: 'Width must be less than 64 numbers' })
-    .optional(),
-  height: z
-    .number({ required_error: 'Heigth is required' })
-    .min(1, { message: 'Heigth is required' })
-    .max(64, { message: 'Heigth must be less than 64 numbers' })
-    .optional(),
-  status: z
-    .enum(['in_stock', 'sold_out', 'on_sale', 'active', 'paused', 'inactive'])
-})
-
-const fileSchema = z
-  .instanceof(File)
-  .refine((file: any) => {
-    return !file || file.size <= 1024 * 1024 * 3
-  }, 'File size must be less than 3MB')
-  .refine((file: any) => {
-    return ['image/png'].includes(file?.type)
-  }, 'File must be a PNG')
-
-const filesSchema = z.object({ files: z.array(fileSchema) }) 
-*/
 
 export const actions: Actions = {
   saveProduct: async ({ request, cookies, fetch }) => {
     const formData = await request.formData()
     const uploadedFiles = formData.getAll('files') as File[]
+    const existingImagesUrls = formData.get('imagesUrls') ? JSON.parse(formData.get('imagesUrls') as string) : []
 
-    // // Validar los archivos
-    // try {
-    //   filesSchema.parse(uploadedFiles);
-    // } catch (error) {
-    //   if (error instanceof z.ZodError) {
-    //     console.error("Validation error:", error.errors);
-    //     // Manejar errores de validación, por ejemplo, devolviendo una respuesta con errores
-    //     return {
-    //       success: false,
-    //       status: 400,
-    //       errors: error.errors
-    //     };
-    //   }
-    // }
-
-
-    // Convertir formData a un objeto
-    // const formDataObj = Object.fromEntries(formData)
     const tokenJwt = cookies.get('session')
-
-    // let productData: any
-    // try {
-    //   productData = createProductSchema.parse(formDataObj); 
-    // } catch (error) {
-    //   if (error instanceof z.ZodError) {
-    //     console.error("Validation error:", error.errors);
-    //     // Manejar errores de validación de los datos del producto
-    //     return {
-    //       success: false,
-    //       status: 400,
-    //       errors: error.errors
-    //     };
-    //   }
-    // }
-
-
-
-
-    // const { productname, description, category, price, quantity, SKU, weight, height, length, width, status } = formData
 
     const imagesUrls: string[] = []
 
-    const uploadPromises = uploadedFiles.map(async (file: any) => {
-      const { data, error } = await supabase.storage.from('products').upload(uuidv4(), file)
-      if (error) {
-        console.log({ supabaseError: error })
-      } else {
-        console.log("imagen subida")
-        const publicUrl = supabase.storage.from('products').getPublicUrl(data.path)
-        console.log(publicUrl)
-        imagesUrls.push(publicUrl.data.publicUrl)
-      }
-    })
+    if (existingImagesUrls && existingImagesUrls.length > 0) {
+      imagesUrls.push(...existingImagesUrls)
+    } else {
+      const uploadPromises = uploadedFiles.map(async (file: any) => {
+        const { data, error } = await supabase.storage.from('products').upload(uuidv4(), file)
+        if (error) {
+          console.log({ supabaseError: error })
+        } else {
+          console.log("imagen subida")
+          const publicUrl = supabase.storage.from('products').getPublicUrl(data.path)
+          console.log(publicUrl)
+          imagesUrls.push(publicUrl.data.publicUrl)
+        }
+      })
 
-    await Promise.all(uploadPromises)
-    console.log({ imagesUrls })
+      await Promise.all(uploadPromises)
+      console.log({ imagesUrls })
+    }
 
-    
+
     const productId = formData?.get('productId')
     const productname = formData?.get('productname')
     const description = formData.get('description')

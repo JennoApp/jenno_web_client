@@ -2,9 +2,21 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { MoreHorizontal } from 'lucide-svelte';
-  import { goto } from '$app/navigation'
+  import { goto, invalidateAll } from '$app/navigation'
+  import { toast } from 'svelte-sonner'
 
 	export let id: string;
+
+  const deleteProduct = async (id: any) => {
+    const response = await fetch(`http://localhost:3000/products/${id}`, {
+      method: 'DELETE'
+    })
+
+    if(response.ok) {
+      invalidateAll() 
+      toast.success('Producto Eliminado!')
+    } 
+  }
 </script>
 
 <DropdownMenu.Root>
@@ -37,7 +49,7 @@
 			<DropdownMenu.Item 
         class="bg-red-500 bg-opacity-60"
         on:click={() => {
-          alert(`Eliminar producto: ${id}`)
+          deleteProduct(id)
         }}
       >
 				<iconify-icon

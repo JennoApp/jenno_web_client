@@ -14,7 +14,6 @@
 	import { onMount } from 'svelte';
 	import CurrencyInput from '@canutin/svelte-currency-input';
   import { location_data } from '$lib/stores/ipaddressStore'
-	import { Target } from 'radix-icons-svelte';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -71,33 +70,33 @@
 
 	/// load product data for update
 
-	let product: any;
+	let product: any
 
-	$: console.log(product);
+	$: console.log(product)
   $: console.log($location_data)
 
 	onMount(async () => {
-		const queryParams = $page.url;
-		const productId = queryParams.searchParams.get('id');
+		const queryParams = $page.url
+		const productId = queryParams.searchParams.get('id')
 
 		if (productId !== null) {
 			try {
-				const response = await fetch(`http://localhost:3000/products/${productId}`);
-				const productData = await response.json();
+				const response = await fetch(`http://localhost:3000/products/${productId}`)
+				const productData = await response.json()
 
-				product = productData;
-				console.log({ productData });
+				product = productData
+				console.log({ productData })
 			} catch (error) {
-				console.log('Error al cargar los datos del producto:', error);
+				console.log('Error al cargar los datos del producto:', error)
 			}
 		}
-	});
+	})
 
 	$: if (product && product.options) {
 		optionsItems = product.options.map((option: any) => ({
 			name: option.name,
 			optionslist: option.optionslist
-		}));
+		}))
 	}
 
   $: if (product && product.especifications) {
@@ -132,7 +131,8 @@
 	<div class="flex flex-row gap-4 p-5">
     <!-- Product Id hidden -->
     {#if product}
-      <input type="hidden" name="productId" value={product._id}> 
+      <input type="hidden" name="productId" value={product._id}>
+      <input type="hidden" name="imagesUrls" value={JSON.stringify(product.imgs)}/> 
     {/if}
 
 		<!-- Columna 1 -->
