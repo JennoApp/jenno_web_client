@@ -339,7 +339,29 @@
 					<Card.Title>Shipping and Delivery</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<div>
+          <!-- Shipping fee -->
+            <div class="flex gap-3 items-center w-full">
+						<label for="shippingfee">Valor de envio:</label>
+						<CurrencyInput
+							name="shippingfee"
+							value={product !== undefined ? product.shippingfee : 0}
+							locale="es-CO"
+							currency={$location_data.data[0].country_module.currencies
+                        [0].code}
+							fractionDigits={0}
+							required
+							inputClasses={{
+								formatted: 'bg-[#121212] h-9 rounded-md p-2'
+							}}
+						/>
+						<label for="shippingfee">
+							{#if form?.errors?.price}
+								<span class="dark:text-red-500 font-medium">{form?.errors?.price[0]}</span>
+							{/if}
+						</label>
+					</div>
+          <!-- Optional shiping product info -->
+					<div class="mt-5">
 						<label for="weight">Weight</label>
 						<Input
 							type="number"

@@ -39,6 +39,7 @@ export const actions: Actions = {
     const quantity = formData.get('quantity')
     const SKU = formData.get('SKU')
     const category = formData.get('category')
+    const shippingfee = formData.get('shippingfee')
     const weight = formData.get('weight')
     const length = formData.get('length')
     const width = formData.get('width')
@@ -90,6 +91,7 @@ export const actions: Actions = {
           description,
           category,
           weight,
+          shippingfee,
           dimensions: {
             length,
             width,

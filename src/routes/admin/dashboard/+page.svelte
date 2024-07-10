@@ -3,10 +3,12 @@
 	import Bar from '$lib/components/Bar.svelte';
   import { page } from '$app/stores'
   import { formatPrice } from '$lib/utils/formatprice'
+  import { onMount } from 'svelte'
 
   $: console.log($page.data.user)
 
   let totalRevenue = 0
+  let numberOfSales = 0
 
   const getTotalRevenue = async (id: string) => {
     const result = await fetch(`http://localhost:3000/orders/totalrevenue/${id}`)
@@ -15,7 +17,17 @@
     totalRevenue = data
   }
 
-  $: getTotalRevenue($page.data.user._id)
+  const getNumberOfSales = async (id: string) => {
+    const result = await fetch(`http://localhost:3000/orders/numberofsales/${id}`)
+    const data = await result.json()
+
+    numberOfSales = data
+  }
+
+  $: if ($page.data.user) {
+    getTotalRevenue($page.data.user._id)
+    getNumberOfSales($page.data.user._id)
+  }
 
 
 </script>
@@ -38,7 +50,7 @@
 			<iconify-icon icon="gravity-ui:persons" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">{$page.data.user.followers.length}</div>
+			<div class="text-2xl font-bold">{$page.data.user !== undefined ? $page.data.user.followers.length: ''}</div>
 			<!-- <p class="text-xs text-muted-foreground">+180.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
@@ -49,7 +61,7 @@
 			<iconify-icon icon="mdi:credit-card-outline" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">{$page.data.user.historicalOrders.length}</div>
+			<div class="text-2xl font-bold">{numberOfSales}</div>
 			<!-- <p class="text-xs text-muted-foreground">+19% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
