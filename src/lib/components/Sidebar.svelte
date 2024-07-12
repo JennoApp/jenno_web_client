@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { page } from '$app/stores'
+	import * as Tooltip from '$lib/components/ui/tooltip'
   import { toast } from 'svelte-sonner'
 
-	export let closeMenu = true;
+	export let closeMenu = true
 
 	let currentPath = '/';
-	$: currentPath = $page.url.pathname.split('/').filter(Boolean).pop() || '/';
+	$: currentPath = $page.url.pathname.split('/').filter(Boolean).pop() || '/'
 
 	function setBgColor(path: string, currentPath: string): string {
-		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : '';
+		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : ''
 	}
 
-	$: pathName = $page.url.pathname;
+	$: pathName = $page.url.pathname
 
 	const paths = [
 		'/admin/dashboard',
@@ -21,7 +21,7 @@
 		'/admin/catalog/addproduct',
 		'/admin/customers',
 		'/admin/marketing'
-	];
+	]
 
 </script>
 

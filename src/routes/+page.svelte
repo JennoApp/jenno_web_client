@@ -5,7 +5,7 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import { goto } from '$app/navigation';
 
-	export let data: PageServerData;
+	export let data: PageServerData
   
 	let products: any[] = data.products;
 	let page = 1;
@@ -75,7 +75,6 @@
       goto(`/?country=${country}`, { replaceState: true })
     }
   })
-
 </script>
 
 <svelte:head>
@@ -91,6 +90,8 @@
 	{/each}
 </div>
 
+
+<!-- <h1 class="text-white absolute top-[500px]">{m.greeting({ name: 'Camilo'})}!</h1> -->
 <div
 	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
 >
