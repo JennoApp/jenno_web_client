@@ -1,0 +1,7 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+
+  "sidebar_home": "Inicio",
+  "sidebar_explore": "Explorar",
+  "sidebar_following": "Siguiendo"
+}

@@ -13,6 +13,8 @@
 		location_data
 	} from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
+	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
+	import { i18n } from '$lib/i18n';
 
 	/*onMount(() => {
     socket.on("connect", () => {
@@ -106,7 +108,9 @@
 	</script>
 </svelte:head>
 
-<Toaster richColors theme="dark" duration={3000} />
-<Navigation>
-	<slot />
-</Navigation>
+<ParaglideJS {i18n}>
+	<Toaster richColors theme="dark" duration={3000} />
+	<Navigation>
+		<slot />
+	</Navigation>
+</ParaglideJS>

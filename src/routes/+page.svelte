@@ -91,10 +91,7 @@
 </div>
 
 
-<!-- <h1 class="text-white absolute top-[500px]">{m.greeting({ name: 'Camilo'})}!</h1> -->
-<div
-	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
->
+<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0">
 	{#each products as productData}
 		<Card data={productData} />
 	{/each}

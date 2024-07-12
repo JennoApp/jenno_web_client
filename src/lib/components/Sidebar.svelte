@@ -2,6 +2,8 @@
 	import { page } from '$app/stores'
 	import * as Tooltip from '$lib/components/ui/tooltip'
   import { toast } from 'svelte-sonner'
+  import * as m from '$paraglide/messages'
+	import { languageTag } from '$paraglide/runtime';
 
 	export let closeMenu = true
 
@@ -226,13 +228,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
-									: 'hidden'}>Inicio</span
+									: 'hidden'}>{m.sidebar_home()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Home</h3>
+							<h3>{m.sidebar_home()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>
@@ -256,13 +258,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Explorar</span
+									: 'hidden'}>{m.sidebar_explore()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Explore</h3>
+							<h3>{m.sidebar_explore()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>
@@ -286,13 +288,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>siguiendo</span
+									: 'hidden'}>{m.sidebar_following()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Subscriptions</h3>
+							<h3>{m.sidebar_following()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>

@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { theme } from '$lib/stores/themeStore';
 	import * as Select from '$lib/components/ui/select';
+  import { availableLanguageTags } from '$paraglide/runtime'
+  import { page } from '$app/stores'
+  import { i18n } from '$lib/i18n'
 
 	function setTheme(newTheme: string) {
 		theme.set(newTheme);
 	}
+
+  $: currentPathWithoutLanguge = i18n.route($page.url.pathname)
 </script>
 
 
@@ -21,3 +26,8 @@
 		</Select.Content>
 	</Select.Root>
 </div>
+
+{#each availableLanguageTags as lang}
+  <a href={currentPathWithoutLanguge} hreflang={lang}>Change language to {lang} </a>
+  <br>
+{/each}

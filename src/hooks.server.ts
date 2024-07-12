@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
+import { i18n } from '$lib/i18n'
 
-
+const langhandle = i18n.handle()
 
 const sessionHandle = (async ({ event, resolve }) => {
   // Obtenemos token de session de la cookies
@@ -41,4 +42,4 @@ const sessionHandle = (async ({ event, resolve }) => {
   return resolve(event)
 }) satisfies Handle
 
-export const handle = sequence(sessionHandle)
+export const handle = sequence(langhandle, sessionHandle)
