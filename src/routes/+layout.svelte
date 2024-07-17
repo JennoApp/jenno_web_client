@@ -14,8 +14,8 @@
 	} from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
-	import { i18n } from '$lib/i18n';
-	import { onSetLanguageTag, setLanguageTag } from '$paraglide/runtime';
+	// import { i18n } from '$lib/i18n';
+	import { setLanguageTag } from '$paraglide/runtime';
 	import { goto } from '$app/navigation';
 	import { redirect } from '@sveltejs/kit';
 
@@ -33,8 +33,10 @@
 
 	export let data;
 
+  $: setLanguageTag(data.locale)
+
 	// current language
-	$: console.log(data.serverLang);
+	// $: console.log(data.serverLang);
 
 	let storedIp: string | null = null;
 	let storedLocationData: any | null = null;
@@ -142,9 +144,9 @@
 	</script>
 </svelte:head>
 
-<ParaglideJS {i18n}>
+<!-- <ParaglideJS {i18n}> -->
 	<Toaster richColors theme="dark" duration={3000} />
 	<Navigation>
 		<slot />
 	</Navigation>
-</ParaglideJS>
+<!-- </ParaglideJS> -->

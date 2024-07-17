@@ -1,19 +1,23 @@
 import jwt from 'jsonwebtoken'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
-import { i18n } from '$lib/i18n'
-// import Negotiator from 'negotiator'
+import Negotiator from 'negotiator'
+import {
+  defaultLocale,
+  availableLocales,
+  type AvailableLocale,
+  isAvailableLocale
+} from '$lib/i18n'
 
-const langhandle = i18n.handle()
-
-const sessionHandle: Handle = (async ({ event, resolve }) => {
+// Session configuration
+const sessionHandle: Handle = async ({ event, resolve }) => {
   // Obtenemos token de session de la cookies
   const session = event.cookies.get('session')
 
   if (session) {
     try {
       const decodedToken = jwt.verify(session, 'secretKey_crb331')
-      console.log({decodedToken})
+      console.log({ decodedToken })
 
       if (decodedToken?.exp * 1000 < Date.now()) {
         event.cookies.delete('session', {
@@ -35,37 +39,45 @@ const sessionHandle: Handle = (async ({ event, resolve }) => {
     } catch (error: any) {
       console.log("Error al verificar el token JWT:", error.message)
 
-      event.cookies.set('session', '', { path: '/',maxAge: 0 })
+      event.cookies.set('session', '', { path: '/', maxAge: 0 })
       event.locals.isSession = false
     }
   }
 
   return resolve(event)
-}) satisfies Handle
+}
 
 
-// // internacionalization locale configuration
-// const availableLocales = ['en', 'es']
-// const defaultLocale = 'en'
-// const localization: Handle = async ({ event, resolve }) => {
-//   const acceptedLangs = event.request.headers.get('accept-language')
+// Internacionalization locale configuration
+const localization: Handle = async ({ event, resolve }) => {
+  let locale: AvailableLocale = defaultLocale
 
-//   let locale = defaultLocale  
-//   if (acceptedLangs) {
-//     locale = new Negotiator({
-//       headers: {
-//         'accept-language': acceptedLangs
-//       }
-//     }).language(availableLocales) || defaultLocale 
-//   }
+  const langFromCookie = event.cookies.get('lang')
 
-//   console.log('headers:', event.request.headers.get('accept-language'))
-//   console.log('user preferred but available locale: ', locale)
+  if (isAvailableLocale(langFromCookie)) {
+    locale = langFromCookie
+  } else {
+    const acceptedLanguageHeader = event.request.headers.get('accept-language')
 
-//   return resolve(event, {
-//     transformPageChunk: ({ html }) => html.replace('%lang%', locale)
-//   })
-// }
+    if (acceptedLanguageHeader) {
+      locale = (new Negotiator({
+        headers: {
+          'accept-language': acceptedLanguageHeader
+        }
+      }).language(availableLocales as unknown as string[]) as AvailableLocale) || defaultLocale
+    }
+  }
+
+  console.log('headers:', event.request.headers.get('accept-language'))
+  console.log('user preferred but available locale: ', locale)
+
+  // set locale in locals
+  event.locals.locale = locale
+
+  return resolve(event, {
+    transformPageChunk: ({ html }) => html.replace('%lang%', locale)
+  })
+}
 
 
-export const handle = sequence(langhandle, sessionHandle)
+export const handle: Handle = sequence(sessionHandle, localization)

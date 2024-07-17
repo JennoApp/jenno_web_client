@@ -19,7 +19,6 @@
 	import { theme } from '$lib/stores/themeStore';
 	import * as Dialog from '$lib/components/ui/dialog';
   import { location_data } from '$lib/stores/ipaddressStore'
-  import { i18n } from '$lib/i18n'
 
 	const rutasExcluidas = [
 		'',
@@ -141,7 +140,7 @@
 					</button>
 				</div>
 
-				<button on:click|preventDefault={() => goto(i18n.resolveRoute("/"))}>
+				<button on:click|preventDefault={() => goto("/")}>
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<h1 class="text-xl font-extrabold dark:text-gray-100">Shop</h1>

@@ -4,7 +4,6 @@
   import { toast } from 'svelte-sonner'
   import * as m from '$paraglide/messages'
 	import { languageTag } from '$paraglide/runtime';
-	import { i18n } from '$lib/i18n';
 	import { resolveRoute } from '$app/paths';
 	import { goto } from '$app/navigation';
 
@@ -216,7 +215,7 @@
 					<Tooltip.Trigger>
 						<button
               on:click|preventDefault={() => {
-                goto(i18n.resolveRoute("/"))
+                goto("/")
               }}
 							class={!closeMenu
 								? `group text h-10 w-44 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`
@@ -248,7 +247,7 @@
 					<Tooltip.Trigger>
 						<button
               on:click|preventDefault={() => {
-                goto(i18n.resolveRoute("/explore"))
+                goto("/explore")
               }}
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('explore', currentPath)}`
@@ -280,7 +279,7 @@
 					<Tooltip.Trigger>
 						<button
               on:click|preventDefault={() => {
-                goto(i18n.resolveRoute("following"))
+                goto("following")
               }}
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`

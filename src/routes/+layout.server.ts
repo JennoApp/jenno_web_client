@@ -1,9 +1,7 @@
-import { languageTag } from '$paraglide/runtime.js'
+import type { LayoutServerLoad } from './$types'
 
-export async function load({ locals, getClientAddress, fetch, depends }) {
-  depends("paraglide:lang")
-
-  let preferredLanguage = 'en' // Default language
+export const load: LayoutServerLoad = async ({ locals, getClientAddress, depends }) => {
+  depends('app:locale')
 
   let requestIp
   let locationData = {}
@@ -20,6 +18,6 @@ export async function load({ locals, getClientAddress, fetch, depends }) {
     sessionExpired: locals.sessionExpired,
     clientAddress: requestIp,
     locationData: locationData,
-    serverLang: `The language on the server is: ${languageTag()}` 
+    locale: locals.locale
   }
 }
