@@ -61,20 +61,20 @@
 		'Automotriz'
 	];
 
-  // country setup
-  let country = ''
+  // // country setup
+  // let country = ''
 
-  $: {
-    if ($location_data && $location_data.data && $location_data.data[0].country) {
-      country = $location_data.data[0].country
-    }
-  }
+  // $: {
+  //   if ($location_data && $location_data.data && $location_data.data[0].country) {
+  //     country = $location_data.data[0].country
+  //   }
+  // }
 
-  onMount(() => {
-    if (country) {
-      goto(`/?country=${country}`, { replaceState: true })
-    }
-  })
+  // onMount(() => {
+  //   if (country) {
+  //     goto(`/?country=${country}`, { replaceState: true })
+  //   }
+  // })
 </script>
 
 <svelte:head>

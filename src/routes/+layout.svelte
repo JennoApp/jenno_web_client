@@ -15,6 +15,9 @@
 	import { onMount } from 'svelte';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import { i18n } from '$lib/i18n';
+	import { onSetLanguageTag, setLanguageTag } from '$paraglide/runtime';
+	import { goto } from '$app/navigation';
+	import { redirect } from '@sveltejs/kit';
 
 	/*onMount(() => {
     socket.on("connect", () => {
@@ -29,6 +32,9 @@
 	}
 
 	export let data;
+
+	// current language
+	$: console.log(data.serverLang);
 
 	let storedIp: string | null = null;
 	let storedLocationData: any | null = null;
@@ -81,6 +87,17 @@
 	//   // addLocationData(locationData)
 	// }
 
+	// let country: string = '';
+	// if ($location_data) {
+	// 	country = $location_data.data[0].country_module.flag;
+	// 	if (country === 'co') {
+	// 		console.log('hola colombia');
+	// 	}
+	// }
+
+	// $: console.log(country)
+
+
 	onMount(() => {
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
@@ -88,7 +105,24 @@
 		} else {
 			console.log('Using stored location data', storedLocationData);
 		}
+
+  //   if ($location_data) {
+	// 	const country = $location_data.data[0].country_module.flag || ''
+	// 	if (country === 'co') {
+	// 		console.log('hola colombia');
+	// 	}
+	// }
 	});
+
+
+	// onMount(() => {
+	// 	if ($location_data) {
+	// 		if ($location_data.data[0].country_module.flag === 'co') {
+	// 			setLanguageTag('es');
+	// 			goto('/es');
+	// 		}
+	// 	}
+	// });
 </script>
 
 <svelte:head>

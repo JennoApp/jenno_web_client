@@ -2,10 +2,11 @@ import jwt from 'jsonwebtoken'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { i18n } from '$lib/i18n'
+// import Negotiator from 'negotiator'
 
 const langhandle = i18n.handle()
 
-const sessionHandle = (async ({ event, resolve }) => {
+const sessionHandle: Handle = (async ({ event, resolve }) => {
   // Obtenemos token de session de la cookies
   const session = event.cookies.get('session')
 
@@ -41,5 +42,30 @@ const sessionHandle = (async ({ event, resolve }) => {
 
   return resolve(event)
 }) satisfies Handle
+
+
+// // internacionalization locale configuration
+// const availableLocales = ['en', 'es']
+// const defaultLocale = 'en'
+// const localization: Handle = async ({ event, resolve }) => {
+//   const acceptedLangs = event.request.headers.get('accept-language')
+
+//   let locale = defaultLocale  
+//   if (acceptedLangs) {
+//     locale = new Negotiator({
+//       headers: {
+//         'accept-language': acceptedLangs
+//       }
+//     }).language(availableLocales) || defaultLocale 
+//   }
+
+//   console.log('headers:', event.request.headers.get('accept-language'))
+//   console.log('user preferred but available locale: ', locale)
+
+//   return resolve(event, {
+//     transformPageChunk: ({ html }) => html.replace('%lang%', locale)
+//   })
+// }
+
 
 export const handle = sequence(langhandle, sessionHandle)

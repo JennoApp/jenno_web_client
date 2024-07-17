@@ -4,6 +4,9 @@
   import { toast } from 'svelte-sonner'
   import * as m from '$paraglide/messages'
 	import { languageTag } from '$paraglide/runtime';
+	import { i18n } from '$lib/i18n';
+	import { resolveRoute } from '$app/paths';
+	import { goto } from '$app/navigation';
 
 	export let closeMenu = true
 
@@ -211,8 +214,10 @@
 			<ul>
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<a
-							href="/"
+						<button
+              on:click|preventDefault={() => {
+                goto(i18n.resolveRoute("/"))
+              }}
 							class={!closeMenu
 								? `group text h-10 w-44 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`
 								: `group text h-10 w-12 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`}
@@ -230,7 +235,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_home()}</span
 							>
-						</a>
+                </button>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
@@ -241,8 +246,10 @@
 
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<a
-							href="/explore"
+						<button
+              on:click|preventDefault={() => {
+                goto(i18n.resolveRoute("/explore"))
+              }}
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('explore', currentPath)}`
 								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('explore', currentPath)}`}
@@ -260,7 +267,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_explore()}</span
 							>
-						</a>
+                </button>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
@@ -271,8 +278,10 @@
 
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<a
-							href="/following"
+						<button
+              on:click|preventDefault={() => {
+                goto(i18n.resolveRoute("following"))
+              }}
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`
 								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`}
@@ -290,7 +299,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_following()}</span
 							>
-						</a>
+                </button>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
