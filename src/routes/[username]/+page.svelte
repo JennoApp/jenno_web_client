@@ -6,6 +6,7 @@
 	import { toast } from 'svelte-sonner';
   import { location_data } from '$lib/stores/ipaddressStore'
   import { onMount } from 'svelte'
+  import * as m from '$paraglide/messages'
 
 	export let data: PageServerData;
 
@@ -142,11 +143,11 @@
 				<div class="flex gap-10">
 					<div class="text-center">
 						<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
-						<span class="block text-sm text-gray-500">Seguidores</span>
+						<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
 					</div>
 					<div class="text-center">
 						<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
-						<span class="block text-sm text-gray-500">Seguidos</span>
+						<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
 					</div>
 				</div>
 			</div>

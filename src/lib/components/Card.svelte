@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+  import * as m from '$paraglide/messages'
 
 	interface CardData {
 		_id: string;
@@ -133,7 +134,7 @@
 				class="bg-gray-200 hover:bg-gray-300 text-black dark:bg-[#404040] font-normal rounded w-full h-8 dark:text-gray-200 text-base cursor-pointer"
 				on:click|preventDefault={() => addToCart(data)}
 			>
-				Add to Cart
+				{m.card_button_addtocart()}
 			</button>
       <button
 				class="bg-purple-600 hover:bg-purple-700 font-normal rounded w-full h-8 text-gray-200 text-base cursor-pointer z-10"
@@ -142,7 +143,7 @@
 					goto('/cart');
 				}}
 			>
-				Buy Now
+				{m.card_button_buynow()}
 			</button>
 		</div>
 	</div>

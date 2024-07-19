@@ -34,6 +34,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import RandomProducts from '$lib/components/Randomuserproducts.svelte';
 	import { page } from '$app/stores';
+  import * as m from '$paraglide/messages'
 
 	export let data: PageServerData;
   let product: CardData
@@ -184,7 +185,7 @@
 				<span class="text-base font-semibold">{rating}</span>
 			</div>
 
-			<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">Reseñas</h3>
+			<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">{m.product_page_reviews()}</h3>
 		</div>
 
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
@@ -241,7 +242,7 @@
 				<button
 					on:click|preventDefault={() => handleAddToCart()}
 					class="dark:bg-[#202020] border-none rounded w-3/5 h-12 bg-gray-200 dark:text-gray-200 text-black text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#252525]"
-					>Add to Cart</button
+					>{m.card_button_addtocart()}</button
 				>
 			</div>
 			<button
@@ -250,7 +251,7 @@
 					goto('/cart');
 				}}
 				class="bg-purple-600 dark:bg-purple-600 border-none rounded w-full h-12 text-white text-base cursor-pointer hover:bg-purple-700 hover:dark:bg-purple-700"
-				>Buy Now</button
+				>{m.card_button_buynow()}</button
 			>
 		</div>
 	</div>
@@ -258,7 +259,7 @@
 
 {#if product.especifications.length !== 0}
 	<div class="flex flex-col m-10 mt-14">
-		<h2 class="text-xl font-bold">Especificaciones</h2>
+		<h2 class="text-xl font-bold">{m.product_page_specifications()}</h2>
 
 		<Table.Root class="mt-7 overflow-x-auto">
 			<Table.Header class="bg-gray-200 dark:bg-[#202020] h-14">
@@ -280,7 +281,7 @@
 {/if}
 
 <div class="flex flex-col m-10 mt-14">
-	<h2 class="text-xl font-bold">Mas Productos</h2>
+	<h2 class="text-xl font-bold">{m.product_page_more_products()}</h2>
 </div>
 
 <!-- Lista de productos del mismo vendedor -->

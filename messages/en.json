@@ -1,7 +1,32 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
- 
+  
+  "navbar_input_search": "Search",
+  "navbar_cart_additems": "Add items to Cart!",
+  "navbar_cart_go_to_cart": "go to cart",
+  "navbar_user_admin": "Admin Panel",
+  "navbar_user_shopping": "Shopping",
+  "navbar_user_settings": "Settings",
+  "navbar_user_theme": "Theme",
+  "nabvar_user_theme_light": "light",
+  "nabvar_user_theme_dark": "dark",
+  "nabvar_user_theme_system": "system",
+  "navbar_user_logout": "Log out",
+
   "sidebar_home": "Home",
   "sidebar_explore": "Explore",
-  "sidebar_following": "Following"
+  "sidebar_following": "Following",
+
+  "card_button_addtocart": "Add to Cart",
+  "card_button_buynow": "Buy Now",
+
+  "shop_page_button_follow": "Follow",
+  "shop_page_button_following": "Following",
+  "shop_page_send_message": "Send Message",
+  "shop_page_followers": "Followers",
+  "shop_page_following": "Following",
+
+  "product_page_reviews": "Reviews",
+  "product_page_specifications": "Specifications",
+  "product_page_more_products": "More Products"
 }

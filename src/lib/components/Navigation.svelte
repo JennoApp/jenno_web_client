@@ -19,6 +19,7 @@
 	import { theme } from '$lib/stores/themeStore';
 	import * as Dialog from '$lib/components/ui/dialog';
   import { location_data } from '$lib/stores/ipaddressStore'
+  import * as m from '$paraglide/messages'
 
 	const rutasExcluidas = [
 		'',
@@ -178,7 +179,7 @@
 								? ''
 								: 'border-r-0 rounded-l-2xl'}"
 							type="text"
-							placeholder="Search"
+							placeholder={m.navbar_input_search()}
 							name="search"
 							autocomplete="off"
 							bind:value={searchInputValue}
@@ -224,7 +225,7 @@
 										? ''
 										: 'border-r-0 rounded-l-2xl'}"
 									type="text"
-									placeholder="Search"
+									placeholder={m.navbar_input_search()}
 									name="search"
 									autocomplete="off"
 									bind:value={searchInputValue}
@@ -276,7 +277,7 @@
 							<HoverCard.Content class="flex flex-col gap-2 w-80">
 								{#if $cartItems.length === 0}
 									<div class="w-full flex justify-center">
-										<h2>Agregar items al Carrito!</h2>
+										<h2>{m.navbar_cart_additems()}</h2>
 									</div>
 								{:else}
 									{#each $cartItems as cartItem}
@@ -327,7 +328,7 @@
 										</div>
 									{/each}
 									<div class="flex justify-between">
-										<a href="/cart" class="hover:underline">Ir al carrito</a>
+										<a href="/cart" class="hover:underline">{m.navbar_cart_go_to_cart()}</a>
 										<h2>Subtotal: {formatPrice(total, 'es-CO', 'COP')}</h2>
 									</div>
 								{/if}
@@ -381,31 +382,31 @@
 								<DropdownMenu.Group>
 									{#if userInfo.accountType === 'business'}
 										<DropdownMenu.Item href="/admin/dashboard">
-											<span>Administrador</span>
+											<span>{m.navbar_user_admin()}</span>
 										</DropdownMenu.Item>
 									{/if}
 									<DropdownMenu.Item href="/shopping">
-										<span>Compras</span>
+										<span>{m.navbar_user_shopping()}</span>
 									</DropdownMenu.Item>
 									<DropdownMenu.Item href="/settings/profile">
-										<span>Ajustes</span>
+										<span>{m.navbar_user_settings()}</span>
 									</DropdownMenu.Item>
 
 									<DropdownMenu.Sub>
-										<DropdownMenu.SubTrigger>Tema</DropdownMenu.SubTrigger>
+										<DropdownMenu.SubTrigger>{m.navbar_user_theme()}</DropdownMenu.SubTrigger>
 										<DropdownMenu.SubContent>
-											<DropdownMenu.Item on:click={() => setTheme('light')}>Claro</DropdownMenu.Item
+											<DropdownMenu.Item on:click={() => setTheme('light')}>{m.nabvar_user_theme_light()}</DropdownMenu.Item
 											>
-											<DropdownMenu.Item on:click={() => setTheme('dark')}>Oscuro</DropdownMenu.Item
+											<DropdownMenu.Item on:click={() => setTheme('dark')}>{m.nabvar_user_theme_dark()}</DropdownMenu.Item
 											>
 											<DropdownMenu.Item on:click={() => setTheme('system')}
-												>Sistema</DropdownMenu.Item
+												>{m.nabvar_user_theme_system()}</DropdownMenu.Item
 											>
 										</DropdownMenu.SubContent>
 									</DropdownMenu.Sub>
 
 									<DropdownMenu.Item on:click={() => logout()}>
-										<span>Cerrar Sesion</span>
+										<span>{m.navbar_user_logout()}</span>
 									</DropdownMenu.Item>
 								</DropdownMenu.Group>
 							</DropdownMenu.Content>
