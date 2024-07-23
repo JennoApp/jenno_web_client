@@ -3,6 +3,7 @@
 	import Message from '$lib/components/Message.svelte';
 	import { page } from '$app/stores';
 	import { io, type Socket } from 'socket.io-client';
+  import * as m from '$paraglide/messages'
 
 	let conversations: any[];
 	let messages: any[] = [];
@@ -205,14 +206,14 @@
 						<form class="flex items-center justify-evenly mt-1 h-20" on:submit={handleSendMessage}>
 							<textarea
 								class="flex flex-wrap w-4/5 p-1 h-10 dark:bg-[#121212] border border-gray-200 dark:border-[#202020] rounded-2xl placeholder:px-1"
-								placeholder="write something"
+								placeholder={m.chat_page_message_input()}
 								id=""
 								bind:value={newMessage}
 							></textarea>
 							<button
 								class="w-20 h-10 border-none rounded-lg bg-purple-600 dark:bg-[#202020] text-white"
 							>
-								Send
+								{m.chat_page_message_button()}
 							</button>
 						</form>
 					</div>

@@ -16,6 +16,11 @@
   "sidebar_home": "Inicio",
   "sidebar_explore": "Explorar",
   "sidebar_following": "Siguiendo",
+  "sidebar_admin_dashboard": "Panel",
+  "sidebar_admin_sales": "Ventas",
+  "sidebar_admin_catalog": "Catalogo",
+  "sidebar_admin_customers": "Seguidores",
+  "sidebar_admin_marketing": "Publicidad",
 
   "card_button_addtocart": "Agregar al Carrito",
   "card_button_buynow": " Comprar Ahora",
@@ -28,5 +33,40 @@
 
   "product_page_reviews": "Reseñas",
   "product_page_specifications": "Especificaciones",
-  "product_page_more_products": "Mas Productos"
+  "product_page_more_products": "Mas Productos",
+
+  "chat_page_message_input": "Escribe algo",
+  "chat_page_message_button": "Enviar",
+
+  "settings_menu_profile": "Perfil",
+  "settings_menu_shipping": "Informacion de envio",
+  "settings_menu_appearance": "Apariencia",
+  "settings_menu_about": "Acerca",
+
+  "settings_profile_uploadimage_button": "Actualizar Imagen",
+  "settings_profile_title_account_info": "Informacion Cuenta",
+  "settings_profile_account_name": "Nombre",
+  "settings_profile_account_email": "Correo",
+  "settings_profile_account_country": "Pais",
+  "settings_profile_account_select_country": "Elige un pais",
+  "settings_profile_account_bio": "Bio",
+  "settings_profile_title_legal_info": "Informacion Legal",
+  "settings_profile_legal_name": "Primer Nombre",
+  "settings_profile_legal_lastname": "Apellido",
+  "settings_profile_legal_taxid": "Tax Id",
+  "settings_profilw_update_button": "Actualizar",
+
+  "settings_shipping_title": "Informacion de Envio",
+  "settings_shipping_address": "Direccion",
+  "settings_shipping_country": "Pais",
+  "settings_shipping_state": "Estado",
+  "settings_shipping_city": "Ciudad",
+  "settings_shipping_postalcode": "Codigo Postal",
+  "settings_shipping_phone_number": "Numero Celular",
+  "settings_shipping_update_button": "Actualizar",
+
+  "settings_appearance_theme": "Tema",
+  "settings_appearance_theme_light": "claro",
+  "settings_appearance_theme_dark": "oscuro",
+  "settings_appearance_theme_system": "sistema"
 }

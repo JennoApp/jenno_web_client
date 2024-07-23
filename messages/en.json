@@ -16,6 +16,11 @@
   "sidebar_home": "Home",
   "sidebar_explore": "Explore",
   "sidebar_following": "Following",
+  "sidebar_admin_dashboard": "Dashboard",
+  "sidebar_admin_sales": "Sales",
+  "sidebar_admin_catalog": "Catalog",
+  "sidebar_admin_customers": "Customers",
+  "sidebar_admin_marketing": "Marketing",
 
   "card_button_addtocart": "Add to Cart",
   "card_button_buynow": "Buy Now",
@@ -28,5 +33,40 @@
 
   "product_page_reviews": "Reviews",
   "product_page_specifications": "Specifications",
-  "product_page_more_products": "More Products"
+  "product_page_more_products": "More Products",
+
+  "chat_page_message_input": "write something",
+  "chat_page_message_button": "Send",
+
+  "settings_menu_profile": "Profile",
+  "settings_menu_shipping": "Shipping Info",
+  "settings_menu_appearance": "Appearance",
+  "settings_menu_about": "About",
+
+  "settings_profile_uploadimage_button": "Upload Image",
+  "settings_profile_title_account_info": "Company Account",
+  "settings_profile_account_name": "Name",
+  "settings_profile_account_email": "Email",
+  "settings_profile_account_country": "Country",
+  "settings_profile_account_select_country": "choose a country",
+  "settings_profile_account_bio": "Bio",
+  "settings_profile_title_legal_info": "Legal Information",
+  "settings_profile_legal_name": "First Name",
+  "settings_profile_legal_lastname": "Lastname",
+  "settings_profile_legal_taxid": "Tax Id",
+  "settings_profilw_update_button": "Update",
+
+  "settings_shipping_title": "shipment information",
+  "settings_shipping_address": "Address",
+  "settings_shipping_country": "Country",
+  "settings_shipping_state": "State",
+  "settings_shipping_city": "City",
+  "settings_shipping_postalcode": "Postal Code",
+  "settings_shipping_phone_number": "Phone number",
+  "settings_shipping_update_button": "Update",
+
+  "settings_appearance_theme": "Theme",
+  "settings_appearance_theme_light": "light",
+  "settings_appearance_theme_dark": "dark",
+  "settings_appearance_theme_system": "system"
 }

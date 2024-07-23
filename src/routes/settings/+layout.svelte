@@ -2,23 +2,24 @@
 	import { page } from '$app/stores';
 	import { cn } from '$lib/utils';
 	import { goto } from '$app/navigation';
+  import * as m from '$paraglide/messages'
 
 	$: url = $page.url.pathname;
 	const SettingsNavItems = [
 		{
-			title: 'Profile',
+			title: `${m.settings_menu_profile()}`,
 			href: '/settings/profile'
 		},
 		{
-			title: 'Shipping',
+			title: `${m.settings_menu_shipping()}`,
 			href: '/settings/shipping'
 		},
 		{
-			title: 'Apariencia',
+			title: `${m.settings_menu_appearance()}`,
 			href: '/settings/appearance'
 		},
 		{
-			title: 'Acerca',
+			title: `${m.settings_menu_about()}`,
 			href: '/settings/about'
 		}
 	];

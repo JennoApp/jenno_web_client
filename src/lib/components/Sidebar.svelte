@@ -58,13 +58,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Dashboard</span
+									: 'hidden'}>{m.sidebar_admin_dashboard()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Dashboard</h3>
+							<h3>{m.sidebar_admin_dashboard()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>
@@ -88,13 +88,12 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Sales</span
-							>
+									: 'hidden'}>{m.sidebar_admin_sales()}</span>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Sales</h3>
+							<h3>{m.sidebar_admin_sales()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>
@@ -118,13 +117,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Catalog</span
+									: 'hidden'}>{m.sidebar_admin_catalog()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Catalog</h3>
+							<h3>{m.sidebar_admin_catalog()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>
@@ -148,13 +147,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Customers</span
+									: 'hidden'}>{m.sidebar_admin_customers()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Customers</h3>
+							<h3>{m.sidebar_admin_customers()}</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>
@@ -179,13 +178,13 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Marketing</span
+									: 'hidden'}>{m.sidebar_admin_marketing()}</span
 							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							<h3>Marketing</h3>
+							
 							<div class="flex gap-2 mt-1">
 								<iconify-icon
 									icon="material-symbols:warning"
@@ -193,7 +192,7 @@
 									width="1.3rem"
 									class='text-yellow-300 text-xl group-hover:text-[#fff]'
 								/>
-								<h2>En construccion</h2>
+                <h3>{m.sidebar_admin_marketing()}</h3>
 							</div>
 						</Tooltip.Content>
 					{/if}

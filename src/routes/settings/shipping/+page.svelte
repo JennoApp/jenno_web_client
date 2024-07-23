@@ -3,6 +3,7 @@
 	import { toast } from 'svelte-sonner'
   import type { ActionData } from './$types'
   import { page } from '$app/stores'
+  import * as m from '$paraglide/messages'
 
   export let form: ActionData
   let userData = $page.data.user
@@ -14,12 +15,12 @@
 
 <div class="flex flex-col items-center justify-center w-full mt-5">
 	<!-- Header -->
-	<h1 class="text-2xl font-semibold dark:text-gray-200 mb-5">Informacion Envio</h1>
+	<h1 class="text-2xl font-semibold dark:text-gray-200 mb-5">{m.settings_shipping_title()}</h1>
 
 	<!-- Form -->
 	<form class="flex flex-col gap-2 min-w-xs w-96 mx-auto" action="?/shipping" method="POST" use:enhance>
 		<div class="flex flex-col">
-			<label for="address" class="text-base dark:text-gray-200 font-medium">Address</label>
+			<label for="address" class="text-base dark:text-gray-200 font-medium">{m.settings_shipping_address()}:</label>
 			<input
 				type="text"
 				name="address"
@@ -37,7 +38,7 @@
 
 		<!-- Country Input -->
 		<div class="flex flex-col">
-			<label for="country" class="text-base dark:text-gray-200 font-medium">Country</label>
+			<label for="country" class="text-base dark:text-gray-200 font-medium">{m.settings_shipping_country()}:</label>
 			<input
 				type="text"
 				name="country"
@@ -55,7 +56,7 @@
 
 		<!-- State Input -->
 		<div class="flex flex-col">
-			<label for="state" class="text-base dark:text-gray-200 font-medium">State</label>
+			<label for="state" class="text-base dark:text-gray-200 font-medium">{m.settings_shipping_state()}:</label>
 			<input
 				type="text"
 				name="state"
@@ -73,7 +74,7 @@
 
 		<!-- City Input -->
 		<div class="flex flex-col">
-			<label for="city" class="text-base dark:text-gray-200 font-medium">City</label>
+			<label for="city" class="text-base dark:text-gray-200 font-medium">{m.settings_shipping_city()}:</label>
 			<input
 				type="text"
 				name="city"
@@ -91,7 +92,7 @@
 
 		<!-- PostalCode Input -->
 		<div class="flex flex-col">
-			<label for="postalCode" class="text-base dark:text-gray-200 font-medium">Postal code</label>
+			<label for="postalCode" class="text-base dark:text-gray-200 font-medium">{m.settings_shipping_postalcode()}:</label>
 			<input
 				type="text"
 				name="postalCode"
@@ -109,7 +110,7 @@
 
 		<!-- Phone Number Input -->
 		<div class="flex flex-col">
-			<label for="phoneNumber" class="text-base dark:text-gray-200 font-medium">Phone number</label>
+			<label for="phoneNumber" class="text-base dark:text-gray-200 font-medium">{m.settings_shipping_phone_number()}:</label>
 			<input
 				type="text"
 				name="phoneNumber"
@@ -129,7 +130,7 @@
 		<button
 			class="h-10 w-full mt-4 border border-purple-600 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-white hover:bg-purple-700 dark:hover:bg-[#252525]"
 		>
-			Guardar
+			{m.settings_shipping_update_button()}
 		</button>
 	</form>
 </div>

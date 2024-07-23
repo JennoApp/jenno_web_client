@@ -9,7 +9,7 @@
   import * as Select from '$lib/components/ui/select';
   import { countryList } from '$lib/utils/countries'
   import { location_data } from '$lib/stores/ipaddressStore'
-
+  import * as m from '$paraglide/messages'
 
 	export let data: PageServerData;
 	export let form: ActionData;
@@ -54,7 +54,7 @@
 			<Input type="file" name="profile" class="ml-10" />
 		</div>
 		<Button type="submit" class="ml-5 bg-purple-600 hover:bg-purple-700 text-white"
-			>Upload Image</Button
+			>{m.settings_profile_uploadimage_button()}</Button
 		>
 	</form>
 </div>
@@ -63,10 +63,10 @@
 	<!-- Personal Information -->
 	<form class="md:w-1/2" method="post" action="?/uploadUserInfo" use:enhance>
 		<h2 class="mt-5 text-xl font-semibold">
-			Informacion {userInfo?.accountType === 'personal' ? 'Personal' : 'Empresa'}
+			{m.settings_profile_title_account_info()}
 		</h2>
 		<div class="flex gap-5 items-center mt-5">
-			<label for="username" class="text-base font-medium">Nombre:</label>
+			<label for="username" class="text-base font-medium">{m.settings_profile_account_name()}:</label>
 			<input
 				type="text"
 				name="username"
@@ -75,7 +75,7 @@
 			/>
 		</div>
 		<div class="flex gap-5 items-center mt-5">
-			<label for="email" class="text-base font-medium">Email:</label>
+			<label for="email" class="text-base font-medium">{m.settings_profile_account_email()}:</label>
 			<input
 				type="text"
 				name="email"
@@ -85,19 +85,19 @@
 		</div>
 
 		<!-- Country Input -->
-		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium">Country</label>
+		<div class="flex flex-col mt-3">
+			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.settings_profile_account_country()}</label>
 			<Select.Root 
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
 				}}
 			>
 				<Select.Trigger>
-					<Select.Value placeholder="Escoge un Pais" />
+					<Select.Value placeholder={m.settings_profile_account_select_country()} />
 				</Select.Trigger>
 				<Select.Content class="overflow-y-auto max-h-[20rem]">
 					{#each countryList as country}
-						<Select.Item value={`${country}`}>{country}</Select.Item>
+						<Select.Item value={`${country}`}>{country}:</Select.Item>
 					{/each}
 				</Select.Content>
 			</Select.Root>
@@ -111,7 +111,7 @@
 		</div>
 
 		<div class="flex gap-5 items-center mt-5">
-			<label for="bio" class="text-base font-medium">Bio:</label>
+			<label for="bio" class="text-base font-medium">{m.settings_profile_account_bio()}:</label>
 			<textarea
 				name="bio"
 				class="h-20 w-80 border rounded-md text-black font-semibold px-2"
@@ -120,7 +120,7 @@
 		</div>
 		<div class="hidden">
 			<div class="flex gap-5 items-center mt-5">
-				<label for="country" class="text-base font-medium">Pais:</label>
+				<label for="country" class="text-base font-medium">{m.settings_profile_account_country()}:</label>
 				<input
 					type="text"
 					name="country"
@@ -132,9 +132,9 @@
 		<!-- Bussines Legal Information -->
 		{#if userInfo?.accountType === 'business'}
 			<div class="mt-10">
-				<h2 class="mt-5 text-xl font-semibold">Informacion Legal</h2>
+				<h2 class="mt-5 text-xl font-semibold">{m.settings_profile_title_legal_info()}</h2>
 				<div class="flex gap-5 items-center mt-5">
-					<label for="legal_name" class="text-base font-medium">Nombre:</label>
+					<label for="legal_name" class="text-base font-medium">{m.settings_profile_legal_name()}:</label>
 					<input
 						type="text"
 						name="legal_name"
@@ -143,7 +143,7 @@
 					/>
 				</div>
 				<div class="flex gap-5 items-center mt-5">
-					<label for="legal_lastname" class="text-base font-medium">Apellido:</label>
+					<label for="legal_lastname" class="text-base font-medium">{m.settings_profile_legal_lastname()}:</label>
 					<input
 						type="text"
 						name="legal_lastname"
@@ -152,7 +152,7 @@
 					/>
 				</div>
 				<div class="flex gap-5 items-center mt-5">
-					<label for="taxid" class="text-base font-medium">TaxId:</label>
+					<label for="taxid" class="text-base font-medium">{m.settings_profile_legal_taxid()}:</label>
 					<input
 						type="text"
 						name="taxid"
@@ -166,7 +166,7 @@
 		<button
 			class="h-10 w-96 mt-10 border border-gray-200 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
 		>
-			<span class="text-lg font-semibold">Actualizar</span>
+			<span class="text-lg font-semibold">{m.settings_profilw_update_button()}</span>
 		</button>
 	</form>
 </div>
