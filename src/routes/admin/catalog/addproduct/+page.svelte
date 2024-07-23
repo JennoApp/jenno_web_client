@@ -14,6 +14,8 @@
 	import { onMount } from 'svelte';
 	import CurrencyInput from '@canutin/svelte-currency-input';
   import { location_data } from '$lib/stores/ipaddressStore'
+  import * as m from '$paraglide/messages'
+	import { admin_catalog_addproduct_inventory } from '$paraglide/messages/en';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -121,8 +123,8 @@
 	</button>
 	<div>
 		<div class="flex flex-col ml-3">
-			<h4 class="text-sm dark:text-slate-300">Back to product list</h4>
-			<h2 class="text-xl font-semibold">Nuevo producto</h2>
+			<h4 class="text-sm dark:text-slate-300">{m.admin_catalog_addproduct_back()}</h4>
+			<h2 class="text-xl font-semibold">{m.admin_catalog_addproduct_title()}</h2>
 		</div>
 	</div>
 </div>
@@ -139,11 +141,11 @@
 		<div class="w-full">
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Description</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_product()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<label for="productname">Product name</label>
+						<label for="productname">{m.admin_catalog_addproduct_product_name()}</label>
 						<Input
 							type="text"
 							name="productname"
@@ -157,7 +159,7 @@
 						</label>
 					</div>
 					<div>
-						<label for="description">Description</label>
+						<label for="description">{m.admin_catalog_addproduct_product_description()}</label>
 						<Textarea
 							class="resize-y"
 							name="description"
@@ -174,11 +176,11 @@
 
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Pricing</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_pricing()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div class="flex gap-3 items-center w-full">
-						<label for="price">Price:</label>
+						<label for="price">{m.admin_catalog_addproduct_pricing_price()}:</label>
 						<CurrencyInput
 							name="price"
 							value={product !== undefined ? product.price : 0}
@@ -202,11 +204,11 @@
 
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Inventory</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_inventory()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<label for="quantity">Quantity</label>
+						<label for="quantity">{m.admin_catalog_addproduct_inventory_quantity()}</label>
 						<Input
 							type="number"
 							name="quantity"
@@ -219,7 +221,7 @@
 						</label>
 					</div>
 					<div>
-						<label for="SKU">SKU</label>
+						<label for="SKU">{m.admin_catalog_addproduct_inventory_sku()}</label>
 						<Input type="text" name="SKU" value={`${product !== undefined ? product.SKU : ''}`} />
 						<label for="SKU">
 							{#if form?.errors?.SKU}
@@ -232,11 +234,11 @@
 
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Category</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_category()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<label for="category">Category</label>
+						<label for="category">{m.admin_catalog_addproduct_category_category()}</label>
 						<Input name="category" value={`${product !== undefined ? product.category : ''}`} />
 						<label for="category">
 							{#if form?.errors?.category}

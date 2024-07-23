@@ -212,10 +212,8 @@
 			<ul>
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<button
-              on:click|preventDefault={() => {
-                goto("/")
-              }}
+						<a
+              href="/"
 							class={!closeMenu
 								? `group text h-10 w-44 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`
 								: `group text h-10 w-12 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`}
@@ -233,7 +231,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_home()}</span
 							>
-                </button>
+                </a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
@@ -244,10 +242,8 @@
 
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<button
-              on:click|preventDefault={() => {
-                goto("/explore")
-              }}
+						<a
+              href="/explore"
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('explore', currentPath)}`
 								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('explore', currentPath)}`}
@@ -265,7 +261,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_explore()}</span
 							>
-                </button>
+                </a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
@@ -276,10 +272,8 @@
 
 				<Tooltip.Root>
 					<Tooltip.Trigger>
-						<button
-              on:click|preventDefault={() => {
-                goto("following")
-              }}
+						<a
+              href="/following"
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`
 								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`}
@@ -297,7 +291,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_following()}</span
 							>
-                </button>
+                </a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>

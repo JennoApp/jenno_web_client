@@ -10,6 +10,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import DataTableActions from './data-table-actions.svelte';
   import * as Dialog from "$lib/components/ui/dialog"
+  import * as m from '$paraglide/messages'
 
 	export let data: PageServerData;
 
@@ -25,11 +26,11 @@
 	const columns = table.createColumns([
 		table.column({
 			accessor: 'productname',
-			header: 'Name'
+			header: `${m.admin_catalog_tableheader_name()}`
 		}),
 		table.column({
 			accessor: 'imgs',
-			header: 'Image',
+			header: `${m.admin_catalog_tableheader_image()}`,
 			plugins: {
 				filter: {
 					exclude: true
@@ -41,7 +42,7 @@
 		}),
 		table.column({
 			accessor: 'category',
-			header: 'Category',
+			header: `${m.admin_catalog_tableheader_category()}`,
 			plugins: {
 				filter: {
 					exclude: true
@@ -50,7 +51,7 @@
 		}),
 		table.column({
 			accessor: 'price',
-			header: 'Price',
+			header: `${m.admin_catalog_tableheader_price()}`,
 			plugins: {
 				filter: {
 					exclude: true
@@ -66,7 +67,7 @@
 		}),
 		table.column({
 			accessor: 'quantity',
-			header: 'Quantity',
+			header: `${m.admin_catalog_tableheader_category()}`,
 			plugins: {
 				filter: {
 					exclude: true
@@ -108,17 +109,17 @@
 </script>
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-	<h2 class="text-xl font-semibold dark:text-gray-200">Catalogo</h2>
+	<h2 class="text-xl font-semibold dark:text-gray-200">{m.admin_catalog_title()}</h2>
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			<Button
 				class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200               hover:bg-purple-700 dark:hover:bg-[#252525]"
-				>Agregar</Button
+				>{m.admin_catalog_button()}</Button
 			>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content class="bg-background mt-2">
-			<DropdownMenu.Item href="/admin/catalog/addproduct">Agregar Producto</DropdownMenu.Item>
-			<DropdownMenu.Item disabled>Agregar Servicio</DropdownMenu.Item>
+			<DropdownMenu.Item href="/admin/catalog/addproduct">{m.admin_catalog_button_addproduct()}</DropdownMenu.Item>
+			<DropdownMenu.Item disabled>{m.admin_catalog_button_addservice()}</DropdownMenu.Item>
 		</DropdownMenu.Content>
 	</DropdownMenu.Root>
 </div>
@@ -215,9 +216,9 @@
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
 		<iconify-icon icon="solar:box-bold" height="5rem" width="5rem" class="text-[#707070] mb-4" />
-		<h1 class="text-xl font-semibold text-[#707070] mb-2">¡Catálogo Vacío!</h1>
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_catalog_nocatalog_title()}</h1>
 		<p class="text-lg text-[#707070]">
-			Añade productos a tu catálogo para que los clientes puedan explorar y comprar.
+			{m.admin_catalog_nocatalog_p()}
 		</p>
 	</div>
 {/if}

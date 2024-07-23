@@ -4,6 +4,7 @@
   import { page } from '$app/stores'
   import { formatPrice } from '$lib/utils/formatprice'
   import { onMount } from 'svelte'
+  import * as m from '$paraglide/messages'
 
   $: console.log($page.data.user)
 
@@ -28,14 +29,12 @@
     getTotalRevenue($page.data.user._id)
     getNumberOfSales($page.data.user._id)
   }
-
-
 </script>
 
 <div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-3">
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Total Revenue</Card.Title>
+			<Card.Title class="text-md font-medium">{m.admin_dashboard_revenue()}</Card.Title>
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -46,7 +45,7 @@
 
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Followers</Card.Title>
+			<Card.Title class="text-md font-medium">{m.admin_dashboard_followers()}</Card.Title>
 			<iconify-icon icon="gravity-ui:persons" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -57,7 +56,7 @@
 
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Sales</Card.Title>
+			<Card.Title class="text-md font-medium">{m.admin_dashboard_sales()}</Card.Title>
 			<iconify-icon icon="mdi:credit-card-outline" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -70,7 +69,7 @@
 <div class="grid gap-4 m-5 md:grid-cols-2">
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-sm font-medium">Overview</Card.Title>
+			<Card.Title class="text-sm font-medium">{m.admin_dashboard_overview()}</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<Bar />
@@ -79,7 +78,7 @@
 
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-sm font-medium">Recent Sales</Card.Title>
+			<Card.Title class="text-sm font-medium">{m.admin_dashboard_recent_sales()}</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<div class="space-y-8">
