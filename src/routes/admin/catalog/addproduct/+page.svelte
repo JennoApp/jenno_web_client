@@ -252,10 +252,10 @@
 			<Card.Root class="mb-4">
 				<Card.Header>
 					<div class="flex justify-between">
-						<h3 class="font-semibold">Opciones</h3>
+						<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
 						<button
 							class="bg-purple-600 text-white dark:bg-[#303030] h-8 w-32 rounded-md"
-							on:click|preventDefault={addOptionsItem}>Agregar</button
+							on:click|preventDefault={addOptionsItem}>{m.admin_catalog_addproduct_options_button()}</button
 						>
 					</div>
 				</Card.Header>
@@ -264,7 +264,7 @@
 				{#each optionsItems as option, i}
 					<Card.Content class="flex gap-5 items-center">
 						<div class="flex gap-3 items-center">
-							<label for="optionname">Nombre: </label>
+							<label for="optionname">{m.admin_catalog_addproduct_options_name()}: </label>
 							<Input
 								type="text"
 								name={`optionname${i}`}
@@ -272,7 +272,7 @@
 							/>
 						</div>
 						<div class="flex gap-3 w-full items-center">
-							<label for="options">Opciones:</label>
+							<label for="options">{m.admin_catalog_addproduct_options_options()}:</label>
 							<Input
 								type="text"
 								name={`options${i}`}
@@ -294,7 +294,7 @@
 		<div class="w-full">
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Products Images</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_images()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div>
@@ -310,9 +310,9 @@
 							<Table.Header>
 								<Table.Row>
 									<Table.Head>#</Table.Head>
-									<Table.Head>Name</Table.Head>
-									<Table.Head>Type</Table.Head>
-									<Table.Head>Size</Table.Head>
+									<Table.Head>{m.admin_catalog_addproduct_images_name()}</Table.Head>
+									<Table.Head>{m.admin_catalog_addproduct_images_type()}</Table.Head>
+									<Table.Head>{m.admin_catalog_addproduct_images_size()}</Table.Head>
 								</Table.Row>
 							</Table.Header>
 							<Table.Body>
@@ -338,12 +338,12 @@
 
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Shipping and Delivery</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_shipping()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
           <!-- Shipping fee -->
             <div class="flex gap-3 items-center w-full">
-						<label for="shippingfee">Valor de envio:</label>
+						<label for="shippingfee">{m.admin_catalog_addproduct_shipping_shipment_value()}:</label>
 						<CurrencyInput
 							name="shippingfee"
 							value={product !== undefined ? product.shippingfee : 0}
@@ -364,7 +364,7 @@
 					</div>
           <!-- Optional shiping product info -->
 					<div class="mt-5">
-						<label for="weight">Weight</label>
+						<label for="weight">{m.admin_catalog_addproduct_shipping_weight()}</label>
 						<Input
 							type="number"
 							name="weight"
@@ -378,7 +378,7 @@
 					</div>
 					<div class="flex gap-1">
 						<div>
-							<label for="length">Length</label>
+							<label for="length">{m.admin_catalog_addproduct_shipping_length()}</label>
 							<Input
 								type="number"
 								name="length"
@@ -391,7 +391,7 @@
 							</label>
 						</div>
 						<div>
-							<label for="width">Width</label>
+							<label for="width">{m.admin_catalog_addproduct_shipping_width()}</label>
 							<Input type="number" name="width" />
 							<label for="width">
 								{#if form?.errors?.width}
@@ -400,7 +400,7 @@
 							</label>
 						</div>
 						<div>
-							<label for="height">Height</label>
+							<label for="height">{m.admin_catalog_addproduct_shipping_height()}</label>
 							<Input type="number" name="height" />
 							<label for="height">
 								{#if form?.errors?.height}
@@ -415,10 +415,10 @@
 			<Card.Root class="mb-4">
 				<Card.Header>
 					<div class="flex justify-between">
-						<h3 class="font-semibold">Especificaciones</h3>
+						<h3 class="font-semibold">{m.admin_catalog_addproduct_specifications()}</h3>
 						<button
 							class="bg-purple-600 dark:bg-[#303030] text-white h-8 w-32 rounded-md"
-							on:click|preventDefault={addEspecificationsItem}>Agregar</button
+							on:click|preventDefault={addEspecificationsItem}>{m.admin_catalog_addproduct_specifications_button()}</button
 						>
 					</div>
 				</Card.Header>
@@ -426,11 +426,11 @@
 				{#each especificationsItems as especification, i}
 					<Card.Content class="flex gap-5 items-center">
 						<div class="flex gap-3 items-center">
-							<label for="optionname">Titulo: </label>
+							<label for="optionname">{m.admin_catalog_addproduct_specifications_title()}: </label>
 							<Input class="overflow-x-scroll" type="text" name={`especificationtitle${i}`} value={product !== undefined ? especification?.title : ""} />
 						</div>
 						<div class="flex gap-3 w-full items-center">
-							<label for="options">Contenido:</label>
+							<label for="options">{m.admin_catalog_addproduct_specifications_content()}:</label>
 							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`} value={product !== undefined ? especification?.content : ""} />
 						</div>
 						<button
@@ -445,24 +445,24 @@
 
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Status</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_status()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<Label for="status">Status</Label>
+						<Label for="status">{m.admin_catalog_addproduct_specifications()}</Label>
 						<Select.Root
 							selected={{
 								value: product !== undefined ? product.status : ''
 							}}
 						>
 							<Select.Trigger>
-								<Select.Value placeholder="Select product status" />
+								<Select.Value placeholder={m.admin_catalog_addproduct_status_select()} />
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Group>
-									<Select.Item value="in_stock">in stock</Select.Item>
-									<Select.Item value="sold_out">sold out</Select.Item>
-									<Select.Item value="on_sale">on sale</Select.Item>
+									<Select.Item value="in_stock">{m.admin_catalog_addproduct_status_select_instock()}</Select.Item>
+									<Select.Item value="sold_out">{m.admin_catalog_addproduct_status_select_soldout()}</Select.Item>
+									<Select.Item value="on_sale">{m.admin_catalog_addproduct_status_select_onsale()}</Select.Item>
 									<!-- <Select.Item value="active">active</Select.Item>
 									<Select.Item value="paused">paused</Select.Item>
 									<Select.Item value="inactive">inactive</Select.Item> -->
@@ -481,18 +481,18 @@
 
 			<Card.Root class="mb-4">
 				<Card.Header>
-					<Card.Title>Visibility</Card.Title>
+					<Card.Title>{m.admin_catalog_addproduct_visibility()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
 					<div class="flex items-center">
 						<input class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-purple-600" type="checkbox" name="visibility" checked  />
-						<span class="ml-2">visibility</span>
+						<span class="ml-2">{m.admin_catalog_addproduct_visibility()}</span>
 					</div>
 				</Card.Content>
 			</Card.Root>
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700">Guardar Producto</Button>
+				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700">{m.admin_catalog_addproduct_button()}</Button>
 			</div>
 		</div>
 	</div>
