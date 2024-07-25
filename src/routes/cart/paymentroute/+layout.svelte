@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/stores'
   import { Progress } from '$lib/components/ui/progress'
+  import * as m from '$paraglide/messages'
 
 	$: pathnameRoute = $page.url.pathname
 	// $: console.log({ pathnameRoute });
@@ -13,14 +14,14 @@
 			<span class="border border-[#121212] dark:border-white rounded-full p-1 w-10 h-10 text-center text-lg font-semibold"
 				>1</span
 			>
-			<h3>Shipping Info</h3>
+			<h3>{m.cart_paymentroute_layout_shipping_info()}</h3>
 		</div>
 		<!-- step 2 -->
 		<div class="flex flex-col justify-center items-center">
 			<span class="border border-[#121212] dark:border-white rounded-full p-1 w-10 h-10 text-center text-lg font-semibold"
 				>2</span
 			>
-			<h3>Confirm order</h3>
+			<h3>{m.cart_paymentroute_layout_confirm_order()}</h3>
 		</div>
 		
 	</div>

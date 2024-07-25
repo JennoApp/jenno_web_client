@@ -8,10 +8,12 @@
 	} from '$lib/stores/cartStore';
 	import { onDestroy } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
+  import { Separator } from '$lib/components/ui/separator'
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
   import { formatPrice } from '$lib/utils/formatprice'
   import { location_data } from '$lib/stores/ipaddressStore'
+  import * as m from '$paraglide/messages'
 
 	/// Total reactivo basado en svelte/store
 	let total = getTotal();
@@ -30,14 +32,14 @@
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
 		<iconify-icon icon="mdi:cart" height="5rem" width="5rem" class="text-[#707070] mb-4" />
 
-		<h1 class="text-xl font-semibold text-[#707070] mb-2">¡Tu carrito está vacío!</h1>
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.cart_nocart_title()}</h1>
 		<p class="text-lg text-[#707070]">
-			¡Agrega productos a tu carrito y prepárate para comprar!
+			{m.cart_nocart_p()}
 		</p>
 	</div>
 {:else}
 	<div>
-		<h1 class="text-2xl m-5">Shopping Cart</h1>
+		<h1 class="text-2xl m-5">{m.cart_title()}</h1>
 	</div>
 	<div class="flex flex-col md:flex-row gap-3">
 		<!-- Shopping cart List -->
@@ -90,15 +92,15 @@
 
 		<!-- Shopping cart Order Summary -->
 		<div class="md:w-2/6 h-auto md:mr-5 p-2 bg-gray-200 dark:bg-[#202020] rounded-sm">
-			<h2 class="text-lg">Order Summary</h2>
+			<h2 class="text-lg">{m.cart_sumary_title()}</h2>
 			<Table.Root>
 				<Table.Header>
 					<Table.Row>
-						<Table.Head>Name</Table.Head>
-						<Table.Head>Shop</Table.Head>
-						<Table.Head>Price</Table.Head>
-						<Table.Head>Quantity</Table.Head>
-						<Table.Head>total</Table.Head>
+						<Table.Head>{m.cart_order_tableheader_name()}</Table.Head>
+						<Table.Head>{m.cart_order_tableheader_shop()}</Table.Head>
+						<Table.Head>{m.cart_order_tableheader_price()}</Table.Head>
+						<Table.Head>{m.cart_order_tableheader_quantity()}</Table.Head>
+						<Table.Head>{m.cart_order_tableheader_total()}</Table.Head>
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
@@ -116,9 +118,16 @@
 					{/each}
 				</Table.Body>
 			</Table.Root>
+
+      <!-- Subtotal -->
+      <div class="flex justify-between my-2 mt-5 mr-5">
+				<h3>{m.cart_summary_subtotal()}</h3>
+				<p>{formatPrice(Number(total.toFixed(0)), 'es-CO', 'COP')}</p>
+			</div>
+
 			<!-- Delivery -->
-			<div class="flex justify-between my-2 mt-5 mr-5">
-				<h3>Envio</h3>
+			<div class="flex justify-between my-2 mt-3 mr-5">
+				<h3>{m.cart_summary_shipment()}</h3>
 				<p>$0.00</p>
 			</div>
 
@@ -126,24 +135,22 @@
         <div class="flex my-2 mr-5">
 				<!-- Close Icon -->
 				<iconify-icon icon="tabler:map-pin-filled" height="1.5rem" width="1.5rem"></iconify-icon>
-				<h3 class="ml-1">Deliver to</h3>
-				<h3 class="ml-1 font-bold">{$location_data?.data[0].country}</h3>
+				<h3 class="ml-1">{m.cart_summary_deliver()}</h3>
+				<h3 class="ml-1 font-semibold">{$location_data?.data[0].country}</h3>
 			</div>     
       {/if}
 
-			<!-- Amount and tax -->
-			<div class="flex justify-between my-2 mt-5 mr-5">
-				<h3>Amount</h3>
-				<p>{formatPrice(Number(total.toFixed(0)), 'es-CO', 'COP')}</p>
-			</div>
-			<div class="flex justify-between my-2 mr-5">
-				<h3>Tax</h3>
+			<!-- tax -->	
+			<div class="flex justify-between my-2 mt-3 mr-5">
+				<h3>{m.cart_summary_tax()}</h3>
 				<p>{formatPrice(Number((total * 0.15).toFixed(2)), 'es-CO', 'COP')}</p>
 			</div>
 
+      <Separator class="bg-[#707070] my-1"/>
+
 			<!-- Total -->
-			<div class="flex justify-between my-2 mr-5 mt-5">
-				<h3>Order Total</h3>
+			<div class="flex justify-between my-2 mr-5 mt-3">
+				<h3 class="font-bold">{m.cart_summary_total()}</h3>
 				<p>{formatPrice(total + (total * 0.15), 'es-CO', 'COP')}</p>
 			</div>
 
@@ -151,7 +158,7 @@
 				class="bg-purple-600 hover:bg-purple-500 dark:bg-[#303030] border-none rounded w-full h-12 text-white text-base cursor-pointer hover:dark:bg-[#353535]"
 				on:click={() => goto('/cart/paymentroute/shipping')}
 			>
-				Checkout
+				{m.cart_summary_button()}
 			</button>
 		</div>
 	</div>

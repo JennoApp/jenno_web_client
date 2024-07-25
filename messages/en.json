@@ -156,5 +156,35 @@
   "shopping_tableheader_category": "Category",
   "shopping_tableheader_status": "Status",
   "shopping_tableheader_date": "Date",
-  "shopping_noshopping_title": "You have not made any purchase yet", "shopping_noshopping_p": "Explore and find products that interest you!"
+  "shopping_noshopping_title": "You have not made any purchase yet", "shopping_noshopping_p": "Explore and find products that interest you!",
+
+  "cart_nocart_title": "Your cart is empty!",
+  "cart_nocart_p": "Add products to your cart and get ready to buy!",
+  "cart_title": "Shopping Cart",
+  "cart_sumary_title": "Summary",
+  "cart_order_tableheader_name": "Name",
+  "cart_order_tableheader_shop": "Shop",
+  "cart_order_tableheader_price": "Price",
+  "cart_order_tableheader_quantity": "Quantity",
+  "cart_order_tableheader_total": "Total",
+  "cart_summary_shipment": "Shipment",
+  "cart_summary_deliver": "Deliver to",
+  "cart_summary_subtotal": "Subtotal",
+  "cart_summary_tax": "Tax",
+  "cart_summary_total": "Total",
+  "cart_summary_button": "Checkout",
+
+  "cart_paymentroute_layout_shipping_info": "Shipping Info",
+  "cart_paymentroute_layout_confirm_order": "Confirm Order",
+  
+  "cart_paymentroute_shipping_title": "Shipping Details",
+  "cart_paymentroute_shipping_address": "Address",
+  "cart_paymentroute_shipping_country": "Country",
+  "cart_paymentroute_shipping_state": "State",
+  "cart_paymentroute_shipping_city": "City",
+  "cart_paymentroute_shipping_postal": "Postal Code",
+  "cart_paymentroute_shipping_phone": "Phone Number",
+  "cart_paymentroute_shipping_button": "Save & next",
+
+  "cart_paymentroute_confirm_button": "Confirm Payment"
 }

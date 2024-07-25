@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation'
   import type { ActionData } from './$types'
   import { page } from '$app/stores'
+  import * as m from '$paraglide/messages'
 
   export let form: ActionData
   let userData = $page.data.user
@@ -18,13 +19,13 @@
 
 <div class="flex flex-col items-center justify-center w-full mt-5">
 	<!-- Header -->
-	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-5">Shipping Details</h1>
+	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-5">{m.cart_paymentroute_shipping_title()}</h1>
 
 	<!-- Form -->
 	<form class="flex flex-col gap-2 min-w-xs w-96 mx-auto" action="?/shipping" method="POST" use:enhance>
 		<!-- Address Input -->
 		<div class="flex flex-col">
-			<label for="address" class="text-base dark:text-gray-200 font-medium">Address</label>
+			<label for="address" class="text-base dark:text-gray-200 font-medium">{m.cart_paymentroute_shipping_address()}</label>
 			<input
 				type="text"
 				name="address"
@@ -42,7 +43,7 @@
 
 		<!-- Country Input -->
 		<div class="flex flex-col">
-			<label for="country" class="text-base dark:text-gray-200 font-medium">Country</label>
+			<label for="country" class="text-base dark:text-gray-200 font-medium">{m.cart_paymentroute_shipping_country()}</label>
 			<input
 				type="text"
 				name="country"
@@ -60,7 +61,7 @@
 
 		<!-- State Input -->
 		<div class="flex flex-col">
-			<label for="state" class="text-base dark:text-gray-200 font-medium">State</label>
+			<label for="state" class="text-base dark:text-gray-200 font-medium">{m.cart_paymentroute_shipping_state()}</label>
 			<input
 				type="text"
 				name="state"
@@ -78,7 +79,7 @@
 
 		<!-- City Input -->
 		<div class="flex flex-col">
-			<label for="city" class="text-base dark:text-gray-200 font-medium">City</label>
+			<label for="city" class="text-base dark:text-gray-200 font-medium">{m.cart_paymentroute_shipping_city()}</label>
 			<input
 				type="text"
 				name="city"
@@ -96,7 +97,7 @@
 
 		<!-- PostalCode Input -->
 		<div class="flex flex-col">
-			<label for="postalCode" class="text-base dark:text-gray-200 font-medium">Postal code</label>
+			<label for="postalCode" class="text-base dark:text-gray-200 font-medium">{m.cart_paymentroute_shipping_postal()}</label>
 			<input
 				type="text"
 				name="postalCode"
@@ -114,7 +115,7 @@
 
 		<!-- Phone Number Input -->
 		<div class="flex flex-col">
-			<label for="phoneNumber" class="text-base dark:text-gray-200 font-medium">Phone number</label>
+			<label for="phoneNumber" class="text-base dark:text-gray-200 font-medium">{m.cart_paymentroute_shipping_phone()}</label>
 			<input
 				type="text"
 				name="phoneNumber"
@@ -134,7 +135,7 @@
 		<button
 			class="h-10 w-full my-4 border border-gray-200 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
 		>
-			Save & Next
+			{m.cart_paymentroute_shipping_button()}
 		</button>
 	</form>
 </div>
