@@ -5,6 +5,7 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import { goto } from '$app/navigation';
 
+
 	export let data: PageServerData
   
 	let products: any[] = data.products;
@@ -79,6 +80,7 @@
 
 <svelte:head>
 	<title>ShopIn</title>
+  <!-- <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."> -->
 </svelte:head>
 
 <div class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 md:w-full h-12 px-0 my-1 z-20">

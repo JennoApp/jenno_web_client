@@ -55,6 +55,8 @@
 	$: console.log(shippingData);
 </script>
 
+
+
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-8/12 mx-auto mt-5">
 	<div class="lg:w-3/5 p-3">
 		{#each $cartItems as cartItem}

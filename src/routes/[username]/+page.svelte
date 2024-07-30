@@ -88,6 +88,10 @@
 </script>
 
 
+<svelte:head>
+  <title>{userData?.username}</title>
+</svelte:head>
+
 {#if userData}
 	{#await userData}
 		<p>Waiting...</p>

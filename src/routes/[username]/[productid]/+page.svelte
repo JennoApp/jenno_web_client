@@ -97,6 +97,13 @@
   $: console.log($cartItems)
 </script>
 
+
+<svelte:head>
+  <title>{product?.productname}</title>
+  <meta name="description" content={`${product?.description}`}>
+</svelte:head>
+
+
 <div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
 	<div class="flex flex-col w-full md:w-1/2">
 		<div class="flex justify-center items-center">

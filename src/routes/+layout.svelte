@@ -18,6 +18,7 @@
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { goto } from '$app/navigation';
 	import { redirect } from '@sveltejs/kit';
+  import { page } from '$app/stores'
 
 	/*onMount(() => {
     socket.on("connect", () => {
@@ -33,7 +34,7 @@
 
 	export let data;
 
-  $: setLanguageTag(data.locale)
+	$: setLanguageTag(data.locale);
 
 	// current language
 	// $: console.log(data.serverLang);
@@ -99,7 +100,6 @@
 
 	// $: console.log(country)
 
-
 	onMount(() => {
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
@@ -108,14 +108,13 @@
 			console.log('Using stored location data', storedLocationData);
 		}
 
-  //   if ($location_data) {
-	// 	const country = $location_data.data[0].country_module.flag || ''
-	// 	if (country === 'co') {
-	// 		console.log('hola colombia');
-	// 	}
-	// }
+		//   if ($location_data) {
+		// 	const country = $location_data.data[0].country_module.flag || ''
+		// 	if (country === 'co') {
+		// 		console.log('hola colombia');
+		// 	}
+		// }
 	});
-
 
 	// onMount(() => {
 	// 	if ($location_data) {
@@ -128,6 +127,9 @@
 </script>
 
 <svelte:head>
+	<title>ShopIn</title>
+  <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura.">
+
 	<script>
 		// Immediately set the theme based on localStorage before the page renders
 		(function () {
@@ -142,11 +144,18 @@
 			}
 		})();
 	</script>
+
+  <!-- Open graph -->
+   <meta property="og:title" content="ShopIn">
+   <meta property="og:description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura.">
+   <meta property="og:type" content="website">
+   <meta property="og:site_name" content="ShopIn">
+   <meta property="og:url" content={$page.url.href}>
 </svelte:head>
 
 <!-- <ParaglideJS {i18n}> -->
-	<Toaster richColors theme="dark" duration={3000} />
-	<Navigation>
-		<slot />
-	</Navigation>
+<Toaster richColors theme="dark" duration={3000} />
+<Navigation>
+	<slot />
+</Navigation>
 <!-- </ParaglideJS> -->
