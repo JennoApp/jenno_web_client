@@ -1,6 +1,8 @@
 import type { Actions } from './$types'
 import { supabase } from '$lib/supabaseClient'
 import { v4 as uuidv4 } from 'uuid'
+import { uploadFile } from '$lib/s3'
+import { env } from '$env/dynamic/private'
 
 export const actions: Actions = {
   saveProduct: async ({ request, cookies, fetch }) => {
@@ -16,15 +18,25 @@ export const actions: Actions = {
       imagesUrls.push(...existingImagesUrls)
     } else {
       const uploadPromises = uploadedFiles.map(async (file: any) => {
-        const { data, error } = await supabase.storage.from('products').upload(uuidv4(), file)
-        if (error) {
-          console.log({ supabaseError: error })
-        } else {
-          console.log("imagen subida")
-          const publicUrl = supabase.storage.from('products').getPublicUrl(data.path)
-          console.log(publicUrl)
-          imagesUrls.push(publicUrl.data.publicUrl)
-        }
+        // const { data, error } = await supabase.storage.from('products').upload(uuidv4(), file)
+        // if (error) {
+        //   console.log({ supabaseError: error })
+        // } else {
+        //   console.log("imagen subida")
+        //   const publicUrl = supabase.storage.from('products').getPublicUrl(data.path)
+        //   console.log(publicUrl)
+        //   imagesUrls.push(publicUrl.data.publicUrl)
+        // }
+        
+        // Subida de Imagenes con AWS S3
+          const result = await uploadFile(file)
+          console.log("Imagen subida a S3")
+          const publicUrl = `https://${env.AWS_BUCKET_NAME}.s3.${env.AWS_BUCKET_REGION}.amazonaws.com/${file.name}`
+          console.log({
+            result,
+            publicUrl
+          })
+          imagesUrls.push(publicUrl)
       })
 
       await Promise.all(uploadPromises)

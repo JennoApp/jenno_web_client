@@ -15,7 +15,7 @@
 	import CurrencyInput from '@canutin/svelte-currency-input';
   import { location_data } from '$lib/stores/ipaddressStore'
   import * as m from '$paraglide/messages'
-	import { admin_catalog_addproduct_inventory } from '$paraglide/messages/en';
+
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -35,7 +35,7 @@
 
 	let fileList: any[] = [];
 
-	function handleFiles(event) {
+	function handleFiles(event: any) {
 		const files = event.target.files;
 		fileList = Array.from(files).map((file) => ({
 			name: file.name,
