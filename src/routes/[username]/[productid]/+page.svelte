@@ -35,6 +35,7 @@
 	import RandomProducts from '$lib/components/Randomuserproducts.svelte';
 	import { page } from '$app/stores';
   import * as m from '$paraglide/messages'
+	import { toast } from 'svelte-sonner';
 
 	export let data: PageServerData;
   let product: CardData
@@ -81,6 +82,10 @@
   let selectedOptions: any[] = []
 
   function handleAddToCart() {
+    if (selectedOptions.length === 0) {
+      toast.error('Please select options before adding to cart')
+      return
+    }
     addToCart(product, selectedOptions, quantity)
   }
 
@@ -88,13 +93,18 @@
   function handleOptionChange(optionName: string, optionValue: string) {
     const optionIndex = selectedOptions.findIndex(opt => opt.name === optionName)
     if (optionIndex !== -1) {
-      selectedOptions[optionIndex].value = optionValue
+      selectedOptions = [
+        ...selectedOptions.slice(0, optionIndex),
+        { name: optionName, value: optionValue },
+        ...selectedOptions.slice(optionIndex + 1)
+      ]
     } else {
-      selectedOptions.push({ name: optionName, value: optionValue });
+      selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }]
     }
   }
   
   $: console.log($cartItems)
+  $: console.log(selectedOptions)
 </script>
 
 
@@ -254,7 +264,7 @@
 			</div>
 			<button
 				on:click={() => {
-					handleAddToCart()
+					handleAddToCart()      
 					goto('/cart');
 				}}
 				class="bg-purple-600 dark:bg-purple-600 border-none rounded w-full h-12 text-white text-base cursor-pointer hover:bg-purple-700 hover:dark:bg-purple-700"

@@ -31,6 +31,12 @@ if (browser) {
 // No solo agrega el producto al carrito sino que tambien
 // incrementa una unidad cuando este ya esta agregado 
 export function addToCart(product: Product, selectedOptions: SelectedOption[] = [], quantity: number = 1) {
+  // Exit if no options are selected 
+  if (selectedOptions.length === 0) {
+    console.warn("No options selected")
+    return
+  }
+
   let items = get(cartItems)
   let found = false
 
@@ -49,20 +55,6 @@ export function addToCart(product: Product, selectedOptions: SelectedOption[] = 
 
 
   cartItems.set(items)
-
-
-  // // Increment amount if it exists
-  // for (let item of items) {
-  //   if (item._id === product._id) {
-  //     item.amount++
-  //     cartItems.set(items)
-  //     return
-  //   }
-  // }
-
-  // Otherwise, append it to cart
-  // const cartItem = { ...product, amount: 1 }
-  // cartItems.set([...items, cartItem])
 }
 
 export function decrementCartItem(id: string) {
@@ -81,10 +73,10 @@ export function decrementCartItem(id: string) {
   }
 }
 
-export function removeFromCart(id: string) {
+export function removeFromCart(id: string, selectedOptions: SelectedOption[]) {
   let items = get(cartItems)
 
-  items = items.filter(item => item._id !== id)
+  items = items.filter(item => item._id !== id || JSON.stringify(item.selectedOptions) !== JSON.stringify(selectedOptions))
 
   cartItems.set(items)
 }

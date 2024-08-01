@@ -293,6 +293,10 @@
 												<div class="flex flex-col items-start">
 													<h2 class="text-lg">{cartItem.productname}</h2>
 													<p class="text-base dark:text-white">${cartItem.price}</p>
+                          <div class="flex gap-1">
+                            <h3>{cartItem.selectedOptions[0].name}:</h3>
+                            <p>{cartItem.selectedOptions[0].value}</p>
+                          </div>
 												</div>
 
 												<div class="flex w-full justify-center items-center mt-2">
@@ -318,7 +322,7 @@
 												</div>
 											</div>
 											<button
-												on:click|preventDefault={() => removeFromCart(cartItem._id)}
+												on:click|preventDefault={() => removeFromCart(cartItem._id, cartItem.selectedOptions)}
 												class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 											>
 												<!-- Close Icon -->

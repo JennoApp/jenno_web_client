@@ -58,6 +58,10 @@
 							<div class="flex gap-5 items-center">
 								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
 								<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-CO', 'COP')}</p>
+                <div class="flex gap-3">
+                  <h3>{cartItem.selectedOptions[0].name}:</h3>
+                  <p>{cartItem.selectedOptions[0].value}</p>
+                </div>
 							</div>
 
 							<div class="flex justify-center items-center mt-2 mr-14">
