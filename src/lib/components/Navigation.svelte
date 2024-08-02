@@ -312,7 +312,7 @@
 														>{cartItem.amount}</span
 													>
 													<button
-														on:click|preventDefault={() => addToCart(cartItem)}
+														on:click|preventDefault={() => addToCart(cartItem, cartItem.selectedOptions)}
 														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 													>
 														<!-- Plus Icon -->

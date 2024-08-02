@@ -7,6 +7,7 @@ interface Product {
   productname: string;
   imgs: [string];
   price: number;
+  shippingfee: number
 }
 
 interface SelectedOption {

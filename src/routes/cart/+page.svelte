@@ -26,6 +26,17 @@
 		unsubscribe();
 	});
 	///
+
+  const calculateTotalShippingFee = (cartitems: any[]) => {
+    const items = cartitems.length !== 0 ? cartitems : []
+    let totalShippingFee: number = 0
+
+    for (const item of items) {
+      totalShippingFee += item?.shippingfee * item?.amount
+    }
+
+    return totalShippingFee
+  }
 </script>
 
 {#if $cartItems.length === 0}
@@ -74,7 +85,7 @@
 								</button>
 								<span class="mx-2">{cartItem.amount}</span>
 								<button
-									on:click|preventDefault={() => addToCart(cartItem)}
+									on:click|preventDefault={() => addToCart(cartItem, cartItem.selectedOptions)}
 									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 								>
 									<!-- Plus Icon -->
@@ -83,7 +94,7 @@
 							</div>
 						</div>
 						<button
-							on:click|preventDefault={() => removeFromCart(cartItem._id)}
+							on:click|preventDefault={() => removeFromCart(cartItem._id, cartItem.selectedOptions)}
 							class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 						>
 							<!-- Close Icon -->
@@ -131,18 +142,15 @@
 
 			<!-- Delivery -->
 			<div class="flex justify-between my-2 mt-3 mr-5">
-				<h3>{m.cart_summary_shipment()}</h3>
-				<p>$0.00</p>
+        <div class="flex gap-1">
+          <h3>{m.cart_summary_shipment()}</h3>
+          <!-- {#if $location_data !== undefined}
+            <h3>-</h3>
+            <h3 class="ml-1 font-semibold">{$location_data?.data[0].region}</h3>
+          {/if} -->
+        </div>	
+				<p>{formatPrice(calculateTotalShippingFee($cartItems), 'es-CO', 'COP')}</p>
 			</div>
-
-      {#if $location_data !== undefined}
-        <div class="flex my-2 mr-5">
-				<!-- Close Icon -->
-				<iconify-icon icon="tabler:map-pin-filled" height="1.5rem" width="1.5rem"></iconify-icon>
-				<h3 class="ml-1">{m.cart_summary_deliver()}</h3>
-				<h3 class="ml-1 font-semibold">{$location_data?.data[0].country}</h3>
-			</div>     
-      {/if}
 
 			<!-- tax -->	
 			<div class="flex justify-between my-2 mt-3 mr-5">
