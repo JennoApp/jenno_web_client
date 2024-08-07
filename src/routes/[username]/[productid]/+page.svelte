@@ -89,6 +89,15 @@
     addToCart(product, selectedOptions, quantity)
   }
 
+  function handleBuyNow() {
+    if (selectedOptions.length === 0) {
+      toast.error('Please select options before adding to cart')
+      return
+    }
+    addToCart(product, selectedOptions, quantity)
+    goto('/cart')
+  }
+
 
   function handleOptionChange(optionName: string, optionValue: string) {
     const optionIndex = selectedOptions.findIndex(opt => opt.name === optionName)
@@ -263,10 +272,7 @@
 				>
 			</div>
 			<button
-				on:click={() => {
-					handleAddToCart()      
-					goto('/cart');
-				}}
+				on:click={() => handleBuyNow()}
 				class="bg-purple-600 dark:bg-purple-600 border-none rounded w-full h-12 text-white text-base cursor-pointer hover:bg-purple-700 hover:dark:bg-purple-700"
 				>{m.card_button_buynow()}</button
 			>

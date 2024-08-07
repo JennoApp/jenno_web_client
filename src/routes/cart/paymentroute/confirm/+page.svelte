@@ -1,63 +1,112 @@
 <script lang="ts">
-	import { cartItems, getTotal } from '$lib/stores/cartStore';
+	import {
+		cartItems,
+		getTotal,
+		subtotal as sub,
+		totalEnvio,
+		transferStripe,
+		total as T
+	} from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
-  import { Separator } from '$lib/components/ui/separator'
-  import { toast } from 'svelte-sonner'
-  import { formatPrice } from '$lib/utils/formatprice'
-  import * as m from '$paraglide/messages'
+	import { Separator } from '$lib/components/ui/separator';
+	import { toast } from 'svelte-sonner';
+	import { formatPrice } from '$lib/utils/formatprice';
+	import { location_data } from '$lib/stores/ipaddressStore';
+	import * as m from '$paraglide/messages';
 
 	let shippingData = $page.data?.user?.shippingInfo;
 
-  function getTotalFormatted() {
-    const total = getTotal()
-    return total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-  }
+	function getTotalFormatted() {
+		const total = getTotal();
+		return total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+	}
 
-  let items= []
+	let items = [];
 
-  // transformar datos para stripe
-  const productsFormattedStripe = $cartItems.map(product => ({
-    price_data: {
-      product_data: {
-        name: product.productname,
-        description: product?.description
-      },
-      currency: 'usd',
-      unit_amount: product.price * 100
-    },
-    quantity: product.amount
-  })) 
+	// // calcular el subtotal de los productos en el carrito
+	// $: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
 
-  const handleSubmitPayment = async () => {
-    const response = await fetch('http://localhost:3000/payments/stripe', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(productsFormattedStripe)
-    })
+	// // Calcular el costo total de envío
+	// $: totalEnvio = $cartItems.reduce(
+	// 	(acc, product) => acc + product.shippingfee * product.amount,
+	// 	0
+	// );
 
-    const response_data = await response.json()
+	// // Calcular la comision del 3%
+	// const P_goal = subtotal + totalEnvio
+	// const F_fixed = 0
+	// const F_percent = 0.03;
 
-    if (response.status === 201) {
-    window.location = response_data?.url
-    } else {
-      toast.error("Error en solicitud de pago!!!")
-    }
+	// $: P_charge = (P_goal + F_fixed) / (1 - F_percent)
+	// $: transferStripe = P_charge - P_goal
 
-    console.log({response_data})
-  }
+	// transformar datos para stripe
+	const productsFormattedStripe = $cartItems.map((product) => ({
+		price_data: {
+			product_data: {
+				name: product.productname,
+				description: product?.description
+			},
+			currency: 'usd',
+			unit_amount: product.price * 100
+		},
+		quantity: product.amount
+	}));
 
-  $: console.log({ productsFormattedStripe })
+	// Añadir el ítem de transferencia de Stripe a la lista de productos
+	productsFormattedStripe.push({
+		price_data: {
+			product_data: {
+				name: 'Transferencia Stripe',
+				description: 'Costo de transferencia de Stripe'
+			},
+			currency: 'usd',
+			unit_amount: Math.round(transferStripe * 100) // Convertir a centavos y redondear
+		},
+		quantity: 1
+	});
 
+	// Añadir el ítem de costo de envío a la lista de productos
+	productsFormattedStripe.push({
+		price_data: {
+			product_data: {
+				name: 'Costo de Envío',
+				description: 'Costo total de envío'
+			},
+			currency: 'usd',
+			unit_amount: Math.round(totalEnvio * 100) // Convertir a centavos y redondear
+		},
+		quantity: 1
+	});
+
+	const handleSubmitPayment = async () => {
+		const response = await fetch('http://localhost:3000/payments/stripe', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(productsFormattedStripe)
+		});
+
+		const response_data = await response.json();
+
+		if (response.status === 201) {
+			window.location = response_data?.url;
+		} else {
+			toast.error('Error en solicitud de pago!!!');
+		}
+
+		console.log({ response_data });
+	};
+
+	////////
+	$: console.log({ productsFormattedStripe });
 	$: console.log($cartItems);
-
 	$: console.log(shippingData);
+	$: console.log($location_data);
 </script>
 
-
-
-<div class="flex flex-col lg:flex-row md:w-3/5 lg:w-8/12 mx-auto mt-5">
+<div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
 	<div class="lg:w-3/5 p-3">
 		{#each $cartItems as cartItem}
 			<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
@@ -71,8 +120,17 @@
 					/>
 					<div class="flex w-full mx-7 justify-between">
 						<div class="flex gap-5 items-center">
-							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-							<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
+							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>	
+							<div class="flex gap-3">
+								<h3>{cartItem.selectedOptions[0].name}:</h3>
+								<p>{cartItem.selectedOptions[0].value}</p>
+							</div>
+              <p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
+              <div class="flex gap-1">
+                <h3>Cantidad:</h3>
+                <span class="mx-2">{cartItem.amount}</span>
+              </div>
+              
 						</div>
 					</div>
 				</div>
@@ -110,33 +168,33 @@
 
 			<!-- Order Summary -->
 			<h3 class="text-md font-semibold mt-3">{m.cart_sumary_title()}</h3>
-      <div class="flex justify-between gap-2">
+			<div class="flex justify-between gap-2">
 				<h3>{m.cart_summary_subtotal()}</h3>
-				<p>{getTotalFormatted()}</p>
-			</div> 
-      <div class="flex justify-between gap-2">
-				<h3>{m.cart_summary_shipment()}</h3>
-				<p>{formatPrice(1212, 'es-CO', 'COP')}</p>
+				<p>{formatPrice($sub, 'es-CO', 'COP')}</p>
 			</div>
-      <div class="flex justify-between gap-2">
-				<h3>{m.cart_summary_tax()}</h3>
-				<p>{formatPrice(1212, 'es-CO', 'COP')}</p>
-			</div>	
+			<div class="flex justify-between gap-2">
+				<h3>{m.cart_summary_shipment()}</h3>
+				<p>{formatPrice($totalEnvio, 'es-CO', 'COP')}</p>
+			</div>
+			<div class="flex justify-between gap-2">
+				<h3>transferencia</h3>
+				<p>{formatPrice($transferStripe, 'es-CO', 'COP')}</p>
+			</div>
 
-      <Separator class="bg-[#707070] my-1"/>
+			<Separator class="bg-[#707070] my-1" />
 
 			<div class="flex justify-between gap-2">
 				<h3 class="font-bold">{m.cart_summary_total()}</h3>
-				<p>{getTotalFormatted()}</p>
+				<p>{formatPrice($T, 'es-CO', 'COP')}</p>
 			</div>
 		</div>
 		<!-- Cofirm Button -->
-			<!-- Shipping Submit -->
-			<button
-				class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
-        on:click={() => handleSubmitPayment()}
-			>
-				{m.cart_paymentroute_confirm_button()}
-			</button>
+		<!-- Shipping Submit -->
+		<button
+			class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
+			on:click={() => handleSubmitPayment()}
+		>
+			{m.cart_paymentroute_confirm_button()}
+		</button>
 	</div>
 </div>

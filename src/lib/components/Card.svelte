@@ -61,7 +61,7 @@
 
 <a href={`/${data.username}/${data._id}`}>
 	<div
-		class="h-[400px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300  dark:shadow-none hover:dark:bg-[#252525]"
+		class="h-[380px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300  dark:shadow-none hover:dark:bg-[#252525]"
 	>
 		<!-- Header -->
 		<div class="flex w-full h-12 mt-1 items-center justify-between">
@@ -121,7 +121,7 @@
 		</div>
 
 		<!-- Info -->
-		<div class="w-full h-[70px] mx-3 mt-3">
+		<div class="w-full h-[70px] mx-3 mt-2">
 			<div>
 				<h3 class="m-1 text-xl">{data.productname}</h3>
 				<h2 class="m-1 mt-1 text-lg font-semibold">{formatPrice(data.price, 'es-CO', 'COP')}</h2>
