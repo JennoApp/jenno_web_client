@@ -52,13 +52,13 @@
 	);
 
 	// Calcular la comision del 3%
-	const P_goal = subtotal + totalEnvio;
-	const F_fixed = 0;
-	const F_percent = 0.03;
+	const P_goal = subtotal + totalEnvio
+	const F_fixed = 0
+	const F_percent = 0.03
 
-	const P_charge = (P_goal + F_fixed) / (1 - F_percent);
+	const P_charge = (P_goal + F_fixed) / (1 - F_percent)
 
-	// const transferStripe = P_charge - P_goal;
+	// const transferStripe = P_charge - P_goal
 
 
 </script>

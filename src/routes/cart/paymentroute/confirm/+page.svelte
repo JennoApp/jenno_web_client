@@ -3,7 +3,7 @@
 		cartItems,
 		getTotal,
 		subtotal as sub,
-		totalEnvio,
+		// totalEnvio,
 		transferStripe,
 		total as T
 	} from '$lib/stores/cartStore';
@@ -23,57 +23,60 @@
 
 	let items = [];
 
-	// // calcular el subtotal de los productos en el carrito
-	// $: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
+	// calcular el subtotal de los productos en el carrito
+	$: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
 
-	// // Calcular el costo total de envío
-	// $: totalEnvio = $cartItems.reduce(
-	// 	(acc, product) => acc + product.shippingfee * product.amount,
-	// 	0
-	// );
+	// Calcular el costo total de envío
+	$: totalEnvio = $cartItems.reduce(
+		(acc, product) => acc + product.shippingfee * product.amount,
+		0
+	);
 
-	// // Calcular la comision del 3%
-	// const P_goal = subtotal + totalEnvio
-	// const F_fixed = 0
-	// const F_percent = 0.03;
+	// Calcular la comision del 3%	
+  const F_fixed = 0
+	const F_percent = 0.03;
 
-	// $: P_charge = (P_goal + F_fixed) / (1 - F_percent)
-	// $: transferStripe = P_charge - P_goal
+  $: P_goal = subtotal + totalEnvio
+	$: P_charge = (P_goal + F_fixed) / (1 - F_percent)
+	$: tStripe = P_charge - P_goal
 
 	// transformar datos para stripe
-	const productsFormattedStripe = $cartItems.map((product) => ({
+	$: productsFormattedStripe = $cartItems.map((product) => ({
 		price_data: {
 			product_data: {
 				name: product.productname,
-				description: product?.description
+				description: product?.description,
+        images: [product.imgs[0]]
 			},
-			currency: 'usd',
+			currency: 'cop',
 			unit_amount: product.price * 100
 		},
 		quantity: product.amount
 	}));
 
 	// Añadir el ítem de transferencia de Stripe a la lista de productos
-	productsFormattedStripe.push({
+	$: productsFormattedStripe.push({
 		price_data: {
 			product_data: {
 				name: 'Transferencia Stripe',
-				description: 'Costo de transferencia de Stripe'
+				description: 'Costo de transferencia de Stripe',
+        images: []
 			},
-			currency: 'usd',
-			unit_amount: Math.round(transferStripe * 100) // Convertir a centavos y redondear
+			currency: 'cop',
+			unit_amount: Math.round(tStripe * 100) // Convertir a centavos y redondear
 		},
 		quantity: 1
 	});
 
 	// Añadir el ítem de costo de envío a la lista de productos
-	productsFormattedStripe.push({
+	$: productsFormattedStripe.push({
 		price_data: {
 			product_data: {
 				name: 'Costo de Envío',
-				description: 'Costo total de envío'
+				description: 'Costo total de envío',
+        images: []
 			},
-			currency: 'usd',
+			currency: 'cop',
 			unit_amount: Math.round(totalEnvio * 100) // Convertir a centavos y redondear
 		},
 		quantity: 1
@@ -174,7 +177,7 @@
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>{m.cart_summary_shipment()}</h3>
-				<p>{formatPrice($totalEnvio, 'es-CO', 'COP')}</p>
+				<p>{formatPrice(totalEnvio, 'es-CO', 'COP')}</p>
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>transferencia</h3>
