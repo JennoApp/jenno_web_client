@@ -29,6 +29,8 @@
     getTotalRevenue($page.data.user._id)
     getNumberOfSales($page.data.user._id)
   }
+
+  $: console.log($page.data.user)
 </script>
 
 <div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-3">

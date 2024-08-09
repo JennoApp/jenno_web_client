@@ -9,6 +9,7 @@ interface Product {
   imgs: [string];
   price: number;
   shippingfee: number
+  user: string
 }
 
 interface SelectedOption {

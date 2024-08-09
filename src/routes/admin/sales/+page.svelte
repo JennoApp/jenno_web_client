@@ -29,7 +29,7 @@
 				salesList = [...salesList, salesData];
 			}
 		} catch (err) {
-			console.error('Error la recuperar la lista de seguidores:', err);
+			console.error('Error la recuperar la lista de ordenes:', err);
 		}
 	}
 
