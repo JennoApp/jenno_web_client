@@ -3,6 +3,7 @@
 	import { page } from '$app/stores'
 	import { format } from 'timeago.js'
   import * as m from '$paraglide/messages'
+  import * as Dialog from "$lib/components/ui/dialog"
 
 	let salesList: any = []
 	let currentPage = 1
@@ -15,7 +16,7 @@
 	async function fetchSales() {
 		try {
 			const response = await fetch(
-				`http://localhost:3000/users/orders/${$page.data.user._id}?page=${currentPage}&limit=${limitPerPage}`
+				`http://localhost:3000/users/orders/${$page.data.user?._id}?page=${currentPage}&limit=${limitPerPage}`
 			);
 			const dataFetch = await response.json();
 			itemsCount = dataFetch.meta.itemCount;
@@ -50,6 +51,18 @@
 		total: { header: `${m.admin_sales_tableheader_total()}`, accessor: (data: any) => data.product?.price * data.amount },
 		sku: { header: `${m.admin_sales_tableheader_sku()}`, accessor: (data: any) => data.product?.SKU },
 		category: { header: `${m.admin_sales_tableheader_category()}`, accessor: (data: any) => data.product?.category },
+    options: { header: 'Opciones', accessor: (data: any) => {
+    const selectedOption = data.product?.selectedOptions?.[0];
+    
+    if (selectedOption) {
+      return `<div class="flex gap-1"><span>${selectedOption.name}:</span><span>${selectedOption.value}</span></div>`;
+    } else {
+      return `<div class="flex gap-1"><span>No options selected</span></div>`;
+    }
+  }},
+    shippingInfo: { header: 'Shipping Info', accessor: (data: any) => {
+      return `<button onclick="alert("info")">Info</button>`
+    }},
 		state: {
 			header: `${m.admin_sales_tableheader_status()}`,
 			accessor: (data: any) => {
@@ -91,6 +104,13 @@
 		},
 		date: { header: `${m.admin_sales_tableheader_date()}`, accessor: (data: any) => `${format(data.createdAt)}` }
 	};
+
+
+  let open = false
+
+  const handleOpenDialog = () => {
+    open = !open
+  }
 </script>
 
 {#if salesList.length !== 0}
@@ -111,3 +131,19 @@
     <p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
 	</div>
 {/if}
+
+
+<button on:click|preventDefault={() => handleOpenDialog()}>Open Dialog</button>
+
+<Dialog.Root bind:open>
+  <Dialog.Trigger>Open</Dialog.Trigger>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
+      <Dialog.Description>
+        This action cannot be undone. This will permanently delete your account
+        and remove your data from our servers.
+      </Dialog.Description>
+    </Dialog.Header>
+  </Dialog.Content>
+</Dialog.Root>
