@@ -1,17 +1,25 @@
 <script lang="ts">
-	import TableData from '$lib/components/Table.svelte'
-	import { page } from '$app/stores'
-	import { format } from 'timeago.js'
-  import * as m from '$paraglide/messages'
-  import * as Dialog from "$lib/components/ui/dialog"
+	import TableData from '$lib/components/Table.svelte';
+	import { page } from '$app/stores';
+	import { format } from 'timeago.js';
+	import * as m from '$paraglide/messages';
+	import * as Dialog from '$lib/components/ui/dialog';
+  import ShippingInfoDialog from '$lib/components/ShippingInFoDialog.svelte'
+	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
 
-	let salesList: any = []
-	let currentPage = 1
-	let limitPerPage = 10
-	let NextPage: boolean
-	let PreviousPage: boolean
-	let itemsCount: number
-	let pageCount: number
+	let salesList: any = [];
+	let currentPage = 1;
+	let limitPerPage = 10;
+	let NextPage: boolean;
+	let PreviousPage: boolean;
+	let itemsCount: number;
+	let pageCount: number;
+
+	let open = false;
+
+	const handleOpenDialog = () => {
+		open = true;
+	};
 
 	async function fetchSales() {
 		try {
@@ -45,24 +53,52 @@
 			accessor: (data: any) =>
 				`<img class="h-10 w-10 ml-1 rounded-md" src="${data.product?.imgs[0]}" alt="${data.product?.productname}"/>`
 		},
-		productName: { header: `${m.admin_sales_tableheader_name()}`, accessor: (data: any) => data.product?.productname },
-		quantity: { header: `${m.admin_sales_tableheader_quantity()}`, accessor: (data: any) => data.amount },
-		price: { header: `${m.admin_sales_tableheader_price()}`, accessor: (data: any) => data.product?.price },
-		total: { header: `${m.admin_sales_tableheader_total()}`, accessor: (data: any) => data.product?.price * data.amount },
-		sku: { header: `${m.admin_sales_tableheader_sku()}`, accessor: (data: any) => data.product?.SKU },
-		category: { header: `${m.admin_sales_tableheader_category()}`, accessor: (data: any) => data.product?.category },
-    options: { header: 'Opciones', accessor: (data: any) => {
-    const selectedOption = data.product?.selectedOptions?.[0];
-    
-    if (selectedOption) {
-      return `<div class="flex gap-1"><span>${selectedOption.name}:</span><span>${selectedOption.value}</span></div>`;
-    } else {
-      return `<div class="flex gap-1"><span>No options selected</span></div>`;
-    }
-  }},
-    shippingInfo: { header: 'Shipping Info', accessor: (data: any) => {
-      return `<button onclick="alert("info")">Info</button>`
-    }},
+		productName: {
+			header: `${m.admin_sales_tableheader_name()}`,
+			accessor: (data: any) => data.product?.productname
+		},
+		quantity: {
+			header: `${m.admin_sales_tableheader_quantity()}`,
+			accessor: (data: any) => data.amount
+		},
+		price: {
+			header: `${m.admin_sales_tableheader_price()}`,
+			accessor: (data: any) => data.product?.price
+		},
+		total: {
+			header: `${m.admin_sales_tableheader_total()}`,
+			accessor: (data: any) => data.product?.price * data.amount
+		},
+		sku: {
+			header: `${m.admin_sales_tableheader_sku()}`,
+			accessor: (data: any) => data.product?.SKU
+		},
+		category: {
+			header: `${m.admin_sales_tableheader_category()}`,
+			accessor: (data: any) => data.product?.category
+		},
+		options: {
+			header: 'Opciones',
+			accessor: (data: any) => {
+				const selectedOption = data.product?.selectedOptions?.[0];
+
+				if (selectedOption) {
+					return `<div class="flex gap-1"><span>${selectedOption.name}:</span><span>${selectedOption.value}</span></div>`;
+				} else {
+					return `<div class="flex gap-1"><span>No options selected</span></div>`;
+				}
+			}
+		},
+		// shippingInfo: {
+		// 	header: 'Shipping Info',
+		// 	accessor: (data: any) => {
+		// 		return `<div><button class="bg-[#202020] h-8 px-3 rounded-md hover:bg-[#303030]" on:click="handleOpenDialog()">${data.product?._id}</button></div>`;
+		// 	}
+		// },
+    shippingInfo: {
+			header: 'Shipping Info',
+			accessor: () => 'shippingInfoDialog'
+		},
 		state: {
 			header: `${m.admin_sales_tableheader_status()}`,
 			accessor: (data: any) => {
@@ -102,15 +138,11 @@
 				}
 			}
 		},
-		date: { header: `${m.admin_sales_tableheader_date()}`, accessor: (data: any) => `${format(data.createdAt)}` }
+		date: {
+			header: `${m.admin_sales_tableheader_date()}`,
+			accessor: (data: any) => `${format(data.createdAt)}`
+		}
 	};
-
-
-  let open = false
-
-  const handleOpenDialog = () => {
-    open = !open
-  }
 </script>
 
 {#if salesList.length !== 0}
@@ -120,30 +152,24 @@
 	<TableData datalist={salesList} {modifier} {NextPage} {PreviousPage} {itemsCount} {pageCount} />
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon
-			icon="mdi:cash"
-			height="5rem"
-			width="5rem"
-			class="text-[#707070] mb-4"
-		/>
+		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
 
-    <h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
-    <p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
+		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
 	</div>
 {/if}
-
 
 <button on:click|preventDefault={() => handleOpenDialog()}>Open Dialog</button>
 
 <Dialog.Root bind:open>
-  <Dialog.Trigger>Open</Dialog.Trigger>
-  <Dialog.Content>
-    <Dialog.Header>
-      <Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
-      <Dialog.Description>
-        This action cannot be undone. This will permanently delete your account
-        and remove your data from our servers.
-      </Dialog.Description>
-    </Dialog.Header>
-  </Dialog.Content>
+	<Dialog.Trigger>Open</Dialog.Trigger>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
+			<Dialog.Description>
+				This action cannot be undone. This will permanently delete your account and remove your data
+				from our servers.
+			</Dialog.Description>
+		</Dialog.Header>
+	</Dialog.Content>
 </Dialog.Root>

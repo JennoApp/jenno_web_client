@@ -2,12 +2,13 @@
 	import * as Table from '$lib/components/ui/table';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
+  import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
 
 	export let datalist: any[];
 	export let NextPage: boolean = false;
 	export let PreviousPage: boolean = false;
-  export let itemsCount: number
-  export let pageCount: number
+	export let itemsCount: number;
+	export let pageCount: number;
 
 	export let modifier: Record<string, { header: string; accessor: (data: any) => any }> | null =
 		null;
@@ -25,7 +26,7 @@
 			})
 		: [];
 
-  $: console.log({ modifierData })
+	$: console.log({ modifierData });
 </script>
 
 <!-- 
@@ -46,7 +47,13 @@
 			{#each modifierData as item}
 				<Table.Row>
 					{#each Object.keys(modifier) as columnKey}
-						<Table.Cell>{@html item[columnKey]}</Table.Cell>
+						<Table.Cell>
+							{#if item[columnKey] === 'shippingInfoDialog'}
+                <button on:click|preventDefault={() => alert('Open')}>Open</button>
+              {:else}
+                {@html item[columnKey]}
+              {/if}
+						</Table.Cell>
 					{/each}
 				</Table.Row>
 			{/each}
@@ -55,9 +62,9 @@
 </div>
 
 <div class="flex justify-between mx-10">
-  <div class="">
-    <h3 class="text-sm dark:text-[#707070]">items: {itemsCount} - pages: {pageCount}</h3>
-  </div>
+	<div class="">
+		<h3 class="text-sm dark:text-[#707070]">items: {itemsCount} - pages: {pageCount}</h3>
+	</div>
 	<div class="flex items-center justify-end space-x-4">
 		<Button
 			class="border-gray-400 dark:border-[#252525]"
