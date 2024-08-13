@@ -23,11 +23,7 @@
 		})
 	});
 
-	const columns = table.createColumns([
-		table.column({
-			accessor: 'productname',
-			header: `${m.admin_catalog_tableheader_name()}`
-		}),
+	const columns = table.createColumns([	
 		table.column({
 			accessor: 'imgs',
 			header: `${m.admin_catalog_tableheader_image()}`,
@@ -39,6 +35,10 @@
 			cell: ({ value }) => {
 				return createRender(Image, { url: value[0] });
 			}
+		}),
+    table.column({
+			accessor: 'productname',
+			header: `${m.admin_catalog_tableheader_name()}`
 		}),
 		table.column({
 			accessor: 'category',
