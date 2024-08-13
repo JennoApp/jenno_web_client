@@ -16,6 +16,8 @@
 	import Options from '$lib/components/Options.svelte';
 	import CustomerCell from '$lib/components/Customer_cell.svelte';
 	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
+  import TableActions from './table-actions.svelte'
+  import { formatPrice } from '$lib/utils/formatprice'
 
 	export let data: PageServerData;
 
@@ -62,11 +64,17 @@
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_price()}`,
-			accessor: (row) => row.product.price
+			accessor: (row) => row.product.price,
+      cell: ({value}) => {
+        return formatPrice(value, 'es-CO', 'COP')
+      }
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_total()}`,
-			accessor: (row) => row.product.price * row.product.amount
+			accessor: (row) => row.product.price * row.product.amount,
+      cell: ({value}) => {
+        return formatPrice(value, 'es-CO', 'COP')
+      }
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_sku()}`,
@@ -115,6 +123,18 @@
 		table.column({
 			header: `${m.shopping_tableheader_date()}`,
 			accessor: (row) => format(row.updatedAt)
+		}),
+    table.column({
+      header: '',
+      accessor: ({ _id }) => _id,	
+			plugins: {
+				filter: {
+					exclude: true
+				}
+			},
+      cell: ({ value }) => {
+				return createRender(TableActions, { id: value });
+			}
 		})
 	]);
 
