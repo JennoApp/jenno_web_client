@@ -8,16 +8,14 @@
 	import { Button } from '$lib/components/ui/button';
 	import { readable } from 'svelte/store';
 	import { format } from 'timeago.js';
-	import TableData from '$lib/components/Table.svelte';
-	import { page } from '$app/stores';
 	import * as m from '$paraglide/messages';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
 	import CustomerCell from '$lib/components/Customer_cell.svelte';
 	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
-  import TableActions from './table-actions.svelte'
-  import { formatPrice } from '$lib/utils/formatprice'
+	import TableActions from './table-actions.svelte';
+	import { formatPrice } from '$lib/utils/formatprice';
+	import { goto } from '$app/navigation';
 
 	export let data: PageServerData;
 
@@ -65,16 +63,16 @@
 		table.column({
 			header: `${m.shopping_tableheader_price()}`,
 			accessor: (row) => row.product.price,
-      cell: ({value}) => {
-        return formatPrice(value, 'es-CO', 'COP')
-      }
+			cell: ({ value }) => {
+				return formatPrice(value, 'es-CO', 'COP');
+			}
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_total()}`,
 			accessor: (row) => row.product.price * row.product.amount,
-      cell: ({value}) => {
-        return formatPrice(value, 'es-CO', 'COP')
-      }
+			cell: ({ value }) => {
+				return formatPrice(value, 'es-CO', 'COP');
+			}
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_sku()}`,
@@ -84,24 +82,35 @@
 			header: `${m.shopping_tableheader_category()}`,
 			accessor: (row) => row.product.category
 		}),
-    table.column({
-      header: 'Opciones',
-      accessor: (row) => row.product.selectedOptions || [],
-      cell: ({ value }) => {
-        if (value && value.length > 0) {
-          return createRender(Options, { options: value[0] })
-        } else {
-          return 'No hay opciones'
-        }
-      }
-    }),
-    table.column({
-      header: 'Informacion Envio',
-      accessor: (row) => row,
-      cell: ({value}) => {
-        return createRender(ShippingInFoDialog, { shippingInfo: value })
-      }
-    }),
+		table.column({
+			header: 'Opciones',
+			accessor: (row) => row.product.selectedOptions || [],
+			cell: ({ value }) => {
+				if (value && value.length > 0) {
+					return createRender(Options, { options: value[0] });
+				} else {
+					return 'No hay opciones';
+				}
+			}
+		}),
+		table.column({
+			header: 'Informacion Envio',
+			accessor: (row) => row,
+			cell: ({ value }) => {
+				return createRender(ShippingInFoDialog, { shippingInfo: value });
+			}
+		}),
+		table.column({
+			header: `${m.admin_sales_tableheader_customer()}`,
+			accessor: (row) => row,
+			cell: ({ value }) => {
+				if (value) {
+					return createRender(CustomerCell, { data: value });
+				} else {
+					return 'No';
+				}
+			}
+		}),
 		table.column({
 			header: `${m.shopping_tableheader_status()}`,
 			accessor: (row) => row.status,
@@ -109,30 +118,19 @@
 				return createRender(Status, { status: value }) || `<span>${value}</span>`;
 			}
 		}),
-    table.column({
-      header: `${m.admin_sales_tableheader_customer()}`,
-      accessor: (row) => row,
-      cell: ({ value }) => {
-        if (value) {
-          return createRender(CustomerCell, { data: value })
-        } else {
-          return 'No'
-        } 
-      }
-    }),
 		table.column({
-			header: `${m.shopping_tableheader_date()}`,
+			header: ' ',
 			accessor: (row) => format(row.updatedAt)
 		}),
-    table.column({
-      header: '',
-      accessor: ({ _id }) => _id,	
+		table.column({
+			header: '',
+			accessor: ({ _id }) => _id,
 			plugins: {
 				filter: {
 					exclude: true
 				}
 			},
-      cell: ({ value }) => {
+			cell: ({ value }) => {
 				return createRender(TableActions, { id: value });
 			}
 		})
@@ -145,15 +143,6 @@
 
 	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
 	const { filterValue } = pluginStates.filter;
-
-	/////
-	let open = false;
-	const handleOpenDialog = () => {
-		open = true;
-	};
-
-	$: console.log({ userData: $page.data.user });
-
 </script>
 
 {#if data?.salesList.length !== 0}
@@ -161,15 +150,26 @@
 		<h1>Error al hacer la solicitud</h1>
 	{:else}
 		<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-			<h2 class="text-xl font-semibold text-gray-200">Compras</h2>
+			<h2 class="text-xl font-semibold text-gray-200">Ventas</h2>
 		</div>
-		<div class="flex items-center mx-10 mt-5">
+		<div class="flex items-center justify-between mx-10 mt-5">
 			<Input
 				class="max-w-sm placeholder:text-[#707070]"
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
 			/>
+			<Button class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200" on:click={() => {
+        goto('/admin/sales/history')
+      }}>
+        <iconify-icon
+					icon="material-symbols:history"
+					height="1.1rem"
+					width="1.1rem"
+					class="text-gray-200 flex justify-center items-center"
+				/>
+				<span class="ml-3">Historial</span></Button
+			>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
@@ -234,26 +234,10 @@
 		</div>
 	{/if}
 {:else}
-    <div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
 		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
 		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
 	</div>
 {/if}
-
-
-<!-- <button on:click|preventDefault={() => handleOpenDialog()}>Open Dialog</button>
-
-<Dialog.Root bind:open>
-	<Dialog.Trigger>Open</Dialog.Trigger>
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
-			<Dialog.Description>
-				This action cannot be undone. This will permanently delete your account and remove your data
-				from our servers.
-			</Dialog.Description>
-		</Dialog.Header>
-	</Dialog.Content>
-</Dialog.Root> -->

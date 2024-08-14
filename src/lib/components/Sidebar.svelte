@@ -21,6 +21,7 @@
 	const paths = [
 		'/admin/dashboard',
 		'/admin/sales',
+    '/admin/sales/history',
 		'/admin/catalog',
 		'/admin/catalog/addproduct',
 		'/admin/customers',
