@@ -20,6 +20,7 @@
 
 	const paths = [
 		'/admin/dashboard',
+    '/admin/wallet',
 		'/admin/sales',
     '/admin/sales/history',
 		'/admin/catalog',
@@ -66,6 +67,35 @@
 					{#if closeMenu}
 						<Tooltip.Content>
 							<h3>{m.sidebar_admin_dashboard()}</h3>
+						</Tooltip.Content>
+					{/if}
+				</Tooltip.Root>
+
+        <Tooltip.Root>
+					<Tooltip.Trigger>
+						<a
+							href="/admin/wallet"
+							class={!closeMenu
+								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('wallet', currentPath)}`
+								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('wallet', currentPath)}`}
+						>
+							<iconify-icon
+								icon="ph:wallet-fill"
+								height="1.3rem"
+								width="1.3rem"
+								class={!closeMenu
+									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
+							/>
+							<span
+								class={!closeMenu
+									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
+									: 'hidden'}>Wallet</span>
+						</a>
+					</Tooltip.Trigger>
+					{#if closeMenu}
+						<Tooltip.Content>
+							<h3>Wallet</h3>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root>

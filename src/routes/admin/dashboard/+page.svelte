@@ -17,7 +17,7 @@
 
     totalRevenue = data
   }
-
+  
   const getNumberOfSales = async (id: string) => {
     const result = await fetch(`http://localhost:3000/orders/numberofsales/${id}`)
     const data = await result.json()

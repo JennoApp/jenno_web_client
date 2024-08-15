@@ -42,6 +42,9 @@ const registerBusinessSchema = z.object({
     .string({ required_error: 'Password is required' })
     .min(6, { message: 'Password must be at least 6 characters' })
     .max(32, { message: 'Password must be less than 32 characters' })
+    .trim(),
+  currency: z
+    .string({ required_error: 'Currency code is required'})
     .trim()
 }).superRefine(({ password, verified_password }, ctx) => {
   if (verified_password !== password) {
@@ -64,8 +67,9 @@ export const actions: Actions = {
     const formData = Object.fromEntries(await request.formData())
 
     try {
-      const { businessname, email, country, name, lastname, taxid, password, verified_password } = registerBusinessSchema.parse(formData)
+      const { businessname, email, country, name, lastname, taxid, password, verified_password, currency } = registerBusinessSchema.parse(formData)
 
+      console.log({currency})
       if (verified_password !== password) {
         return {
           message: "Password and Confirm Password must match",
@@ -78,7 +82,7 @@ export const actions: Actions = {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username: businessname, email, country, name, lastname, taxid, password, accountType: 'business' })
+          body: JSON.stringify({ username: businessname, email, country, name, lastname, taxid, password, accountType: 'business', currency })
         })
 
         const result = await responseCreateUser.json()

@@ -11,7 +11,7 @@
 
   let selectedCountry: any = ''
 
-  // $: console.log({selectedCountry})
+  $: console.log($location_data?.data[0]?.country_module?.currencies[0]?.code)
 
 	$: console.log(form?.success);
 
@@ -191,6 +191,8 @@
 			</label>
 		</div>
 
+    <!-- currency Input hidden -->
+    <input type="text" name="currency" class="hidden" value={$location_data?.data[0]?.country_module?.currencies[0]?.code}>
 		<!-- Login Submit -->
 		<button
 			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
