@@ -195,23 +195,6 @@
 				</Button>
 			</div>
 		</div>
-
-		<!-- <div class="flex items-center justify-end space-x-4 mx-10">
-			<Button
-				class="border-[#252525]"
-				variant="outline"
-				size="sm"
-				on:click={() => ($pageIndex = $pageIndex - 1)}
-				disabled={!$hasPreviousPage}>Previous</Button
-			>
-			<Button
-				class="border-[#252525]"
-				variant="outline"
-				size="sm"
-				disabled={!$hasNextPage}
-				on:click={() => ($pageIndex = $pageIndex + 1)}>Next</Button
-			>
-		</div> -->
 	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
