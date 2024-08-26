@@ -13,9 +13,13 @@
 
 		const buyerId = buyer?._id;
 		const buyerName = buyer?.username;
-		const buyerProfileImg = buyer?.profileImg;
+		let buyerProfileImg = buyer?.profileImg;
 
-		if (!buyerId || !buyerName || !buyerProfileImg) {
+    if (buyerProfileImg == null || buyerProfileImg == undefined) {
+      buyerProfileImg = ""
+    }
+
+		if (!buyerId || !buyerName) {
 			toast.error('Informacion del comprador imcompleta');
 			return;
 		}

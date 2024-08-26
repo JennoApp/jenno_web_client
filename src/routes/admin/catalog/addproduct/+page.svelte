@@ -43,7 +43,7 @@
 		}));
 	}
 
-	function formatFileSize(size) {
+	function formatFileSize(size: any) {
 		if (size === 0) return '0 bytes';
 		const units = ['bytes', 'KB', 'MB', 'GB', 'TB'];
 		const i = Math.floor(Math.log(size) / Math.log(1024));
@@ -490,6 +490,9 @@
 					</div>
 				</Card.Content>
 			</Card.Root>
+
+      <!-- Hidden Input country info -->
+       <input class="hidden" type="text" name="country" value={$location_data.data[0].country}>
 
 			<div class="w-full flex justify-end">
 				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700">{m.admin_catalog_addproduct_button()}</Button>

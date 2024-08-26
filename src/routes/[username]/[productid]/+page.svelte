@@ -22,6 +22,7 @@
 		user: string;
 	}
 
+  import * as Dialog from "$lib/components/ui/dialog"
 	import type { PageServerData } from './$types';
 	import * as Carousel from '$lib/components/ui/carousel/index';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context';
@@ -51,6 +52,7 @@
 	}
 
 	let profileImg = ''
+  let openDialogreview = false
 
 	onMount(async () => {
 		if (!product || !product?.user) {
@@ -114,6 +116,10 @@
   
   $: console.log($cartItems)
   $: console.log(selectedOptions)
+
+  function handleOpenDialgoReview() {
+    openDialogreview = true
+  }
 </script>
 
 
@@ -211,7 +217,11 @@
 				<span class="text-base font-semibold">{rating}</span>
 			</div>
 
-			<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">{m.product_page_reviews()}</h3>
+        <button on:click|preventDefault={() => handleOpenDialgoReview()}>
+          <h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">{m.product_page_reviews()}</h3>
+        </button>
+        
+			
 		</div>
 
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
@@ -309,3 +319,28 @@
 
 <!-- Lista de productos del mismo vendedor -->
 <RandomProducts user={product.user} />
+
+
+
+<Dialog.Root bind:open={openDialogreview}>
+  <Dialog.Trigger />
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
+    </Dialog.Header>
+    <div>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+      <h2>Lorem ipsum</h2>
+    </div>
+  </Dialog.Content>
+</Dialog.Root>

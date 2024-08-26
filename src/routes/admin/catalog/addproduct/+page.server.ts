@@ -13,6 +13,7 @@ export const actions: Actions = {
     const tokenJwt = cookies.get('session')
 
     const imagesUrls: string[] = []
+    const countryList: string[] = []
 
     if (existingImagesUrls && existingImagesUrls.length > 0) {
       imagesUrls.push(...existingImagesUrls)
@@ -58,6 +59,11 @@ export const actions: Actions = {
     const height = formData.get('height')
     const status = formData.get('status')
     const visibility = formData.get('visibility')
+    const country = formData.get('country')
+
+    if (country) {
+      countryList.push(country as string)
+    }
 
     // Extraer las opciones
     const optionsItems = []
@@ -110,6 +116,7 @@ export const actions: Actions = {
             height
           },
           status,
+          countryList,
           visibility,
           options: optionsItems,
           especifications: especificationsItems

@@ -132,7 +132,7 @@
 <div class="flex p-5">
 	<button
 		class="flex justify-center items-center h-10 w-10 dark:bg-[#202020] rounded-sm hover:dark:bg-[#252525]"
-		on:click={() => goto('/shopping')}
+		on:click|preventDefault={() => goto('/shopping')}
 	>
 		<iconify-icon
 			icon="material-symbols:chevron-left-rounded"

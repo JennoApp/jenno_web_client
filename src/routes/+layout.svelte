@@ -1,4 +1,5 @@
 <script lang="ts">
+  
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 	import '../app.css';
 	import 'iconify-icon';
@@ -67,7 +68,7 @@
 	const getLocationData = async (ip: string) => {
 		try {
 			const response = await fetch(
-				`http://api.positionstack.com/v1/reverse?access_key=e5d24e10dc3df5aff3692fa9db8665cf&query=181.61.209.148&country_module=1&limit=1`
+				`http://api.positionstack.com/v1/reverse?access_key=d75a3f286bf6b305d2c90a844db78915&query=4.7507498,-74.0446888&country_module=1&limit=1`
 			);
 			if (!response.ok) {
 				throw new Error(`Failed to fetch location data: ${response.status}`);
@@ -127,7 +128,7 @@
 </script>
 
 <svelte:head>
-	<title>ShopIn</title>
+	<title>eShop</title>
   <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura.">
 
 	<script>

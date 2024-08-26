@@ -16,7 +16,7 @@
 
 	let products: any[] = []
 
-  // $: console.log({products})
+  $: console.log({products})
 	// $: console.log({ isSession: $page.data.isSession })
 
 	async function loadUserData(userId: string) {
@@ -118,7 +118,7 @@
 				<div class="flex flex-col gap-3 items-start">
 					<h2 class="text-2xl font-medium">{user?.username}</h2>
 					<p class="flex flex-wrap">
-            {user?.bio}
+            {user?.bio !== undefined ? user?.bio : ''}
 					</p>
 				</div>
 			</div>

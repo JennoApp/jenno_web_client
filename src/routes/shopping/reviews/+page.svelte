@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PageServerData } from './$types';
+  import type { PageServerData } from './$types';
 	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
@@ -13,19 +13,11 @@
 	import Options from '$lib/components/Options.svelte';
   import { goto } from '$app/navigation'
 
-	export let data: PageServerData;
+  export let data
 
-  $: console.log({meta: data.meta})
-	
-	let currentPage = 1;
-	let limitPerPage = 10;
-	let NextPage: boolean;
-	let PreviousPage: boolean;
-	let itemsCount: number;
-	let pageCount: number;
+  $: console.log({ data })
 
-
-	const table = createTable(readable(data.products), {
+  const table = createTable(readable(data.shoppingWithoutReviews), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
@@ -99,7 +91,30 @@
 	const { filterValue } = pluginStates.filter;
 </script>
 
-{#if data?.products.length !== 0}
+
+
+<div class="flex p-5">
+	<button
+		class="flex justify-center items-center h-10 w-10 dark:bg-[#202020] rounded-sm hover:dark:bg-[#252525]"
+		on:click|preventDefault={() => goto('/shopping')}
+	>
+		<iconify-icon
+			icon="material-symbols:chevron-left-rounded"
+			heigth="2.5rem"
+			width="2.5rem"
+			class="dark:text-gray-200"
+		></iconify-icon>
+	</button>
+	<div>
+		<div class="flex flex-col ml-3">
+			<h4 class="text-sm dark:text-slate-300">Volver a Compras</h4>
+			<h2 class="text-xl font-semibold">Valoración y Reseñas</h2>
+		</div>
+	</div>
+</div>
+
+
+{#if data?.shoppingWithoutReviews.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
 	{:else}
@@ -206,12 +221,12 @@
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
 			<iconify-icon
-				icon="fa6-solid:cart-shopping"
+				icon="ic:round-reviews"
 				height="5rem"
 				width="5rem"
 				class="text-[#707070] mb-4"
 			/>
-			<p class="text-lg text-[#707070] mb-2">{m.shopping_noshopping_title()}</p>
+			<p class="text-lg text-[#707070] mb-2">No tienes Reseñas pendientes</p>
 			<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
 		</div>
 {/if}
