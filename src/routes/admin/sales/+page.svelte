@@ -145,31 +145,35 @@
 	const { filterValue } = pluginStates.filter;
 </script>
 
+<div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
+	<h2 class="text-xl font-semibold text-gray-200">Ventas</h2>
+	<Button
+		class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
+		on:click={() => {
+			goto('/admin/sales/history');
+		}}
+	>
+		<iconify-icon
+			icon="material-symbols:history"
+			height="1.1rem"
+			width="1.1rem"
+			class="text-gray-200 flex justify-center items-center"
+		/>
+		<span class="ml-3">Historial</span></Button
+	>
+</div>
+
 {#if data?.salesList.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
-	{:else}
-		<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-			<h2 class="text-xl font-semibold text-gray-200">Ventas</h2>
-		</div>
+	{:else}	
 		<div class="flex items-center justify-between mx-10 mt-5">
 			<Input
 				class="max-w-sm placeholder:text-[#707070]"
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
-			/>
-			<Button class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200" on:click={() => {
-        goto('/admin/sales/history')
-      }}>
-        <iconify-icon
-					icon="material-symbols:history"
-					height="1.1rem"
-					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
-				/>
-				<span class="ml-3">Historial</span></Button
-			>
+			/>	
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>

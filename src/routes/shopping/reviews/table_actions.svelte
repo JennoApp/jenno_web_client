@@ -12,6 +12,7 @@
 	$: console.log({ userInfo });
 
 	export let id: string;
+  $: console.log({ id })
 
 	let openDialog = false;
 	let rating = 0;
@@ -25,12 +26,35 @@
 		rating = index;
 	}
 
-	async function sendReview(productId: string) {
-    if (!userInfo || !userInfo._id || !productId) {
+  async function getProductFromOrder(orderId: string) {
+    try {
+      const response = await fetch(`http://localhost:3000/orders/${orderId}`)
+      if (response.ok) {
+        const orderData = await response.json()
+        return orderData.product._id
+      } else {
+        console.error('Error al obtener la orden')
+        toast.error('No se pudo obtener la orden. Intentalo Nuevamente')
+        return null
+      }
+    } catch (error) {
+      console.error('Error al obtener la order:', error)
+      toast.error('Ocurrio un error al obtener la orden. Intentalo nuevamente')
+      return null
+    }
+  }
+
+	async function sendReview(orderId: string) {
+    if (!userInfo || !userInfo._id || !orderId) {
 			console.error('Falta información del usuario o del producto');
 			toast.error('No se pudo enviar la reseña. Falta información del usuario o del producto.');
 			return;
 		}
+
+    const productId = await getProductFromOrder(orderId)
+    if (!productId) {
+      return
+    }
 
 		try {
 			const response = await fetch(`http://localhost:3000/products/review/${productId}`, {

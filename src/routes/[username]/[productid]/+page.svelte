@@ -22,7 +22,7 @@
 		user: string;
 	}
 
-  import * as Dialog from "$lib/components/ui/dialog"
+	import * as Dialog from '$lib/components/ui/dialog';
 	import type { PageServerData } from './$types';
 	import * as Carousel from '$lib/components/ui/carousel/index';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context';
@@ -33,117 +33,113 @@
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import RandomProducts from '$lib/components/Randomuserproducts.svelte';
 	import { page } from '$app/stores';
-  import * as m from '$paraglide/messages'
+	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
 
 	export let data: PageServerData;
-  let product: CardData
-	$: product = data.product
+	// let product: CardData
+	$: product = data.product;
 
 	$: console.log({ product: data.product });
 
 	/// Sync Corousels index
-	let api: CarouselAPI
-	let indexCarousel = 0
+	let api: CarouselAPI;
+	let indexCarousel = 0;
 	function syncCarousel(index: number) {
-		indexCarousel = index
+		indexCarousel = index;
 	}
 
-	let profileImg = ''
-  let openDialogreview = false
+	let profileImg = '';
+	let openDialogreview = false;
 
 	onMount(async () => {
 		if (!product || !product?.user) {
 			console.error(
 				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
-			)
-			return
+			);
+			return;
 		}
 
 		try {
-			const response = await fetch(`http://localhost:3000/users/getprofileimg/${product?.user}`)
+			const response = await fetch(`http://localhost:3000/users/getprofileimg/${product?.user}`);
 
 			const userData = await response.json();
-			console.log({ userData })
+			console.log({ userData });
 
-			profileImg = userData?.profileImg
+			profileImg = userData?.profileImg;
 		} catch (error: any) {
-			console.error(`Error al obtener la imagen de perfil: ${error.message}`)
+			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
 		}
-	})
+	});
 
-  $: console.log($page.url.pathname)
-  $: console.log(`/${product.username}/${product._id}`)
-
+	$: console.log($page.url.pathname);
+	$: console.log(`/${product.username}/${product._id}`);
 
 	// product
 	let rating = 4.3;
 	let quantity: number = 1;
-  let selectedOptions: any[] = []
+	let selectedOptions: any[] = [];
 
-  function handleAddToCart() {
-    if (selectedOptions.length === 0) {
-      toast.error('Please select options before adding to cart')
-      return
-    }
-    addToCart(product, selectedOptions, quantity)
-  }
+	function handleAddToCart() {
+		if (selectedOptions.length === 0) {
+			toast.error('Please select options before adding to cart');
+			return;
+		}
+		addToCart(product, selectedOptions, quantity);
+	}
 
-  function handleBuyNow() {
-    if (selectedOptions.length === 0) {
-      toast.error('Please select options before adding to cart')
-      return
-    }
-    addToCart(product, selectedOptions, quantity)
-    goto('/cart')
-  }
+	function handleBuyNow() {
+		if (selectedOptions.length === 0) {
+			toast.error('Please select options before adding to cart');
+			return;
+		}
+		addToCart(product, selectedOptions, quantity);
+		goto('/cart');
+	}
 
+	function handleOptionChange(optionName: string, optionValue: string) {
+		const optionIndex = selectedOptions.findIndex((opt) => opt.name === optionName);
+		if (optionIndex !== -1) {
+			selectedOptions = [
+				...selectedOptions.slice(0, optionIndex),
+				{ name: optionName, value: optionValue },
+				...selectedOptions.slice(optionIndex + 1)
+			];
+		} else {
+			selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }];
+		}
+	}
 
-  function handleOptionChange(optionName: string, optionValue: string) {
-    const optionIndex = selectedOptions.findIndex(opt => opt.name === optionName)
-    if (optionIndex !== -1) {
-      selectedOptions = [
-        ...selectedOptions.slice(0, optionIndex),
-        { name: optionName, value: optionValue },
-        ...selectedOptions.slice(optionIndex + 1)
-      ]
-    } else {
-      selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }]
-    }
-  }
-  
-  $: console.log($cartItems)
-  $: console.log(selectedOptions)
+	$: console.log($cartItems);
+	$: console.log(selectedOptions);
 
-  function handleOpenDialgoReview() {
-    openDialogreview = true
-  }
+	function handleOpenDialgoReview() {
+		openDialogreview = true;
+	}
 
+	// calcular la calificacion
 
-  // calcular la calificacion
-  
-  const calculateStars = (reviews: any[]) => {
-    if (!Array.isArray(reviews) || reviews.length === 0) {
-      return 0
-    }
+	const calculateStars = (reviews: any[]) => {
+		if (!Array.isArray(reviews) || reviews.length === 0) {
+			return 0;
+		}
 
-    const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0)
+		const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0);
 
-    return total / reviews.length
-  }
+		return total / reviews.length;
+	};
 
-  $: totalStars = calculateStars(product.reviews || [])
-  $: console.log({totalStars})
+	$: totalStars = calculateStars(product.reviews || []);
+	$: console.log({ totalStars });
 </script>
 
-
 <svelte:head>
-  <title>{product?.productname}</title>
-  <meta name="description" content={`${product?.description}`}>
+	<title>{product?.productname}</title>
+	<meta name="description" content={`${product?.description}`} />
 </svelte:head>
-
 
 <div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
 	<div class="flex flex-col w-full md:w-1/2">
@@ -228,18 +224,22 @@
 			<div
 				class="flex gap-1 items-center justify-center w-16 h-8 bg-gray-200 dark:bg-[#303030] px-1 mt-1 rounded-lg"
 			>
-				<iconify-icon class={getStartColor(totalStars)} icon="mdi:star" height="1.5rem" width="1.5rem"
+				<iconify-icon
+					class={getStartColor(totalStars)}
+					icon="mdi:star"
+					height="1.5rem"
+					width="1.5rem"
 				></iconify-icon>
-        {#if totalStars !== 0}
-          <span class="text-base font-semibold">{totalStars}</span>
-        {/if}	
+				{#if totalStars !== 0}
+					<span class="text-base font-semibold">{totalStars}</span>
+				{/if}
 			</div>
 
-        <button on:click|preventDefault={() => handleOpenDialgoReview()}>
-          <h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">{m.product_page_reviews()}</h3>
-        </button>
-        
-			
+			<button on:click|preventDefault={() => handleOpenDialgoReview()}>
+				<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">
+					{m.product_page_reviews()}
+				</h3>
+			</button>
 		</div>
 
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
@@ -261,7 +261,9 @@
 							</Select.Trigger>
 							<Select.Content>
 								{#each option.optionslist as op}
-									<Select.Item value={`${op}`} on:click={() => handleOptionChange(option.name, op)}>{op}</Select.Item>
+									<Select.Item value={`${op}`} on:click={() => handleOptionChange(option.name, op)}
+										>{op}</Select.Item
+									>
 								{/each}
 							</Select.Content>
 						</Select.Root>
@@ -272,7 +274,9 @@
 
 		<div class="flex flex-col gap-3">
 			<div class="flex mt-5 gap-3">
-				<div class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md">
+				<div
+					class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md"
+				>
 					<button
 						on:click|preventDefault={() => {
 							if (quantity > 1) {
@@ -338,25 +342,58 @@
 <!-- Lista de productos del mismo vendedor -->
 <RandomProducts user={product.user} />
 
-
-
 <Dialog.Root bind:open={openDialogreview}>
-  <Dialog.Trigger />
-  <Dialog.Content>
-    <Dialog.Header>
-      <Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
-    </Dialog.Header>
-    <div>
-      {#if product?.reviews.length === 0}
-      <div>
-        <h2>No hay reseñas disponibles</h2>
-      </div>
-      {:else}
-        {#each product?.reviews as review}
-          <h1>{review.username}</h1>
-        {/each}
-      {/if}
-     
-    </div>
-  </Dialog.Content>
+	<Dialog.Trigger />
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
+		</Dialog.Header>
+		<div>
+			{#if product?.reviews.length === 0}
+				<div>
+					<h2>No hay reseñas disponibles</h2>
+				</div>
+			{:else}
+				<ScrollArea class="max-h-[600px] w-full">
+					{#each product?.reviews as review}
+						<div class="m-3">
+							<div class="flex items-center justify-between">
+								<div class="flex gap-2 items-center">
+									{#if review.userProfileImg !== ''}
+										<img
+											src={review.userProfileImg}
+											alt={review.userName}
+											class="h-9 w-9 object-cover ml-1 rounded-full"
+										/>
+									{:else}
+										<iconify-icon
+											icon="mdi:user"
+											height="1.5rem"
+											width="1.5rem"
+											class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
+										/>
+									{/if}
+									<h3 class="text-base font-semibold">{review.userName}</h3>
+								</div>
+
+								<div class="flex">
+									{#each Array(review.stars) as _, i}
+										<iconify-icon
+											icon="mdi:star"
+											height="1.5rem"
+											width="1.5rem"
+											class="flex justify-center items-center h-9 w-9 {getStartColor(review.stars)}"
+										/>
+									{/each}
+								</div>
+							</div>
+							<div class="m-3">
+								<p>{review.review}</p>
+							</div>
+						</div>
+					{/each}
+				</ScrollArea>
+			{/if}
+		</div>
+	</Dialog.Content>
 </Dialog.Root>

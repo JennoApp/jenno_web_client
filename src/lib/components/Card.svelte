@@ -1,8 +1,10 @@
 <script lang="ts">
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-  import * as m from '$paraglide/messages'
-  import { getStartColor } from '$lib/utils/getstartcolor'
+	import * as m from '$paraglide/messages';
+	import { getStartColor } from '$lib/utils/getstartcolor';
 
 	interface CardData {
 		_id: string;
@@ -11,7 +13,7 @@
 		imgs: [string];
 		price: number;
 		user: string;
-    reviews: []
+		reviews: [];
 	}
 
 	import { addToCart } from '$lib/stores/cartStore';
@@ -20,6 +22,7 @@
 	export let data: CardData;
 
 	let profileImg = '';
+	let openDialogreview = false;
 
 	onMount(async () => {
 		if (!data || !data?.user) {
@@ -35,33 +38,35 @@
 			const userData = await response.json();
 			console.log({ userData });
 
-			profileImg = userData?.profileImg
+			profileImg = userData?.profileImg;
 		} catch (error: any) {
 			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
 		}
 	});
 
-  let rating: number = 3.5
+	let rating: number = 3.5;
 
+	const calculateStars = (reviews: any[]) => {
+		if (!Array.isArray(reviews) || reviews.length === 0) {
+			return 0;
+		}
 
-  const calculateStars = (reviews: any[]) => {
-    if (!Array.isArray(reviews) || reviews.length === 0) {
-      return 0
-    }
+		const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0);
 
-    const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0)
+		return total / reviews.length;
+	};
 
-    return total / reviews.length
-  }
+	$: totalStars = calculateStars(data?.reviews || []);
+	$: console.log({ data: data?.reviews });
 
-  $: totalStars = calculateStars(data?.reviews || [])
-  $: console.log({data: data?.reviews})
-
+	function handleOpenDialgoReview() {
+		openDialogreview = true;
+	}
 </script>
 
 <a href={`/${data.username}/${data._id}`}>
 	<div
-		class="h-[380px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300  dark:shadow-none hover:dark:bg-[#252525]"
+		class="h-[380px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525]"
 	>
 		<!-- Header -->
 		<div class="flex w-full h-12 mt-1 items-center justify-between">
@@ -70,14 +75,16 @@
 					<img class="h-7 w-7 object-cover ml-4 rounded-full" src={profileImg} alt="logo" />
 				{:else}
 					<div class="flex justify-center items-center h-9 w-9 ml-2 rounded-full">
-						<iconify-icon class="text-[#707070]" icon="bxs:store" height="1.5rem" width="1.5rem"></iconify-icon>
+						<iconify-icon class="text-[#707070]" icon="bxs:store" height="1.5rem" width="1.5rem"
+						></iconify-icon>
 					</div>
 				{/if}
 				<a href={data.username}>
 					<h4 class="ml-2 font-medium">{data.username}</h4>
 				</a>
 			</div>
-			<div class="hidden"> <!-- oculto los simbolos para agregar funcionalidad posteriormente -->
+			<div class="hidden">
+				<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
 				<iconify-icon
 					class="mr-1 cursor-pointer"
 					icon="mdi:dots-vertical"
@@ -95,24 +102,38 @@
 		<!-- Social -->
 		<div class="flex items-center justify-between w-full h-8 mt-1 mx-3">
 			<div class="flex gap-2 items-center text-2xl text-center">
-        <div class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg">
-          <iconify-icon 
-            class={getStartColor(totalStars)} 
-            icon="mdi:star" 
-            height="1.5rem"
-            width="1.5rem"
-				></iconify-icon>
-        {#if totalStars !== 0}
-          <span class="text-sm font-medium">{totalStars}</span>
-        {/if}
-        </div>	
-				<iconify-icon class="text-[#707070] dark:text-white" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
-				></iconify-icon>
-				<iconify-icon class="text-[#707070] dark:text-white" icon="bitcoin-icons:share-filled" height="1.5rem" width="1.5rem"
+				<div
+					class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg"
+				>
+					<iconify-icon
+						class={getStartColor(totalStars)}
+						icon="mdi:star"
+						height="1.5rem"
+						width="1.5rem"
+					></iconify-icon>
+					{#if totalStars !== 0}
+						<span class="text-sm font-medium">{totalStars}</span>
+					{/if}
+				</div>
+				<button class="flex items-center" on:click|preventDefault={() => handleOpenDialgoReview()}>
+					<iconify-icon
+						class="text-[#707070] dark:text-white"
+						icon="material-symbols-light:reviews"
+						height="1.5rem"
+						width="1.5rem"
+					></iconify-icon>
+				</button>
+
+				<iconify-icon
+					class="text-[#707070] dark:text-white"
+					icon="bitcoin-icons:share-filled"
+					height="1.5rem"
+					width="1.5rem"
 				></iconify-icon>
 			</div>
 
-			<div class="save hidden"> <!-- oculto los simbolos para agregar funcionalidad posteriormente -->
+			<div class="save hidden">
+				<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
 				<iconify-icon
 					class="px-1 mr-4"
 					icon="material-symbols:bookmark-outline"
@@ -150,3 +171,60 @@
 		</div> -->
 	</div>
 </a>
+
+<!-- Dialog Reviews -->
+<Dialog.Root bind:open={openDialogreview}>
+	<Dialog.Trigger />
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
+		</Dialog.Header>
+		<div>
+			{#if data?.reviews.length === 0}
+				<div>
+					<h2>No hay reseñas disponibles</h2>
+				</div>
+			{:else}
+				<ScrollArea class="max-h-[600px] w-full">
+					{#each data?.reviews as review}
+						<div class="m-3">
+							<div class="flex items-center justify-between">
+								<div class="flex gap-2 items-center">
+									{#if review.userProfileImg !== ''}
+										<img
+											src={review.userProfileImg}
+											alt={review.userName}
+											class="h-9 w-9 object-cover ml-1 rounded-full"
+										/>
+									{:else}
+										<iconify-icon
+											icon="mdi:user"
+											height="1.5rem"
+											width="1.5rem"
+											class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
+										/>
+									{/if}
+									<h3 class="text-base font-semibold">{review.userName}</h3>
+								</div>
+
+								<div class="flex">
+									{#each Array(review.stars) as _, i}
+										<iconify-icon
+											icon="mdi:star"
+											height="1.5rem"
+											width="1.5rem"
+											class="flex justify-center items-center h-9 w-9 {getStartColor(review.stars)}"
+										/>
+									{/each}
+								</div>
+							</div>
+							<div class="m-3">
+								<p>{review.review}</p>
+							</div>
+						</div>
+					{/each}
+				</ScrollArea>
+			{/if}
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
