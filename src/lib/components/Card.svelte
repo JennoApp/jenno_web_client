@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
   import * as m from '$paraglide/messages'
+  import { getStartColor } from '$lib/utils/getstartcolor'
 
 	interface CardData {
 		_id: string;
@@ -10,6 +11,7 @@
 		imgs: [string];
 		price: number;
 		user: string;
+    reviews: []
 	}
 
 	import { addToCart } from '$lib/stores/cartStore';
@@ -41,21 +43,19 @@
 
   let rating: number = 3.5
 
-  const getStartColor = (rating: number) => {
-    if (rating >= 5) {
-      return 'text-yellow-600'
-    } else if (rating >= 4.5) {
-      return 'text-yellow-500'
-    } else if (rating >= 3.5) {
-      return 'text-yellow-400'
-    } else if (rating >= 2.5) {
-      return 'text-yellow-300'
-    } else if (rating >= 1.5) {
-      return 'text-yellow-200'
-    } else {
-      return 'text-yellow-100'
+
+  const calculateStars = (reviews: any[]) => {
+    if (!Array.isArray(reviews) || reviews.length === 0) {
+      return 0
     }
+
+    const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0)
+
+    return total / reviews.length
   }
+
+  $: totalStars = calculateStars(data?.reviews || [])
+  $: console.log({data: data?.reviews})
 
 </script>
 
@@ -70,7 +70,7 @@
 					<img class="h-7 w-7 object-cover ml-4 rounded-full" src={profileImg} alt="logo" />
 				{:else}
 					<div class="flex justify-center items-center h-9 w-9 ml-2 rounded-full">
-						<iconify-icon icon="mdi:user" height="1.5rem" width="1.5rem"></iconify-icon>
+						<iconify-icon class="text-[#707070]" icon="bxs:store" height="1.5rem" width="1.5rem"></iconify-icon>
 					</div>
 				{/if}
 				<a href={data.username}>
@@ -97,12 +97,14 @@
 			<div class="flex gap-2 items-center text-2xl text-center">
         <div class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg">
           <iconify-icon 
-            class={getStartColor(rating)} 
+            class={getStartColor(totalStars)} 
             icon="mdi:star" 
             height="1.5rem"
             width="1.5rem"
 				></iconify-icon>
-        <span class="text-sm font-medium">{rating}</span>
+        {#if totalStars !== 0}
+          <span class="text-sm font-medium">{totalStars}</span>
+        {/if}
         </div>	
 				<iconify-icon class="text-[#707070] dark:text-white" icon="material-symbols-light:reviews" height="1.5rem" width="1.5rem"
 				></iconify-icon>

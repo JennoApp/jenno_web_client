@@ -11,13 +11,17 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
       const response = await fetch(`http://localhost:3000/users/shoppingwithoutreviews/${user?.sub}?page=${1}&limit=${10}`);
       const { data, meta } = await response.json()
 
+      console.log({datareview: data})
+
       // Fetch details for each order
       const shoppingWithoutReviews = await Promise.all(
-        data.map(async (orderId: string) => {
-        const orderResponse = await fetch(`http://localhost:3000/orders/${orderId}`);
+        data.map(async (order: {_id: string }) => {
+        const orderResponse = await fetch(`http://localhost:3000/orders/${order._id}`);
         return await orderResponse.json();
       })
     );
+
+    console.log({shoppingWithoutReviews})
 
       return {
         shoppingWithoutReviews,

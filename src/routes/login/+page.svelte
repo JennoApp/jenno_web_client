@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+  import { toast } from 'svelte-sonner'
 
 	export let form;
 	$: if (form?.success) {
 		console.log('login succesful');
 		goto('/');
 	}
+
+  $: if(form?.success === false) {
+    toast.error("Credenciales Incorrectas o Usuario no registrado")
+  }
 </script>
 
 <svelte:head>

@@ -11,19 +11,18 @@
 	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
-  import { goto } from '$app/navigation'
+	import { goto } from '$app/navigation';
 
 	export let data: PageServerData;
 
-  $: console.log({meta: data.meta})
-	
+	$: console.log({ meta: data.meta });
+
 	let currentPage = 1;
 	let limitPerPage = 10;
 	let NextPage: boolean;
 	let PreviousPage: boolean;
 	let itemsCount: number;
 	let pageCount: number;
-
 
 	const table = createTable(readable(data.products), {
 		page: addPagination(),
@@ -72,19 +71,19 @@
 			header: `${m.shopping_tableheader_category()}`,
 			accessor: (row) => row.product.category
 		}),
-    table.column({
+		table.column({
 			header: 'Opciones',
 			accessor: (row) => row.product.selectedOptions[0],
-      cell: ({value}) => {
-        return createRender(Options, {options: value})
-      }
+			cell: ({ value }) => {
+				return createRender(Options, { options: value });
+			}
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_status()}`,
 			accessor: (row) => row.status,
-      cell: ({value}) => {
-        return createRender(Status, { status: value }) || `<span>${value}</span>`
-      }
+			cell: ({ value }) => {
+				return createRender(Status, { status: value }) || `<span>${value}</span>`;
+			}
 		}),
 		table.column({
 			header: ` `,
@@ -99,13 +98,45 @@
 	const { filterValue } = pluginStates.filter;
 </script>
 
+<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink justify-between">
+	<h2 class="text-xl font-semibold text-gray-200">Compras</h2>
+
+	<div class="flex gap-3">
+		<Button
+			class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
+			on:click={() => {
+				goto('/shopping/reviews');
+			}}
+		>
+			<iconify-icon
+				icon="ic:round-reviews"
+				height="1.1rem"
+				width="1.1rem"
+				class="text-gray-200 flex justify-center items-center"
+			/>
+			<span class="ml-3">Valoración y Reseñas</span></Button
+		>
+		<Button
+			class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
+			on:click={() => {
+				goto('/shopping/history');
+			}}
+		>
+			<iconify-icon
+				icon="material-symbols:history"
+				height="1.1rem"
+				width="1.1rem"
+				class="text-gray-200 flex justify-center items-center"
+			/>
+			<span class="ml-3">Historial</span></Button
+		>
+	</div>
+</div>
+
 {#if data?.products.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
 	{:else}
-		<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-			<h2 class="text-xl font-semibold text-gray-200">Compras</h2>
-		</div>
 		<div class="flex items-center justify-between mx-10 mt-5">
 			<Input
 				class="max-w-sm placeholder:text-[#707070]"
@@ -113,33 +144,6 @@
 				type="text"
 				bind:value={$filterValue}
 			/>
-      <div class="flex gap-3">
-        <Button class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200" on:click={() => {
-        goto('/shopping/reviews')
-      }}>
-      
-        <iconify-icon
-					icon="ic:round-reviews"
-					height="1.1rem"
-					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
-				/>
-				<span class="ml-3">Valoración y Reseñas</span></Button
-			>
-      <Button class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200" on:click={() => {
-        goto('/shopping/history')
-      }}>
-      
-        <iconify-icon
-					icon="material-symbols:history"
-					height="1.1rem"
-					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
-				/>
-				<span class="ml-3">Historial</span></Button
-			>
-      </div>
-      
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
@@ -205,13 +209,13 @@
 	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-			<iconify-icon
-				icon="fa6-solid:cart-shopping"
-				height="5rem"
-				width="5rem"
-				class="text-[#707070] mb-4"
-			/>
-			<p class="text-lg text-[#707070] mb-2">{m.shopping_noshopping_title()}</p>
-			<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
-		</div>
+		<iconify-icon
+			icon="fa6-solid:cart-shopping"
+			height="5rem"
+			width="5rem"
+			class="text-[#707070] mb-4"
+		/>
+		<p class="text-lg text-[#707070] mb-2">{m.shopping_noshopping_title()}</p>
+		<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
+	</div>
 {/if}

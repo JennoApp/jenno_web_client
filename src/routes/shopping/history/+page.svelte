@@ -227,10 +227,10 @@
 	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="material-symbols:history" height="5rem" width="5rem" class="text-[#707070] mb-4" />
 
-		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
-		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">No hay productos en el historial</h1>
+		<p class="text-lg text-[#707070]">¡Explora y encuentra productos que te interesen!</p>
 	</div>
 {/if}
 

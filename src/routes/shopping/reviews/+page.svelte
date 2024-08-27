@@ -9,6 +9,7 @@
 	import { format } from 'timeago.js';
 	import * as m from '$paraglide/messages';
 	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
+  import TableActions from './table_actions.svelte'
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
   import { goto } from '$app/navigation'
@@ -81,6 +82,18 @@
 		table.column({
 			header: ` `,
 			accessor: (row) => format(row.updatedAt)
+		}),
+    table.column({
+			accessor: ({ _id }) => _id,
+			header: '',
+			plugins: {
+				filter: {
+					exclude: true
+				}
+			},
+			cell: ({ value }) => {
+				return createRender(TableActions, { id: value });
+			}
 		})
 	]);
 
@@ -127,34 +140,7 @@
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
-			/>
-      <div class="flex gap-3">
-        <Button class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200" on:click={() => {
-        goto('/shopping/reviews')
-      }}>
-      
-        <iconify-icon
-					icon="ic:round-reviews"
-					height="1.1rem"
-					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
-				/>
-				<span class="ml-3">Valoración y Reseñas</span></Button
-			>
-      <Button class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200" on:click={() => {
-        goto('/shopping/history')
-      }}>
-      
-        <iconify-icon
-					icon="material-symbols:history"
-					height="1.1rem"
-					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
-				/>
-				<span class="ml-3">Historial</span></Button
-			>
-      </div>
-      
+			/>   
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
@@ -226,7 +212,7 @@
 				width="5rem"
 				class="text-[#707070] mb-4"
 			/>
-			<p class="text-lg text-[#707070] mb-2">No tienes Reseñas pendientes</p>
+			<p class="text-lg font-semibold text-[#707070] mb-2">No tienes Reseñas pendientes</p>
 			<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
 		</div>
 {/if}

@@ -120,6 +120,22 @@
   function handleOpenDialgoReview() {
     openDialogreview = true
   }
+
+
+  // calcular la calificacion
+  
+  const calculateStars = (reviews: any[]) => {
+    if (!Array.isArray(reviews) || reviews.length === 0) {
+      return 0
+    }
+
+    const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0)
+
+    return total / reviews.length
+  }
+
+  $: totalStars = calculateStars(product.reviews || [])
+  $: console.log({totalStars})
 </script>
 
 
@@ -212,9 +228,11 @@
 			<div
 				class="flex gap-1 items-center justify-center w-16 h-8 bg-gray-200 dark:bg-[#303030] px-1 mt-1 rounded-lg"
 			>
-				<iconify-icon class={getStartColor(rating)} icon="mdi:star" height="1.5rem" width="1.5rem"
+				<iconify-icon class={getStartColor(totalStars)} icon="mdi:star" height="1.5rem" width="1.5rem"
 				></iconify-icon>
-				<span class="text-base font-semibold">{rating}</span>
+        {#if totalStars !== 0}
+          <span class="text-base font-semibold">{totalStars}</span>
+        {/if}	
 			</div>
 
         <button on:click|preventDefault={() => handleOpenDialgoReview()}>
@@ -329,18 +347,16 @@
       <Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
     </Dialog.Header>
     <div>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
-      <h2>Lorem ipsum</h2>
+      {#if product?.reviews.length === 0}
+      <div>
+        <h2>No hay reseñas disponibles</h2>
+      </div>
+      {:else}
+        {#each product?.reviews as review}
+          <h1>{review.username}</h1>
+        {/each}
+      {/if}
+     
     </div>
   </Dialog.Content>
 </Dialog.Root>
