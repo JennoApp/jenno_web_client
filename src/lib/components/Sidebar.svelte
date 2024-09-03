@@ -271,7 +271,7 @@
 					{/if}
 				</Tooltip.Root>
 
-				<Tooltip.Root>
+				<!-- <Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
               href="/explore"
@@ -299,7 +299,7 @@
 							<h3>{m.sidebar_explore()}</h3>
 						</Tooltip.Content>
 					{/if}
-				</Tooltip.Root>
+				</Tooltip.Root> -->
 
 				<Tooltip.Root>
 					<Tooltip.Trigger>

@@ -32,6 +32,7 @@
 		'cart',
 		'chat',
 		'shopping',
+    'forgotpassword',
     // languages
     'es'
 	];
@@ -70,7 +71,7 @@
 	});
 	///
 
-	const paths = ['/login', '/register', '/register/personal', '/register/business'];
+	const paths = ['/login', '/register', '/register/personal', '/register/business', '/forgotpassword'];
 
 	//verifica si la sesion de usuario esta activa
 	$: userInfo = $page.data.user;

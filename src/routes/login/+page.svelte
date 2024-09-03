@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Separator } from "$lib/components/ui/separator"
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
   import { toast } from 'svelte-sonner'
@@ -35,6 +36,11 @@
 		<div class="flex flex-col">
 			<label for="password" class="text-base dark:text-gray-200 font-medium">Password</label>
 			<input type="password" name="password" class="h-8 border text-black font-semibold px-2 text-xl rounded-md" />
+      
+      <!-- Forgot Password Link -->
+			<div class="flex justify-end mt-1">
+				<a href="/forgotpassword" class="text-sm text-gray-400 hover:underline">¿Olvidaste tu contraseña?</a>
+			</div>
 		</div>
 
 		<!-- Login Submit -->
@@ -43,6 +49,15 @@
 			>Login</button
 		>
 	</form>
+
+  <Separator class="w-96 mt-5"/>
+
+  <!-- Sign Up Link -->
+	<p class="px-8 mt-3 text-center text-sm dark:text-gray-200 text-muted-foreground">
+		¿No tienes una cuenta?
+		<a href="/register" class="text-gray-400 hover:underline">Regístrate</a>.
+	</p>
+
 
 	<!-- Terms & Services Info -->
 	<p class="px-8 mt-6 text-center text-sm dark:text-gray-200 text-muted-foreground">
