@@ -18,6 +18,7 @@
 
 	import { addToCart } from '$lib/stores/cartStore';
 	import { formatPrice } from '$lib/utils/formatprice';
+	import { toast } from 'svelte-sonner';
 
 	export let data: CardData;
 
@@ -79,7 +80,7 @@
 						></iconify-icon>
 					</div>
 				{/if}
-				<a href={data.username}>
+				<a href={`/${data.username}`}>
 					<h4 class="ml-2 font-medium">{data.username}</h4>
 				</a>
 			</div>
@@ -124,12 +125,23 @@
 					></iconify-icon>
 				</button>
 
-				<iconify-icon
+        <button class="flex items-center" on:click|preventDefault={() => {
+          const product_link = `http://localhost:5173/${data.username}/${data._id}`
+          navigator.clipboard.writeText(product_link)
+            .then(() => {
+              toast.success('Enlace copiado al portapapeles')
+            })
+            .catch(err => {
+              toast.error("Error al copiar el enlace. Intentelo nuevamente")
+            }) 
+        }}>
+          <iconify-icon
 					class="text-[#707070] dark:text-white"
 					icon="bitcoin-icons:share-filled"
 					height="1.5rem"
 					width="1.5rem"
 				></iconify-icon>
+        </button>	
 			</div>
 
 			<div class="save hidden">

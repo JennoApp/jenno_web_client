@@ -18,8 +18,8 @@
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { theme } from '$lib/stores/themeStore';
 	import * as Dialog from '$lib/components/ui/dialog';
-  import { location_data } from '$lib/stores/ipaddressStore'
-  import * as m from '$paraglide/messages'
+	import { location_data } from '$lib/stores/ipaddressStore';
+	import * as m from '$paraglide/messages';
 
 	const rutasExcluidas = [
 		'',
@@ -32,9 +32,9 @@
 		'cart',
 		'chat',
 		'shopping',
-    'forgotpassword',
-    // languages
-    'es'
+		'forgotpassword',
+		// languages
+		'es'
 	];
 
 	let searchInputValue = '';
@@ -50,12 +50,23 @@
 				setSearch(searchInputValue);
 				dialogOpen = false;
 				goto(`/${$page.url.pathname.split('/')[1]}/search`);
+        searchInputValue = ''
 			} else {
 				setSearch(searchInputValue);
 				console.log($search);
 				dialogOpen = false;
 				goto('/search');
+        searchInputValue = ''
 			}
+		}
+	};
+
+	const handleGlobalSearch = () => {
+		if (searchInputValue !== '') {
+			setSearch(searchInputValue);
+			dialogOpen = false;
+			goto('/search');
+      searchInputValue = ''
 		}
 	};
 
@@ -71,7 +82,13 @@
 	});
 	///
 
-	const paths = ['/login', '/register', '/register/personal', '/register/business', '/forgotpassword'];
+	const paths = [
+		'/login',
+		'/register',
+		'/register/personal',
+		'/register/business',
+		'/forgotpassword'
+	];
 
 	//verifica si la sesion de usuario esta activa
 	$: userInfo = $page.data.user;
@@ -142,7 +159,7 @@
 					</button>
 				</div>
 
-				<button on:click|preventDefault={() => goto("/")}>
+				<button on:click|preventDefault={() => goto('/')}>
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<h1 class="text-xl font-extrabold dark:text-gray-100">e</h1>
@@ -150,11 +167,14 @@
 							{#if $location_data !== undefined}
 								<span
 									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
-									>{$location_data?.data[0]?.country_module?.global?.alpha2}</span>
+									>{$location_data?.data[0]?.country_module?.global?.alpha2}</span
+								>
 							{/if}
 							<span
-								class="absolute top-2 text-gray-500 h-5 w-5 text-sm flex items-center justify-center {$location_data !== undefined ? "right-[-50px]": "right-[-30px]"}"
-								>beta</span
+								class="absolute top-2 text-gray-500 h-5 w-5 text-sm flex items-center justify-center {$location_data !==
+								undefined
+									? 'right-[-50px]'
+									: 'right-[-30px]'}">beta</span
 							>
 						</div>
 					</div>
@@ -193,6 +213,18 @@
 							></iconify-icon>
 						</div>
 					</form>
+
+					{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
+						<button on:click={() => handleGlobalSearch()}>
+							<div
+								class="absolute top-10 left-0 mt-2 w-full bg-white dark:bg-[#202020] shadow-lg rounded-md p-2"
+							>
+								<p class="text-gray-700 dark:text-gray-200 cursor-pointer">
+									Realizar búsqueda global
+								</p>
+							</div>
+						</button>
+					{/if}
 				</div>
 			</div>
 
@@ -242,6 +274,18 @@
 									></iconify-icon>
 								</div>
 							</form>
+
+							{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
+								<button on:click={() => handleGlobalSearch()}>
+									<div
+										class="absolute top-10 left-0 mt-2 w-full bg-white dark:bg-[#202020] shadow-lg rounded-md p-2"
+									>
+										<p class="text-gray-700 dark:text-gray-200 cursor-pointer">
+											Realizar búsqueda global
+										</p>
+									</div>
+								</button>
+							{/if}
 						</Dialog.Content>
 					</Dialog.Root>
 				</div>
@@ -294,10 +338,10 @@
 												<div class="flex flex-col items-start">
 													<h2 class="text-lg">{cartItem.productname}</h2>
 													<p class="text-base dark:text-white">${cartItem.price}</p>
-                          <div class="flex gap-1">
-                            <h3>{cartItem.selectedOptions[0].name}:</h3>
-                            <p>{cartItem.selectedOptions[0].value}</p>
-                          </div>
+													<div class="flex gap-1">
+														<h3>{cartItem.selectedOptions[0].name}:</h3>
+														<p>{cartItem.selectedOptions[0].value}</p>
+													</div>
 												</div>
 
 												<div class="flex w-full justify-center items-center mt-2">
@@ -313,7 +357,8 @@
 														>{cartItem.amount}</span
 													>
 													<button
-														on:click|preventDefault={() => addToCart(cartItem, cartItem.selectedOptions)}
+														on:click|preventDefault={() =>
+															addToCart(cartItem, cartItem.selectedOptions)}
 														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 													>
 														<!-- Plus Icon -->
@@ -323,7 +368,8 @@
 												</div>
 											</div>
 											<button
-												on:click|preventDefault={() => removeFromCart(cartItem._id, cartItem.selectedOptions)}
+												on:click|preventDefault={() =>
+													removeFromCart(cartItem._id, cartItem.selectedOptions)}
 												class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 											>
 												<!-- Close Icon -->
@@ -400,9 +446,11 @@
 									<DropdownMenu.Sub>
 										<DropdownMenu.SubTrigger>{m.navbar_user_theme()}</DropdownMenu.SubTrigger>
 										<DropdownMenu.SubContent>
-											<DropdownMenu.Item on:click={() => setTheme('light')}>{m.nabvar_user_theme_light()}</DropdownMenu.Item
+											<DropdownMenu.Item on:click={() => setTheme('light')}
+												>{m.nabvar_user_theme_light()}</DropdownMenu.Item
 											>
-											<DropdownMenu.Item on:click={() => setTheme('dark')}>{m.nabvar_user_theme_dark()}</DropdownMenu.Item
+											<DropdownMenu.Item on:click={() => setTheme('dark')}
+												>{m.nabvar_user_theme_dark()}</DropdownMenu.Item
 											>
 											<DropdownMenu.Item on:click={() => setTheme('system')}
 												>{m.nabvar_user_theme_system()}</DropdownMenu.Item
