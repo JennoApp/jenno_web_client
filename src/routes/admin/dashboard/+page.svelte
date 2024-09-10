@@ -1,36 +1,42 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import Bar from '$lib/components/Bar.svelte';
-  import { page } from '$app/stores'
-  import { formatPrice } from '$lib/utils/formatprice'
-  import { onMount } from 'svelte'
-  import * as m from '$paraglide/messages'
+	import { page } from '$app/stores';
+	import { formatPrice } from '$lib/utils/formatprice';
+	import { onMount } from 'svelte';
+	import * as m from '$paraglide/messages';
+	import type { PageServerData } from './$types';
+	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 
-  $: console.log($page.data.user)
+	export let data: PageServerData;
 
-  let totalRevenue = 0
-  let numberOfSales = 0
+	$: console.log({ data });
 
-  const getTotalRevenue = async (id: string) => {
-    const result = await fetch(`http://localhost:3000/orders/totalrevenue/${id}`)
-    const data = await result.json()
+	$: console.log($page.data.user);
 
-    totalRevenue = data
-  }
-  
-  const getNumberOfSales = async (id: string) => {
-    const result = await fetch(`http://localhost:3000/orders/numberofsales/${id}`)
-    const data = await result.json()
+	let totalRevenue = 0;
+	let numberOfSales = 0;
 
-    numberOfSales = data
-  }
+	const getTotalRevenue = async (id: string) => {
+		const result = await fetch(`http://localhost:3000/orders/totalrevenue/${id}`);
+		const data = await result.json();
 
-  $: if ($page.data.user) {
-    getTotalRevenue($page.data.user._id)
-    getNumberOfSales($page.data.user._id)
-  }
+		totalRevenue = data;
+	};
 
-  $: console.log($page.data.user)
+	const getNumberOfSales = async (id: string) => {
+		const result = await fetch(`http://localhost:3000/orders/numberofsales/${id}`);
+		const data = await result.json();
+
+		numberOfSales = data;
+	};
+
+	$: if ($page.data.user) {
+		getTotalRevenue($page.data.user._id);
+		getNumberOfSales($page.data.user._id);
+	}
+
+	$: console.log($page.data.user);
 </script>
 
 <div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +57,9 @@
 			<iconify-icon icon="gravity-ui:persons" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">{$page.data.user !== undefined ? $page.data.user.followers.length: ''}</div>
+			<div class="text-2xl font-bold">
+				{$page.data.user !== undefined ? $page.data.user.followers.length : ''}
+			</div>
 			<!-- <p class="text-xs text-muted-foreground">+180.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
@@ -83,48 +91,31 @@
 			<Card.Title class="text-sm font-medium">{m.admin_dashboard_recent_sales()}</Card.Title>
 		</Card.Header>
 		<Card.Content>
-			<div class="space-y-8">
-				<div class="flex items-center">
-					<iconify-icon icon="material-symbols:person" height="1.5rem" width="1.5rem"></iconify-icon>
-					<div class="ml-4 space-y-1">
-						<p class="text-sm font-medium leading-none">Olivia Martin</p>
-						<p class="text-sm text-muted-foreground">olivia.martin@email.com</p>
-					</div>
-					<div class="ml-auto font-medium">+$1,999.00</div>
+			<ScrollArea class="h-96 p-1">
+				<div class="space-y-8">
+					{#if data.salesList?.length !== 0}
+						{#each data?.salesList as order}
+							<div class="flex items-center">
+								{#if order?.buyerProfileImg !== ''}
+									<img
+										src={order?.buyerProfileImg}
+										alt={order?.buyerName}
+										class="h-9 w-9 object-cover ml-1 rounded-full"
+									/>
+								{/if}
+								<iconify-icon icon="material-symbols:person" height="1.5rem" width="1.5rem"
+								></iconify-icon>
+								<div class="ml-4 space-y-1">
+									<p class="text-sm font-medium leading-none">{order.buyerName}</p>
+								</div>
+								<div class="ml-auto font-medium">
+									+{formatPrice(order?.amount * order?.product?.price, 'es-CO', 'COP')}
+								</div>
+							</div>
+						{/each}
+					{/if}
 				</div>
-				<div class="flex items-center">
-					<iconify-icon icon="material-symbols:person" height="1.5rem" width="1.5rem"></iconify-icon>
-					<div class="ml-4 space-y-1">
-						<p class="text-sm font-medium leading-none">Jackson Lee</p>
-						<p class="text-sm text-muted-foreground">jackson.lee@email.com</p>
-					</div>
-					<div class="ml-auto font-medium">+$39.00</div>
-				</div>
-				<div class="flex items-center">
-					<iconify-icon icon="material-symbols:person" height="1.5rem" width="1.5rem"></iconify-icon>
-					<div class="ml-4 space-y-1">
-						<p class="text-sm font-medium leading-none">Isabella Nguyen</p>
-						<p class="text-sm text-muted-foreground">isabella.nguyen@email.com</p>
-					</div>
-					<div class="ml-auto font-medium">+$299.00</div>
-				</div>
-				<div class="flex items-center">
-					<iconify-icon icon="material-symbols:person" height="1.5rem" width="1.5rem"></iconify-icon>
-					<div class="ml-4 space-y-1">
-						<p class="text-sm font-medium leading-none">William Kim</p>
-						<p class="text-sm text-muted-foreground">will@email.com</p>
-					</div>
-					<div class="ml-auto font-medium">+$99.00</div>
-				</div>
-				<div class="flex items-center">
-					<iconify-icon icon="material-symbols:person" height="1.5rem" width="1.5rem"></iconify-icon>
-					<div class="ml-4 space-y-1">
-						<p class="text-sm font-medium leading-none">Sofia Davis</p>
-						<p class="text-sm text-muted-foreground">sofia.davis@email.com</p>
-					</div>
-					<div class="ml-auto font-medium">+$39.00</div>
-				</div>
-			</div>
+			</ScrollArea>
 		</Card.Content>
 	</Card.Root>
 </div>
