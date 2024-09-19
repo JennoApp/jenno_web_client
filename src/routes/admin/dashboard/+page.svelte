@@ -14,6 +14,7 @@
 
 	$: console.log($page.data.user);
 
+  let walletData: any;
 	let totalRevenue = 0;
 	let numberOfSales = 0;
 
@@ -31,9 +32,19 @@
 		numberOfSales = data;
 	};
 
+  async function fetchWallet(walletId: any) {
+		const response = await fetch(`http://localhost:3000/wallet/${walletId}`);
+
+		const data = await response.json();
+		walletData = data;
+
+		return data;
+	}
+
 	$: if ($page.data.user) {
 		getTotalRevenue($page.data.user._id);
 		getNumberOfSales($page.data.user._id);
+    fetchWallet($page.data.user.walletId)
 	}
 
 	$: console.log($page.data.user);
@@ -46,7 +57,7 @@
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">{formatPrice(totalRevenue, 'es-CO', 'COP')}</div>
+			<div class="text-2xl font-bold">{formatPrice(walletData?.totalEarned, 'es-CO', 'COP')}</div>
 			<!-- <p class="text-xs text-muted-foreground">+20.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>

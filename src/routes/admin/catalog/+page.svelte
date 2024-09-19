@@ -67,7 +67,7 @@
 		}),
 		table.column({
 			accessor: 'quantity',
-			header: `${m.admin_catalog_tableheader_category()}`,
+			header: `${m.admin_catalog_tableheader_quantity()}`,
 			plugins: {
 				filter: {
 					exclude: true
