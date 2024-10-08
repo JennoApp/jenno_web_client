@@ -8,7 +8,7 @@ export default defineConfig({
       project: "./project.inlang",
       outdir: "./src/paraglide"
     }),
-    sveltekit()
+    sveltekit(),
 	],
 	ssr: {
 		noExternal: ['three']

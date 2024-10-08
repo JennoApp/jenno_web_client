@@ -3,8 +3,9 @@
   import { Progress } from '$lib/components/ui/progress'
   import * as m from '$paraglide/messages'
 
-	$: pathnameRoute = $page.url.pathname
-	// $: console.log({ pathnameRoute });
+  $: pathnameRoute = $page.url.pathname
+	
+  // $: console.log({ pathnameRoute });
 </script>
 
 <div class="flex flex-col justify-center items-center">

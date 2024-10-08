@@ -1,4 +1,7 @@
 <script lang="ts">
+	import * as Dialog from '$lib/components/ui/dialog';
+	
+	import { loadScript } from '@paypal/paypal-js';
 	import {
 		cartItems,
 		getTotal,
@@ -13,6 +16,7 @@
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
+	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 
 	let shippingData = $page.data?.user?.shippingInfo;
 
@@ -22,6 +26,7 @@
 	}
 
 	let items = [];
+	let openDialogPayment = false;
 
 	// calcular el subtotal de los productos en el carrito
 	$: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
@@ -32,13 +37,13 @@
 		0
 	);
 
-	// Calcular la comision del 3%	
-  const F_fixed = 0
+	// Calcular la comision del 3%
+	const F_fixed = 0;
 	const F_percent = 0.03;
 
-  $: P_goal = subtotal + totalEnvio
-	$: P_charge = (P_goal + F_fixed) / (1 - F_percent)
-	$: tStripe = P_charge - P_goal
+	$: P_goal = subtotal + totalEnvio;
+	$: P_charge = (P_goal + F_fixed) / (1 - F_percent);
+	$: tStripe = P_charge - P_goal;
 
 	// transformar datos para stripe
 	$: productsFormattedStripe = $cartItems.map((product) => ({
@@ -46,7 +51,7 @@
 			product_data: {
 				name: product.productname,
 				description: product?.description,
-        images: [product.imgs[0]]
+				images: [product.imgs[0]]
 			},
 			currency: 'cop',
 			unit_amount: product.price * 100
@@ -60,7 +65,7 @@
 			product_data: {
 				name: 'Transferencia Stripe',
 				description: 'Costo de transferencia de Stripe',
-        images: []
+				images: []
 			},
 			currency: 'cop',
 			unit_amount: Math.round(tStripe * 100) // Convertir a centavos y redondear
@@ -74,7 +79,7 @@
 			product_data: {
 				name: 'Costo de Envío',
 				description: 'Costo total de envío',
-        images: []
+				images: []
 			},
 			currency: 'cop',
 			unit_amount: Math.round(totalEnvio * 100) // Convertir a centavos y redondear
@@ -107,6 +112,52 @@
 	$: console.log($cartItems);
 	$: console.log(shippingData);
 	$: console.log($location_data);
+
+	//////////////////
+	let paypal: any;
+
+	async function paypalInit() {
+		try {
+			paypal = await loadScript({
+				clientId: 'AQc0Px63WS02JpsJp3hmK6SV4tYsMgRNc-tUBz6ypAoOq_T8AO27wZTNHNsykRkcMhfmOqVNhtTCE9XR'
+			});
+		} catch (error) {
+			console.error('failed to load the Paypal SDK script', error);
+		} 
+
+		if (paypal) {
+			console.log('paypal started');
+			try {
+				await paypal
+					.Buttons({
+						style: {
+							color: 'blue',
+							shape: 'rect'
+						},
+						createOrder: function (data: any, actions: any) {
+							// Set up the transaction
+							return actions.order.create({
+								purchase_units: [
+									{
+										amount: {
+											value: 100.0
+										}
+									}
+								],
+								application_context: {
+									shipping_preference: 'NO_SHIPPING'
+								}
+							});
+						}
+					})
+					.render('#paypal-button-container');
+			} catch (error) {
+				console.error('Failed to redner the Paypal Buttons', error);
+			}
+		}
+	}
+
+	$: paypalInit();
 </script>
 
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
@@ -123,17 +174,16 @@
 					/>
 					<div class="flex w-full mx-7 justify-between">
 						<div class="flex gap-5 items-center">
-							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>	
+							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
 							<div class="flex gap-3">
 								<h3>{cartItem.selectedOptions[0].name}:</h3>
 								<p>{cartItem.selectedOptions[0].value}</p>
 							</div>
-              <p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
-              <div class="flex gap-1">
-                <h3>Cantidad:</h3>
-                <span class="mx-2">{cartItem.amount}</span>
-              </div>
-              
+							<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
+							<div class="flex gap-1">
+								<h3>Cantidad:</h3>
+								<span class="mx-2">{cartItem.amount}</span>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -195,9 +245,27 @@
 		<!-- Shipping Submit -->
 		<button
 			class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
-			on:click={() => handleSubmitPayment()}
+			on:click={() => {
+				openDialogPayment = true;
+			}}
 		>
-			{m.cart_paymentroute_confirm_button()}
+			Pagar
 		</button>
+		<!-- <div class="w-10/12 mt-3" id="paypal-button-container" />     -->
 	</div>
 </div>
+
+<!-- Dialog Payment -->
+<Dialog.Root bind:open={openDialogPayment}>
+	<Dialog.Trigger />
+	<Dialog.Content class="max-h-screen">
+		<Dialog.Header>
+			<Dialog.Title>Opciones de Pago</Dialog.Title>
+		</Dialog.Header>
+		<Dialog.Description>	
+				<div class="h-auto">		
+					<PaymentButtons TotalAmount={$T}/>
+				</div>
+		</Dialog.Description>
+	</Dialog.Content>
+</Dialog.Root>

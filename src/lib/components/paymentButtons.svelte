@@ -1,0 +1,58 @@
+<script lang="ts">
+	import { loadScript } from '@paypal/paypal-js';
+
+  export let TotalAmount: number
+	let paypal: any;
+
+	async function paypalInit() {
+		try {
+			paypal = await loadScript({
+				clientId: 'AQc0Px63WS02JpsJp3hmK6SV4tYsMgRNc-tUBz6ypAoOq_T8AO27wZTNHNsykRkcMhfmOqVNhtTCE9XR'
+			});
+		} catch (error) {
+			console.error('failed to load the Paypal SDK script', error);
+		}
+
+		if (paypal) {
+			console.log('paypal started');
+			try {
+				await paypal
+					.Buttons({
+						style: {
+							color: 'blue',
+							shape: 'rect'
+						},
+						createOrder: function (data: any, actions: any) {
+							// Set up the transaction
+							return actions.order.create({
+								purchase_units: [
+									{
+										amount: {
+                      currency_code: 'USD',
+											value: 100
+										}
+									}
+								],
+								application_context: {
+									shipping_preference: 'NO_SHIPPING',
+                  return_url: "http://localhost:5173/cart/paymentroute/confirm",
+                  cancel_url: "http://localhost:5173",
+                  user_action: "PAY_NOW",
+								}
+							});
+						}
+					})
+					.render('#paypal-button-container');
+			} catch (error) {
+				console.error('Failed to redner the Paypal Buttons', error);
+			}
+		}
+	}
+
+	$: paypalInit();
+</script>
+
+<div class="w-full mt-3 overflow-auto" id="paypal-button-container" />
+
+
+
