@@ -162,8 +162,8 @@
 				<button on:click|preventDefault={() => goto('/')}>
 					<div class="relative flex gap-1">
 						<div class="flex">
-							<h1 class="text-xl font-extrabold dark:text-gray-100">e</h1>
-							<span class="text-xl font-extrabold text-purple-600">Shop</span>
+              <!-- Logo  -->
+							<h1 class="text-xl font-extrabold dark:text-gray-200">J</h1>
 							{#if $location_data !== undefined}
 								<span
 									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"

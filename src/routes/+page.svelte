@@ -88,7 +88,7 @@
 </script>
 
 <svelte:head>
-	<title>eShop</title>
+	<title>Jenno</title>
   <!-- <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."> -->
 </svelte:head>
 
