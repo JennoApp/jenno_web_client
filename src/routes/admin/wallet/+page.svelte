@@ -16,6 +16,8 @@
 	let walletData: any;
 	let openDialogAddCart = false;
 	let openDialogwithdraw = false;
+	let withdrawalAmount = '';
+
 	let UserId = $page.data.user._id;
 
 	$: console.log({ data: $page.data.user.walletId });
@@ -140,12 +142,12 @@
 	</div>
 	<div>
 		{#if paypalAccount}
-      <div
+			<div
 				class="flex flex-col gap-5 items-center justify-center bg-[#202020] h-48 w-96 rounded-md"
 			>
 				<iconify-icon icon="logos:paypal" height="2rem" width="2rem"></iconify-icon>
-        <h1 class="text-lg font-semibold">{paypalAccount}</h1>
-      </div>		
+				<h1 class="text-lg font-semibold">{paypalAccount}</h1>
+			</div>
 		{:else}
 			<button
 				class="flex items-center justify-center bg-[#202020] h-48 w-96 rounded-md"
@@ -200,11 +202,34 @@
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>Retirar Deposito</Dialog.Title>
+			<Dialog.Title>Retirar Depósito</Dialog.Title>
 			<Dialog.Description>
-				This action cannot be undone. This will permanently delete your account and remove your data
-				from our servers.
+				Ingrese el monto que desea retirar a su cuenta de PayPal:
 			</Dialog.Description>
 		</Dialog.Header>
+
+		<div class="">
+			<label for="withdrawAmount">Monto a retirar</label>
+			<input
+				id="withdrawAmount"
+				type="number"
+				bind:value={withdrawalAmount}
+				placeholder="Ingrese el monto en COP o USD"
+			/>
+		</div>
+
+		<div class="flex gap-3">
+			<label for="paypalEmail">Cuenta de PayPal:</label>
+      {#if paypalAccount}
+      <h3>{paypalAccount}</h3> 
+      {:else}
+      <h3 class="text-orange-400">Agregar Cuenta de Paypal</h3>
+      {/if}
+			
+		</div>
+
+		<Dialog.Footer>
+			<Button type="submit">Save changes</Button>
+		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
