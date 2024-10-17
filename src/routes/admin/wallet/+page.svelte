@@ -2,21 +2,23 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
 	import { page } from '$app/stores';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { onMount } from 'svelte';
-	import Stripe from 'stripe';
+	// import Stripe from 'stripe';
 	import { toast } from 'svelte-sonner';
 
 	// api key of stripe
-	const stripe = new Stripe(
-		'sk_test_51OwBS403Ci0grIYp0SpTaQX8L2K7dYLMLc6OBcVFgOMfx7848THFeaVXWI2HoaVDyjKIJHivaqLfq2SGZE1HUFhU00FqyBwntr'
-	);
+	// const stripe = new Stripe(
+	// 	'sk_test_51OwBS403Ci0grIYp0SpTaQX8L2K7dYLMLc6OBcVFgOMfx7848THFeaVXWI2HoaVDyjKIJHivaqLfq2SGZE1HUFhU00FqyBwntr'
+	// );
 
 	let walletData: any;
 	let openDialogAddCart = false;
 	let openDialogwithdraw = false;
 	let withdrawalAmount = '';
+	let withdrawalAmountforExchange = 0;
 
 	let UserId = $page.data.user._id;
 
@@ -34,6 +36,7 @@
 
 	onMount(() => {
 		fetchWallet($page.data.user.walletId);
+		fetchExchangeRate();
 		// getPaypalAccount($page.data.user._id)
 	});
 
@@ -85,6 +88,64 @@
 			console.error('Error guardando la cuenta de paypal:', error);
 			toast.error('Error al guardar la cuenta de PayPal');
 		}
+	}
+
+	function formatCurrency(value: any, currencyType: any) {
+		const formatter = new Intl.NumberFormat('es-CO', {
+			style: 'currency',
+			currency: currencyType,
+			minimumFractionDigits: 0
+		});
+		return formatter.format(value);
+	}
+
+	let exchangeRate = 0;
+	let usdEquivalent = 0;
+
+	// obtener la tasa de cambio de COP a USD
+	async function fetchExchangeRate() {
+		try {
+			const response = await fetch(
+				'https://v6.exchangerate-api.com/v6/2f1a8fc7fbff4f769bb0d245/latest/USD'
+			);
+			const data = await response.json();
+			exchangeRate = data.conversion_rates.COP;
+		} catch (error) {
+			console.error('Error al obtener la tasa de cambio:', error);
+		}
+	}
+
+	function calculateUsdEquivalent() {
+		if (exchangeRate && withdrawalAmount !== '') {
+			usdEquivalent = withdrawalAmountforExchange / exchangeRate;
+			toast.info(`${exchangeRate}: ${withdrawalAmount}: ${usdEquivalent}`);
+		} else {
+			usdEquivalent = 0;
+		}
+	}
+
+	function handleInput(event: any) {
+		let rawValue = event.target.value.replace(/[^0-9]/g, '');
+		let processedValue = Number(rawValue);
+
+		// valor minimo
+		if (processedValue < 1) {
+			processedValue = 0;
+		}
+		// valor maximo disponible
+		if (processedValue > walletData.availableBalance) {
+			processedValue = walletData.availableBalance;
+		}
+
+		if (processedValue) {
+			withdrawalAmount = formatCurrency(processedValue, 'COP');
+			withdrawalAmountforExchange = processedValue;
+		} else {
+			withdrawalAmount = '';
+			withdrawalAmountforExchange = 0;
+		}
+
+		calculateUsdEquivalent();
 	}
 </script>
 
@@ -208,28 +269,41 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<div class="">
-			<label for="withdrawAmount">Monto a retirar</label>
-			<input
-				id="withdrawAmount"
-				type="number"
-				bind:value={withdrawalAmount}
-				placeholder="Ingrese el monto en COP o USD"
-			/>
+		<div class="flex w-full">
+			<label for="withdrawAmount">Monto a retirar:</label>
+			<div class="flex flex-col w-full">
+				<Input
+					type="text"
+					min={1}
+					max={walletData?.availableBalance}
+					on:input={handleInput}
+					name="profile"
+					class=""
+					bind:value={withdrawalAmount}
+					placeholder="Ingrese el monto"
+				/>
+				<div class="flex justify-between">
+					<!-- Mostrar el equivalente en USD -->
+					{#if exchangeRate}
+						<p class="text-gray-500 text-sm">Equivalente en Dolares: ${usdEquivalent.toFixed(2)} USD</p>
+					{:else}
+						<p>Obteniendo tasa de cambio...</p>
+					{/if}
+				</div>
+			</div>
 		</div>
 
 		<div class="flex gap-3">
 			<label for="paypalEmail">Cuenta de PayPal:</label>
-      {#if paypalAccount}
-      <h3>{paypalAccount}</h3> 
-      {:else}
-      <h3 class="text-orange-400">Agregar Cuenta de Paypal</h3>
-      {/if}
-			
+			{#if paypalAccount}
+				<h3>{paypalAccount}</h3>
+			{:else}
+				<h3 class="text-orange-400">Agregar Cuenta de Paypal</h3>
+			{/if}
 		</div>
 
 		<Dialog.Footer>
-			<Button type="submit">Save changes</Button>
+			<Button type="submit">Retirar</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
