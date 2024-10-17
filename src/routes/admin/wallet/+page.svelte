@@ -8,11 +8,17 @@
 	import { onMount } from 'svelte';
 	// import Stripe from 'stripe';
 	import { toast } from 'svelte-sonner';
+  import type { PageData } from './$types'
+	import { invalidateAll } from '$app/navigation';
 
 	// api key of stripe
 	// const stripe = new Stripe(
 	// 	'sk_test_51OwBS403Ci0grIYp0SpTaQX8L2K7dYLMLc6OBcVFgOMfx7848THFeaVXWI2HoaVDyjKIJHivaqLfq2SGZE1HUFhU00FqyBwntr'
 	// );
+
+  export let data: PageData
+
+  $: console.log({token: data.sessionToken})
 
 	let walletData: any;
 	let openDialogAddCart = false;
@@ -20,10 +26,10 @@
 	let withdrawalAmount = '';
 	let withdrawalAmountforExchange = 0;
 
-	let UserId = $page.data.user._id;
+	// let UserId = $page.data.user._id;
 
-	$: console.log({ data: $page.data.user.walletId });
-	$: console.log({ userData: $page.data.user });
+	$: console.log({ data: $page.data?.user?.walletId });
+	$: console.log({ userData: $page.data?.user });
 
 	async function fetchWallet(walletId: any) {
 		const response = await fetch(`http://localhost:3000/wallet/${walletId}`);
@@ -35,7 +41,7 @@
 	}
 
 	onMount(() => {
-		fetchWallet($page.data.user.walletId);
+		fetchWallet($page.data?.user?.walletId);
 		fetchExchangeRate();
 		// getPaypalAccount($page.data.user._id)
 	});
@@ -47,7 +53,7 @@
 
 	async function getPaypalAccount() {
 		try {
-			const response = await fetch(`http://localhost:3000/users/getpaypal/${$page.data.user._id}`);
+			const response = await fetch(`http://localhost:3000/users/getpaypal/${$page.data?.user?._id}`);
 
 			const { account } = await response.json();
 			paypalAccount = account;
@@ -118,7 +124,6 @@
 	function calculateUsdEquivalent() {
 		if (exchangeRate && withdrawalAmount !== '') {
 			usdEquivalent = withdrawalAmountforExchange / exchangeRate;
-			toast.info(`${exchangeRate}: ${withdrawalAmount}: ${usdEquivalent}`);
 		} else {
 			usdEquivalent = 0;
 		}
@@ -147,6 +152,54 @@
 
 		calculateUsdEquivalent();
 	}
+
+  async function handleSubmit(account: any, amount: number, amountUsd: number) {
+    try {
+      if (!data.sessionToken) {
+        toast.error('Token de sesion no encontrado')
+        return
+      }
+
+      if (amount <= 0 || amountUsd <= 0) {
+        toast.error('El monto debe ser mayor a 0')
+        return
+      }
+
+      // Formatear los montos segun requerimientos de Paypal
+      const formattedAmount = amount.toFixed(2)
+      const formattedAmountUsd = amountUsd.toFixed(2)
+
+      console.log('Datos enviados:', {account, formattedAmount, formattedAmountUsd})
+
+      const response = await fetch(`http://localhost:3000/wallet/withdraw/${account}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${data.sessionToken}`
+        },
+        body: JSON.stringify({
+          amount: formattedAmount,       //monto en COP
+          amountUsd: formattedAmountUsd  // monto en dolares
+        })
+      })
+
+      if (response.ok) {
+        toast.success('Retiro solicitado con exito')
+        openDialogwithdraw = false
+
+        // Recargar los datos de la pagina
+        await fetchWallet($page.data?.user?.walletId)
+      } else {
+        const errorMessage =  await response.json()
+        console.error('Detalles del error:', errorMessage)
+        toast.error(`Error al solicitar retiro: ${errorMessage.message || 'Error desconocido'}`)
+      }
+
+    } catch (error) {
+      console.error('Error al procesar el retiro:', error)
+      toast.error(`Error en la conexión con el servidor: ${error?.message || 'Error desconocido'}`);
+    }
+  }
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -269,41 +322,44 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<div class="flex w-full">
-			<label for="withdrawAmount">Monto a retirar:</label>
-			<div class="flex flex-col w-full">
-				<Input
-					type="text"
-					min={1}
-					max={walletData?.availableBalance}
-					on:input={handleInput}
-					name="profile"
-					class=""
-					bind:value={withdrawalAmount}
-					placeholder="Ingrese el monto"
-				/>
-				<div class="flex justify-between">
-					<!-- Mostrar el equivalente en USD -->
-					{#if exchangeRate}
-						<p class="text-gray-500 text-sm">Equivalente en Dolares: ${usdEquivalent.toFixed(2)} USD</p>
-					{:else}
-						<p>Obteniendo tasa de cambio...</p>
-					{/if}
+		<form on:submit|preventDefault={() => handleSubmit(paypalAccount, Number(withdrawalAmountforExchange) ,Number(usdEquivalent))}>
+			<div class="flex w-full">
+				<label for="withdrawAmount">Monto a retirar:</label>
+				<div class="flex flex-col w-full">
+					<Input
+						type="text"
+						min={1}
+						max={walletData?.availableBalance}
+						on:input={handleInput}
+						name="profile"
+						class=""
+						bind:value={withdrawalAmount}
+						placeholder="Ingrese el monto"
+					/>
+					<div class="flex justify-between">
+						<!-- Mostrar el equivalente en USD -->
+						{#if exchangeRate}
+							<p class="text-gray-500 text-sm">
+								Equivalente en Dolares: ${usdEquivalent.toFixed(2)} USD
+							</p>
+						{:else}
+							<p>Obteniendo tasa de cambio...</p>
+						{/if}
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="flex gap-3">
-			<label for="paypalEmail">Cuenta de PayPal:</label>
-			{#if paypalAccount}
-				<h3>{paypalAccount}</h3>
-			{:else}
-				<h3 class="text-orange-400">Agregar Cuenta de Paypal</h3>
-			{/if}
-		</div>
-
-		<Dialog.Footer>
-			<Button type="submit">Retirar</Button>
-		</Dialog.Footer>
+			<div class="flex gap-3 mt-3">
+				<label for="paypalEmail">Cuenta de PayPal:</label>
+				{#if paypalAccount}
+					<h3>{paypalAccount}</h3>
+				{:else}
+					<h3 class="text-orange-400">Agregar Cuenta de Paypal</h3>
+				{/if}
+			</div>
+			<div class="flex flex-row-reverse mt-3">
+				<Button type="submit">Retirar</Button>
+			</div>
+		</form>
 	</Dialog.Content>
 </Dialog.Root>
