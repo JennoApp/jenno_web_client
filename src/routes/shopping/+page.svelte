@@ -13,23 +13,23 @@
 	import Options from '$lib/components/Options.svelte';
 	import { goto } from '$app/navigation';
 
-	export let data: PageServerData;
+	export let data: PageServerData
 
-	$: console.log({ meta: data.meta });
+	$: console.log({ meta: data.meta })
 
-	let currentPage = 1;
-	let limitPerPage = 10;
-	let NextPage: boolean;
-	let PreviousPage: boolean;
-	let itemsCount: number;
-	let pageCount: number;
+	let currentPage = 1
+	let limitPerPage = 10
+	let NextPage: boolean
+	let PreviousPage: boolean
+	let itemsCount: number
+	let pageCount: number
 
 	const table = createTable(readable(data.products), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		})
-	});
+	})
 
 	const columns = table.createColumns([
 		table.column({

@@ -6,19 +6,17 @@
 	import { page } from '$app/stores';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { onMount } from 'svelte';
-	// import Stripe from 'stripe';
 	import { toast } from 'svelte-sonner';
-  import type { PageData } from './$types'
-	import { invalidateAll } from '$app/navigation';
+	import type { PageData } from './$types';
+	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
+	import * as Table from '$lib/components/ui/table';
+	import { format } from 'timeago.js';
+	import { readable } from 'svelte/store';
+	import { addPagination } from 'svelte-headless-table/plugins';
 
-	// api key of stripe
-	// const stripe = new Stripe(
-	// 	'sk_test_51OwBS403Ci0grIYp0SpTaQX8L2K7dYLMLc6OBcVFgOMfx7848THFeaVXWI2HoaVDyjKIJHivaqLfq2SGZE1HUFhU00FqyBwntr'
-	// );
+	export let data: PageData;
 
-  export let data: PageData
-
-  $: console.log({token: data.sessionToken})
+	$: console.log({ token: data.sessionToken });
 
 	let walletData: any;
 	let openDialogAddCart = false;
@@ -42,6 +40,7 @@
 
 	onMount(() => {
 		fetchWallet($page.data?.user?.walletId);
+		getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
 		// getPaypalAccount($page.data.user._id)
 	});
@@ -53,7 +52,9 @@
 
 	async function getPaypalAccount() {
 		try {
-			const response = await fetch(`http://localhost:3000/users/getpaypal/${$page.data?.user?._id}`);
+			const response = await fetch(
+				`http://localhost:3000/users/getpaypal/${$page.data?.user?._id}`
+			);
 
 			const { account } = await response.json();
 			paypalAccount = account;
@@ -153,53 +154,151 @@
 		calculateUsdEquivalent();
 	}
 
-  async function handleSubmit(account: any, amount: number, amountUsd: number) {
+	async function handleSubmit(account: any, amount: number, amountUsd: number) {
+		try {
+			if (!data.sessionToken) {
+				toast.error('Token de sesion no encontrado');
+				return;
+			}
+
+			if (amount <= 0 || amountUsd <= 0) {
+				toast.error('El monto debe ser mayor a 0');
+				return;
+			}
+
+			// Formatear los montos segun requerimientos de Paypal
+			const formattedAmount = amount.toFixed(2);
+			const formattedAmountUsd = amountUsd.toFixed(2);
+
+			console.log('Datos enviados:', { account, formattedAmount, formattedAmountUsd });
+
+			const response = await fetch(`http://localhost:3000/wallet/withdraw/${account}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${data.sessionToken}`
+				},
+				body: JSON.stringify({
+					amount: formattedAmount, //monto en COP
+					amountUsd: formattedAmountUsd // monto en dolares
+				})
+			});
+
+			if (response.ok) {
+				toast.success('Retiro solicitado con exito');
+				openDialogwithdraw = false;
+
+				// Recargar los datos de la pagina
+				await fetchWallet($page.data?.user?.walletId);
+			} else {
+				const errorMessage = await response.json();
+				console.error('Detalles del error:', errorMessage);
+				toast.error(`Error al solicitar retiro: ${errorMessage.message || 'Error desconocido'}`);
+			}
+		} catch (error) {
+			console.error('Error al procesar el retiro:', error);
+			toast.error(`Error en la conexión con el servidor: ${error?.message || 'Error desconocido'}`);
+		}
+	}
+
+	////////////////
+	// Tabla de retiros //
+	let withdrawals: any = [];
+  let withdrawalsPaypalDetails: any = []
+	let table: any;
+
+  $: console.log({withdrawals})
+
+	async function getWithdrawals(walletId: string) {
+		try {
+			const response = await fetch(`http://localhost:3000/wallet/getwithdrawals/${walletId}`);
+
+			if (response.ok) {
+				const data = await response.json();
+        console.log({Datos: data})
+
+        if (data) {
+          withdrawals = data;
+        } else {
+          console.error('La respuesta no contiene la propiedad withdrawals')
+        }
+			} else {
+				console.error('Error al obtener la billetera');
+			}
+		} catch (error) {
+			console.error('Error en la solicitud:', error);
+		}
+	}
+
+  async function getWithdrawalsPaypalDetails(batchId: any) {
     try {
-      if (!data.sessionToken) {
-        toast.error('Token de sesion no encontrado')
-        return
-      }
-
-      if (amount <= 0 || amountUsd <= 0) {
-        toast.error('El monto debe ser mayor a 0')
-        return
-      }
-
-      // Formatear los montos segun requerimientos de Paypal
-      const formattedAmount = amount.toFixed(2)
-      const formattedAmountUsd = amountUsd.toFixed(2)
-
-      console.log('Datos enviados:', {account, formattedAmount, formattedAmountUsd})
-
-      const response = await fetch(`http://localhost:3000/wallet/withdraw/${account}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${data.sessionToken}`
-        },
-        body: JSON.stringify({
-          amount: formattedAmount,       //monto en COP
-          amountUsd: formattedAmountUsd  // monto en dolares
-        })
-      })
-
+      const response = await fetch(`http://localhost:3000/wallet/getPaypalPayoutDetails/${batchId?.payoutBatchId}`)
       if (response.ok) {
-        toast.success('Retiro solicitado con exito')
-        openDialogwithdraw = false
+        const data = await response.json()
+        withdrawalsPaypalDetails.push(data)
 
-        // Recargar los datos de la pagina
-        await fetchWallet($page.data?.user?.walletId)
+        return data
       } else {
-        const errorMessage =  await response.json()
-        console.error('Detalles del error:', errorMessage)
-        toast.error(`Error al solicitar retiro: ${errorMessage.message || 'Error desconocido'}`)
+        console.error('Error en la solicitud: Paypal Details')
       }
 
     } catch (error) {
-      console.error('Error al procesar el retiro:', error)
-      toast.error(`Error en la conexión con el servidor: ${error?.message || 'Error desconocido'}`);
+      console.error('Error al solicitar informacion')
     }
   }
+
+  $: if (withdrawals) {
+    withdrawals.map((batchId: any) => {
+      getWithdrawalsPaypalDetails(batchId)
+    })
+  }
+
+  $: console.log({withdrawalsPaypalDetails})
+
+	// if (!Array.isArray(withdrawals)) {
+	// 	console.error('withdrawals is not an array:', withdrawals);
+	// } else if (withdrawals.length === 0) {
+	// 	console.log('No withdrawals found.');
+	// } else {
+	// 	console.log('withdrawals:', withdrawals);
+	// }
+
+	const tableCreate = createTable(readable(withdrawalsPaypalDetails), {
+		page: addPagination()
+	});
+	table = tableCreate;
+
+	// definiendo las columnas
+	const columns = table.createColumns([
+		table.column({
+			header: 'Payout ID',
+			accessor: 'payoutBatchId',
+			cell: ({ value }) => value || 'No ID'
+		}),
+		table.column({
+			header: 'Monto COP',
+			accessor: 'amount',
+			cell: ({ value }) => `${value} COP`
+		}),
+		table.column({
+			header: 'Monto USD',
+			accessor: 'amountUsd',
+			cell: ({ value }) => `${value} USD`
+		}),
+		table.column({
+			header: 'Estado',
+			accessor: 'status',
+			cell: ({ value }) => `${value}`
+		}),
+		table.column({
+			header: 'Fecha',
+			accessor: 'date',
+			cell: ({ value }) => format(value)
+		})
+	]);
+
+	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
+		table.createViewModel(columns);
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -276,9 +375,45 @@
 </div>
 
 <div class="m-5 mt-10">
-	<h2 class="my-5 text-xl font-semibold">Historial de transacciones</h2>
-	<div></div>
+	<h2 class="my-5 text-xl font-semibold">Retiros</h2>
 </div>
+
+{#if withdrawals}
+	<div class="rounded-md border mx-10 my-5">
+		<Table.Root {...$tableAttrs}>
+			<Table.Header>
+				{#each $headerRows as headerRow}
+					<Subscribe rowAttrs={headerRow.attrs()}>
+						<Table.Row>
+							{#each headerRow.cells as cell (cell.id)}
+								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
+									<Table.Head {...attrs}>
+										<Render of={cell.render()} />
+									</Table.Head>
+								</Subscribe>
+							{/each}
+						</Table.Row>
+					</Subscribe>
+				{/each}
+			</Table.Header>
+			<Table.Body {...$tableBodyAttrs}>
+				{#each $pageRows as row (row.id)}
+					<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+						<Table.Row {...rowAttrs}>
+							{#each row.cells as cell (cell.id)}
+								<Subscribe attrs={cell.attrs()} let:attrs>
+									<Table.Cell {...attrs}>
+										<Render of={cell.render()} />
+									</Table.Cell>
+								</Subscribe>
+							{/each}
+						</Table.Row>
+					</Subscribe>
+				{/each}
+			</Table.Body>
+		</Table.Root>
+	</div>
+{/if}
 
 <!-- Dialog Add Bank Account -->
 <Dialog.Root bind:open={openDialogAddCart}>
@@ -322,7 +457,10 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<form on:submit|preventDefault={() => handleSubmit(paypalAccount, Number(withdrawalAmountforExchange) ,Number(usdEquivalent))}>
+		<form
+			on:submit|preventDefault={() =>
+				handleSubmit(paypalAccount, Number(withdrawalAmountforExchange), Number(usdEquivalent))}
+		>
 			<div class="flex w-full">
 				<label for="withdrawAmount">Monto a retirar:</label>
 				<div class="flex flex-col w-full">
