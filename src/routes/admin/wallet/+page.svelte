@@ -1,6 +1,8 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Card from '$lib/components/ui/card';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js"
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { page } from '$app/stores';
@@ -8,11 +10,7 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
-	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import * as Table from '$lib/components/ui/table';
 	import { format } from 'timeago.js';
-	import { readable } from 'svelte/store';
-	import { addPagination } from 'svelte-headless-table/plugins';
 
 	export let data: PageData;
 
@@ -21,10 +19,9 @@
 	let walletData: any;
 	let openDialogAddCart = false;
 	let openDialogwithdraw = false;
+  let openDialogRemove = false
 	let withdrawalAmount = '';
 	let withdrawalAmountforExchange = 0;
-
-	// let UserId = $page.data.user._id;
 
 	$: console.log({ data: $page.data?.user?.walletId });
 	$: console.log({ userData: $page.data?.user });
@@ -58,6 +55,7 @@
 
 			const { account } = await response.json();
 			paypalAccount = account;
+      paypalAccountEmail = account
 		} catch (error) {
 			console.log(error);
 		}
@@ -91,11 +89,40 @@
 
 			toast.success(`Cuenta de Paypal guardada con exito`);
 			openDialogAddCart = false;
+
+      await getPaypalAccount()
 		} catch (error) {
 			console.error('Error guardando la cuenta de paypal:', error);
 			toast.error('Error al guardar la cuenta de PayPal');
 		}
 	}
+
+  async function handleRemovePaypalAccount() {
+		try {
+			const response = await fetch(
+				`http://localhost:3000/users/removepaypalaccount/${$page.data.user._id}`,
+				{
+					method: 'DELETE'	
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Error actualizando la cuenta del Usuario');
+			}
+
+			toast.success(`Cuenta de Paypal eliminada con exito`);
+			openDialogRemove = false;
+
+      await getPaypalAccount()
+		} catch (error) {
+			console.error('Error eliminando la cuenta de paypal:', error);
+			toast.error('Error al eliminar la cuenta de PayPal');
+		}
+	}
+
+  async function actionsPaypalAccount() {
+    openDialogAddCart = true 
+  }
 
 	function formatCurrency(value: any, currencyType: any) {
 		const formatter = new Intl.NumberFormat('es-CO', {
@@ -204,10 +231,10 @@
 	////////////////
 	// Tabla de retiros //
 	let withdrawals: any = [];
-  let withdrawalsPaypalDetails: any = []
+	let withdrawalsPaypalDetails: any = [];
 	let table: any;
 
-  $: console.log({withdrawals})
+	$: console.log({ withdrawals });
 
 	async function getWithdrawals(walletId: string) {
 		try {
@@ -215,13 +242,13 @@
 
 			if (response.ok) {
 				const data = await response.json();
-        console.log({Datos: data})
+				console.log({ Datos: data });
 
-        if (data) {
-          withdrawals = data;
-        } else {
-          console.error('La respuesta no contiene la propiedad withdrawals')
-        }
+				if (data) {
+					withdrawals = data;
+				} else {
+					console.error('La respuesta no contiene la propiedad withdrawals');
+				}
 			} else {
 				console.error('Error al obtener la billetera');
 			}
@@ -230,75 +257,31 @@
 		}
 	}
 
-  async function getWithdrawalsPaypalDetails(batchId: any) {
-    try {
-      const response = await fetch(`http://localhost:3000/wallet/getPaypalPayoutDetails/${batchId?.payoutBatchId}`)
-      if (response.ok) {
-        const data = await response.json()
-        withdrawalsPaypalDetails.push(data)
+	async function getWithdrawalsPaypalDetails(batchId: any) {
+		try {
+			const response = await fetch(
+				`http://localhost:3000/wallet/getPaypalPayoutDetails/${batchId?.payoutBatchId}`
+			);
+			if (response.ok) {
+				const data = await response.json();
+				console.log({ data });
+				withdrawalsPaypalDetails = [...withdrawalsPaypalDetails, data];
+				return data;
+			} else {
+				console.error('Error en la solicitud: Paypal Details');
+			}
+		} catch (error) {
+			console.error('Error al solicitar informacion');
+		}
+	}
 
-        return data
-      } else {
-        console.error('Error en la solicitud: Paypal Details')
-      }
+	$: if (withdrawals) {
+		withdrawals.map((batchId: any) => {
+			getWithdrawalsPaypalDetails(batchId);
+		});
+	}
 
-    } catch (error) {
-      console.error('Error al solicitar informacion')
-    }
-  }
-
-  $: if (withdrawals) {
-    withdrawals.map((batchId: any) => {
-      getWithdrawalsPaypalDetails(batchId)
-    })
-  }
-
-  $: console.log({withdrawalsPaypalDetails})
-
-	// if (!Array.isArray(withdrawals)) {
-	// 	console.error('withdrawals is not an array:', withdrawals);
-	// } else if (withdrawals.length === 0) {
-	// 	console.log('No withdrawals found.');
-	// } else {
-	// 	console.log('withdrawals:', withdrawals);
-	// }
-
-	const tableCreate = createTable(readable(withdrawalsPaypalDetails), {
-		page: addPagination()
-	});
-	table = tableCreate;
-
-	// definiendo las columnas
-	const columns = table.createColumns([
-		table.column({
-			header: 'Payout ID',
-			accessor: 'payoutBatchId',
-			cell: ({ value }) => value || 'No ID'
-		}),
-		table.column({
-			header: 'Monto COP',
-			accessor: 'amount',
-			cell: ({ value }) => `${value} COP`
-		}),
-		table.column({
-			header: 'Monto USD',
-			accessor: 'amountUsd',
-			cell: ({ value }) => `${value} USD`
-		}),
-		table.column({
-			header: 'Estado',
-			accessor: 'status',
-			cell: ({ value }) => `${value}`
-		}),
-		table.column({
-			header: 'Fecha',
-			accessor: 'date',
-			cell: ({ value }) => format(value)
-		})
-	]);
-
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
-		table.createViewModel(columns);
+	$: console.log({ withdrawalsPaypalDetails });
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -355,11 +338,45 @@
 	</div>
 	<div>
 		{#if paypalAccount}
-			<div
-				class="flex flex-col gap-5 items-center justify-center bg-[#202020] h-48 w-96 rounded-md"
-			>
-				<iconify-icon icon="logos:paypal" height="2rem" width="2rem"></iconify-icon>
-				<h1 class="text-lg font-semibold">{paypalAccount}</h1>
+			<div class="flex flex-col bg-[#202020] h-48 w-96 rounded-md">
+				<div class="flex flex-row-reverse h-10 w-full">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger class="m-2">
+							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem"></iconify-icon>
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Group>
+								<DropdownMenu.Label>Actions</DropdownMenu.Label>
+								<DropdownMenu.Item on:click={() => actionsPaypalAccount()}>
+									<iconify-icon
+										icon="material-symbols:update"
+										height="1.1rem"
+										width="1.1rem"
+										class="text-gray-200 flex justify-center items-center"
+									/>
+									<span class="ml-3">Actualizar</span>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									class="hover:!bg-red-500 bg-opacity-60"
+                  on:click={() => {
+                    openDialogRemove = true
+                  }}>
+									<iconify-icon
+										icon="material-symbols:delete"
+										height="1.1rem"
+										width="1.1rem"
+										class="text-gray-200 flex justify-center items-center"
+									/>
+									<span class="ml-3">Eliminar</span>
+								</DropdownMenu.Item>
+							</DropdownMenu.Group>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</div>
+				<div class="flex flex-col gap-5 items-center mt-3">
+					<iconify-icon icon="logos:paypal" height="2rem" width="2rem"></iconify-icon>
+					<h1 class="text-lg font-semibold">{paypalAccount}</h1>
+				</div>
 			</div>
 		{:else}
 			<button
@@ -378,41 +395,54 @@
 	<h2 class="my-5 text-xl font-semibold">Retiros</h2>
 </div>
 
-{#if withdrawals}
-	<div class="rounded-md border mx-10 my-5">
-		<Table.Root {...$tableAttrs}>
-			<Table.Header>
-				{#each $headerRows as headerRow}
-					<Subscribe rowAttrs={headerRow.attrs()}>
-						<Table.Row>
-							{#each headerRow.cells as cell (cell.id)}
-								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
-									<Table.Head {...attrs}>
-										<Render of={cell.render()} />
-									</Table.Head>
-								</Subscribe>
-							{/each}
-						</Table.Row>
-					</Subscribe>
+{#if withdrawalsPaypalDetails && withdrawalsPaypalDetails.length > 0}
+	<div class="overflow-x-auto mx-10 my-5 border rounded-md shadow">
+		<table class="min-w-full table-auto divide-y divide-gray-200 dark:divide-[#303030]">
+			<!-- Cabecera de la tabla -->
+			<thead class="dark:bg-[#202020]">
+				<tr>
+					<th
+						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
+						>Payout ID</th
+					>
+					<th
+						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
+						>Monto USD</th
+					>
+					<th
+						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
+						>Estado</th
+					>
+					<th
+						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
+						>Fecha</th
+					>
+				</tr>
+			</thead>
+
+			<!-- Cuerpo de la tabla -->
+			<tbody class="dark:bg-[#202020] divide-y divide-gray-200 dark:divide-[#303030]">
+				{#each withdrawalsPaypalDetails as detail}
+					<tr class="hover:bg-[#121212]">
+						<td class="px-6 py-4 whitespace-nowrap text-sm font-medium dark:text-gray-200"
+							>{detail.batch_header.payout_batch_id || 'No ID'}</td
+						>
+						<td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-200"
+							>{detail.batch_header.amount.value || 'No amount'} USD</td
+						>
+						<td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-200"
+							>{detail.batch_header.batch_status || 'No status'}</td
+						>
+						<td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-200"
+							>{format(detail.batch_header.time_created) || 'No date'}</td
+						>
+					</tr>
 				{/each}
-			</Table.Header>
-			<Table.Body {...$tableBodyAttrs}>
-				{#each $pageRows as row (row.id)}
-					<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-						<Table.Row {...rowAttrs}>
-							{#each row.cells as cell (cell.id)}
-								<Subscribe attrs={cell.attrs()} let:attrs>
-									<Table.Cell {...attrs}>
-										<Render of={cell.render()} />
-									</Table.Cell>
-								</Subscribe>
-							{/each}
-						</Table.Row>
-					</Subscribe>
-				{/each}
-			</Table.Body>
-		</Table.Root>
+			</tbody>
+		</table>
 	</div>
+{:else}
+	<p class="text-center text-gray-500">No se encontraron datos.</p>
 {/if}
 
 <!-- Dialog Add Bank Account -->
@@ -420,7 +450,7 @@
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>Agregar Cuenta de PayPal</Dialog.Title>
+			<Dialog.Title>{paypalAccount ? 'Actualizar Cuenta de PayPal' : 'Agregar Cuenta de PayPal'}</Dialog.Title>
 			<Dialog.Description>
 				<form on:submit|preventDefault={handleSubmitAddPaypalAccount}>
 					<div class="mt-3">
@@ -437,7 +467,7 @@
 					<div class="flex flex-row-reverse">
 						<button
 							class="h-8 p-2 mt-5 bg-purple-600 dark:text-gray-200 hover:bg-purple-700 rounded-md"
-							>Agregar cuenta de PayPal</button
+							>{paypalAccount ? 'Actualizar': 'Agregar'}</button
 						>
 					</div>
 				</form>
@@ -501,3 +531,24 @@
 		</form>
 	</Dialog.Content>
 </Dialog.Root>
+
+
+<AlertDialog.Root bind:open={openDialogRemove}>
+  <AlertDialog.Trigger />
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>¿Estás absolutamente seguro?</AlertDialog.Title>
+      <AlertDialog.Description>
+         Esta acción no se puede deshacer. Esto eliminará permanentemente tu cuenta y eliminará tus datos de nuestros servidores.
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <AlertDialog.Cancel class="dark:border-[#252525] dark:hover:bg-[#252525]" on:click={() => {
+        openDialogRemove = false
+      }}>Cancelar</AlertDialog.Cancel>
+      <AlertDialog.Action on:click={() => {
+        handleRemovePaypalAccount()
+      }}>Continuar</AlertDialog.Action>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>
