@@ -41,7 +41,7 @@
 	let isActiveSearchInput = false;
 
 	function activeSearchInput() {
-		activeSearchInput = !isActiveSearchInput;
+		isActiveSearchInput = !isActiveSearchInput;
 	}
 
 	const handleSearch = () => {
@@ -125,7 +125,7 @@
 
 	const autocompleteOptions = ['Opción 1', 'Opción 2', 'Opción 3'];
 	let selectedIndex = -1;
-	function selectOption(option) {
+	function selectOption(option: any) {
 		alert(option);
 	}
 
@@ -204,7 +204,6 @@
 							name="search"
 							autocomplete="off"
 							bind:value={searchInputValue}
-							on:click={activeSearchInput}
 						/>
 						<div
 							class="grid place-items-center text-2xl dark:text-white w-16 h-full bg-gray-200 dark:bg-[#202020] border border-gray-200 dark:border-[#222222] rounded-r-2xl"
@@ -262,7 +261,6 @@
 									name="search"
 									autocomplete="off"
 									bind:value={searchInputValue}
-									on:click={activeSearchInput}
 								/>
 								<div
 									class="grid place-items-center text-2xl dark:text-white w-16 h-full bg-gray-200 dark:bg-[#202020] border border-gray-200 dark:border-[#222222] rounded-r-2xl"
@@ -346,7 +344,7 @@
 
 												<div class="flex w-full justify-center items-center mt-2">
 													<button
-														on:click|preventDefault={() => decrementCartItem(cartItem._id)}
+														on:click|preventDefault={() => decrementCartItem(cartItem._id, cartItem.selectedOptions)}
 														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 													>
 														<!-- Minus Icon -->
@@ -498,11 +496,11 @@
 			<slot />
 		</main>
 
-		{#if isActiveSearchInput}
+		<!-- {#if isActiveSearchInput}
 			{#if autocompleteOptions.length > 0}
 				<Autocomplete options={autocompleteOptions} {selectedIndex} {selectOption} />
 			{/if}
-		{/if}
+		{/if} -->
 	</div>
 {:else}
 	<slot />

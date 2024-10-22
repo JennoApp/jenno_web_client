@@ -29,13 +29,13 @@
 									{
 										amount: {
                       currency_code: 'USD',
-											value: 100
+											value: TotalAmount.toFixed(2)
 										}
 									}
 								],
 								application_context: {
 									shipping_preference: 'NO_SHIPPING',
-                  return_url: "http://localhost:5173/cart/paymentroute/confirm",
+                  return_url: "http://localhost:5173/cart/success",
                   cancel_url: "http://localhost:5173",
                   user_action: "PAY_NOW",
 								}

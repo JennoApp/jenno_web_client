@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
-	
+
 	import { loadScript } from '@paypal/paypal-js';
 	import {
 		cartItems,
@@ -17,8 +17,13 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
+	import { onMount } from 'svelte';
 
 	let shippingData = $page.data?.user?.shippingInfo;
+
+	onMount(() => {
+		fetchExchangeRate();
+	});
 
 	function getTotalFormatted() {
 		const total = getTotal();
@@ -123,7 +128,7 @@
 			});
 		} catch (error) {
 			console.error('failed to load the Paypal SDK script', error);
-		} 
+		}
 
 		if (paypal) {
 			console.log('paypal started');
@@ -135,12 +140,16 @@
 							shape: 'rect'
 						},
 						createOrder: function (data: any, actions: any) {
+							const formattedUsdEquivalent = parseFloat(usdEquivalent).toFixed(2);
+							console.log('usdEquivalent enviado a PayPal:', formattedUsdEquivalent);
+
 							// Set up the transaction
 							return actions.order.create({
 								purchase_units: [
 									{
 										amount: {
-											value: 100.0
+                      currency_code: "USD",
+											value: formattedUsdEquivalent
 										}
 									}
 								],
@@ -152,12 +161,50 @@
 					})
 					.render('#paypal-button-container');
 			} catch (error) {
-				console.error('Failed to redner the Paypal Buttons', error);
+				console.error('Failed to render the Paypal Buttons', error);
 			}
 		}
 	}
 
-	$: paypalInit();
+	// $: paypalInit();
+	$: if (usdEquivalent > 0) {
+		paypalInit(); // Solo inicializa PayPal cuando el valor de usdEquivalent está listo
+	}
+
+	let paypalButtonLoaded = false;
+
+	$: if (usdEquivalent && paypalButtonLoaded) {
+		document.getElementById('paypal-button-container').innerHTML = ''; // Eliminar el botón existente
+		paypalInit(); // Volver a inicializar PayPal con el valor actualizado
+	}
+
+
+
+	let exchangeRate = 0;
+	let usdEquivalent: any;
+
+	// obtener la tasa de cambio de COP a USD
+	async function fetchExchangeRate() {
+		try {
+			const response = await fetch(
+				'https://v6.exchangerate-api.com/v6/2f1a8fc7fbff4f769bb0d245/latest/USD'
+			);
+			const data = await response.json();
+			exchangeRate = data.conversion_rates.COP;
+		} catch (error) {
+			console.error('Error al obtener la tasa de cambio:', error);
+		}
+	}
+
+	$: if (exchangeRate && $T) {
+		usdEquivalent = $T / exchangeRate;
+	} else {
+		usdEquivalent = 0;
+	}
+
+	$: console.log({ exchangeRate });
+	$: console.log({ T: $T });
+	$: console.log(usdEquivalent);
 </script>
 
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
@@ -240,7 +287,12 @@
 				<h3 class="font-bold">{m.cart_summary_total()}</h3>
 				<p>{formatPrice($T, 'es-CO', 'COP')}</p>
 			</div>
+
+			<div class="flex flex-row-reverse">
+				<h3 class="text-gray-400">Equivalente en Dolares: ${usdEquivalent.toFixed(2)}</h3>
+			</div>
 		</div>
+
 		<!-- Cofirm Button -->
 		<!-- Shipping Submit -->
 		<button
@@ -262,10 +314,12 @@
 		<Dialog.Header>
 			<Dialog.Title>Opciones de Pago</Dialog.Title>
 		</Dialog.Header>
-		<Dialog.Description>	
-				<div class="h-auto">		
-					<PaymentButtons TotalAmount={$T}/>
-				</div>
+		<Dialog.Description>
+			<div class="h-auto">
+        {#if usdEquivalent !== 0}
+          <PaymentButtons TotalAmount={usdEquivalent} />      
+        {/if}	
+			</div>
 		</Dialog.Description>
 	</Dialog.Content>
 </Dialog.Root>
