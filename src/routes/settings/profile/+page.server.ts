@@ -1,5 +1,6 @@
 import type { Actions } from './$types'
 import { supabase } from '$lib/supabaseClient'
+import { uploadFile } from '$lib/s3'
 import { v4 as uuidv4 } from 'uuid'
 
 export const actions: Actions = {
@@ -16,28 +17,21 @@ export const actions: Actions = {
         throw new Error('No se proporcionó ninguna imagen de perfil.');
       }
 
-      const { data, error } = await supabase.storage.from('profileImg').upload(uuidv4(), uploadProfileImg)
+      // // Subida de imagen de perfil a AWS S3 en la carpeta 'profiles'
+      // const { result, publicUrl} = await uploadFile(uploadProfileImg, 'profile')
+      // console.log("Imagen de perfil subida a S3:", publicUrl)
 
-      if (error) {
-        console.error("Error al cargar la imagen: ", error.message)
-        return {
-          success: false,
-          message: 'Error al cargar la imagen'
-        }
-
-      }
-
-
-      const publicUrl = supabase.storage.from('profileImg').getPublicUrl(data.path)
+      // Crear un nuevo FormData para enviar el archivo
+      const formDataToSend = new FormData();
+      formDataToSend.append('file', uploadProfileImg);
 
       // Actualiza la imagen de perfil en el usuario
       const updateResponse = await fetch(`http://localhost:3000/users/updateProfileImg`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${tokenJwt}`
         },
-        body: JSON.stringify({ profileImg: publicUrl.data.publicUrl })
+        body: formDataToSend
       })
 
       if (!updateResponse.ok) {
