@@ -6,35 +6,52 @@ export const actions: Actions = {
   saveProduct: async ({ request, cookies, fetch }) => {
     const formData = await request.formData()
     const uploadedFiles = formData.getAll('files') as File[]
-    const existingImagesUrls = formData.get('imagesUrls') ? JSON.parse(formData.get('imagesUrls') as string) : []
-
     const tokenJwt = cookies.get('session')
+    const productId = formData?.get('productId')
 
-    const imagesUrls: string[] = []
-    const countryList: string[] = []
+    let imagesUrls: string[] = []
+    const country: string[] = ['Colombia']
 
-    if (existingImagesUrls && existingImagesUrls.length > 0) {
-      imagesUrls.push(...existingImagesUrls)
-    } else {
-      const uploadPromises = uploadedFiles.map(async (file: any) => {   
-        // Subida de Imagenes con AWS S3
-          const {result, publicUrl } = await uploadFile(file, "product")
-          console.log("Imagen subida a S3")
-         
-          // Guardar URL publica de la imagen subida
-          console.log({
-            result,
-            publicUrl
-          })
-          imagesUrls.push(publicUrl)
-      })
+    if (productId) {
+      // Obtener el producto existente para obtener las imágenes actuales
+      const existingProductResponse = await fetch(`http://localhost:3000/products/${productId}`, {
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${tokenJwt}`
+        }
+      });
 
-      await Promise.all(uploadPromises)
-      console.log({ imagesUrls })
+      if (!existingProductResponse.ok) {
+        throw new Error('Error al obtener el producto existente');
+      }
+
+      const existingProduct = await existingProductResponse.json();
+      imagesUrls = existingProduct.imgs || [];  // Cargar las imágenes existentes
     }
 
+    // subir nuevas imagenes solo si hay archivos seleccionados
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      const imageFormData = new FormData()
+      uploadedFiles.forEach(file => {
+        imageFormData.append('files', file)
+      })
 
-    const productId = formData?.get('productId')
+      const imageResponse = await fetch(`http://localhost:3000/products/upload-images/${productId}`, {
+        method: 'POST',
+        headers: {
+          "Authorization": `Bearer ${tokenJwt}`
+        },
+        body: imageFormData
+      })
+
+      if (!imageResponse.ok) {
+        throw new Error('Error al subir las imágenes')
+      }
+
+      const imageResult = await imageResponse.json()
+      imagesUrls = imageResult.images
+    }
+
     const productname = formData?.get('productname')
     const description = formData.get('description')
     const price = formData.get('price')
@@ -48,10 +65,10 @@ export const actions: Actions = {
     const height = formData.get('height')
     const status = formData.get('status')
     const visibility = formData.get('visibility')
-    const country = formData.get('country')
+    const countryform = formData.get('country')
 
-    if (country) {
-      countryList.push(country as string)
+    if (countryform !== null || countryform !== undefined) {
+      country.push(countryform as string)
     }
 
     // Extraer las opciones
@@ -80,7 +97,7 @@ export const actions: Actions = {
       }
     }
 
-
+    // Enviar los datos del producto
     try {
       const response = await fetch("http://localhost:3000/products", {
         method: "POST",
@@ -105,7 +122,7 @@ export const actions: Actions = {
             height
           },
           status,
-          countryList,
+          country,
           visibility,
           options: optionsItems,
           especifications: especificationsItems
