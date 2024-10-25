@@ -12,9 +12,12 @@ const LanguageSchema = z
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
   const country = url.searchParams.get('country') || ''
+  const category = url.searchParams.get('category') || ''
   const limit: number = 20
   
-  const response = await fetch(`http://localhost:3000/products?page=${1}&limit=${limit}&country=${country}`)
+  const response = await fetch(`http://localhost:3000/products?page=${1}&limit=${limit}&country=${country}&category=${category}`)
+
+  console.log(category)
 
   if (!response.ok) {
     return {
@@ -25,6 +28,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
 
   
   const { data, meta } = await response.json()
+  console.log({productsData: data})
 
   return {
     products: data,

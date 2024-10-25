@@ -24,7 +24,7 @@
 </script>
 
 {#if productsSearch.length === 0}
-	<h1>No ahi productos que considan con la busquedad: "{$search}"</h1>	
+	<h1>No ahi productos que coincidan con la busquedad: "{$search}"</h1>	
 {/if}
 
 <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0">

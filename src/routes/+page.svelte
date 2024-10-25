@@ -1,16 +1,17 @@
 <script lang="ts">
-  // import { BACKEND_URl } from '$env/static/public'
+	// import { BACKEND_URl } from '$env/static/public'
 	import type { PageServerData, RequestEvent } from './$types';
 	import Card from '$lib/components/Card.svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import { location_data, ip_address } from '$lib/stores/ipaddressStore';
 	import { goto } from '$app/navigation';
 
-  $: console.log({$ip_address})
-	export let data: PageServerData
-  
+	$: console.log({ $ip_address });
+	export let data: PageServerData;
+
 	let products: any[] = data.products;
-	let page = 1;
+	let pageload = 1;
 
 	$: console.log({ data });
 
@@ -18,7 +19,7 @@
 	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
-		const response = await fetch(`http://localhost:3000/products?page=${page + 1}`);
+		const response = await fetch(`http://localhost:3000/products?page=${pageload + 1}`);
 
 		const newData = await response.json();
 
@@ -26,7 +27,7 @@
 		products = [...products, newData.data];
 
 		// incrementar el numero de pagina para la siguiente carga
-		page++;
+		pageload++;
 
 		return newData;
 	};
@@ -63,46 +64,105 @@
 		'Automotriz'
 	];
 
-  // // country setup
-  // let country = ''
+	let randomCategories: { category: string }[] = [];
+	let selectedCategory: string | null = $page.url.searchParams.get('category');
 
-  // $: {
-  //   if ($location_data && $location_data.data && $location_data.data[0].country) {
-  //     country = $location_data.data[0].country
-  //   }
-  // }
+	// Cargar las Categorias aleatorias
+	async function getRandomCategories() {
+		try {
+			const response = await fetch(`http://localhost:3000/products/categories/random?limit=${10}`);
 
-  // onMount(() => {
-  //   if (country) {
-  //     goto(`/?country=${country}`, { replaceState: true })
-  //   }
-  // })
+			if (response.ok) {
+				const data = await response.json();
+				console.log(data);
+				randomCategories = data;
+			} else {
+				console.error('Error al cargar aleatoriamente las categorias');
+			}
+		} catch (error) {
+			console.error('Error al solicitar las categorias aleatorias');
+		}
+	}
 
-  // $: {
-  //   navigator.geolocation.getCurrentPosition((location) => {
-  //     console.log(location.coords.latitude)
-  //     console.log(location.coords.longitude)
-  //     console.log(location.coords.accuracy)
-  //   })
-  // }
+	// Funcion para manejar el click en una categoria
+	async function handleCategoryClick(category: string) {
+		selectedCategory = category;
+
+		const url = new URL(window.location.href);
+
+		// actualizar la categoria
+		if (category === '') {
+			url.searchParams.delete('category');
+		} else {
+			url.searchParams.set('category', category);
+		}
+
+		// Navegar a la nueva Url
+		await goto(url.toString(), {
+			keepFocus: true,
+			invalidateAll: true
+		});
+	}
+
+	onMount(() => {
+		getRandomCategories();
+	});
+
+	// // country setup
+	// let country = ''
+
+	// $: {
+	//   if ($location_data && $location_data.data && $location_data.data[0].country) {
+	//     country = $location_data.data[0].country
+	//   }
+	// }
+
+	// onMount(() => {
+	//   if (country) {
+	//     goto(`/?country=${country}`, { replaceState: true })
+	//   }
+	// })
+
+	// $: {
+	//   navigator.geolocation.getCurrentPosition((location) => {
+	//     console.log(location.coords.latitude)
+	//     console.log(location.coords.longitude)
+	//     console.log(location.coords.accuracy)
+	//   })
+	// }
 </script>
 
 <svelte:head>
 	<title>Jenno</title>
-  <!-- <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."> -->
+	<!-- <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."> -->
 </svelte:head>
 
-<div class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 md:w-full h-12 px-0 my-1 z-20">
-	{#each list as l}
+<!-- Barra de categorias -->
+<div
+	class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 md:w-full h-12 px-0 my-1 z-20"
+>
+  <!-- Boton de Todos -->
+	<button
+		class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
+		class:selected={!selectedCategory}
+		on:click={() => handleCategoryClick('')}
+	>
+		Todos
+	</button>
+
+  <!-- Categorias Aleatorias -->
+	{#each randomCategories as item}
 		<button
 			class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-			>{l}</button
+			class:selected={selectedCategory === item.category}
+			on:click={() => handleCategoryClick(item.category)}>{item.category}</button
 		>
 	{/each}
 </div>
 
-
-<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0">
+<div
+	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
+>
 	{#each products as productData}
 		<Card data={productData} />
 	{/each}
