@@ -1,5 +1,4 @@
 import type { Actions } from './$types'
-import { uploadFile } from '$lib/s3'
 import { env } from '$env/dynamic/private'
 
 export const actions: Actions = {

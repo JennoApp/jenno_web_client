@@ -17,10 +17,6 @@
 		{
 			title: `${m.settings_menu_appearance()}`,
 			href: '/settings/appearance'
-		},
-		{
-			title: `${m.settings_menu_about()}`,
-			href: '/settings/about'
 		}
 	];
 

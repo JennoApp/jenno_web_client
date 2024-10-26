@@ -1,7 +1,5 @@
 import type { Actions } from './$types'
-import { supabase } from '$lib/supabaseClient'
-import { uploadFile } from '$lib/s3'
-import { v4 as uuidv4 } from 'uuid'
+
 
 export const actions: Actions = {
   uploadProfileImg: async ({ request, cookies }) => {
@@ -15,11 +13,7 @@ export const actions: Actions = {
       // Verificar que se haya proporcionado un archivo
       if (!uploadProfileImg || !(uploadProfileImg instanceof File)) {
         throw new Error('No se proporcionó ninguna imagen de perfil.');
-      }
-
-      // // Subida de imagen de perfil a AWS S3 en la carpeta 'profiles'
-      // const { result, publicUrl} = await uploadFile(uploadProfileImg, 'profile')
-      // console.log("Imagen de perfil subida a S3:", publicUrl)
+      } 
 
       // Crear un nuevo FormData para enviar el archivo
       const formDataToSend = new FormData();
