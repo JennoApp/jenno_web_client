@@ -50,13 +50,13 @@
 				setSearch(searchInputValue);
 				dialogOpen = false;
 				goto(`/${$page.url.pathname.split('/')[1]}/search`);
-        searchInputValue = ''
+				searchInputValue = '';
 			} else {
 				setSearch(searchInputValue);
 				console.log($search);
 				dialogOpen = false;
 				goto('/search');
-        searchInputValue = ''
+				searchInputValue = '';
 			}
 		}
 	};
@@ -66,7 +66,7 @@
 			setSearch(searchInputValue);
 			dialogOpen = false;
 			goto('/search');
-      searchInputValue = ''
+			searchInputValue = '';
 		}
 	};
 
@@ -118,6 +118,16 @@
 		if (response.ok) {
 			invalidateAll();
 			toast.success('Sesión Cerrada');
+
+			// Redirige a la pagina principal si la ruta actual es "restringida"
+			const restrictedPaths = ['/admin', '/settings', '/personal', '/cart', '/chat', '/shopping'];
+			const currentPath = $page.url.pathname;
+
+			if (restrictedPaths.some((path) => currentPath.startsWith(path))) {
+				setTimeout(() => {
+					goto('/');
+				}, 100);
+			}
 		} else {
 			toast.error('No se ha podido cerrar sesion');
 		}
@@ -162,7 +172,7 @@
 				<button on:click|preventDefault={() => goto('/')}>
 					<div class="relative flex gap-1">
 						<div class="flex">
-              <!-- Logo  -->
+							<!-- Logo  -->
 							<h1 class="text-xl font-extrabold dark:text-gray-200">J</h1>
 							{#if $location_data !== undefined}
 								<span
@@ -344,7 +354,8 @@
 
 												<div class="flex w-full justify-center items-center mt-2">
 													<button
-														on:click|preventDefault={() => decrementCartItem(cartItem._id, cartItem.selectedOptions)}
+														on:click|preventDefault={() =>
+															decrementCartItem(cartItem._id, cartItem.selectedOptions)}
 														class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 													>
 														<!-- Minus Icon -->

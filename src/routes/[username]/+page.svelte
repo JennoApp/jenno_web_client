@@ -4,37 +4,36 @@
 	import { Button } from '$lib/components/ui/button';
 	import type { PageServerData } from './$types';
 	import { toast } from 'svelte-sonner';
-  import { location_data } from '$lib/stores/ipaddressStore'
-  import { onMount } from 'svelte'
-  import * as m from '$paraglide/messages'
+	import { location_data } from '$lib/stores/ipaddressStore';
+	import { onMount } from 'svelte';
+	import * as m from '$paraglide/messages';
+	import { invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
 
-	$: dataStatus = data.status
-	$: userData = data.userData
-  $: console.log($location_data)
+	$: dataStatus = data.status;
+	$: userData = data.userData;
+	$: console.log($location_data);
+  $: console.log({userD: $page.data.user})
 
-	let products: any[] = []
+	let products: any[] = [];
+	$: isFollowing = userData.followers?.includes($page.data?.user?._id)
 
-  $: console.log({products})
-	// $: console.log({ isSession: $page.data.isSession })
+	$: console.log({ isFollowing });
 
-	async function loadUserData(userId: string) {
-		const response = await fetch(`http://localhost:3000/users/${userId}`)
-		const user = await response.json()
-		userData = user
-	}
-
+	// Cargar productos del Usuario
 	async function loadProducts(userId: any, country?: string) {
-    const limit: number = 20
-    try {
-      const response = await fetch(`http://localhost:3000/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`)
-		  const { data } = await response.json()
-		  
-      products = data
-    } catch (error) {
-      console.log('Error al cargar los productos del usuario: ', error)
-    }	
+		const limit: number = 20;
+		try {
+			const response = await fetch(
+				`http://localhost:3000/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`
+			);
+			const { data } = await response.json();
+
+			products = data;
+		} catch (error) {
+			console.log('Error al cargar los productos del usuario: ', error);
+		}
 	}
 
 	// Carga los datos si el resutaldo del data.Status es diferente a 500
@@ -42,10 +41,9 @@
 		console.log('usuario no existe');
 		products = []; // vacia la lista de productos cuando el usuario no existe
 	} else {
-    if ($location_data) {
-      loadProducts(data.userData._id, $location_data.data[0].country)
-    }
-		
+		if ($location_data) {
+			loadProducts(data.userData._id, $location_data.data[0].country);
+		}
 	}
 
 	$: console.log({ userData });
@@ -68,28 +66,28 @@
 					throw new Error('Error al seguir al usuario');
 				}
 
-				// actualiza la informacion del usuario
-				await loadUserData(customerId);
+				// Actualiza el estado de isFollowing
+				isFollowing = true;
+				invalidateAll();
 
-				console.log('Usuario seguido exitosamente');
+				toast.success('Usuario seguido exitosamente!');
 			} catch (error) {
 				console.log(error);
 			}
 		} else {
-			toast.info("Debes iniciar sesion para seguir a este usuario!!!")
+			toast.info('Debes iniciar sesion para seguir a este usuario!!!');
 		}
 	};
 
-  onMount(() => {
-    if ($location_data) {
-      loadProducts(data.userData._id, $location_data.data[0].country);
-    }
-  })
+	onMount(() => {
+		if ($location_data) {
+			loadProducts(data.userData._id, $location_data.data[0].country);
+		}
+	});
 </script>
 
-
 <svelte:head>
-  <title>{userData?.username}</title>
+	<title>{userData?.username}</title>
 </svelte:head>
 
 {#if userData}
@@ -118,15 +116,17 @@
 				<div class="flex flex-col gap-3 items-start">
 					<h2 class="text-2xl font-medium">{user?.username}</h2>
 					<p class="flex flex-wrap">
-            {user?.bio !== undefined ? user?.bio : ''}
+						{user?.bio !== undefined ? user?.bio : ''}
 					</p>
 				</div>
 			</div>
 
 			<div class="flex flex-col items-center gap-5 md:w-4/12">
 				<div class="flex items-center gap-5 ml-10">
+					<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
 					{#if !(user?._id === data?.user?._id)}
-						{#if data?.user?.following.includes(user?._id)}
+						<!-- Botón de seguimiento basado en el estado de `isFollowing` -->
+						{#if isFollowing}
 							<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
 								<span class="text-gray-200">Siguiendo</span>
 							</Button>
@@ -160,16 +160,14 @@
 		<p class="text-red-500">{error.message}</p>
 	{/await}
 
+	<!-- Lista de prod -->
+	<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
+		{#each products as productData}
+			<Card data={productData} />
+		{/each}
+	</div>
 
-<!-- Lista de prod -->
-<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
-	{#each products as productData}
-		<Card data={productData} />
-	{/each}
-</div>
-
-
-<!-- Error al encontrar la informacion del usuario -->
+	<!-- Error al encontrar la informacion del usuario -->
 {:else if data?.userData?.error}
 	<h1>{data?.userData?.error}</h1>
 {:else}

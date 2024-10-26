@@ -1,28 +1,21 @@
 <script lang="ts">
-  import type { PageServerData } from './$types'
-  import { Button } from '$lib/components/ui/button'
+	import type { PageServerData } from './$types';
+	import { Button } from '$lib/components/ui/button';
+	import { page } from '$app/stores';
+	import { invalidateAll } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
 
-  export let data: PageServerData
+	export let data: PageServerData;
 
-  $: userData = data.userData
-  $: dataStatus = data.status
-  $: sessionUserData = data?.user
+	$: userData = data.userData;
+	$: dataStatus = data.status;
+	$: sessionUserData = data?.user;
 
-  $: console.log({sessionUserData: sessionUserData})
+	$: isFollowing = userData.followers?.includes($page.data?.user?._id);
 
-  
-	async function loadUserData(userId: string) {
-		const response = await fetch(`http://localhost:3000/users/${userId}`);
-		const user = await response.json();
-		userData = user;
-	}
+	$: console.log({ isFollowing });
 
-	// Carga los datos si el resutaldo del data.Status es diferente a 500
-	$: if (dataStatus === 500) {
-		console.log('usuario no existe');
-	}
-
-  const handleFollow = async (customerId: string) => {
+	const handleFollow = async (customerId: string) => {
 		try {
 			const followingResponse = await fetch(`http://localhost:3000/users/following/${customerId}`, {
 				method: 'POST',
@@ -36,12 +29,14 @@
 				throw new Error('Error al seguir al usuario');
 			}
 
-			// actualiza la informacion del usuario
-			await loadUserData(customerId);
+			// Actualiza el estado de isFollowing
+			isFollowing = true;
+			invalidateAll();
 
-			console.log('Usuario seguido exitosamente');
+			toast.success('Usuario seguido exitosamente!');
 		} catch (error) {
 			console.log(error);
+			toast.error('Error al seguir usuario!');
 		}
 	};
 </script>
@@ -72,17 +67,17 @@
 				<div class="flex flex-col gap-3 items-start">
 					<h2 class="text-2xl font-medium">{user?.username}</h2>
 					<p class="flex flex-wrap">
-						Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a
-						piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard
-						McClintock.
+						{user?.bio !== undefined ? user?.bio : ''}
 					</p>
 				</div>
 			</div>
 
 			<div class="flex flex-col items-center gap-5 w-4/12">
 				<div class="flex items-center gap-5 ml-10">
+					<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
 					{#if !(user?._id === sessionUserData?._id)}
-						{#if user?.followers.includes(sessionUserData?._id)}
+						<!-- Botón de seguimiento basado en el estado de `isFollowing` -->
+						{#if isFollowing}
 							<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
 								<span class="text-gray-200">Siguiendo</span>
 							</Button>
@@ -97,7 +92,7 @@
 
 						<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
 							<span class="text-gray-200">Send Message</span></Button
-						> 
+						>
 					{/if}
 				</div>
 				<div class="flex gap-10">
