@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { PageServerData } from './$types'
-  import { goto } from '$app/navigation'
-  import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
+	import type { PageServerData } from './$types';
+	import { goto } from '$app/navigation';
+	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
 	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
@@ -9,20 +9,26 @@
 	import { Button } from '$lib/components/ui/button';
 	import { readable } from 'svelte/store';
 	import { format } from 'timeago.js';
-	import TableData from '$lib/components/Table.svelte';
-	import { page } from '$app/stores';
 	import * as m from '$paraglide/messages';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
 	import CustomerCell from '$lib/components/Customer_cell.svelte';
 	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
+	import { invalidateAll } from '$app/navigation';
 
-  export let data: PageServerData;
+	export let data: PageServerData;
+	const currentPage = data.meta?.page;
 
+	$: console.log(data.meta);
 
-  const table = createTable(readable(data.salesList), {
+	function changePage(newPage: number) {
+		const searchParams = new URLSearchParams(window.location.search);
+		searchParams.set('page', newPage.toString());
+		invalidateAll();
+	}
+
+	const table = createTable(readable(data.salesList), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
@@ -122,12 +128,8 @@
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
 		table.createViewModel(columns);
 
-	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
 	const { filterValue } = pluginStates.filter;
-
 </script>
-
-
 
 <div class="flex p-5">
 	<button
@@ -149,8 +151,6 @@
 	</div>
 </div>
 
-
-
 {#if data?.salesList.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
@@ -161,7 +161,7 @@
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
-			/>	
+			/>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
@@ -209,28 +209,32 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasPreviousPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage - 1)}
 				>
-					Previous
+					Anterior
 				</Button>
 				<Button
 					class="border-gray-400 dark:border-[#252525]"
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasNextPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage + 1)}
 				>
-					Next
+					Siguiente
 				</Button>
 			</div>
 		</div>
 	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="material-symbols:history" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon
+			icon="material-symbols:history"
+			height="5rem"
+			width="5rem"
+			class="text-[#707070] mb-4"
+		/>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">No hay productos en el historial</h1>
 		<p class="text-lg text-[#707070]">¡Explora y encuentra productos que te interesen!</p>
 	</div>
 {/if}
-

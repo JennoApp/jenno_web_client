@@ -5,7 +5,7 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
-	import { invalidate } from '$app/navigation';
+	import { invalidate, invalidateAll } from '$app/navigation';
   import * as Select from '$lib/components/ui/select';
   import { countryList } from '$lib/utils/countries'
   import { location_data } from '$lib/stores/ipaddressStore'
@@ -22,7 +22,7 @@
 
 	$: if (form?.success) {
 		toast.success('Informacion Actualizada!');
-		invalidate((url) => url.pathname === '/settings/profile');
+    invalidateAll()
 	}
 </script>
 

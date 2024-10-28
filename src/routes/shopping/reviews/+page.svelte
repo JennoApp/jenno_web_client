@@ -12,11 +12,16 @@
   import TableActions from './table_actions.svelte'
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
-  import { goto } from '$app/navigation'
+  import { goto, invalidateAll } from '$app/navigation'
 
-  export let data
+  export let data: PageServerData
+  const currentPage = data.meta?.page
 
-  $: console.log({ data })
+  function changePage(newPage: number) {
+    const searchParams = new URLSearchParams(window.location.search)
+    searchParams.set('page', newPage.toString())
+    invalidateAll()  
+  }
 
   const table = createTable(readable(data.shoppingWithoutReviews), {
 		page: addPagination(),
@@ -100,7 +105,6 @@
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
 		table.createViewModel(columns);
 
-	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
 	const { filterValue } = pluginStates.filter;
 </script>
 
@@ -188,18 +192,18 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasPreviousPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage - 1)}
 				>
-					Previous
+					Anterior
 				</Button>
 				<Button
 					class="border-gray-400 dark:border-[#252525]"
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasNextPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage + 1)}
 				>
-					Next
+					Siguiente
 				</Button>
 			</div>
 		</div>

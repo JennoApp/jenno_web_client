@@ -1,17 +1,19 @@
 import jwt from 'jsonwebtoken'
 import type { PageServerLoad } from './$types'
 
-export const load: PageServerLoad = async ({ cookies, fetch }) => {
+export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
   try {
     const session = cookies.get('session') as string
     if (session) {
       const user = jwt.decode(session)
 
-      // Fetch the orders list data
-      const response = await fetch(`http://localhost:3000/users/shoppingwithoutreviews/${user?.sub}?page=${1}&limit=${10}`);
-      const { data, meta } = await response.json()
+      // Obtener la pagina actual
+      const page = parseInt(url.searchParams.get('page') || '1')
+      const limit = 10
 
-      console.log({datareview: data})
+      // Fetch the orders list data
+      const response = await fetch(`http://localhost:3000/users/shoppingwithoutreviews/${user?.sub}?page=${page}&limit=${limit}`);
+      const { data, meta } = await response.json()
 
       // Fetch details for each order
       const shoppingWithoutReviews = await Promise.all(
@@ -20,8 +22,6 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
         return await orderResponse.json();
       })
     );
-
-    console.log({shoppingWithoutReviews})
 
       return {
         shoppingWithoutReviews,
@@ -33,7 +33,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
         sucess: false
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       error: error?.message,
       sucess: false

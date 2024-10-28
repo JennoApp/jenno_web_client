@@ -4,12 +4,14 @@
   import type { ActionData } from './$types'
   import { page } from '$app/stores'
   import * as m from '$paraglide/messages'
+	import { invalidateAll } from '$app/navigation';
 
   export let form: ActionData
   let userData = $page.data.user
 
   $: if (form?.success) {
     toast.success("Informacion guardada!!")
+    invalidateAll()
   }
 </script>
 
