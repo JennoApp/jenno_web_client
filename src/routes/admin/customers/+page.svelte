@@ -1,86 +1,145 @@
 <script lang="ts">
-	import TableData from '$lib/components/Table.svelte';
+	import type { PageServerData } from './$types';
+	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
+	import { addTableFilter } from 'svelte-headless-table/plugins';
+	import * as Table from '$lib/components/ui/table';
 	import { page } from '$app/stores';
-  import * as m from '$paraglide/messages'
+	import { readable } from 'svelte/store';
+	import * as m from '$paraglide/messages';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { formatPrice } from '$lib/utils/formatprice';
+	import { format } from 'timeago.js';
+	import Options from '$lib/components/Options.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Input } from '$lib/components/ui/input';
+  import Image from '$lib/components/Image.svelte'
 
-	let followersList: any = [];
-	let currentPage = 1;
-	let limitPerPage = 10;
-	let NextPage: boolean;
-	let PreviousPage: boolean;
-	let itemsCount: number;
-	let pageCount: number;
+	export let data: PageServerData;
+	const currentPage = data.meta?.page;
+  const followerList = data.followers
 
-	async function fetchFollowers() {
-		try {
-			const response = await fetch(
-				`http://localhost:3000/users/followers/${$page.data.user._id}?page=${currentPage}&limit=${limitPerPage}`
-			);
-			const dataFetch = await response.json();
-			itemsCount = dataFetch.meta.itemCount;
-			pageCount = dataFetch.meta.pageCount;
-			NextPage = dataFetch.meta.hasNextPage;
-			PreviousPage = dataFetch.meta.hasPreviousPage;
 
-			for (const followerId of dataFetch.data) {
-				const response = await fetch(`http://localhost:3000/users/${followerId}`);
-				const followerData = await response.json();
-				followersList = [...followersList, followerData];
-			}
-		} catch (err) {
-			console.error('Error la recuperar la lista de seguidores:', err);
-		}
+	function changePage(newPage: number) {
+		const searchParams = new URLSearchParams(window.location.search);
+		searchParams.set('page', newPage.toString());
+		invalidateAll();
 	}
 
-	$: fetchFollowers();
+	const table = createTable(readable(data.followers), {
+		filter: addTableFilter({
+			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
+		})
+	});
 
-	$: console.log({ followersList });
-	$: console.log({ itemsCount, pageCount, NextPage, PreviousPage });
-
-	const modifier = {
-		profileImg: {
-			header: `${m.admin_customers_tableheader_img()}`,
-			accessor: (data: any) => {
-				if (data.profileImg !== '') {
-					return `<img class="h-10 w-10 ml-5 rounded-md" src="${data.profileImg}" alt="${data.username}"/>`
-				} else {
-					return `<iconify-icon
-										icon="mdi:user"
-										height="1.5rem"
-										width="1.5rem"
-										class="text-gray-200 flex justify-center items-center h-9 w-9 ml-5 bg-[#202020] rounded-full hover:bg-[#252525]"
-									/>`
-				}
+	const columns = table.createColumns([
+		table.column({
+			header: `${m.shopping_tableheader_image()}`,
+			accessor: 'profileImg',
+      cell: ({ value }) => {
+				return createRender(Image, { url: value.profileImg });
 			}
-		},
-		username: { header: `${m.admin_customers_tableheader_name()}`, accessor: (data: any) => data.username },
-		email: { header: `${m.admin_customers_tableheader_email()}`, accessor: (data: any) => data.email },
-		accountType: { header: `${m.admin_customers_tableheader_type()}`, accessor: (data: any) => data.accountType }
-	};
+		}),
+
+		table.column({
+			header: `Name`,
+			accessor: (row) => row.username
+		}),
+		table.column({
+			header: `Email`,
+			accessor: (row) => row.email,
+		}),
+		table.column({
+			header: `Account Type`,
+			accessor: (row) => row.accountType,	
+		})
+	]);
+
+
+	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
+		table.createViewModel(columns);
+
+	const { filterValue } = pluginStates.filter;
 </script>
 
-<!-- <div class="flex items-center mx-10 mt-5">
-	<Input class="max-w-sm" placeholder="Filter names..." type="text" />
-</div> -->
-
-{#if followersList.length !== 0}
-	<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-		<h2 class="text-xl font-semibold">{m.admin_customers_title()}</h2>
-	</div>
-	<TableData
-		datalist={followersList}
-		{modifier}
-		{NextPage}
-		{PreviousPage}
-		{itemsCount}
-		{pageCount}
-	/>
+{#if followerList?.length !== 0}
+	{#if data.sucess === false}
+		<h1>Error al hacer la solicitud</h1>
+	{:else}
+		<div class="flex items-center justify-between mx-10 mt-5">
+			<Input
+				class="max-w-sm placeholder:text-[#707070]"
+				placeholder="Filter names..."
+				type="text"
+				bind:value={$filterValue}
+			/>
+		</div>
+		<div class="rounded-md border mx-10 my-5">
+			<Table.Root {...$tableAttrs}>
+				<Table.Header>
+					{#each $headerRows as headerRow}
+						<Subscribe rowAttrs={headerRow.attrs()}>
+							<Table.Row>
+								{#each headerRow.cells as cell (cell.id)}
+									<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
+										<Table.Head {...attrs}>
+											<Render of={cell.render()} />
+										</Table.Head>
+									</Subscribe>
+								{/each}
+							</Table.Row>
+						</Subscribe>
+					{/each}
+				</Table.Header>
+				<Table.Body {...$tableBodyAttrs}>
+					{#each $pageRows as row (row.id)}
+						<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+							<Table.Row {...rowAttrs}>
+								{#each row.cells as cell (cell.id)}
+									<Subscribe attrs={cell.attrs()} let:attrs>
+										<Table.Cell {...attrs}>
+											<Render of={cell.render()} />
+										</Table.Cell>
+									</Subscribe>
+								{/each}
+							</Table.Row>
+						</Subscribe>
+					{/each}
+				</Table.Body>
+			</Table.Root>
+		</div>
+		<div class="flex justify-between mx-10 mb-5">
+			<div class="">
+				<h3 class="text-sm dark:text-[#707070]">
+					items: {data.meta.itemCount} - pages: {data.meta.pageCount}
+				</h3>
+			</div>
+			<div class="flex items-center justify-end space-x-4">
+				<Button
+					class="border-gray-400 dark:border-[#252525]"
+					variant="outline"
+					size="sm"
+					disabled={!data.meta.hasPreviousPage}
+					on:click={() => changePage(currentPage - 1)}
+				>
+					Anterior
+				</Button>
+				<Button
+					class="border-gray-400 dark:border-[#252525]"
+					variant="outline"
+					size="sm"
+					disabled={!data.meta.hasNextPage}
+					on:click={() => changePage(currentPage + 1)}
+				>
+					Siguiente
+				</Button>
+			</div>
+		</div>
+	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="f7:person-3-fill" height="5rem" width="5rem" class="text-[#707070] mb-4" />
-		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_customers_nocustomers_title()}</h1>
-		<p class="text-lg text-[#707070]">
-			{m.admin_customers_nocustomers_p()}
-		</p>
+		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+
+		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
+		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
 	</div>
 {/if}

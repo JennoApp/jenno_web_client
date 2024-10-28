@@ -87,15 +87,15 @@
 	</Card.Root>
 </div>
 
-<div class="grid gap-4 m-5 md:grid-cols-2">
-	<Card.Root>
+<div class="grid gap-4 m-5">
+	<!-- <Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
 			<Card.Title class="text-sm font-medium">{m.admin_dashboard_overview()}</Card.Title>
 		</Card.Header>
 		<Card.Content>
 			<Bar />
 		</Card.Content>
-	</Card.Root>
+	</Card.Root> -->
 
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">

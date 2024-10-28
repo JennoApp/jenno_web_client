@@ -189,7 +189,7 @@
 					{/if}
 				</Tooltip.Root>
 
-				<Tooltip.Root>
+				<!-- <Tooltip.Root>
 					<Tooltip.Trigger class="disabled:opacity-75">
 						<a
 							href="/admin/marketing"
@@ -227,7 +227,7 @@
 							</div>
 						</Tooltip.Content>
 					{/if}
-				</Tooltip.Root>
+				</Tooltip.Root> -->
 			</ul>
 		</div>
 	</nav>

@@ -1,32 +1,38 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	// import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addTableFilter, addPagination } from 'svelte-headless-table/plugins';
+	import { addTableFilter } from 'svelte-headless-table/plugins';
 	import { readable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import DataTableActions from './data-table-actions.svelte';
-  import * as Dialog from "$lib/components/ui/dialog"
-  import * as m from '$paraglide/messages'
+	import * as m from '$paraglide/messages';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
+	const currentPage = data.meta?.page;
 
-	$: console.log({ data });
+	$: console.log(data.meta);
+
+	function changePage(newPage: number) {
+		const searchParams = new URLSearchParams(window.location.search);
+		searchParams.set('page', newPage.toString());
+		invalidateAll();
+	}
 
 	const table = createTable(readable(data.products), {
-		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		})
 	});
 
-	const columns = table.createColumns([	
+	const columns = table.createColumns([
 		table.column({
-			accessor: 'imgs',
 			header: `${m.admin_catalog_tableheader_image()}`,
+			accessor: `imgs`,
 			plugins: {
 				filter: {
 					exclude: true
@@ -36,7 +42,7 @@
 				return createRender(Image, { url: value[0] });
 			}
 		}),
-    table.column({
+		table.column({
 			accessor: 'productname',
 			header: `${m.admin_catalog_tableheader_name()}`
 		}),
@@ -102,7 +108,6 @@
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
 		table.createViewModel(columns);
 
-	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
 	const { filterValue } = pluginStates.filter;
 
 	$: console.log({ products: data.products });
@@ -110,7 +115,13 @@
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
 	<h2 class="text-xl font-semibold dark:text-gray-200">{m.admin_catalog_title()}</h2>
-	<DropdownMenu.Root>
+
+	<Button
+		class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
+    on:click={() => goto('/admin/catalog/addproduct')}
+		>{m.admin_catalog_button()}</Button
+	>
+	<!-- <DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			<Button
 				class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200               hover:bg-purple-700 dark:hover:bg-[#252525]"
@@ -118,10 +129,12 @@
 			>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content class="bg-background mt-2">
-			<DropdownMenu.Item href="/admin/catalog/addproduct">{m.admin_catalog_button_addproduct()}</DropdownMenu.Item>
+			<DropdownMenu.Item href="/admin/catalog/addproduct"
+				>{m.admin_catalog_button_addproduct()}</DropdownMenu.Item
+			>
 			<DropdownMenu.Item disabled>{m.admin_catalog_button_addservice()}</DropdownMenu.Item>
 		</DropdownMenu.Content>
-	</DropdownMenu.Root>
+	</DropdownMenu.Root> -->
 </div>
 
 {#if data.products.length !== 0}
@@ -172,7 +185,9 @@
 		</div>
 		<div class="flex justify-between mx-10">
 			<div class="">
-				<h3 class="text-sm dark:text-[#707070]">items: {data.meta.itemCount} - pages: {data.meta.pageCount}</h3>
+				<h3 class="text-sm dark:text-[#707070]">
+					items: {data.meta.itemCount} - pages: {data.meta.pageCount}
+				</h3>
 			</div>
 			<div class="flex items-center justify-end space-x-4">
 				<Button
@@ -180,18 +195,18 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasPreviousPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage - 1)}
 				>
-					Previous
+					Anterior
 				</Button>
 				<Button
 					class="border-gray-400 dark:border-[#252525]"
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasNextPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage + 1)}
 				>
-					Next
+					Siguiente
 				</Button>
 			</div>
 		</div>
@@ -205,4 +220,3 @@
 		</p>
 	</div>
 {/if}
-

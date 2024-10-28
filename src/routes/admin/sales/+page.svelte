@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
 	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
+	import { addTableFilter } from 'svelte-headless-table/plugins';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -15,22 +15,20 @@
 	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
 	import TableActions from './table-actions.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
+  const currentPage = data.meta?.page
 
-	$: console.log(data.salesList);
+	$: console.log(data.meta);
 
-	// let salesList: any = [];
-	// let currentPage = 1;
-	// let limitPerPage = 10;
-	// let NextPage: boolean;
-	// let PreviousPage: boolean;
-	// let itemsCount: number;
-	// let pageCount: number;
+  function changePage(newPage: number) {
+    const searchParams = new URLSearchParams(window.location.search)
+    searchParams.set('page', newPage.toString())
+    invalidateAll()  
+  }
 
 	const table = createTable(readable(data.salesList), {
-		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		})
@@ -141,7 +139,6 @@
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
 		table.createViewModel(columns);
 
-	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
 	const { filterValue } = pluginStates.filter;
 </script>
 
@@ -221,18 +218,18 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasPreviousPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage - 1)}
 				>
-					Previous
+					Anterior
 				</Button>
 				<Button
 					class="border-gray-400 dark:border-[#252525]"
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasNextPage}
-					on:click={() => {}}
+					on:click={() => changePage(currentPage + 1)}
 				>
-					Next
+					Siguiente
 				</Button>
 			</div>
 		</div>
