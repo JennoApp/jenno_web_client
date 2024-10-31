@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { loadScript } from '@paypal/paypal-js';
+  import { PRIVATE_PAYPAL_CLIENTID } from '$env/static/private'
 
   export let TotalAmount: number
 	let paypal: any;
@@ -7,7 +8,7 @@
 	async function paypalInit() {
 		try {
 			paypal = await loadScript({
-				clientId: 'AQc0Px63WS02JpsJp3hmK6SV4tYsMgRNc-tUBz6ypAoOq_T8AO27wZTNHNsykRkcMhfmOqVNhtTCE9XR'
+				clientId: PRIVATE_PAYPAL_CLIENTID
 			});
 		} catch (error) {
 			console.error('failed to load the Paypal SDK script', error);

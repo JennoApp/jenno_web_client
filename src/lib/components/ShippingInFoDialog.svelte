@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Dialog from '$lib/components/ui/dialog'
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
   export let shippingInfo: any
 
@@ -13,7 +14,7 @@
   // $: console.log({id: shippingInfo.buyerId})
 
   async function getShippingInfo(id: string) {
-    const response = await fetch(`http://localhost:3000/users/shippingInfo/${id}`)
+    const response = await fetch(`${PRIVATE_SERVER_URL}/users/shippingInfo/${id}`)
     const data = await response.json()
     userShippingInfo = data
 

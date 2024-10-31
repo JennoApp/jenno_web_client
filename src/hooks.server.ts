@@ -8,6 +8,8 @@ import {
   type AvailableLocale,
   isAvailableLocale
 } from '$lib/i18n'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
+
 
 // Session configuration
 const sessionHandle: Handle = async ({ event, resolve }) => {
@@ -26,7 +28,7 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
         event.locals.sessionExpired = true
         event.locals.isSession = false
       } else {
-        const result = await fetch(`http://localhost:3000/users/${decodedToken.sub}`)
+        const result = await fetch(`${PRIVATE_SERVER_URL}/users/${decodedToken.sub}`)
         const userData = await result.json()
         console.log({ userData })
 

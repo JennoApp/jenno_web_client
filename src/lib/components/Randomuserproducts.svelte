@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Card from '$lib/components/Card.svelte';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let user: string;
 
@@ -8,7 +9,7 @@
 	let products: any[];
 
 	async function loadProducts(userId: string) {
-		const response = await fetch(`http://localhost:3000/products/user/random/${userId}`);
+		const response = await fetch(`${PRIVATE_SERVER_URL}/products/user/random/${userId}`);
 		const data = await response.json();
 		products = data;
 		console.log({ products });

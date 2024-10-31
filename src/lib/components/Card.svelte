@@ -19,6 +19,7 @@
 	import { addToCart } from '$lib/stores/cartStore';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { toast } from 'svelte-sonner';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: CardData;
 
@@ -34,7 +35,7 @@
 		}
 
 		try {
-			const response = await fetch(`http://localhost:3000/users/getprofileimg/${data?.user}`);
+			const response = await fetch(`${PRIVATE_SERVER_URL}/users/getprofileimg/${data?.user}`);
 
 			const userData = await response.json();
 			console.log({ userData });
@@ -126,7 +127,7 @@
 				</button>
 
         <button class="flex items-center" on:click|preventDefault={() => {
-          const product_link = `http://localhost:5173/${data.username}/${data._id}`
+          const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`
           navigator.clipboard.writeText(product_link)
             .then(() => {
               toast.success('Enlace copiado al portapapeles')

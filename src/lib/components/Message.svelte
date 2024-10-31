@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { format } from 'timeago.js';
 	import { page } from '$app/stores';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let own: boolean;
 	export let friendId: any;
@@ -9,7 +10,7 @@
 	let friendImg: string;
 
 	const getFriendImg = async (id: string) => {
-		const response = await fetch(`http://localhost:3000/users/getprofileimg/${id}`);
+		const response = await fetch(`${PRIVATE_SERVER_URL}/users/getprofileimg/${id}`);
 		const data = await response.json();
 		friendImg = data;
 

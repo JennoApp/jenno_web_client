@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
+
 	export let conversation: any[];
 	export let userId: string;
 
@@ -9,7 +11,7 @@
 
 		const getUser = async () => {
 			try {
-				const response = await fetch(`http://localhost:3000/users/${friendId}`);
+				const response = await fetch(`${PRIVATE_SERVER_URL}/users/${friendId}`);
 				const data = await response.json();
 				user = data;
 				console.log(data);
