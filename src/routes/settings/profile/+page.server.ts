@@ -1,4 +1,5 @@
 import type { Actions } from './$types'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 
 export const actions: Actions = {
@@ -20,7 +21,7 @@ export const actions: Actions = {
       formDataToSend.append('file', uploadProfileImg);
 
       // Actualiza la imagen de perfil en el usuario
-      const updateResponse = await fetch(`http://localhost:3000/users/updateProfileImg`, {
+      const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/users/updateProfileImg`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${tokenJwt}`
@@ -68,7 +69,7 @@ export const actions: Actions = {
 
     try {
       // Actualiza infomacion del usuario
-      const updateResponse = await fetch(`http://localhost:3000/users/updateuser`, {
+      const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/users/updateuser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

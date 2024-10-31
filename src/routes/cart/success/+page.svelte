@@ -4,6 +4,7 @@
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	async function createOrders() {
 		const items = $cartItems;
@@ -44,7 +45,7 @@
 							selectedOptions: item.selectedOptions
 						};
 
-						const response = await fetch('http://localhost:3000/orders', {
+						const response = await fetch(`${PRIVATE_SERVER_URL}/orders`, {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'

@@ -3,13 +3,14 @@
 	import { Button } from '$lib/components/ui/button';
 	import { MoreHorizontal } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let id: string;
 
   $: console.log({id})
 
   async function updateStatus(id: string, status: string) {
-    const response = await fetch(`http://localhost:3000/orders/status/${id}`, {
+    const response = await fetch(`${PRIVATE_SERVER_URL}/orders/status/${id}`, {
       method: 'PUT',
       headers: {
           "Content-Type": "application/json",
@@ -49,7 +50,7 @@
 							width="1.1rem"
 							class="text-gray-200 flex justify-center items-center"
 						/>
-						<span class="ml-3">Sending</span>
+						<span class="ml-3">Enviando</span>
 					</DropdownMenu.Item>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Item on:click={() => {
@@ -61,7 +62,7 @@
 							width="1.1rem"
 							class="text-gray-200 flex justify-center items-center"
 						/>
-						<span class="ml-3">Cancel Order</span>
+						<span class="ml-3">Cancelar Orden</span>
 					</DropdownMenu.Item>
 					<DropdownMenu.Item on:click={() => {
             updateStatus(id, 'returned')
@@ -72,7 +73,7 @@
 							width="1.1rem"
 							class="text-gray-200 flex justify-center items-center"
 						/>
-						<span class="ml-3">Returned</span>
+						<span class="ml-3">Devolver</span>
 					</DropdownMenu.Item>
 				</DropdownMenu.SubContent>
 			</DropdownMenu.Sub>

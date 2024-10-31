@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import type { PageServerLoad } from './$types'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
   try {
@@ -11,7 +12,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
       const page = parseInt(url.searchParams.get('page') || '1')
       const limit = 10
 
-      const response = await fetch(`http://localhost:3000/products/admin/user/${user?.sub}?page=${page}&limit=${limit}&country=Colombia`)
+      const response = await fetch(`${PRIVATE_SERVER_URL}/products/admin/user/${user?.sub}?page=${page}&limit=${limit}&country=Colombia`)
 
       const { data, meta } = await response.json()
 

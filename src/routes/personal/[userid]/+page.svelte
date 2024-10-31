@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+	import { PRIVATE_SERVER_URL } from '$env/static/private';
 
 	export let data: PageServerData;
 
@@ -17,7 +18,7 @@
 
 	const handleFollow = async (customerId: string) => {
 		try {
-			const followingResponse = await fetch(`http://localhost:3000/users/following/${customerId}`, {
+			const followingResponse = await fetch(`${PRIVATE_SERVER_URL}/users/following/${customerId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

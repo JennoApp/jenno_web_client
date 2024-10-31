@@ -18,6 +18,7 @@
 	import * as m from '$paraglide/messages';
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
+  import { PRIVATE_SERVER_URL, PRIVATE_PAYPAL_CLIENTID } from '$env/static/private'
 
 	let shippingData = $page.data?.user?.shippingInfo;
 
@@ -93,7 +94,7 @@
 	});
 
 	const handleSubmitPayment = async () => {
-		const response = await fetch('http://localhost:3000/payments/stripe', {
+		const response = await fetch(`${PRIVATE_SERVER_URL}/payments/stripe`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -124,7 +125,7 @@
 	async function paypalInit() {
 		try {
 			paypal = await loadScript({
-				clientId: 'AQc0Px63WS02JpsJp3hmK6SV4tYsMgRNc-tUBz6ypAoOq_T8AO27wZTNHNsykRkcMhfmOqVNhtTCE9XR'
+				clientId: `${PRIVATE_PAYPAL_CLIENTID}`
 			});
 		} catch (error) {
 			console.error('failed to load the Paypal SDK script', error);

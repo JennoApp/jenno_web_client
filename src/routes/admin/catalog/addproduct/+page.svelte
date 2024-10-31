@@ -15,6 +15,7 @@
 	import CurrencyInput from '@canutin/svelte-currency-input';
   import { location_data } from '$lib/stores/ipaddressStore'
   import * as m from '$paraglide/messages'
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 
 	export let form: ActionData;
@@ -83,7 +84,7 @@
 
 		if (productId !== null) {
 			try {
-				const response = await fetch(`http://localhost:3000/products/${productId}`)
+				const response = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`)
 				const productData = await response.json()
 
 				product = productData

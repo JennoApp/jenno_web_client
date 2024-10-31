@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { io, type Socket } from 'socket.io-client';
   import * as m from '$paraglide/messages'
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	let conversations: any[];
 	let messages: any[] = [];
@@ -13,7 +14,7 @@
 	let arrivalMessage: any = null;
 
 	$: {
-		socket = io('http://localhost:3000');
+		socket = io(`${PRIVATE_SERVER_URL}`);
 		socket?.on('connect', () => {
 			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
 			socket?.emit('addUser', $page.data.user._id); // se agrega el usuario la nueva conexion
@@ -40,7 +41,7 @@
 
 	const getConversations = async (userid: string) => {
 		try {
-			const response = await fetch(`http://localhost:3000/chat/conversations/${userid}`);
+			const response = await fetch(`${PRIVATE_SERVER_URL}/chat/conversations/${userid}`);
 			const data = await response.json();
 			conversations = data.conversation;
 			// console.log(conversations);
@@ -52,7 +53,7 @@
 
 	const getMessages = async (currentChatId: string) => {
 		try {
-			const response = await fetch(`http://localhost:3000/chat/messages/${currentChatId}`);
+			const response = await fetch(`${PRIVATE_SERVER_URL}/chat/messages/${currentChatId}`);
 			const data = await response.json();
 			messages = [...data?.messages];
 			return data;
@@ -85,7 +86,7 @@
 		});
 
 		try {
-			const response = await fetch(`http://localhost:3000/chat/messages`, {
+			const response = await fetch(`${PRIVATE_SERVER_URL}/chat/messages`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

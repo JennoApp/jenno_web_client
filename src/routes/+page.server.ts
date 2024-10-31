@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { PageServerLoad, Actions } from './$types'
 import { availableLocales, type AvailableLocale } from '$lib/i18n'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 
 const ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 30 * 12
@@ -15,7 +16,7 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
   const category = url.searchParams.get('category') || ''
   const limit: number = 20
   
-  const response = await fetch(`http://localhost:3000/products?page=${1}&limit=${limit}&country=${country}&category=${category}`)
+  const response = await fetch(`${PRIVATE_SERVER_URL}/products?page=${1}&limit=${limit}&country=${country}&category=${category}`)
 
   console.log(category)
 

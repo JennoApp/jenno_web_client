@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import type { PageServerLoad } from './$types'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
   try {
@@ -12,13 +13,13 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
       const limit = 10
 
       // Fetch the orders list data
-      const response = await fetch(`http://localhost:3000/users/orderscompleted/${user?.sub}?page=${page}&limit=${limit}`);
+      const response = await fetch(`${PRIVATE_SERVER_URL}/users/orderscompleted/${user?.sub}?page=${page}&limit=${limit}`);
       const { data, meta } = await response.json()
 
       // Fetch details for each order
       const salesList = await Promise.all(
         data.map(async (orderId: string) => {
-        const orderResponse = await fetch(`http://localhost:3000/orders/${orderId}`);
+        const orderResponse = await fetch(`${PRIVATE_SERVER_URL}/orders/${orderId}`);
         return await orderResponse.json();
       })
     );

@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { location_data, ip_address } from '$lib/stores/ipaddressStore';
 	import { goto } from '$app/navigation';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	$: console.log({ $ip_address });
 	export let data: PageServerData;
@@ -19,7 +20,7 @@
 	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
-		const response = await fetch(`http://localhost:3000/products?page=${pageload + 1}`);
+		const response = await fetch(`${PRIVATE_SERVER_URL}/products?page=${pageload + 1}`);
 
 		const newData = await response.json();
 
@@ -70,7 +71,7 @@
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
 		try {
-			const response = await fetch(`http://localhost:3000/products/categories/random?limit=${10}`);
+			const response = await fetch(`${PRIVATE_SERVER_URL}/products/categories/random?limit=${10}`);
 
 			if (response.ok) {
 				const data = await response.json();

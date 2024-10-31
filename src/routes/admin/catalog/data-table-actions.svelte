@@ -4,11 +4,12 @@
 	import { MoreHorizontal } from 'lucide-svelte';
   import { goto, invalidateAll } from '$app/navigation'
   import { toast } from 'svelte-sonner'
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let id: string;
 
   const deleteProduct = async (id: any) => {
-    const response = await fetch(`http://localhost:3000/products/${id}`, {
+    const response = await fetch(`${PRIVATE_SERVER_URL}/products/${id}`, {
       method: 'DELETE'
     })
 

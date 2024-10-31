@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { invalidateAll } from '$app/navigation';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: PageServerData;
 
@@ -26,7 +27,7 @@
 		const limit: number = 20;
 		try {
 			const response = await fetch(
-				`http://localhost:3000/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`
+				`${PRIVATE_SERVER_URL}/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`
 			);
 			const { data } = await response.json();
 
@@ -52,7 +53,7 @@
 		if ($page.data.isSession) {
 			try {
 				const followingResponse = await fetch(
-					`http://localhost:3000/users/following/${customerId}`,
+					`${PRIVATE_SERVER_URL}/users/following/${customerId}`,
 					{
 						method: 'POST',
 						headers: {

@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
-import type { PageServerLoad, Actions } from './$types'
+import type { PageServerLoad } from './$types'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
@@ -8,7 +9,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     if (session) {
       const user = jwt.decode(session)
 
-      const response = await fetch(`http://localhost:3000/products/randomfollowed/${user?.sub}?page=${1}&limit=${20}&country=Colombia`)
+      const response = await fetch(`${PRIVATE_SERVER_URL}/products/randomfollowed/${user?.sub}?page=${1}&limit=${20}&country=Colombia`)
 
       const { data, meta } = await response.json()
 

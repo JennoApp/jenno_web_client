@@ -1,5 +1,5 @@
 import type { Actions } from './$types'
-import { env } from '$env/dynamic/private'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 export const actions: Actions = {
   saveProduct: async ({ request, cookies, fetch }) => {
@@ -13,7 +13,7 @@ export const actions: Actions = {
 
     if (productId) {
       // Obtener el producto existente para obtener las imágenes actuales
-      const existingProductResponse = await fetch(`http://localhost:3000/products/${productId}`, {
+      const existingProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
         method: 'GET',
         headers: {
           "Authorization": `Bearer ${tokenJwt}`
@@ -35,7 +35,7 @@ export const actions: Actions = {
         imageFormData.append('files', file)
       })
 
-      const imageResponse = await fetch(`http://localhost:3000/products/upload-images/${productId}`, {
+      const imageResponse = await fetch(`${PRIVATE_SERVER_URL}/products/upload-images/${productId}`, {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${tokenJwt}`
@@ -98,7 +98,7 @@ export const actions: Actions = {
 
     // Enviar los datos del producto
     try {
-      const response = await fetch("http://localhost:3000/products", {
+      const response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

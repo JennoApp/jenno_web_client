@@ -1,5 +1,6 @@
 import type { Actions } from './$types'
 import { z } from 'zod'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 const registerPersonalSchema = z.object({
   username: z
@@ -57,7 +58,7 @@ export const actions: Actions = {
         }
       } else {
         // Crear Usuario Personal
-        const responseCreateUser = await fetch("http://localhost:3000/users", {
+        const responseCreateUser = await fetch(`${PRIVATE_SERVER_URL}/users`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -76,7 +77,7 @@ export const actions: Actions = {
         }
 
         // Logear Usuario
-        const responseLoginUser = await fetch("http://localhost:3000/auth/login", {
+        const responseLoginUser = await fetch(`${PRIVATE_SERVER_URL}/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

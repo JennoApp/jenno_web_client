@@ -1,12 +1,13 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner'
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
   let email: string = ''
 
   async function handleForm() {
     console.log({email})
     try {
-      const response = await fetch(`http://localhost:3000/users/forgotpassword`, {
+      const response = await fetch(`${PRIVATE_SERVER_URL}/users/forgotpassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

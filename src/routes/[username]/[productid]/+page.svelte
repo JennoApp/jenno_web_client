@@ -38,6 +38,7 @@
 	import { page } from '$app/stores';
 	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: PageServerData;
 	// let product: CardData
@@ -64,7 +65,7 @@
 		}
 
 		try {
-			const response = await fetch(`http://localhost:3000/users/getprofileimg/${product?.user}`);
+			const response = await fetch(`${PRIVATE_SERVER_URL}/users/getprofileimg/${product?.user}`);
 
 			const userData = await response.json();
 			console.log({ userData });

@@ -3,12 +3,13 @@
   import {onMount} from 'svelte'
   import Card from '$lib/components/Card.svelte';
   import { page } from '$app/stores'
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	let productsSearch: any[] = [];
 
 	const fetchSearchProducts = async (param: string) => {
 		const response = await fetch(
-			`http://localhost:3000/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
+			`${PRIVATE_SERVER_URL}/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
 		);
 
 		const { data } = await response.json();

@@ -7,6 +7,7 @@
 	import { page } from '$app/stores';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	let userInfo = $page.data.user;
 	$: console.log({ userInfo });
@@ -28,7 +29,7 @@
 
   async function getProductFromOrder(orderId: string) {
     try {
-      const response = await fetch(`http://localhost:3000/orders/${orderId}`)
+      const response = await fetch(`${PRIVATE_SERVER_URL}/orders/${orderId}`)
       if (response.ok) {
         const orderData = await response.json()
         return orderData.product._id
@@ -57,7 +58,7 @@
     }
 
 		try {
-			const response = await fetch(`http://localhost:3000/products/review/${productId}`, {
+			const response = await fetch(`${PRIVATE_SERVER_URL}/products/review/${productId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

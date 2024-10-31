@@ -1,5 +1,6 @@
 import type { Actions } from './$types.js'
 import { z } from 'zod'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 const shippingSchema = z.object({
   country: z
@@ -43,7 +44,7 @@ export const actions: Actions = {
 
       console.log({ address, country, state, city, postalCode, phoneNumber })
 
-      const responseUpdateShippinginfo = await fetch(`http://localhost:3000/users/shipping/${locals?.user?._id}`, {
+      const responseUpdateShippinginfo = await fetch(`${PRIVATE_SERVER_URL}/users/shipping/${locals?.user?._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"

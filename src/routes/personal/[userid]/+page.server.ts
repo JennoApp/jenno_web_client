@@ -1,11 +1,12 @@
 import type { PageServerLoad } from './$types'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 export const load: PageServerLoad = async ({params, cookies}) => {
   try {
     const session = cookies.get('session')
 
     // obtener informacion del usuario
-    const userFetch = await fetch(`http://localhost:3000/users/findOnePersonal/${params.userid}`)
+    const userFetch = await fetch(`${PRIVATE_SERVER_URL}/users/findOnePersonal/${params.userid}`)
 
     // verificar el estado de la respuesta
     if (!userFetch.ok) {

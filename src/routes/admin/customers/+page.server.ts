@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import type { PageServerLoad } from './$types'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 export const load: PageServerLoad = async ({ cookies, locals, url }) => {
   try {
@@ -14,12 +15,12 @@ export const load: PageServerLoad = async ({ cookies, locals, url }) => {
       const limit = 10
 
       const response = await fetch(
-        `http://localhost:3000/users/followers/${user?.sub}?page=${page}&limit=${limit}`
+        `${PRIVATE_SERVER_URL}/users/followers/${user?.sub}?page=${page}&limit=${limit}`
       );
       const { data, meta } = await response.json();
 
       for (const followerId of data) {
-        const response = await fetch(`http://localhost:3000/users/${followerId}`);
+        const response = await fetch(`${PRIVATE_SERVER_URL}/users/${followerId}`);
         const followerData = await response.json();
         followers = [...followers, followerData]
       }
