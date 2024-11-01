@@ -1,11 +1,25 @@
 <script lang="ts">
   import * as Dialog from '$lib/components/ui/dialog'
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
   export let shippingInfo: any
 
   let open = false
   let userShippingInfo: any
+
+  // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
   function openDialog() {
     open = true
@@ -14,7 +28,7 @@
   // $: console.log({id: shippingInfo.buyerId})
 
   async function getShippingInfo(id: string) {
-    const response = await fetch(`${PRIVATE_SERVER_URL}/users/shippingInfo/${id}`)
+    const response = await fetch(`${serverUrl}/users/shippingInfo/${id}`)
     const data = await response.json()
     userShippingInfo = data
 

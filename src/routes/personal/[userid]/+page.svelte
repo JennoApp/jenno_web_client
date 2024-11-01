@@ -4,9 +4,23 @@
 	import { page } from '$app/stores';
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
-	import { PRIVATE_SERVER_URL } from '$env/static/private';
 
 	export let data: PageServerData;
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	$: userData = data.userData;
 	$: dataStatus = data.status;
@@ -18,7 +32,7 @@
 
 	const handleFollow = async (customerId: string) => {
 		try {
-			const followingResponse = await fetch(`${PRIVATE_SERVER_URL}/users/following/${customerId}`, {
+			const followingResponse = await fetch(`${serverUrl}/users/following/${customerId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

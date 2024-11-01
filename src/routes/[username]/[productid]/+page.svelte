@@ -38,13 +38,27 @@
 	import { page } from '$app/stores';
 	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: PageServerData;
 	// let product: CardData
 	$: product = data.product;
 
 	$: console.log({ product: data.product });
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	/// Sync Corousels index
 	let api: CarouselAPI;
@@ -65,7 +79,7 @@
 		}
 
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/users/getprofileimg/${product?.user}`);
+			const response = await fetch(`${serverUrl}/users/getprofileimg/${product?.user}`);
 
 			const userData = await response.json();
 			console.log({ userData });

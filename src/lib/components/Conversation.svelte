@@ -1,17 +1,30 @@
 <script lang="ts">
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let conversation: any[];
 	export let userId: string;
 
 	let user: any = null;
+  // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	$: {
 		const friendId = conversation?.members.find((m) => m !== userId);
 
 		const getUser = async () => {
 			try {
-				const response = await fetch(`${PRIVATE_SERVER_URL}/users/${friendId}`);
+				const response = await fetch(`${serverUrl}/users/${friendId}`);
 				const data = await response.json();
 				user = data;
 				console.log(data);

@@ -4,7 +4,6 @@
 	import { page } from '$app/stores';
 	import { io, type Socket } from 'socket.io-client';
   import * as m from '$paraglide/messages'
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	let conversations: any[];
 	let messages: any[] = [];
@@ -13,8 +12,23 @@
 	let socket: Socket;
 	let arrivalMessage: any = null;
 
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
+
 	$: {
-		socket = io(`${PRIVATE_SERVER_URL}`);
+		socket = io(`${serverUrl}`);
 		socket?.on('connect', () => {
 			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
 			socket?.emit('addUser', $page.data.user._id); // se agrega el usuario la nueva conexion
@@ -41,7 +55,7 @@
 
 	const getConversations = async (userid: string) => {
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/chat/conversations/${userid}`);
+			const response = await fetch(`${serverUrl}/chat/conversations/${userid}`);
 			const data = await response.json();
 			conversations = data.conversation;
 			// console.log(conversations);
@@ -53,7 +67,7 @@
 
 	const getMessages = async (currentChatId: string) => {
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/chat/messages/${currentChatId}`);
+			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
 			const data = await response.json();
 			messages = [...data?.messages];
 			return data;
@@ -86,7 +100,7 @@
 		});
 
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/chat/messages`, {
+			const response = await fetch(`${serverUrl}/chat/messages`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

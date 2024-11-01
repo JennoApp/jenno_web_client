@@ -1,15 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import Card from '$lib/components/Card.svelte';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let user: string;
+
+  // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	$: console.log({ user });
 	let products: any[];
 
 	async function loadProducts(userId: string) {
-		const response = await fetch(`${PRIVATE_SERVER_URL}/products/user/random/${userId}`);
+		const response = await fetch(`${serverUrl}/products/user/random/${userId}`);
 		const data = await response.json();
 		products = data;
 		console.log({ products });

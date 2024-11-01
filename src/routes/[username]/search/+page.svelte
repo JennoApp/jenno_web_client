@@ -3,13 +3,27 @@
   import {onMount} from 'svelte'
   import Card from '$lib/components/Card.svelte';
   import { page } from '$app/stores'
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	let productsSearch: any[] = [];
 
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
+
 	const fetchSearchProducts = async (param: string) => {
 		const response = await fetch(
-			`${PRIVATE_SERVER_URL}/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
+			`${serverUrl}/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
 		);
 
 		const { data } = await response.json();

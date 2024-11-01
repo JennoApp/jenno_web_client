@@ -7,9 +7,23 @@
 	import * as m from '$paraglide/messages';
 	import type { PageServerData } from './$types';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: PageServerData;
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	$: console.log({ data });
 
@@ -20,21 +34,21 @@
 	let numberOfSales = 0;
 
 	const getTotalRevenue = async (id: string) => {
-		const result = await fetch(`${PRIVATE_SERVER_URL}/orders/totalrevenue/${id}`);
+		const result = await fetch(`${serverUrl}/orders/totalrevenue/${id}`);
 		const data = await result.json();
 
 		totalRevenue = data;
 	};
 
 	const getNumberOfSales = async (id: string) => {
-		const result = await fetch(`${PRIVATE_SERVER_URL}/orders/numberofsales/${id}`);
+		const result = await fetch(`${serverUrl}/orders/numberofsales/${id}`);
 		const data = await result.json();
 
 		numberOfSales = data;
 	};
 
   async function fetchWallet(walletId: any) {
-		const response = await fetch(`${PRIVATE_SERVER_URL}/wallet/${walletId}`);
+		const response = await fetch(`${serverUrl}/wallet/${walletId}`);
 
 		const data = await response.json();
 		walletData = data;

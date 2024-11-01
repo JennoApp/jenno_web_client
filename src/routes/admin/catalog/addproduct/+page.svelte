@@ -15,12 +15,26 @@
 	import CurrencyInput from '@canutin/svelte-currency-input';
   import { location_data } from '$lib/stores/ipaddressStore'
   import * as m from '$paraglide/messages'
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
 	let especificationsItems: any[] = [];
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	$: if (form?.status === 201) {
 		console.log(`formStatus: ${form.status}`);
@@ -84,7 +98,7 @@
 
 		if (productId !== null) {
 			try {
-				const response = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`)
+				const response = await fetch(`${serverUrl}/products/${productId}`)
 				const productData = await response.json()
 
 				product = productData

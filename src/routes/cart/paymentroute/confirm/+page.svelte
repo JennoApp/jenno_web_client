@@ -18,13 +18,40 @@
 	import * as m from '$paraglide/messages';
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
-  import { PRIVATE_SERVER_URL, PRIVATE_PAYPAL_CLIENTID } from '$env/static/private'
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	let shippingData = $page.data?.user?.shippingInfo;
 
 	onMount(() => {
 		fetchExchangeRate();
+    getPaypalClientId()
 	});
+
+  let paypalClientId: string
+  async function getPaypalClientId() {
+    try {
+      const response = await fetch(`/api/paypal`)
+      const data = await response.json()
+
+      paypalClientId = data.clientId 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
 
 	function getTotalFormatted() {
 		const total = getTotal();
@@ -94,7 +121,7 @@
 	});
 
 	const handleSubmitPayment = async () => {
-		const response = await fetch(`${PRIVATE_SERVER_URL}/payments/stripe`, {
+		const response = await fetch(`${serverUrl}/payments/stripe`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -125,7 +152,7 @@
 	async function paypalInit() {
 		try {
 			paypal = await loadScript({
-				clientId: `${PRIVATE_PAYPAL_CLIENTID}`
+				clientId: paypalClientId
 			});
 		} catch (error) {
 			console.error('failed to load the Paypal SDK script', error);

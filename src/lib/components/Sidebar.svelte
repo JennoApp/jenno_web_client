@@ -1,11 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import * as Tooltip from '$lib/components/ui/tooltip'
-  import { toast } from 'svelte-sonner'
   import * as m from '$paraglide/messages'
 	import { languageTag } from '$paraglide/runtime';
-	import { resolveRoute } from '$app/paths';
-	import { goto } from '$app/navigation';
 
 	export let closeMenu = true
 

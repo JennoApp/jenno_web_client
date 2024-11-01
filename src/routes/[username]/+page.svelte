@@ -8,9 +8,23 @@
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { invalidateAll } from '$app/navigation';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: PageServerData;
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	$: dataStatus = data.status;
 	$: userData = data.userData;
@@ -27,7 +41,7 @@
 		const limit: number = 20;
 		try {
 			const response = await fetch(
-				`${PRIVATE_SERVER_URL}/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`
+				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`
 			);
 			const { data } = await response.json();
 
@@ -53,7 +67,7 @@
 		if ($page.data.isSession) {
 			try {
 				const followingResponse = await fetch(
-					`${PRIVATE_SERVER_URL}/users/following/${customerId}`,
+					`${serverUrl}/users/following/${customerId}`,
 					{
 						method: 'POST',
 						headers: {

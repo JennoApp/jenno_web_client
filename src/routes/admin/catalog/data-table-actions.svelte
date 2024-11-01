@@ -4,12 +4,26 @@
 	import { MoreHorizontal } from 'lucide-svelte';
   import { goto, invalidateAll } from '$app/navigation'
   import { toast } from 'svelte-sonner'
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let id: string;
 
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
+
   const deleteProduct = async (id: any) => {
-    const response = await fetch(`${PRIVATE_SERVER_URL}/products/${id}`, {
+    const response = await fetch(`${serverUrl}/products/${id}`, {
       method: 'DELETE'
     })
 

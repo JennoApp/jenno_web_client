@@ -4,7 +4,21 @@
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	async function createOrders() {
 		const items = $cartItems;
@@ -45,7 +59,7 @@
 							selectedOptions: item.selectedOptions
 						};
 
-						const response = await fetch(`${PRIVATE_SERVER_URL}/orders`, {
+						const response = await fetch(`${serverUrl}/orders`, {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'

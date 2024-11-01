@@ -19,12 +19,27 @@
 	import { addToCart } from '$lib/stores/cartStore';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { toast } from 'svelte-sonner';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: CardData;
 
 	let profileImg = '';
 	let openDialogreview = false;
+
+  // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
+
 
 	onMount(async () => {
 		if (!data || !data?.user) {
@@ -35,7 +50,7 @@
 		}
 
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/users/getprofileimg/${data?.user}`);
+			const response = await fetch(`${serverUrl}/users/getprofileimg/${data?.user}`);
 
 			const userData = await response.json();
 			console.log({ userData });

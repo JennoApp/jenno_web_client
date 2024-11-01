@@ -6,7 +6,6 @@
 	import { page } from '$app/stores';
 	import { location_data, ip_address } from '$lib/stores/ipaddressStore';
 	import { goto } from '$app/navigation';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	$: console.log({ $ip_address });
 	export let data: PageServerData;
@@ -16,11 +15,26 @@
 
 	$: console.log({ data });
 
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
+
 	////////
 	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
-		const response = await fetch(`${PRIVATE_SERVER_URL}/products?page=${pageload + 1}`);
+		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}`);
 
 		const newData = await response.json();
 
@@ -71,7 +85,7 @@
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/products/categories/random?limit=${10}`);
+			const response = await fetch(`${serverUrl}/products/categories/random?limit=${10}`);
 
 			if (response.ok) {
 				const data = await response.json();

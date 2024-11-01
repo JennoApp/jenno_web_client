@@ -11,11 +11,25 @@
 	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 	import { format } from 'timeago.js';
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 	export let data: PageData;
 
 	$: console.log({ token: data.sessionToken });
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
 	let walletData: any;
 	let openDialogAddCart = false;
@@ -28,7 +42,7 @@
 	$: console.log({ userData: $page.data?.user });
 
 	async function fetchWallet(walletId: any) {
-		const response = await fetch(`${PRIVATE_SERVER_URL}/wallet/${walletId}`);
+		const response = await fetch(`${serverUrl}/wallet/${walletId}`);
 
 		const data = await response.json();
 		walletData = data;
@@ -51,7 +65,7 @@
 	async function getPaypalAccount() {
 		try {
 			const response = await fetch(
-				`${PRIVATE_SERVER_URL}/users/getpaypal/${$page.data?.user?._id}`
+				`${serverUrl}/users/getpaypal/${$page.data?.user?._id}`
 			);
 
 			const { account } = await response.json();
@@ -71,7 +85,7 @@
 	async function handleSubmitAddPaypalAccount() {
 		try {
 			const response = await fetch(
-				`${PRIVATE_SERVER_URL}/users/paypalaccount/${$page.data.user._id}`,
+				`${serverUrl}/users/paypalaccount/${$page.data.user._id}`,
 				{
 					method: 'PATCH',
 					headers: {
@@ -101,7 +115,7 @@
   async function handleRemovePaypalAccount() {
 		try {
 			const response = await fetch(
-				`${PRIVATE_SERVER_URL}/users/removepaypalaccount/${$page.data.user._id}`,
+				`${serverUrl}/users/removepaypalaccount/${$page.data.user._id}`,
 				{
 					method: 'DELETE'	
 				}
@@ -200,7 +214,7 @@
 
 			console.log('Datos enviados:', { account, formattedAmount, formattedAmountUsd });
 
-			const response = await fetch(`${PRIVATE_SERVER_URL}/wallet/withdraw/${account}`, {
+			const response = await fetch(`${serverUrl}/wallet/withdraw/${account}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -239,7 +253,7 @@
 
 	async function getWithdrawals(walletId: string) {
 		try {
-			const response = await fetch(`${PRIVATE_SERVER_URL}/wallet/getwithdrawals/${walletId}`);
+			const response = await fetch(`${serverUrl}/wallet/getwithdrawals/${walletId}`);
 
 			if (response.ok) {
 				const data = await response.json();
@@ -261,7 +275,7 @@
 	async function getWithdrawalsPaypalDetails(batchId: any) {
 		try {
 			const response = await fetch(
-				`${PRIVATE_SERVER_URL}/wallet/getPaypalPayoutDetails/${batchId?.payoutBatchId}`
+				`${serverUrl}/wallet/getPaypalPayoutDetails/${batchId?.payoutBatchId}`
 			);
 			if (response.ok) {
 				const data = await response.json();

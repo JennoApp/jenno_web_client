@@ -1,13 +1,27 @@
 <script lang="ts">
   import { toast } from 'svelte-sonner'
-  import { PRIVATE_SERVER_URL } from '$env/static/private'
 
   let email: string = ''
+
+   // Obtener url del servidor
+  let serverUrl: string
+  async function getServerUrl() {
+    try {
+      const response = await fetch(`/api/server`)
+      const data = await response.json()
+
+      serverUrl = data.server_url 
+    } catch (error) {
+      console.error('Error al solicitar Paypal Id')
+    }
+  }
+
+  $: getServerUrl()
 
   async function handleForm() {
     console.log({email})
     try {
-      const response = await fetch(`${PRIVATE_SERVER_URL}/users/forgotpassword`, {
+      const response = await fetch(`${serverUrl}/users/forgotpassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
