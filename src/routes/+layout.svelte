@@ -68,7 +68,7 @@
 	const getLocationData = async (ip: string) => {
 		try {
 			const response = await fetch(
-				`http://api.positionstack.com/v1/reverse?access_key=d75a3f286bf6b305d2c90a844db78915&query=4.7507498,-74.0446888&country_module=1&limit=1`
+				`https://api.positionstack.com/v1/reverse?access_key=d75a3f286bf6b305d2c90a844db78915&query=4.7507498,-74.0446888&country_module=1&limit=1`
 			);
 			if (!response.ok) {
 				throw new Error(`Failed to fetch location data: ${response.status}`);

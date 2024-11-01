@@ -1,6 +1,7 @@
 import { io } from 'socket.io-client'
+import { PRIVATE_SOCKET_URL } from '$env/static/private'
 
-const socket = io("ws://localhost:3000")
+const socket = io(`wss:${PRIVATE_SOCKET_URL}`)
 
 
 export default socket
