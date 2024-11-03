@@ -19,11 +19,11 @@
 	import { redirect } from '@sveltejs/kit';
   import { page } from '$app/stores'
 
-	onMount(() => {
-    socket.on("connect", () => {
-      console.log("Successful connect to socket")
-    })
-  })
+	// onMount(() => {
+  //   socket.on("connect", () => {
+  //     console.log("Successful connect to socket")
+  //   })
+  // })
 
 
 	$: {
