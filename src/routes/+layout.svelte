@@ -13,7 +13,6 @@
 		location_data
 	} from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
-	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { goto } from '$app/navigation';
 	import { redirect } from '@sveltejs/kit';
@@ -37,7 +36,7 @@
     }
   }
 
-  $: getLocationAccessKey()
+  // $: getLocationAccessKey()
 
 	$: {
 		setupTheme();
@@ -92,14 +91,17 @@
 		}
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
-			getLocationData(data.clientAddress as string, locationAccessKey);
+
+      await getLocationAccessKey()
+      if (locationAccessKey) {
+        await getLocationData(data.clientAddress as string, locationAccessKey);
+      }	
 		} else {
 			console.log('Using stored location data', storedLocationData);
 		}
-
 	});
 
 	// onMount(() => {
