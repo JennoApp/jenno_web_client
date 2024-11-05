@@ -14,7 +14,6 @@
 	} from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
 	import { ParaglideJS } from '@inlang/paraglide-sveltekit';
-	// import { i18n } from '$lib/i18n';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { goto } from '$app/navigation';
 	import { redirect } from '@sveltejs/kit';
@@ -25,6 +24,18 @@
   //     console.log("Successful connect to socket")
   //   })
   // })
+
+  let locationAccessKey: string
+  async function getLocationAccessKey() {
+    try {
+      const response = await fetch(`/api/location`)
+      const data = await response.json()
+
+      locationAccessKey = data.accessKey 
+    } catch (error) {
+      console.error('Error al solicitar el location access key')
+    }
+  }
 
 
 	$: {
@@ -63,10 +74,10 @@
 	$: console.log({ locationData: $location_data });
 	// $: console.log(data.locationData)
 
-	const getLocationData = async (ip: string) => {
+	const getLocationData = async (ip: string, access_key: string) => {
 		try {
 			const response = await fetch(
-				`https://api.positionstack.com/v1/reverse?access_key=d75a3f286bf6b305d2c90a844db78915&query=${ip}&country_module=1&limit=1`
+				`https://api.positionstack.com/v1/reverse?access_key=${access_key}&query=${ip}&country_module=1&limit=1`
 			);
 			if (!response.ok) {
 				throw new Error(`Failed to fetch location data: ${response.status}`);
@@ -80,39 +91,15 @@
 		}
 	};
 
-	// $: if (!storedLocationData || storedIp !== data.clientAddress) {
-	//     getLocationData(data.clientAddress as string)
-
-	//   // if (!storedLocationData || storedIp !== data.clientAddress) {
-	//     // getLocationData(data.clientAddress as string)
-	//   // }
-	//   // addLocationData(locationData)
-	// }
-
-	// let country: string = '';
-	// if ($location_data) {
-	// 	country = $location_data.data[0].country_module.flag;
-	// 	if (country === 'co') {
-	// 		console.log('hola colombia');
-	// 	}
-	// }
-
-	// $: console.log(country)
-
 	onMount(() => {
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
-			getLocationData(data.clientAddress as string);
+			getLocationData(data.clientAddress as string, locationAccessKey);
 		} else {
 			console.log('Using stored location data', storedLocationData);
 		}
 
-		//   if ($location_data) {
-		// 	const country = $location_data.data[0].country_module.flag || ''
-		// 	if (country === 'co') {
-		// 		console.log('hola colombia');
-		// 	}
-		// }
+    getLocationAccessKey()
 	});
 
 	// onMount(() => {
@@ -152,9 +139,9 @@
    <meta property="og:url" content={$page.url.href}>
 </svelte:head>
 
-<!-- <ParaglideJS {i18n}> -->
+
 <Toaster richColors theme="dark" duration={3000} />
 <Navigation>
 	<slot />
 </Navigation>
-<!-- </ParaglideJS> -->
+
