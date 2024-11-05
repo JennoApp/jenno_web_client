@@ -37,6 +37,7 @@
     }
   }
 
+  $: getLocationAccessKey()
 
 	$: {
 		setupTheme();
@@ -99,7 +100,6 @@
 			console.log('Using stored location data', storedLocationData);
 		}
 
-    getLocationAccessKey()
 	});
 
 	// onMount(() => {
