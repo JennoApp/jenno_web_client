@@ -1,19 +1,15 @@
 <script lang="ts">
-	// import { BACKEND_URl } from '$env/static/public'
-	import type { PageServerData, RequestEvent } from './$types';
+	import type { PageServerData } from './$types';
 	import Card from '$lib/components/Card.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { location_data, ip_address } from '$lib/stores/ipaddressStore';
 	import { goto } from '$app/navigation';
 
-	$: console.log({ $ip_address });
+
 	export let data: PageServerData;
 
 	let products: any[] = data.products;
 	let pageload = 1;
-
-	$: console.log({ data });
 
    // Obtener url del servidor
   let serverUrl: string
@@ -69,16 +65,6 @@
 	});
 	/////////
 
-	const list = [
-		'All',
-		'Electrodomesticos',
-		'Electronica',
-		'Salud',
-		'Libros',
-		'Entretenimiento',
-		'Automotriz'
-	];
-
 	let randomCategories: { category: string }[] = [];
 	let selectedCategory: string | null = $page.url.searchParams.get('category');
 
@@ -123,28 +109,6 @@
 		getRandomCategories();
 	});
 
-	// // country setup
-	// let country = ''
-
-	// $: {
-	//   if ($location_data && $location_data.data && $location_data.data[0].country) {
-	//     country = $location_data.data[0].country
-	//   }
-	// }
-
-	// onMount(() => {
-	//   if (country) {
-	//     goto(`/?country=${country}`, { replaceState: true })
-	//   }
-	// })
-
-	// $: {
-	//   navigator.geolocation.getCurrentPosition((location) => {
-	//     console.log(location.coords.latitude)
-	//     console.log(location.coords.longitude)
-	//     console.log(location.coords.accuracy)
-	//   })
-	// }
 </script>
 
 <svelte:head>

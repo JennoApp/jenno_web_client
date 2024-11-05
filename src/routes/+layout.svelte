@@ -71,8 +71,6 @@
 	// 	// addLocationData(data.locationData as Object);
 	// }
 
-	$: console.log({ locationData: $location_data });
-	// $: console.log(data.locationData)
 
 	const getLocationData = async (ip: string, access_key: string) => {
 		try {
