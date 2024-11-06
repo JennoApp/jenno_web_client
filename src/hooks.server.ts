@@ -19,7 +19,6 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
   if (session) {
     try {
       const decodedToken = jwt.verify(session, 'secretKey_crb331')
-      console.log({ decodedToken })
 
       if (decodedToken?.exp * 1000 < Date.now()) {
         event.cookies.delete('session', {
@@ -30,7 +29,6 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
       } else {
         const result = await fetch(`${PRIVATE_SERVER_URL}/users/${decodedToken.sub}`)
         const userData = await result.json()
-        console.log({ userData })
 
         // asignar la informacion del usuario a event.locals
         event.locals.user = userData
@@ -39,7 +37,7 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
 
       event.locals.session = session
     } catch (error: any) {
-      console.log("Error al verificar el token JWT:", error.message)
+      console.error("Error al verificar el token JWT:", error.message)
 
       event.cookies.set('session', '', { path: '/', maxAge: 0 })
       event.locals.isSession = false

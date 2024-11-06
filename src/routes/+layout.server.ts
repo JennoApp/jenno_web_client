@@ -1,7 +1,7 @@
 import type { LayoutServerLoad } from './$types'
 
 export const load: LayoutServerLoad = async ({ locals, getClientAddress, depends }) => {
-  depends('app:locale','app:auth')
+  depends('app:locale','app:user')
 
   let requestIp
   let locationData = {}

@@ -12,7 +12,7 @@
 		removeFromCart,
 		getTotal
 	} from '$lib/stores/cartStore';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
@@ -92,17 +92,13 @@
 
 	//verifica si la sesion de usuario esta activa
 	let userInfo: any
-  let sessionExpired: any
-	$: console.log({ sessionExpired });
 
-  onMount(() => {
-    const unsubscribe = page.subscribe(($page) => {
-      userInfo = $page.data.user
-      sessionExpired = $page.data.sessionExpired
-    })
-    return () => unsubscribe()
-  })
+	// $: sessionExpired = $page.data.sessionExpired;
+	// $: console.log({ sessionExpired });
 
+  $: if ($page.data.sessionExpired === false) {
+     userInfo = $page.data.user
+  }
 
 	// Estado de sidebar, por defecto es true,
 	// y funcion que actualiza este estado
