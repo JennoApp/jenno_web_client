@@ -91,14 +91,10 @@
 	];
 
 	//verifica si la sesion de usuario esta activa
-	let userInfo: any
+	let userInfo: any = $page.data.user
 
-	// $: sessionExpired = $page.data.sessionExpired;
-	// $: console.log({ sessionExpired });
-
-  $: if ($page.data.sessionExpired === false) {
-     userInfo = $page.data.user
-  }
+	$: sessionExpired = $page.data.sessionExpired;
+	$: console.log({ sessionExpired });
 
 	// Estado de sidebar, por defecto es true,
 	// y funcion que actualiza este estado
