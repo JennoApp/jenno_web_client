@@ -14,7 +14,7 @@
 	} from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { redirect } from '@sveltejs/kit';
   import { page } from '$app/stores'
 
@@ -100,6 +100,8 @@
 		} else {
 			console.log('Using stored location data', storedLocationData);
 		}
+
+    invalidateAll()
 	});
 
 	// onMount(() => {
