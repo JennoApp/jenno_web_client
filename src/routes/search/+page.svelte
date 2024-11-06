@@ -39,7 +39,18 @@
 </script>
 
 {#if productsSearch.length === 0}
-	<h1>No ahi productos que coincidan con la busquedad: "{$search}"</h1>	
+  <div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+		<iconify-icon
+			icon="mdi:card-search"
+			height="5rem"
+			width="5rem"
+			class="text-[#707070] mb-4"
+		/>
+		<p class="text-lg text-[#707070] mb-2">No hay productos que coincidan con tu búsqueda: "{$search}"</p>
+		<p class="text-lg text-[#707070]">
+			Intenta con otros términos o categorías para encontrar lo que buscas.
+		</p>
+	</div>
 {/if}
 
 <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0">
