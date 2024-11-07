@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { paraglide } from "@inlang/paraglide-sveltekit/vite"
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
 	plugins: [
     paraglide({
       project: "./project.inlang",
@@ -12,10 +12,5 @@ export default defineConfig(({ mode }) => ({
 	],
 	ssr: {
 		noExternal: ['three']
-	},
-  resolve: {
-    alias: {
-      $img: mode === 'production' ? './static' : '..'
-    }
-  }
-}))
+	}
+})

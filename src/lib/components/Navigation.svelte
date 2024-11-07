@@ -173,7 +173,7 @@
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<!-- Logo  -->
-							<img class="w-5 h-2 object-cover" src="$img/logo-dark.png" alt="logo" />
+							<img class="object-cover" src="/logo-dark.png" alt="logo" />
 							{#if $location_data !== undefined}
 								<span
 									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
