@@ -2,7 +2,7 @@ import { io } from 'socket.io-client'
 import { PUBLIC_SOCKET_URL } from '$env/static/public'
 
 const socket = io(`https://${PUBLIC_SOCKET_URL}`, {
-  transports: ["websocket"]
+  transports: ["polling"]
 })
 
 
