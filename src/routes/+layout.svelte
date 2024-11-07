@@ -12,17 +12,29 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { onMount } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { redirect } from '@sveltejs/kit';
+	import { invalidateAll } from '$app/navigation';
   import { page } from '$app/stores'
 
-	// onMount(() => {
-  //   socket.on("connect", () => {
-  //     console.log("Successful connect to socket")
-  //   })
-  // })
+  // SocketIO global setup
+  setContext('socket', socket)
+
+  socket.on('connect', () => {
+    console.log('Connected to server')
+    if ($page.data.user?._id) {
+      socket.emit('removeUser', $page.data.user._id)
+      socket.emit('addUser', $page.data.user._id)
+    }
+  })
+
+  socket.on('disconnect',  () => {
+    console.log('Disconnected from server')
+    if ($page.data.user?._id) {
+      socket.emit('removeUser',  $page.data.user?._id)
+    }
+  })
+
 
   let locationAccessKey: string
   async function getLocationAccessKey() {
@@ -36,7 +48,6 @@
     }
   }
 
-  // $: getLocationAccessKey()
 
 	$: {
 		setupTheme();

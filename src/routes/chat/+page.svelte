@@ -2,88 +2,91 @@
 	import Conversation from '$lib/components/Conversation.svelte';
 	import Message from '$lib/components/Message.svelte';
 	import { page } from '$app/stores';
-	import { io, type Socket } from 'socket.io-client';
-  import * as m from '$paraglide/messages'
+	import type { Socket } from 'socket.io-client';
+	import * as m from '$paraglide/messages';
+	import { getContext, onMount, afterUpdate } from 'svelte';
 
+	// Obtener el socket del contexto
+	const socket: Socket = getContext('socket');
+
+	// Estados y variables
 	let conversations: any[];
 	let messages: any[] = [];
 	let currentChat: any = null;
 	let newMessage: string = '';
-	let socket: Socket;
 	let arrivalMessage: any = null;
+	let element: HTMLDivElement;
+	let isSmallview: boolean = false;
+	let friendId: string;
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-  $: getServerUrl()
-
-	$: {
-		socket = io(`${serverUrl}`);
-		socket?.on('connect', () => {
-			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
-			socket?.emit('addUser', $page.data.user._id); // se agrega el usuario la nueva conexion
-			console.log('Successful connect socket');
-		});
-
-		socket?.on('disconnect', () => {
-			socket?.emit('removeUser', $page.data.user._id); // si el usuario existe es eliminado
-			console.log('Succesful disconnect socket');
-		});
-
-		socket?.on('getMessage', (data) => {
-			arrivalMessage = {
-				sender: data.senderId,
-				text: data.text,
-				createAt: Date.now()
-			};
-		});
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Server Url');
+		}
 	}
 
-	$: console.log(socket);
-	$: console.log({ conversations });
-	$: console.log({ arrivalMessage });
+	onMount(getServerUrl)
 
+  // Configurar eventos de socket
+	onMount(() => {
+		if (socket) {
+			socket.on('getMessage', (data: any) => {
+				arrivalMessage = {
+					sender: data.senderId,
+					text: data.text,
+					createAt: Date.now()
+				};
+			});
+		}
+	});
+
+  $: if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
+		messages = [...messages, arrivalMessage];
+	}
+
+  // Obtener conversaciones
 	const getConversations = async (userid: string) => {
 		try {
 			const response = await fetch(`${serverUrl}/chat/conversations/${userid}`);
 			const data = await response.json();
-			conversations = data.conversation;
-			// console.log(conversations);
-			return data.conversation;
-		} catch (error) {
-			console.log(error);
-		}
-	};
 
+			conversations = data.conversation;	
+		} catch (error) {
+			console.error('Error obteniendo conversaciones:', error)
+		}
+	}
+
+  // Obtener mensajes de la conversacion actual
 	const getMessages = async (currentChatId: string) => {
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
 			const data = await response.json();
+
 			messages = [...data?.messages];
-			return data;
-		} catch (err) {
-			console.log(err);
+		} catch (error) {
+			console.error('Error obteniendo mensajes:', error)
 		}
 	};
 
-	$: {
-		getConversations($page.data.user._id).then((data) => console.log(data));
+	$: if ($page.data.user?._id) {
+		getConversations($page.data.user._id)
 	}
 
 	$: if (currentChat) {
-		getMessages(currentChat?._id).then((data) => console.log(data));
+		getMessages(currentChat?._id)
+    friendId = currentChat.members.find((member: any) => member !== $page.data.user._id)
 	}
 
+
+  // Enviar mensaje
 	const handleSendMessage = async () => {
 		const message = {
 			sender: $page.data.user._id,
@@ -91,7 +94,7 @@
 			conversationId: currentChat._id
 		};
 
-		const receiverId = currentChat?.members.find((member) => member !== $page.data.user._id);
+		const receiverId = currentChat?.members.find((member: any) => member !== $page.data.user._id);
 
 		socket?.emit('sendMessage', {
 			senderId: $page.data.user._id,
@@ -122,46 +125,23 @@
 		}
 	};
 
-	$: console.log({ messages });
-	$: console.log({ currentChat });
+	// $: console.log({ messages });
+	// $: console.log({ currentChat });
 
-	$: if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
-		messages = [...messages, arrivalMessage];
-	}
-
-	import { afterUpdate } from 'svelte';
-
-	// get element
-	let element: HTMLDivElement;
-
-	const scrollToBottom = async (node: HTMLDivElement) => {
+	
+  // Desplazar hacia abajo en los mensajes
+	const scrollToBottom = (node: HTMLDivElement) => {
 		node?.scroll({ top: node.scrollHeight, behavior: 'smooth' });
-	};
+	}
 
 	afterUpdate(() => {
-		if (messages) scrollToBottom(element);
-	});
+		if (messages && element) scrollToBottom(element);
+	})	
 
-	$: if (messages && element) {
-		scrollToBottom(element);
-	}
-
-	$: console.log({ element });
-
-	////
-	let isSmallview: boolean = false;
-  
-  let friendId: string
-
-  $: if (currentChat !== null) {
-    friendId = currentChat.members.find((member: any) => member !== $page.data.user._id)
-    console.log(friendId)
-  }
 </script>
 
 <div class="flex m-0 p-0">
 	<!-- ChatMenu -->
-
 	<div
 		class={`w-full md:w-1/4 top-14 h-[calc(100vh-56px)] ${isSmallview === true ? 'hidden md:block' : ''}`}
 	>
@@ -211,7 +191,7 @@
 					<!-- Chatbox Body -->
 					<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
 						{#each messages as message}
-							<Message own={message?.sender === $page.data.user._id} friendId={friendId} {message} />
+							<Message own={message?.sender === $page.data.user._id} {friendId} {message} />
 						{/each}
 					</div>
 
