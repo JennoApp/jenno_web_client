@@ -1,9 +1,7 @@
 import { io } from 'socket.io-client'
-import { PUBLIC_SOCKET_URL } from '$env/static/public'
+import { PRIVATE_SERVER_URL } from '$env/static/private'
 
-const socket = io(`https://${PUBLIC_SOCKET_URL}`, {
-  transports: ["polling"]
-})
+const socket = io(`${PRIVATE_SERVER_URL}`)
 
 
 export default socket
