@@ -173,7 +173,12 @@
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<!-- Logo  -->
-							<img class="object-cover" src="/logo-dark.png" alt="logo" />
+							{#if $theme === 'light'}
+								<img class="h-6 object-cover" src="/logo-light.png" alt="logo" />
+							{:else}
+								<img class="h-6 object-cover" src="/logo-dark.png" alt="logo" />
+							{/if}
+
 							{#if $location_data !== undefined}
 								<span
 									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"

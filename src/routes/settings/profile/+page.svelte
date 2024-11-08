@@ -37,7 +37,7 @@
 		<div class="flex items-center">
 			<div class="w-36">
 				{#if data?.user?.profileImg !== ''}
-					<div class="flex justify-center items-center h-24 w-24 ml-5 bg-[#202020] rounded-full">
+					<div class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full">
 						<img
 							src={`${data?.user?.profileImg}`}
 							alt={`${data?.user?.username}`}
@@ -45,7 +45,7 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex justify-center items-center h-24 w-24 ml-5 bg-[#202020] rounded-full">
+					<div class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full">
 						<iconify-icon icon="mdi:user" height="3rem" width="3rem" class="text-[#707070]" />
 					</div>
 				{/if}
@@ -53,7 +53,7 @@
 
 			<Input type="file" name="profile" class="ml-10" />
 		</div>
-		<Button type="submit" class="ml-5 bg-purple-600 hover:bg-purple-700 text-white"
+		<Button type="submit" class="ml-5 bg-purple-600 dark:bg-[#202020] hover:bg-purple-700 dark:hover:bg-[#252525] text-white"
 			>{m.settings_profile_uploadimage_button()}</Button
 		>
 	</form>
