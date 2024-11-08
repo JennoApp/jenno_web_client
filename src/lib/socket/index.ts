@@ -11,7 +11,7 @@ export async function initializeSocket(): Promise<Socket> {
     const serverUrl = data.server_url
 
     socket = io(serverUrl, {
-      transports: ["websocket"]
+      transports: ["websocket", "polling"]
     })
 
     return socket
