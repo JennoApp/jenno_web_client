@@ -1,34 +1,25 @@
-import { io } from 'socket.io-client'
-import { PRIVATE_SERVER_URL } from '$env/static/private'
+import { io, type Socket } from 'socket.io-client'
 
-const socket = io(`${PRIVATE_SERVER_URL}`)
+let socket: Socket | null = null
 
+export async function initializeSocket(): Promise<Socket> {
+  if (socket) return socket
+  
+  try {
+    const response = await fetch('/api/server')
+    const data = await response.json()
+    const serverUrl = data.server_url
 
-export default socket
+    socket = io(serverUrl, {
+      transports: ["websocket"]
+    })
 
-/*
-const users = []
+    return socket
 
-// Función para agregar un nuevo usuario
-const addUser = (userId, socketId) => {
-  // Verificar si el usuario ya existe en el array
-  const existingUser = users.find(user => user.userId === userId);
-  if (!existingUser) {
-    // Agregar el nuevo usuario al array
-    users.push({ userId, socketId });
-    console.log(`Usuario añadido: ${userId}`);
-  } else {
-    console.log(`El usuario ${userId} ya existe.`);
+  } catch (error) {
+    console.error('Error al inicializar el socket:', error)
+    throw error
   }
-};
+}
 
-socket.on("connect", () => {
-  console.log("Successfully connected to socket")
 
-  socket.on("addUser", (userId) => {
-    addUser(userId, socket.id);
-    console.log(users)
-  });
-})
-
-*/

@@ -1,10 +1,9 @@
 <script lang="ts">
-
-  import "../app.css"  
+	import '../app.css';
 	import 'iconify-icon';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { Toaster } from 'svelte-sonner';
-	import socket from '$lib/socket/index';
+	import { initializeSocket } from '$lib/socket/index';
 	import { setupTheme } from '$lib/theme';
 	import {
 		addIpAddress,
@@ -12,42 +11,94 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { onMount, setContext } from 'svelte';
+	import { onMount, setContext, onDestroy } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
-  import { page } from '$app/stores'
+	import { page } from '$app/stores';
+	import type { Socket } from 'socket.io-client';
 
-  // SocketIO global setup
-  setContext('socket', socket)
+	// let socket: Socket | null = null;
 
-  socket.on('connect', () => {
-    console.log('Connected to server')
-    if ($page.data.user?._id) {
-      socket.emit('removeUser', $page.data.user._id)
-      socket.emit('addUser', $page.data.user._id)
-    }
-  })
+	// onMount(async () => {
+	// 	try {
+	// 		socket = await initializeSocket();
 
-  socket.on('disconnect',  () => {
-    console.log('Disconnected from server')
-    if ($page.data.user?._id) {
-      socket.emit('removeUser',  $page.data.user?._id)
-    }
-  })
+	// 		socket.on('connect', () => {
+	// 			console.log('Connected to server');
+	// 			if ($page.data.user?._id) {
+	// 				socket?.emit('removeUser', $page.data.user._id);
+	// 				socket?.emit('addUser', $page.data.user._id);
+	// 			}
+	// 		});
 
+	// 		// SocketIO global setup
+	// 		setContext('socket', socket);
+	// 	} catch (error) {
+	// 		console.error('No se pudo conectar al socket:', error);
+	// 	}
+	// });
 
-  let locationAccessKey: string
-  async function getLocationAccessKey() {
-    try {
-      const response = await fetch(`/api/location`)
-      const data = await response.json()
+	// socket?.on('disconnect', () => {
+	// 	console.log('Disconnected from server');
+	// 	if ($page.data.user?._id) {
+	// 		socket?.emit('removeUser', $page.data.user?._id);
+	// 	}
+	// });
 
-      locationAccessKey = data.accessKey 
-    } catch (error) {
-      console.error('Error al solicitar el location access key')
-    }
-  }
+	let socket: Socket | null = null;
 
+	onMount(async () => {
+		try {
+			socket = await initializeSocket();
+
+			if (socket) {
+				socket?.on('connect', () => {
+					console.log('Connected to server');
+
+					// Asegúrate de verificar que el usuario existe antes de emitir el evento
+					if ($page?.data?.user?._id) {
+						socket?.emit('removeUser', $page.data.user._id);
+						socket?.emit('addUser', $page.data.user._id);
+					}
+				});
+
+				// Configuración de evento de desconexión
+				socket?.on('disconnect', () => {
+					console.log('Disconnected from server');
+					if ($page?.data?.user?._id) {
+						socket?.emit('removeUser', $page.data.user._id);
+					}
+				});
+			} else {
+        console.error('Socket no se pudo inicializar')
+      }
+
+			// Configura el contexto global
+			setContext('socket', socket);
+		} catch (error) {
+			console.error('No se pudo conectar al socket:', error);
+		}
+	});
+
+	// Limpieza de listeners al desmontar el componente
+	onDestroy(() => {
+		if (socket) {
+			socket?.off('connect');
+			socket?.off('disconnect');
+		}
+	});
+
+	let locationAccessKey: string;
+	async function getLocationAccessKey() {
+		try {
+			const response = await fetch(`/api/location`);
+			const data = await response.json();
+
+			locationAccessKey = data.accessKey;
+		} catch (error) {
+			console.error('Error al solicitar el location access key');
+		}
+	}
 
 	$: {
 		setupTheme();
@@ -82,7 +133,6 @@
 	// 	// addLocationData(data.locationData as Object);
 	// }
 
-
 	const getLocationData = async (ip: string, access_key: string) => {
 		try {
 			const response = await fetch(
@@ -104,15 +154,15 @@
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
 
-      await getLocationAccessKey()
-      if (locationAccessKey) {
-        await getLocationData(data.clientAddress as string, locationAccessKey);
-      }	
+			await getLocationAccessKey();
+			if (locationAccessKey) {
+				await getLocationData(data.clientAddress as string, locationAccessKey);
+			}
 		} else {
 			console.log('Using stored location data', storedLocationData);
 		}
 
-    invalidateAll()
+		invalidateAll();
 	});
 
 	// onMount(() => {
@@ -127,7 +177,10 @@
 
 <svelte:head>
 	<title>Jenno</title>
-  <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura.">
+	<meta
+		name="description"
+		content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."
+	/>
 
 	<script>
 		// Immediately set the theme based on localStorage before the page renders
@@ -144,17 +197,18 @@
 		})();
 	</script>
 
-  <!-- Open graph -->
-   <meta property="og:title" content="ShopIn">
-   <meta property="og:description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura.">
-   <meta property="og:type" content="website">
-   <meta property="og:site_name" content="ShopIn">
-   <meta property="og:url" content={$page.url.href}>
+	<!-- Open graph -->
+	<meta property="og:title" content="ShopIn" />
+	<meta
+		property="og:description"
+		content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."
+	/>
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="ShopIn" />
+	<meta property="og:url" content={$page.url.href} />
 </svelte:head>
-
 
 <Toaster richColors theme="dark" duration={3000} />
 <Navigation>
 	<slot />
 </Navigation>
-
