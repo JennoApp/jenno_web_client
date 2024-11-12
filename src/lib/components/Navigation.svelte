@@ -125,8 +125,9 @@
 
 			if (restrictedPaths.some((path) => currentPath.startsWith(path))) {
 				setTimeout(() => {
-					goto('/');
-          location.reload()
+					goto('/', { replaceState: true}).then(() => {
+            location.reload()
+          }) 
 				}, 100)
 			} else {
         location.reload()
