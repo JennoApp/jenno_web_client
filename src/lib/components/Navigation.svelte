@@ -116,7 +116,7 @@
 		});
 
 		if (response.ok) {
-			invalidateAll();
+			// invalidateAll();
 			toast.success('Sesión Cerrada');
 
 			// Redirige a la pagina principal si la ruta actual es "restringida"
@@ -126,8 +126,11 @@
 			if (restrictedPaths.some((path) => currentPath.startsWith(path))) {
 				setTimeout(() => {
 					goto('/');
-				}, 100);
-			}
+          location.reload()
+				}, 100)
+			} else {
+        location.reload()
+      }
 		} else {
 			toast.error('No se ha podido cerrar sesion');
 		}
