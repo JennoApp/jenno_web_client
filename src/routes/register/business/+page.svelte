@@ -5,13 +5,14 @@
 	import { goto } from '$app/navigation';
 	import * as Select from '$lib/components/ui/select';
 	import { countryList } from '$lib/utils/countries';
-  import { location_data } from '$lib/stores/ipaddressStore'
+	import { location_data } from '$lib/stores/ipaddressStore';
+	import * as m from '$paraglide/messages';
 
 	export let form: ActionData;
 
-  let selectedCountry: any = ''
+	let selectedCountry: any = '';
 
-  $: console.log($location_data?.data[0]?.country_module?.currencies[0]?.code)
+	$: console.log($location_data?.data[0]?.country_module?.currencies[0]?.code);
 
 	$: console.log(form?.success);
 
@@ -19,12 +20,46 @@
 		toast.success('Usuario creado!');
 		goto('/');
 	}
+
+	function togglePasswordVisibility() {
+		const passwordInput = document.getElementById('password') as HTMLInputElement;
+		const eyeIcon = document.getElementById('eyeIcon');
+
+		if (passwordInput?.type === 'password') {
+			passwordInput.type = 'text';
+			if (eyeIcon !== null) {
+				eyeIcon.textContent = '🙈'; // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
+			}
+		} else {
+			passwordInput.type = 'password';
+			if (eyeIcon !== null) {
+				eyeIcon.textContent = '👁️'; // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta
+			}
+		}
+	}
+
+	function toggleConfirmPasswordVisibility() {
+		const passwordInput = document.getElementById('confirm-password') as HTMLInputElement;
+		const eyeIcon = document.getElementById('confirm-eyeIcon');
+
+		if (passwordInput?.type === 'password') {
+			passwordInput.type = 'text';
+			if (eyeIcon !== null) {
+				eyeIcon.textContent = '🙈'; // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
+			}
+		} else {
+			passwordInput.type = 'password';
+			if (eyeIcon !== null) {
+				eyeIcon.textContent = '👁️'; // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta
+			}
+		}
+	}
 </script>
 
 <div class="flex flex-col items-center justify-center h-screen w-full">
 	<!-- Header -->
 	<h1 class="text-3xl font-semibold dark:text-gray-200 tracking-tight mb-10">
-		Crear Usuario Empresa
+		{m.register_business_title()}
 	</h1>
 
 	<!-- Form -->
@@ -32,7 +67,7 @@
 		<!-- Businessname Input -->
 		<div class="flex flex-col">
 			<label for="businessname" class="text-base dark:text-gray-200 font-medium"
-				>Businnes name</label
+				>{m.register_business_username_label()}</label
 			>
 			<input
 				type="text"
@@ -51,7 +86,9 @@
 
 		<!-- Email Input -->
 		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium">Email</label>
+			<label for="email" class="text-base dark:text-gray-200 font-medium"
+				>{m.register_business_email_label()}</label
+			>
 			<input
 				type="email"
 				name="email"
@@ -69,20 +106,24 @@
 
 		<!-- Country Input -->
 		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium">Country</label>
-			<Select.Root onSelectedChange={(v) => {
-        selectedCountry = v?.value
-        }}>
+			<label for="email" class="text-base dark:text-gray-200 font-medium"
+				>{m.register_business_country_label()}</label
+			>
+			<Select.Root
+				onSelectedChange={(v) => {
+					selectedCountry = v?.value;
+				}}
+			>
 				<Select.Trigger>
-					<Select.Value placeholder="Escoge un Pais"/>
-				</Select.Trigger>	
-					<Select.Content class="overflow-y-auto max-h-[20rem]">
-						{#each countryList as country}
-							<Select.Item value={`${country}`}>{country}</Select.Item>
-						{/each}
-					</Select.Content>
+					<Select.Value placeholder="Escoge un Pais" />
+				</Select.Trigger>
+				<Select.Content class="overflow-y-auto max-h-[20rem]">
+					{#each countryList as country}
+						<Select.Item value={`${country}`}>{country}</Select.Item>
+					{/each}
+				</Select.Content>
 			</Select.Root>
-      <input hidden name="country" bind:value={selectedCountry}>
+			<input hidden name="country" bind:value={selectedCountry} />
 
 			<label for="country">
 				{#if form?.errors?.country}
@@ -92,12 +133,14 @@
 		</div>
 
 		<!-- Legal information -->
-		<h2 class="font-semibold text-lg mt-1">Legal Information</h2>
+		<h2 class="font-semibold text-lg mt-1">{m.register_business_legal_title()}</h2>
 		<div class="border border-white my-1 p-2 rounded-md">
 			<div class="flex">
 				<!-- Name Input -->
 				<div class="flex flex-col w-1/2">
-					<label for="name" class="text-base dark:text-gray-200 font-medium">Name</label>
+					<label for="name" class="text-base dark:text-gray-200 font-medium"
+						>{m.register_business_legal_name_label()}</label
+					>
 					<input
 						type="text"
 						name="name"
@@ -115,7 +158,9 @@
 
 				<!-- Lastname Input -->
 				<div class="flex flex-col w-1/2">
-					<label for="lastname" class="text-base dark:text-gray-200 font-medium">Lastname</label>
+					<label for="lastname" class="text-base dark:text-gray-200 font-medium"
+						>{m.register_business_legal_lastname_label()}</label
+					>
 					<input
 						type="text"
 						name="lastname"
@@ -136,7 +181,9 @@
 			<!-- Tax Id Input -->
 			<div class="flex">
 				<div class="flex flex-col w-full">
-					<label for="taxid" class="text-base dark:text-gray-200 font-medium">Tax Id</label>
+					<label for="taxid" class="text-base dark:text-gray-200 font-medium"
+						>{m.register_business_legal_taxid_label()}</label
+					>
 					<input
 						type="string"
 						name="taxid"
@@ -156,14 +203,30 @@
 
 		<!-- Password Input -->
 		<div class="flex flex-col">
-			<label for="password" class="text-base dark:text-gray-200 font-medium">Password</label>
-			<input
-				type="password"
-				name="password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.password
-					? 'border border-red-500'
-					: ''}"
-			/>
+			<label for="password" class="text-base dark:text-gray-200 font-medium"
+				>{m.register_business_password_label()}</label
+			>
+			<div class="relative">
+				<!-- Input de contraseña -->
+				<input
+					type="password"
+					id="password"
+					name="password"
+					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form
+						?.errors?.password
+						? 'border border-red-500'
+						: ''}"
+				/>
+
+				<!-- Icono de ojo -->
+				<button
+					type="button"
+					class="absolute right-2 top-1/2 transform -translate-y-1/2"
+					on:click={() => togglePasswordVisibility()}
+				>
+					<span id="eyeIcon">👁️</span>
+				</button>
+			</div>
 			<label for="password">
 				{#if form?.errors?.password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.password[0]}</span>
@@ -174,16 +237,29 @@
 		<!-- verified Password Input -->
 		<div class="flex flex-col">
 			<label for="verified_password" class="text-base dark:text-gray-200 font-medium"
-				>Password confirmation</label
+				>{m.register_business_password_confirm()}</label
 			>
-			<input
-				type="password"
-				name="verified_password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors
-					?.verified_password
-					? 'border border-red-500'
-					: ''}"
-			/>
+			<div class="relative">
+				<!-- Input de contraseña -->
+				<input
+					type="password"
+					id="confirm-password"
+					name="password"
+					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form
+						?.errors?.password
+						? 'border border-red-500'
+						: ''}"
+				/>
+
+				<!-- Icono de ojo -->
+				<button
+					type="button"
+					class="absolute right-2 top-1/2 transform -translate-y-1/2"
+					on:click={() => toggleConfirmPasswordVisibility()}
+				>
+					<span id="confirm-eyeIcon">👁️</span>
+				</button>
+			</div>
 			<label for="verified_password">
 				{#if form?.errors?.verified_password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.verified_password[0]}</span>
@@ -191,23 +267,24 @@
 			</label>
 		</div>
 
-    <!-- currency Input hidden -->
-    <input type="text" name="currency" class="hidden" value={$location_data?.data[0]?.country_module?.currencies[0]?.code}>
+		<!-- currency Input hidden -->
+		<input
+			type="text"
+			name="currency"
+			class="hidden"
+			value={$location_data?.data[0]?.country_module?.currencies[0]?.code}
+		/>
 		<!-- Login Submit -->
 		<button
 			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
-			>Create User</button
+			>{m.register_business_button_title()}</button
 		>
 	</form>
 
 	<!-- Terms & Services Info -->
 	<p class="px-8 mt-6 text-center text-sm dark:text-gray-200 text-muted-foreground">
-		By clicking Create User, you agree to our{' '}
 		<a href="/terms" class="underline underline-offset-4 hover:text-primary">
-			Terms of Service
-		</a>{' '}
-		and{' '}
-		<a href="/privacy" class="underline underline-offset-4 hover:text-primary"> Privacy Policy </a>
-		.
+			{m.register_business_termsandservice()}
+		</a>
 	</p>
 </div>

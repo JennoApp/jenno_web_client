@@ -487,13 +487,13 @@
 							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
 							on:click={() => goto('/login')}
 						>
-							Login
+							{m.navbar_button_login()}
 						</button>
 						<button
 							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
 							on:click={() => goto('/register')}
 						>
-							Register
+							{m.navbar_button_register()}
 						</button>
 					</div>
 				{/if}

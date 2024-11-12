@@ -5,6 +5,7 @@
 	import { goto } from '$app/navigation';
   import * as Select from '$lib/components/ui/select';
 	import { countryList } from '$lib/utils/countries'
+  import * as m from '$paraglide/messages';
 
 	export let form: ActionData;
   let selectedCountry: any = ''
@@ -15,19 +16,56 @@
 		toast.success('Usuario creado!');
 		goto('/');
 	}
+
+
+  function togglePasswordVisibility() {
+    const passwordInput = document.getElementById('password') as HTMLInputElement
+    const eyeIcon = document.getElementById('eyeIcon')
+
+    if (passwordInput?.type === 'password') {
+      passwordInput.type = 'text'
+      if (eyeIcon !== null) {
+        eyeIcon.textContent = '🙈' // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
+      }
+      
+    } else {
+      passwordInput.type = 'password'
+      if (eyeIcon !== null) {
+        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta       
+      }      
+    }
+  }
+
+  function toggleConfirmPasswordVisibility() {
+    const passwordInput = document.getElementById('confirm-password') as HTMLInputElement
+    const eyeIcon = document.getElementById('confirm-eyeIcon')
+
+    if (passwordInput?.type === 'password') {
+      passwordInput.type = 'text'
+      if (eyeIcon !== null) {
+        eyeIcon.textContent = '🙈' // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
+      }
+      
+    } else {
+      passwordInput.type = 'password'
+      if (eyeIcon !== null) {
+        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta       
+      }      
+    }
+  }
 </script>
 
 <div class="flex flex-col items-center justify-center h-screen w-full">
 	<!-- Header -->
 	<h1 class="text-3xl font-semibold dark:text-gray-200 tracking-tight mb-10">
-		Crear Usuario Personal
+		{m.register_personal_title()}
 	</h1>
 
 	<!-- Form -->
 	<form method="POST" action="?/personal" class="flex-col gap-2 min-w-xs w-96 mx-auto" use:enhance>
 		<!-- Username Input -->
 		<div class="flex flex-col">
-			<label for="username" class="text-base dark:text-gray-200 font-medium">Username</label>
+			<label for="username" class="text-base dark:text-gray-200 font-medium">{m.register_personal_username_label()}</label>
 			<input
 				type="text"
 				name="username"
@@ -45,7 +83,7 @@
 
 		<!-- Email Input -->
 		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium">Email</label>
+			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.register_personal_email_label()}</label>
 			<input
 				type="email"
 				name="email"
@@ -63,7 +101,7 @@
 
 		<!-- Country Input -->
 		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium">Country</label>
+			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.register_personal_country_label()}</label>
 			<Select.Root
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
@@ -89,14 +127,26 @@
 
 		<!-- Password Input -->
 		<div class="flex flex-col">
-			<label for="password" class="text-base dark:text-gray-200 font-medium">Password</label>
-			<input
-				type="password"
-				name="password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors?.password
-					? 'border border-red-500'
-					: ''}"
-			/>
+			<label for="password" class="text-base dark:text-gray-200 font-medium">{m.register_personal_password_label()}</label>
+      <div class="relative">
+				<!-- Input de contraseña -->
+				<input
+					type="password"
+					id="password"
+					name="password"
+					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
+				/>
+
+				<!-- Icono de ojo -->
+				<button
+					type="button"
+					class="absolute right-2 top-1/2 transform -translate-y-1/2"
+					on:click={() => togglePasswordVisibility()}
+				>
+					<span id="eyeIcon">👁️</span>
+				</button>
+			</div>
+
 			<label for="username">
 				{#if form?.errors?.password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.password[0]}</span>
@@ -107,16 +157,26 @@
 		<!-- verified Password Input -->
 		<div class="flex flex-col">
 			<label for="verified_password" class="text-base dark:text-gray-200 font-medium"
-				>Password confirmation</label
-			>
-			<input
-				type="password"
-				name="verified_password"
-				class="h-8 border text-black font-semibold px-2 text-xl rounded-md {form?.errors
-					?.verified_password
-					? 'border border-red-500'
-					: ''}"
-			/>
+				>{m.register_personal_password_confirm()}</label
+			>	
+      <div class="relative">
+				<!-- Input de contraseña -->
+				<input
+					type="password"
+					id="confirm-password"
+					name="password"
+					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
+				/>
+
+				<!-- Icono de ojo -->
+				<button
+					type="button"
+					class="absolute right-2 top-1/2 transform -translate-y-1/2"
+					on:click={() => toggleConfirmPasswordVisibility()}
+				>
+					<span id="confirm-eyeIcon">👁️</span>
+				</button>
+			</div>
 			<label for="username">
 				{#if form?.errors?.verified_password}
 					<span class="dark:text-red-500 font-medium">{form?.errors?.verified_password[0]}</span>
@@ -127,18 +187,14 @@
 		<!-- Login Submit -->
 		<button
 			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
-			>Create User</button
+			>{m.register_personal_button_title()}</button
 		>
 	</form>
 
 	<!-- Terms & Services Info -->
 	<p class="px-8 mt-6 text-center text-sm dark:text-gray-200 text-muted-foreground">
-		By clicking Create User, you agree to our{' '}
-		<a href="/terms" class="underline underline-offset-4 hover:text-primary">
-			Terms of Service
-		</a>{' '}
-		and{' '}
-		<a href="/privacy" class="underline underline-offset-4 hover:text-primary"> Privacy Policy </a>
-		.
+		<a href="/terms" class="hover:underline hover:text-primary">
+			{m.register_personal_termsandservice()}
+		</a>
 	</p>
 </div>

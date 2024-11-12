@@ -10,9 +10,7 @@ export async function initializeSocket(): Promise<Socket> {
     const data = await response.json()
     const serverUrl = data.server_url
 
-    socket = io(serverUrl, {
-      transports: ["polling"]
-    })
+    socket = io(serverUrl)
 
     return socket
 
