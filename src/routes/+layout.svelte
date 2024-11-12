@@ -45,48 +45,48 @@
 	// 	}
 	// });
 
-	let socket: Socket | null = null;
+	// let socket: Socket | null = null;
 
-	onMount(async () => {
-		try {
-			socket = await initializeSocket();
+	// onMount(async () => {
+	// 	try {
+	// 		socket = await initializeSocket();
 
-			if (socket) {
-				socket?.on('connect', () => {
-					console.log('Connected to server');
+	// 		if (socket) {
+	// 			socket?.on('connect', () => {
+	// 				console.log('Connected to server');
 
-					// Asegúrate de verificar que el usuario existe antes de emitir el evento
-					if ($page?.data?.user?._id) {
-						socket?.emit('removeUser', $page.data.user._id);
-						socket?.emit('addUser', $page.data.user._id);
-					}
-				});
+	// 				// Asegúrate de verificar que el usuario existe antes de emitir el evento
+	// 				if ($page?.data?.user?._id) {
+	// 					socket?.emit('removeUser', $page.data.user._id);
+	// 					socket?.emit('addUser', $page.data.user._id);
+	// 				}
+	// 			});
 
-				// Configuración de evento de desconexión
-				socket?.on('disconnect', () => {
-					console.log('Disconnected from server');
-					if ($page?.data?.user?._id) {
-						socket?.emit('removeUser', $page.data.user._id);
-					}
-				});
-			} else {
-        console.error('Socket no se pudo inicializar')
-      }
+	// 			// Configuración de evento de desconexión
+	// 			socket?.on('disconnect', () => {
+	// 				console.log('Disconnected from server');
+	// 				if ($page?.data?.user?._id) {
+	// 					socket?.emit('removeUser', $page.data.user._id);
+	// 				}
+	// 			});
+	// 		} else {
+  //       console.error('Socket no se pudo inicializar')
+  //     }
 
-			// Configura el contexto global
-			setContext('socket', socket);
-		} catch (error) {
-			console.error('No se pudo conectar al socket:', error);
-		}
-	});
+	// 		// Configura el contexto global
+	// 		setContext('socket', socket);
+	// 	} catch (error) {
+	// 		console.error('No se pudo conectar al socket:', error);
+	// 	}
+	// });
 
-	// Limpieza de listeners al desmontar el componente
-	onDestroy(() => {
-		if (socket) {
-			socket?.off('connect');
-			socket?.off('disconnect');
-		}
-	});
+	// // Limpieza de listeners al desmontar el componente
+	// onDestroy(() => {
+	// 	if (socket) {
+	// 		socket?.off('connect');
+	// 		socket?.off('disconnect');
+	// 	}
+	// });
 
 	let locationAccessKey: string;
 	async function getLocationAccessKey() {

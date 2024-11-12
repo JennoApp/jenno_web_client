@@ -8,7 +8,9 @@
 	export let form;
 	$: if (form?.success) {
 		console.log('login succesful');
-		goto('/');
+		goto('/', { replaceState: true }).then(() => {
+      location.reload()
+    })
 	}
 
 	$: if (form?.success === false) {
