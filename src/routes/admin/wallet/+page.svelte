@@ -56,9 +56,22 @@
 
 	
   // Obtener datos de la billetera del usuario
-	async function fetchWallet(walletId: any) {
+	async function fetchWallet(walletId: string) {
 		try {
 			const response = await fetch(`${serverUrl}/wallet/${walletId}`);
+
+      // Verifica el estado de la respuesta y si el contenido es JSON
+        if (!response.ok) {
+            console.error('Error en la solicitud al servidor:', response.statusText);
+            return;
+        }
+
+        // Verifica el tipo de contenido para asegurarte de que sea JSON
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error('La respuesta no es JSON');
+            return;
+        }
 
 			const data = await response.json();
 			walletData = data.wallet;
