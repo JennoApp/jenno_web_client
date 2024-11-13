@@ -15,7 +15,7 @@
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
-  let serverUrl: string;
+	let serverUrl: string;
 	let walletData: any;
 	let openDialogAddCart = false;
 	let openDialogwithdraw = false;
@@ -28,20 +28,18 @@
 	let usdEquivalent = 0;
 	let withdrawals: any = [];
 	let withdrawalsPaypalDetails: any = [];
-	let table: any;
 
 	// Debuging
 	$: console.log({ token: data.sessionToken });
-  $: console.log({ data: $page.data?.user?.walletId });
+	$: console.log({ data: $page.data?.user?.walletId });
 	$: console.log({ userData: $page.data?.user });
-  $: console.log({ wallet_id: $page.data.user.walletId });
-  $: console.log({ walletData });
-  $: console.log({ usreData: paypalAccount });
-  $: console.log({ withdrawals });
-  $: console.log({ withdrawalsPaypalDetails });
+	$: console.log({ wallet_id: $page.data.user.walletId });
+	$: console.log({ walletData });
+	$: console.log({ usreData: paypalAccount });
+	$: console.log({ withdrawals });
+	$: console.log({ withdrawalsPaypalDetails });
 
-
-	// Obtener url del servidor	
+	// Obtener url del servidor
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -49,29 +47,31 @@
 
 			serverUrl = data.server_url;
 		} catch (error) {
-			console.error('Error al solicitar Paypal Id');
+			console.error('Error al solicitar Url del servidor');
 		}
 	}
-	$: getServerUrl();
 
-	
-  // Obtener datos de la billetera del usuario
+	// Obtener datos de la billetera del usuario
 	async function fetchWallet(walletId: string) {
 		try {
+			if (!serverUrl) {
+				await getServerUrl();
+			}
+
 			const response = await fetch(`${serverUrl}/wallet/${walletId}`);
 
-      // Verifica el estado de la respuesta y si el contenido es JSON
-        if (!response.ok) {
-            console.error('Error en la solicitud al servidor:', response.statusText);
-            return;
-        }
+			// Verifica el estado de la respuesta y si el contenido es JSON
+			if (!response.ok) {
+				console.error('Error en la solicitud al servidor:', response.statusText);
+				return;
+			}
 
-        // Verifica el tipo de contenido para asegurarte de que sea JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            console.error('La respuesta no es JSON');
-            return;
-        }
+			// Verifica el tipo de contenido para asegurarte de que sea JSON
+			const contentType = response.headers.get('content-type');
+			if (!contentType || !contentType.includes('application/json')) {
+				console.error('La respuesta no es JSON');
+				return;
+			}
 
 			const data = await response.json();
 			walletData = data.wallet;
@@ -80,23 +80,31 @@
 		} catch (error) {
 			console.error('Error al obtener informacion del wallet del usuario!');
 		}
-	}	
+	}
 
-  // Obtener detalles de la cuenta Paypal del usuario
+	// Obtener detalles de la cuenta Paypal del usuario
 	async function getPaypalAccount() {
 		try {
-			const response = await fetch(`${serverUrl}/users/getpaypal/${$page.data?.user?._id}`);
+			if (!serverUrl) {
+				await getServerUrl();
+			}
 
-			const { account } = await response.json();
-			paypalAccount = account;
-			paypalAccountEmail = account;
+			if (serverUrl) {
+				const response = await fetch(`${serverUrl}/users/getpaypal/${$page.data?.user?._id}`);
+
+				const { account } = await response.json();
+				paypalAccount = account;
+				paypalAccountEmail = account;
+			} else {
+				console.error('ServerUrl no esta definido');
+			}
 		} catch (error) {
 			console.log(error);
 		}
 	}
-	$: getPaypalAccount()
-	
-  // Funcion para agregar una cuenta Paypal
+	// $: getPaypalAccount();
+
+	// Funcion para agregar una cuenta Paypal
 	async function handleSubmitAddPaypalAccount() {
 		try {
 			const response = await fetch(`${serverUrl}/users/paypalaccount/${$page.data.user._id}`, {
@@ -124,7 +132,7 @@
 		}
 	}
 
-  // Eliminar cuenta Paypal
+	// Eliminar cuenta Paypal
 	async function handleRemovePaypalAccount() {
 		try {
 			const response = await fetch(
@@ -152,7 +160,7 @@
 		openDialogAddCart = true;
 	}
 
-  // Formatear moneda
+	// Formatear moneda
 	function formatCurrency(value: any, currencyType: any) {
 		const formatter = new Intl.NumberFormat('es-CO', {
 			style: 'currency',
@@ -175,7 +183,7 @@
 		}
 	}
 
-  // Calcular equivalente en USD
+	// Calcular equivalente en USD
 	function calculateUsdEquivalent() {
 		if (exchangeRate && withdrawalAmount !== '') {
 			usdEquivalent = withdrawalAmountforExchange / exchangeRate;
@@ -184,7 +192,7 @@
 		}
 	}
 
-  // menejar el retiro
+	// menejar el retiro
 	function handleInput(event: any) {
 		let rawValue = event.target.value.replace(/[^0-9]/g, '');
 		let processedValue = Number(rawValue);
@@ -209,7 +217,7 @@
 		calculateUsdEquivalent();
 	}
 
-  // Manejar el envio de retiro
+	// Manejar el envio de retiro
 	async function handleSubmit(account: any, amount: number, amountUsd: number) {
 		try {
 			if (!data.sessionToken) {
@@ -257,7 +265,7 @@
 		}
 	}
 
-  // Obtener retiros
+	// Obtener retiros
 	async function getWithdrawals(walletId: string) {
 		try {
 			const response = await fetch(`${serverUrl}/wallet/getwithdrawals/${walletId}`);
@@ -279,7 +287,7 @@
 		}
 	}
 
-  // Obtener detalles de pagos en Paypal
+	// Obtener detalles de pagos en Paypal
 	async function getWithdrawalsPaypalDetails(batchId: any) {
 		try {
 			const response = await fetch(
@@ -297,19 +305,19 @@
 			console.error('Error al solicitar informacion');
 		}
 	}
-  
-  // Carga inicial de datos
-  onMount(async () => {
+
+	// Carga inicial de datos
+	onMount(async () => {
 		await fetchWallet($page.data?.user?.walletId);
 		await getWithdrawals($page.data?.user?.walletId);
-		fetchExchangeRate();	
+		fetchExchangeRate();
 	});
 
 	$: if (withdrawals) {
 		withdrawals.map((batchId: any) => {
 			getWithdrawalsPaypalDetails(batchId);
 		});
-	}	
+	}
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -323,8 +331,11 @@
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">{formatPrice(walletData?.totalEarned, 'es-CO', 'COP')}</div>
-			<!-- <p class="text-xs text-muted-foreground">+20.1% from last month</p> -->
+			<div class="text-2xl font-bold">
+				{walletData !== undefined
+					? formatPrice(walletData?.totalEarned, 'es-CO', 'COP')
+					: 'Cargando...'}
+			</div>
 		</Card.Content>
 	</Card.Root>
 
@@ -335,7 +346,9 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="text-2xl font-bold">
-				{formatPrice(walletData?.availableBalance, 'es-CO', 'COP')}
+				{walletData !== undefined
+					? formatPrice(walletData?.availableBalance, 'es-CO', 'COP')
+					: 'Cargando...'}
 			</div>
 			<!-- <p class="text-xs text-muted-foreground">+180.1% from last month</p> -->
 		</Card.Content>
@@ -348,7 +361,9 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="text-2xl font-bold">
-				{formatPrice(walletData?.pendingBalance, 'es-CO', 'COP')}
+				{walletData !== undefined
+					? formatPrice(walletData?.pendingBalance, 'es-CO', 'COP')
+					: 'Cargando...'}
 			</div>
 			<!-- <p class="text-xs text-muted-foreground">+19% from last month</p> -->
 		</Card.Content>
