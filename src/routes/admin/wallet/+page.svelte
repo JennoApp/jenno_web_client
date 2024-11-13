@@ -1,101 +1,100 @@
 <script lang="ts">
+	// Importaciones de componentes UI y utilidades
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import * as AlertDialog from "$lib/components/ui/alert-dialog/index.js"
+	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { page } from '$app/stores';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import type { PageData } from './$types';
 	import { format } from 'timeago.js';
+	import type { PageData } from './$types';
 
+	// Datos iniciales y variables de estado
 	export let data: PageData;
-
-	$: console.log({ token: data.sessionToken });
-
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
-
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
-
-  $: getServerUrl()
-
+  let serverUrl: string;
 	let walletData: any;
 	let openDialogAddCart = false;
 	let openDialogwithdraw = false;
-  let openDialogRemove = false
+	let openDialogRemove = false;
 	let withdrawalAmount = '';
 	let withdrawalAmountforExchange = 0;
-
-	$: console.log({ data: $page.data?.user?.walletId });
-	$: console.log({ userData: $page.data?.user });
-
-	async function fetchWallet(walletId: any) {
-		const response = await fetch(`${serverUrl}/wallet/${walletId}`);
-
-		const data = await response.json();
-		walletData = data;
-
-		return data;
-	}
-
-	onMount(() => {
-		fetchWallet($page.data?.user?.walletId);
-		getWithdrawals($page.data?.user?.walletId);
-		fetchExchangeRate();
-		// getPaypalAccount($page.data.user._id)
-	});
-
-	$: console.log({ walletData });
-
 	let paypalAccountEmail = '';
 	let paypalAccount: any;
+	let exchangeRate = 0;
+	let usdEquivalent = 0;
+	let withdrawals: any = [];
+	let withdrawalsPaypalDetails: any = [];
+	let table: any;
 
+	// Debuging
+	$: console.log({ token: data.sessionToken });
+  $: console.log({ data: $page.data?.user?.walletId });
+	$: console.log({ userData: $page.data?.user });
+  $: console.log({ wallet_id: $page.data.user.walletId });
+  $: console.log({ walletData });
+  $: console.log({ usreData: paypalAccount });
+  $: console.log({ withdrawals });
+  $: console.log({ withdrawalsPaypalDetails });
+
+
+	// Obtener url del servidor	
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
+
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
+	$: getServerUrl();
+
+	
+  // Obtener datos de la billetera del usuario
+	async function fetchWallet(walletId: any) {
+		try {
+			const response = await fetch(`${serverUrl}/wallet/${walletId}`);
+
+			const data = await response.json();
+			walletData = data.wallet;
+
+			return data;
+		} catch (error) {
+			console.error('Error al obtener informacion del wallet del usuario!');
+		}
+	}	
+
+  // Obtener detalles de la cuenta Paypal del usuario
 	async function getPaypalAccount() {
 		try {
-			const response = await fetch(
-				`${serverUrl}/users/getpaypal/${$page.data?.user?._id}`
-			);
+			const response = await fetch(`${serverUrl}/users/getpaypal/${$page.data?.user?._id}`);
 
 			const { account } = await response.json();
 			paypalAccount = account;
-      paypalAccountEmail = account
+			paypalAccountEmail = account;
 		} catch (error) {
 			console.log(error);
 		}
 	}
-
-	$: console.log({ usreData: paypalAccount });
-
-	$: {
-		getPaypalAccount();
-	}
-
+	$: getPaypalAccount()
+	
+  // Funcion para agregar una cuenta Paypal
 	async function handleSubmitAddPaypalAccount() {
 		try {
-			const response = await fetch(
-				`${serverUrl}/users/paypalaccount/${$page.data.user._id}`,
-				{
-					method: 'PATCH',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						paypalAccount: paypalAccountEmail.trim()
-					})
-				}
-			);
+			const response = await fetch(`${serverUrl}/users/paypalaccount/${$page.data.user._id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					paypalAccount: paypalAccountEmail.trim()
+				})
+			});
 
 			if (!response.ok) {
 				throw new Error('Error actualizando la cuenta del Usuario');
@@ -105,19 +104,20 @@
 			toast.success(`Cuenta de Paypal guardada con exito`);
 			openDialogAddCart = false;
 
-      await getPaypalAccount()
+			await getPaypalAccount();
 		} catch (error) {
 			console.error('Error guardando la cuenta de paypal:', error);
 			toast.error('Error al guardar la cuenta de PayPal');
 		}
 	}
 
-  async function handleRemovePaypalAccount() {
+  // Eliminar cuenta Paypal
+	async function handleRemovePaypalAccount() {
 		try {
 			const response = await fetch(
 				`${serverUrl}/users/removepaypalaccount/${$page.data.user._id}`,
 				{
-					method: 'DELETE'	
+					method: 'DELETE'
 				}
 			);
 
@@ -128,17 +128,18 @@
 			toast.success(`Cuenta de Paypal eliminada con exito`);
 			openDialogRemove = false;
 
-      await getPaypalAccount()
+			await getPaypalAccount();
 		} catch (error) {
 			console.error('Error eliminando la cuenta de paypal:', error);
 			toast.error('Error al eliminar la cuenta de PayPal');
 		}
 	}
 
-  async function actionsPaypalAccount() {
-    openDialogAddCart = true 
-  }
+	async function actionsPaypalAccount() {
+		openDialogAddCart = true;
+	}
 
+  // Formatear moneda
 	function formatCurrency(value: any, currencyType: any) {
 		const formatter = new Intl.NumberFormat('es-CO', {
 			style: 'currency',
@@ -147,9 +148,6 @@
 		});
 		return formatter.format(value);
 	}
-
-	let exchangeRate = 0;
-	let usdEquivalent = 0;
 
 	// obtener la tasa de cambio de COP a USD
 	async function fetchExchangeRate() {
@@ -164,6 +162,7 @@
 		}
 	}
 
+  // Calcular equivalente en USD
 	function calculateUsdEquivalent() {
 		if (exchangeRate && withdrawalAmount !== '') {
 			usdEquivalent = withdrawalAmountforExchange / exchangeRate;
@@ -172,6 +171,7 @@
 		}
 	}
 
+  // menejar el retiro
 	function handleInput(event: any) {
 		let rawValue = event.target.value.replace(/[^0-9]/g, '');
 		let processedValue = Number(rawValue);
@@ -196,6 +196,7 @@
 		calculateUsdEquivalent();
 	}
 
+  // Manejar el envio de retiro
 	async function handleSubmit(account: any, amount: number, amountUsd: number) {
 		try {
 			if (!data.sessionToken) {
@@ -239,28 +240,21 @@
 			}
 		} catch (error) {
 			console.error('Error al procesar el retiro:', error);
-			toast.error(`Error en la conexión con el servidor: ${error?.message || 'Error desconocido'}`);
+			toast.error(`Error en la conexión con el servidor: ${error || 'Error desconocido'}`);
 		}
 	}
 
-	////////////////
-	// Tabla de retiros //
-	let withdrawals: any = [];
-	let withdrawalsPaypalDetails: any = [];
-	let table: any;
-
-	$: console.log({ withdrawals });
-
+  // Obtener retiros
 	async function getWithdrawals(walletId: string) {
 		try {
 			const response = await fetch(`${serverUrl}/wallet/getwithdrawals/${walletId}`);
 
 			if (response.ok) {
 				const data = await response.json();
-				console.log({ Datos: data });
+				console.log({ Datos: data.withdrawals });
 
 				if (data) {
-					withdrawals = data;
+					withdrawals = data.withdrawals;
 				} else {
 					console.error('La respuesta no contiene la propiedad withdrawals');
 				}
@@ -272,6 +266,7 @@
 		}
 	}
 
+  // Obtener detalles de pagos en Paypal
 	async function getWithdrawalsPaypalDetails(batchId: any) {
 		try {
 			const response = await fetch(
@@ -289,14 +284,19 @@
 			console.error('Error al solicitar informacion');
 		}
 	}
+  
+  // Carga inicial de datos
+  onMount(async () => {
+		await fetchWallet($page.data?.user?.walletId);
+		await getWithdrawals($page.data?.user?.walletId);
+		fetchExchangeRate();	
+	});
 
 	$: if (withdrawals) {
 		withdrawals.map((batchId: any) => {
 			getWithdrawalsPaypalDetails(batchId);
 		});
-	}
-
-	$: console.log({ withdrawalsPaypalDetails });
+	}	
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -373,9 +373,10 @@
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									class="hover:!bg-red-500 bg-opacity-60"
-                  on:click={() => {
-                    openDialogRemove = true
-                  }}>
+									on:click={() => {
+										openDialogRemove = true;
+									}}
+								>
 									<iconify-icon
 										icon="material-symbols:delete"
 										height="1.1rem"
@@ -465,7 +466,9 @@
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>{paypalAccount ? 'Actualizar Cuenta de PayPal' : 'Agregar Cuenta de PayPal'}</Dialog.Title>
+			<Dialog.Title
+				>{paypalAccount ? 'Actualizar Cuenta de PayPal' : 'Agregar Cuenta de PayPal'}</Dialog.Title
+			>
 			<Dialog.Description>
 				<form on:submit|preventDefault={handleSubmitAddPaypalAccount}>
 					<div class="mt-3">
@@ -482,7 +485,7 @@
 					<div class="flex flex-row-reverse">
 						<button
 							class="h-8 p-2 mt-5 bg-purple-600 dark:text-gray-200 hover:bg-purple-700 rounded-md"
-							>{paypalAccount ? 'Actualizar': 'Agregar'}</button
+							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
 						>
 					</div>
 				</form>
@@ -547,23 +550,28 @@
 	</Dialog.Content>
 </Dialog.Root>
 
-
 <AlertDialog.Root bind:open={openDialogRemove}>
-  <AlertDialog.Trigger />
-  <AlertDialog.Content>
-    <AlertDialog.Header>
-      <AlertDialog.Title>¿Estás absolutamente seguro?</AlertDialog.Title>
-      <AlertDialog.Description>
-         Esta acción no se puede deshacer. Esto eliminará permanentemente tu cuenta y eliminará tus datos de nuestros servidores.
-      </AlertDialog.Description>
-    </AlertDialog.Header>
-    <AlertDialog.Footer>
-      <AlertDialog.Cancel class="dark:border-[#252525] dark:hover:bg-[#252525]" on:click={() => {
-        openDialogRemove = false
-      }}>Cancelar</AlertDialog.Cancel>
-      <AlertDialog.Action on:click={() => {
-        handleRemovePaypalAccount()
-      }}>Continuar</AlertDialog.Action>
-    </AlertDialog.Footer>
-  </AlertDialog.Content>
+	<AlertDialog.Trigger />
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>¿Estás absolutamente seguro?</AlertDialog.Title>
+			<AlertDialog.Description>
+				Esta acción no se puede deshacer. Esto eliminará permanentemente tu cuenta y eliminará tus
+				datos de nuestros servidores.
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel
+				class="dark:border-[#252525] dark:hover:bg-[#252525]"
+				on:click={() => {
+					openDialogRemove = false;
+				}}>Cancelar</AlertDialog.Cancel
+			>
+			<AlertDialog.Action
+				on:click={() => {
+					handleRemovePaypalAccount();
+				}}>Continuar</AlertDialog.Action
+			>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
 </AlertDialog.Root>
