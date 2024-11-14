@@ -76,6 +76,23 @@
   "admin_dashboard_overview": "Visualización",
   "admin_dashboard_recent_sales": "Ventas Recientes",
 
+  "admin_wallet_title": "Billetera",
+  "admin_wallet_earnings": "Ganancias",
+  "admin_wallet_available": "Saldo Disponible",
+  "admin_wallet_pending": "Saldo Pendiente",
+  "admin_wallet_paypal_account": "Cuenta de Paypal",
+  "admin_wallet_button_withdraw_title": "Retirar",
+  "admin_wallet_withdrawals_title": "Retiros",
+  "admin_wallet_withdrawals_no_data": "No se encontraron datos.",
+  "admin_wallet_withdrawals_modal_title": "Retiro de Depósito",
+  "admin_wallet_withdrawals_modal_subtitle": "Ingresa la cantidad que deseas retirar a tu cuenta de PayPal:",
+  "admin_wallet_withdrawals_modal_amount_withdraw_label": "Cantidad a retirar:",
+  "admin_wallet_withdrawals_modal_input": "Ingresa la cantidad",
+  "admin_wallet_withdrawals_modal_dollar_equivalent": "Equivalente en Dólares:",
+  "admin_wallet_withdrawals_modal_paypal_account": "Cuenta de Paypal:",
+  "admin_wallet_withdrawals_modal_add_paypal": "Agregar Cuenta de Paypal",
+
+
   "admin_sales_title": "Ventas",
   "admin_sales_tableheader_image": "Imagen",
   "admin_sales_tableheader_name": "Nombre",
