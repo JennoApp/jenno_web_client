@@ -136,7 +136,11 @@
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
-			<div class="text-2xl font-bold">{formatPrice(walletData?.totalEarned, 'es-CO', 'COP')}</div>
+			<div class="text-2xl font-bold">
+        {walletData !== undefined
+					? formatPrice(walletData?.totalEarned, 'es-CO', 'COP')
+					: 'Cargando...'}
+      </div>
 			<!-- <p class="text-xs text-muted-foreground">+20.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>

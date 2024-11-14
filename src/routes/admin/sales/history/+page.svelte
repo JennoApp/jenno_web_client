@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { PageServerData } from './$types'
-  import { goto } from '$app/navigation'
-  import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
+	import type { PageServerData } from './$types';
+	import { goto } from '$app/navigation';
+	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
 	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
@@ -19,10 +19,9 @@
 	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
 
-  export let data: PageServerData;
+	export let data: PageServerData;
 
-
-  const table = createTable(readable(data.salesList), {
+	const table = createTable(readable(data.salesList), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
@@ -121,13 +120,8 @@
 
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
 		table.createViewModel(columns);
-
-	const { hasNextPage, hasPreviousPage, pageIndex } = pluginStates.page;
 	const { filterValue } = pluginStates.filter;
-
 </script>
-
-
 
 <div class="flex p-5">
 	<button
@@ -149,8 +143,6 @@
 	</div>
 </div>
 
-
-
 {#if data?.salesList.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
@@ -161,7 +153,7 @@
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
-			/>	
+			/>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
@@ -233,4 +225,3 @@
 		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
 	</div>
 {/if}
-

@@ -18,15 +18,15 @@
 	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
-  const currentPage = data.meta?.page
+	const currentPage = data.meta?.page;
 
 	$: console.log(data.meta);
 
-  function changePage(newPage: number) {
-    const searchParams = new URLSearchParams(window.location.search)
-    searchParams.set('page', newPage.toString())
-    invalidateAll()  
-  }
+	function changePage(newPage: number) {
+		const searchParams = new URLSearchParams(window.location.search);
+		searchParams.set('page', newPage.toString());
+		invalidateAll();
+	}
 
 	const table = createTable(readable(data.salesList), {
 		filter: addTableFilter({
@@ -142,35 +142,35 @@
 	const { filterValue } = pluginStates.filter;
 </script>
 
-<div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-	<h2 class="text-xl font-semibold text-gray-200">Ventas</h2>
-	<Button
-		class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
-		on:click={() => {
-			goto('/admin/sales/history');
-		}}
-	>
-		<iconify-icon
-			icon="material-symbols:history"
-			height="1.1rem"
-			width="1.1rem"
-			class="text-gray-200 flex justify-center items-center"
-		/>
-		<span class="ml-3">Historial</span></Button
-	>
-</div>
-
 {#if data?.salesList.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
-	{:else}	
+	{:else}
+		<div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
+			<h2 class="text-xl font-semibold text-gray-200">Ventas</h2>
+			<Button
+				class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
+				on:click={() => {
+					goto('/admin/sales/history');
+				}}
+			>
+				<iconify-icon
+					icon="material-symbols:history"
+					height="1.1rem"
+					width="1.1rem"
+					class="text-gray-200 flex justify-center items-center"
+				/>
+				<span class="ml-3">Historial</span></Button
+			>
+		</div>
+
 		<div class="flex items-center justify-between mx-10 mt-5">
 			<Input
 				class="max-w-sm placeholder:text-[#707070]"
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
-			/>	
+			/>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
