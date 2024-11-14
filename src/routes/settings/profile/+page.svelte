@@ -5,10 +5,8 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
-	import { invalidateAll } from '$app/navigation';
   import * as Select from '$lib/components/ui/select';
   import { countryList } from '$lib/utils/countries'
-  import { location_data } from '$lib/stores/ipaddressStore'
   import * as m from '$paraglide/messages'
 
 	export let data: PageServerData;
@@ -18,12 +16,17 @@
   let selectedCountry: any = ''
 
 	$: userInfo = $page.data.user;
-	$: console.log({ userInfo });
-
+	
 	$: if (form?.success) {
 		toast.success('Informacion Actualizada!');
-    invalidateAll()
+    setTimeout(() => {
+       location.reload()
+    }, 1000) 
 	}
+
+  // Debuging
+  $: console.log({ userInfo });
+  $: console.log({ data })
 </script>
 
 <div class="flex items-center w-full md:w-11/12 h-32">
