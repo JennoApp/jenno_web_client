@@ -10,58 +10,122 @@
 
 	export let data: PageServerData;
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
-
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
-
-  $: getServerUrl()
-
-	$: console.log({ data });
-
-	$: console.log($page.data.user);
-
-  let walletData: any;
+	// variables de estado
+	let serverUrl: string;
+	let walletData: any;
 	let totalRevenue = 0;
 	let numberOfSales = 0;
 
-	const getTotalRevenue = async (id: string) => {
-		const result = await fetch(`${serverUrl}/orders/totalrevenue/${id}`);
-		const data = await result.json();
+	// Obtener url del servidor
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-		totalRevenue = data;
-	};
-
-	const getNumberOfSales = async (id: string) => {
-		const result = await fetch(`${serverUrl}/orders/numberofsales/${id}`);
-		const data = await result.json();
-
-		numberOfSales = data;
-	};
-
-  async function fetchWallet(walletId: any) {
-		const response = await fetch(`${serverUrl}/wallet/${walletId}`);
-
-		const data = await response.json();
-		walletData = data;
-
-		return data;
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
 	}
 
+	// $: getServerUrl();
+
+	// Obtener datos de la cuenta del usuario
+	const getTotalRevenue = async (id: string) => {
+		if (!serverUrl) {
+			await getServerUrl();
+		}
+		const response = await fetch(`${serverUrl}/orders/totalrevenue/${id}`);
+
+		// Verifica el estado de la respuesta
+		if (!response.ok) {
+			console.error('Error en la solicitud al servidor:', response.statusText);
+			return;
+		}
+
+		// Verifica que la respuesta sea de tipo JSON
+		const contentType = response.headers.get('content-type');
+		if (!contentType || !contentType.includes('application/json')) {
+			console.error('La respuesta no es JSON');
+			return;
+		}
+
+		const data = await response.json();
+		totalRevenue = data.totalRevenue
+	};
+
+	// Obtener el número de ventas del usuario
+	const getNumberOfSales = async (id: string) => {
+		try {
+			// Asegura que serverUrl esté definido
+			if (!serverUrl) {
+				await getServerUrl();
+			}
+
+			const response = await fetch(`${serverUrl}/orders/numberofsales/${id}`);
+
+			// Verifica el estado de la respuesta
+			if (!response.ok) {
+				console.error('Error en la solicitud al servidor:', response.statusText);
+				return;
+			}
+
+			// Verifica que la respuesta sea de tipo JSON
+			const contentType = response.headers.get('content-type');
+			if (!contentType || !contentType.includes('application/json')) {
+				console.error('La respuesta no es JSON');
+				return;
+			}
+
+			// Asigna los datos a numberOfSales
+			const data = await response.json();
+			numberOfSales = data.numberOfSales
+		} catch (error) {
+			console.error('Error al obtener el número de ventas:', error);
+		}
+	};
+
+	// Obtener datos de la billetera del usuario
+	async function fetchWallet(walletId: string) {
+		try {
+			if (!serverUrl) {
+				await getServerUrl();
+			}
+
+			const response = await fetch(`${serverUrl}/wallet/${walletId}`);
+
+			// Verifica el estado de la respuesta y si el contenido es JSON
+			if (!response.ok) {
+				console.error('Error en la solicitud al servidor:', response.statusText);
+				return;
+			}
+
+			// Verifica el tipo de contenido para asegurarte de que sea JSON
+			const contentType = response.headers.get('content-type');
+			if (!contentType || !contentType.includes('application/json')) {
+				console.error('La respuesta no es JSON');
+				return;
+			}
+
+			const data = await response.json();
+			walletData = data.wallet;
+
+			return data;
+		} catch (error) {
+			console.error('Error al obtener informacion del wallet del usuario!');
+		}
+	}
+
+	// Datos dependiente del usuario
 	$: if ($page.data.user) {
 		getTotalRevenue($page.data.user._id);
 		getNumberOfSales($page.data.user._id);
-    fetchWallet($page.data.user.walletId)
+		fetchWallet($page.data.user.walletId);
 	}
 
+	// Depuracion
+	$: console.log($page.data.user);
+	$: console.log({ data });
 	$: console.log($page.data.user);
 </script>
 
