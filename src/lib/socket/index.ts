@@ -1,7 +1,7 @@
 import { PUBLIC_SOCKET_URL } from '$env/static/public'
 import { io, type Socket } from 'socket.io-client'
 
-const socket: Socket = io(`https://${PUBLIC_SOCKET_URL}`, {
+const socket: Socket = io(`https://jenno-backend.vercel.app`, {
   transports: ["websocket", "polling"],
   autoConnect: false,
   reconnection: true,
