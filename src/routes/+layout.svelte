@@ -12,7 +12,7 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { onMount, setContext } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
   import { page } from '$app/stores'
@@ -20,19 +20,26 @@
   // SocketIO global setup
   setContext('socket', socket)
 
+  // Conexion y configuracion del socket
+  socket.connect()
+
   socket.on('connect', () => {
     console.log('Connected to server')
     if ($page.data.user?._id) {
-      socket.emit('removeUser', $page.data.user._id)
       socket.emit('addUser', $page.data.user._id)
     }
   })
 
   socket.on('disconnect',  () => {
     console.log('Disconnected from server')
-    if ($page.data.user?._id) {
-      socket.emit('removeUser',  $page.data.user?._id)
+  })
+
+  // Limpieza cuando el layout se destruye
+  onDestroy(() => {
+    if ($page.data?.user?._id) {
+      socket.emit('removeUser', $page.data?.user?._id)
     }
+    socket.disconnect()
   })
 
 
