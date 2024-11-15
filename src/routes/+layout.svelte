@@ -14,39 +14,58 @@
 	import { onDestroy, onMount, setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
-  import { page } from '$app/stores'
+	import { page } from '$app/stores';
 
-  // SocketIO global setup
-  setContext('socket', socket)
+	// SocketIO global setup
+	setContext('socket', socket);
 
-  // Conexion y configuracion del socket
-  socket.connect()
+	// Conexion y configuracion del socket
+	socket.connect();
 
-  socket.on('connect', () => {
-    console.log('Connected to server')
-    if ($page.data.user?._id) {
-      socket.emit('addUser', $page.data.user._id)
-    }
-  })
+	socket.on('connect', () => {
+		console.log('Connected to server');
+		if ($page.data.user?._id) {
+			socket.emit('addUser', $page.data.user._id);
+		}
+	});
 
-  socket.on('disconnect',  () => {
-    console.log('Disconnected from server')
-  })
+	socket.on('disconnect', () => {
+		console.log('Disconnected from server');
+	});
 
-  // Limpieza cuando el layout se destruye
-  onDestroy(() => {
-    if ($page.data?.user?._id) {
-      socket.emit('removeUser', $page.data?.user?._id)
-    }
-    socket.disconnect()
-  })
+	socket.on('connect_error', (error) => {
+		console.error('Connection error:', error.message);
+	});
 
+	socket.on('reconnect_attempt', (attemptNumber) => {
+		console.log(`Attempting to reconnect... (${attemptNumber})`);
+	});
 
-  let locationAccessKey: string
-  async function getLocationAccessKey() {
-    try {
-      const response = await fetch(`/api/location`)
-      const data = await response.json()
+	socket.on('reconnect_failed', () => {
+		console.error('Failed to reconnect to server');
+	});
+
+	socket.on('reconnect', (attemptNumber) => {
+		console.log(`Successfully reconnected after ${attemptNumber} attempts`);
+		// Vuelve a registrar al usuario después de reconectar
+		if ($page?.data?.user?._id) {
+			socket.emit('addUser', $page.data.user._id);
+		}
+	});
+
+	// Limpieza cuando el layout se destruye
+	onDestroy(() => {
+		if ($page.data?.user?._id) {
+			socket.emit('removeUser', $page.data?.user?._id);
+		}
+		socket.disconnect();
+	});
+
+	let locationAccessKey: string;
+	async function getLocationAccessKey() {
+		try {
+			const response = await fetch(`/api/location`);
+			const data = await response.json();
 
 			locationAccessKey = data.accessKey;
 		} catch (error) {
