@@ -4,6 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+  import * as m from '$paraglide/messages'
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { page } from '$app/stores';
@@ -321,13 +322,13 @@
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
-	<h2 class="text-xl font-semibold text-gray-200">Wallet</h2>
+	<h2 class="text-xl font-semibold text-gray-200">{m.admin_wallet_title()}</h2>
 </div>
 
 <div class="grid gap-4 mx-5 md:grid-cols-2 lg:grid-cols-3">
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Total Ganado</Card.Title>
+			<Card.Title class="text-md font-medium">{m.admin_wallet_earnings()}</Card.Title>
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -341,7 +342,7 @@
 
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Saldo Disponible</Card.Title>
+			<Card.Title class="text-md font-medium">{m.admin_wallet_available()}</Card.Title>
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -356,7 +357,7 @@
 
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Saldo Pendiente</Card.Title>
+			<Card.Title class="text-md font-medium">{m.admin_wallet_pending()}</Card.Title>
 			<iconify-icon icon="mdi:dollar" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -372,7 +373,7 @@
 
 <div class="m-5 mt-10">
 	<div class="flex items-center justify-between">
-		<h2 class="my-5 text-xl font-semibold">Cuenta Asociada</h2>
+		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_paypal_account()}</h2>
 		<Button
 			on:click={() => {
 				openDialogwithdraw = true;
@@ -436,7 +437,7 @@
 </div>
 
 <div class="m-5 mt-10">
-	<h2 class="my-5 text-xl font-semibold">Retiros</h2>
+	<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_button_withdraw_title()}</h2>
 </div>
 
 {#if withdrawalsPaypalDetails && withdrawalsPaypalDetails.length > 0}
@@ -486,7 +487,7 @@
 		</table>
 	</div>
 {:else}
-	<p class="text-center text-gray-500">No se encontraron datos.</p>
+	<p class="text-center text-gray-500">{m.admin_wallet_withdrawals_no_data()}</p>
 {/if}
 
 <!-- Dialog Add Bank Account -->
@@ -527,9 +528,9 @@
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
-			<Dialog.Title>Retirar Depósito</Dialog.Title>
+			<Dialog.Title>{m.admin_wallet_withdrawals_modal_title()}</Dialog.Title>
 			<Dialog.Description>
-				Ingrese el monto que desea retirar a su cuenta de PayPal:
+				{m.admin_wallet_withdrawals_modal_subtitle()}
 			</Dialog.Description>
 		</Dialog.Header>
 
@@ -538,7 +539,7 @@
 				handleSubmit(paypalAccount, Number(withdrawalAmountforExchange), Number(usdEquivalent))}
 		>
 			<div class="flex w-full">
-				<label for="withdrawAmount">Monto a retirar:</label>
+				<label for="withdrawAmount">{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label>
 				<div class="flex flex-col w-full">
 					<Input
 						type="text"
@@ -554,7 +555,8 @@
 						<!-- Mostrar el equivalente en USD -->
 						{#if exchangeRate}
 							<p class="text-gray-500 text-sm">
-								Equivalente en Dolares: ${usdEquivalent.toFixed(2)} USD
+								{m.admin_wallet_withdrawals_modal_dollar_equivalent()} 
+                ${usdEquivalent.toFixed(2)} USD
 							</p>
 						{:else}
 							<p>Obteniendo tasa de cambio...</p>
@@ -564,11 +566,11 @@
 			</div>
 
 			<div class="flex gap-3 mt-3">
-				<label for="paypalEmail">Cuenta de PayPal:</label>
+				<label for="paypalEmail">{m.admin_wallet_withdrawals_modal_paypal_account()}</label>
 				{#if paypalAccount}
 					<h3>{paypalAccount}</h3>
 				{:else}
-					<h3 class="text-orange-400">Agregar Cuenta de Paypal</h3>
+					<h3 class="text-orange-400">{m.admin_wallet_withdrawals_modal_add_paypal()}</h3>
 				{/if}
 			</div>
 			<div class="flex flex-row-reverse mt-3">

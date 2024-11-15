@@ -3,7 +3,7 @@
 	import 'iconify-icon';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { Toaster } from 'svelte-sonner';
-	import { initializeSocket } from '$lib/socket/index';
+	import socket from '$lib/socket/index';
 	import { setupTheme } from '$lib/theme';
 	import {
 		addIpAddress,
@@ -11,88 +11,42 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { onMount, setContext, onDestroy } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
-	import type { Socket } from 'socket.io-client';
+  import { page } from '$app/stores'
 
-	// let socket: Socket | null = null;
+  // SocketIO global setup
+  setContext('socket', socket)
 
-	// onMount(async () => {
-	// 	try {
-	// 		socket = await initializeSocket();
+  // Conexion y configuracion del socket
+  socket.connect()
 
-	// 		socket.on('connect', () => {
-	// 			console.log('Connected to server');
-	// 			if ($page.data.user?._id) {
-	// 				socket?.emit('removeUser', $page.data.user._id);
-	// 				socket?.emit('addUser', $page.data.user._id);
-	// 			}
-	// 		});
+  socket.on('connect', () => {
+    console.log('Connected to server')
+    if ($page.data.user?._id) {
+      socket.emit('addUser', $page.data.user._id)
+    }
+  })
 
-	// 		// SocketIO global setup
-	// 		setContext('socket', socket);
-	// 	} catch (error) {
-	// 		console.error('No se pudo conectar al socket:', error);
-	// 	}
-	// });
+  socket.on('disconnect',  () => {
+    console.log('Disconnected from server')
+  })
 
-	// socket?.on('disconnect', () => {
-	// 	console.log('Disconnected from server');
-	// 	if ($page.data.user?._id) {
-	// 		socket?.emit('removeUser', $page.data.user?._id);
-	// 	}
-	// });
+  // Limpieza cuando el layout se destruye
+  onDestroy(() => {
+    if ($page.data?.user?._id) {
+      socket.emit('removeUser', $page.data?.user?._id)
+    }
+    socket.disconnect()
+  })
 
-	// let socket: Socket | null = null;
 
-	// onMount(async () => {
-	// 	try {
-	// 		socket = await initializeSocket();
-
-	// 		if (socket) {
-	// 			socket?.on('connect', () => {
-	// 				console.log('Connected to server');
-
-	// 				// Asegúrate de verificar que el usuario existe antes de emitir el evento
-	// 				if ($page?.data?.user?._id) {
-	// 					socket?.emit('removeUser', $page.data.user._id);
-	// 					socket?.emit('addUser', $page.data.user._id);
-	// 				}
-	// 			});
-
-	// 			// Configuración de evento de desconexión
-	// 			socket?.on('disconnect', () => {
-	// 				console.log('Disconnected from server');
-	// 				if ($page?.data?.user?._id) {
-	// 					socket?.emit('removeUser', $page.data.user._id);
-	// 				}
-	// 			});
-	// 		} else {
-  //       console.error('Socket no se pudo inicializar')
-  //     }
-
-	// 		// Configura el contexto global
-	// 		setContext('socket', socket);
-	// 	} catch (error) {
-	// 		console.error('No se pudo conectar al socket:', error);
-	// 	}
-	// });
-
-	// // Limpieza de listeners al desmontar el componente
-	// onDestroy(() => {
-	// 	if (socket) {
-	// 		socket?.off('connect');
-	// 		socket?.off('disconnect');
-	// 	}
-	// });
-
-	let locationAccessKey: string;
-	async function getLocationAccessKey() {
-		try {
-			const response = await fetch(`/api/location`);
-			const data = await response.json();
+  let locationAccessKey: string
+  async function getLocationAccessKey() {
+    try {
+      const response = await fetch(`/api/location`)
+      const data = await response.json()
 
 			locationAccessKey = data.accessKey;
 		} catch (error) {

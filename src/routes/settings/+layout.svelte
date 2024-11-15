@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
   import * as m from '$paraglide/messages'
 
-	$: url = $page.url.pathname;
+	$: url = $page.url.pathname
 	const SettingsNavItems = [
 		{
 			title: `${m.settings_menu_profile()}`,
@@ -18,7 +18,7 @@
 			title: `${m.settings_menu_appearance()}`,
 			href: '/settings/appearance'
 		}
-	];
+	]
 
 	///
 	let isSmallView = false;

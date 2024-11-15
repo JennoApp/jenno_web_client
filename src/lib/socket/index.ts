@@ -1,23 +1,12 @@
+import { PUBLIC_SOCKET_URL } from '$env/static/public'
 import { io, type Socket } from 'socket.io-client'
 
-let socket: Socket | null = null
+const socket: Socket = io(`https://${PUBLIC_SOCKET_URL}`, {
+  transports: ["websocket", "polling"],
+  autoConnect: false,
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+})
 
-export async function initializeSocket(): Promise<Socket> {
-  if (socket) return socket
-  
-  try {
-    const response = await fetch('/api/server')
-    const data = await response.json()
-    const serverUrl = data.server_url
-
-    socket = io(serverUrl)
-
-    return socket
-
-  } catch (error) {
-    console.error('Error al inicializar el socket:', error)
-    throw error
-  }
-}
-
-
+export default socket
