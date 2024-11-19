@@ -7,12 +7,18 @@
 	import { getContext, onMount, afterUpdate } from 'svelte';
 
 	// Obtener el socket del contexto
-	const socket: Socket = getContext('socket');
+	// const socket: Socket = getContext('socket');
+
+  import { useSocketContext } from '$lib/socket/index'
+
+
+  const { socket }: { socket: any}  = getContext('socket')
+  $: console.log({socket})
 
 	// Estados y variables
 	let conversations: any[];
 	let messages: any[] = [];
-	let currentChat: any = null;
+	let currentChat: any = [];
 	let newMessage: string = '';
 	let arrivalMessage: any = null;
 	let element: HTMLDivElement;
@@ -35,18 +41,18 @@
 
 	onMount(getServerUrl)
 
-  // Configurar eventos de socket
-	onMount(() => {
-		if (socket) {
-			socket.on('getMessage', (data: any) => {
-				arrivalMessage = {
-					sender: data.senderId,
-					text: data.text,
-					createAt: Date.now()
-				};
-			});
-		}
-	});
+  // // Configurar eventos de socket
+	// onMount(() => {
+	// 	if (socket) {
+	// 		socket.on('getMessage', (data: any) => {
+	// 			arrivalMessage = {
+	// 				sender: data.senderId,
+	// 				text: data.text,
+	// 				createAt: Date.now()
+	// 			};
+	// 		});
+	// 	}
+	// });
 
   $: if (arrivalMessage && currentChat?.members.includes(arrivalMessage.sender)) {
 		messages = [...messages, arrivalMessage];

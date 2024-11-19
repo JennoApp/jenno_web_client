@@ -3,7 +3,6 @@
 	import 'iconify-icon';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import { Toaster } from 'svelte-sonner';
-	import socket from '$lib/socket/index';
 	import { setupTheme } from '$lib/theme';
 	import {
 		addIpAddress,
@@ -11,55 +10,66 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { onDestroy, onMount, setContext } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { io, type Socket } from 'socket.io-client';
 
-	// SocketIO global setup
-	setContext('socket', socket);
+	
+	const SOCKET_CONTEXT = 'socket';
 
-	// Conexion y configuracion del socket
-	socket.connect();
+	// Crear e inicializar el contexto dentro del ciclo de vida del componente
+	let socket: Socket | null = null;
 
-	socket.on('connect', () => {
-		console.log('Connected to server');
-		if ($page.data.user?._id) {
-			socket.emit('addUser', $page.data.user._id);
-		}
-	});
+  const socketContext = {
+    socket: null as Socket | null
+  }
 
-	socket.on('disconnect', () => {
-		console.log('Disconnected from server');
-	});
+  setContext(SOCKET_CONTEXT, socketContext)
 
-	socket.on('connect_error', (error) => {
-		console.error('Connection error:', error.message);
-	});
+	async function initializeSocket() {
+		try {
+			const response = await fetch('/api/socketurl');
+			const { socket_url } = await response.json();
 
-	socket.on('reconnect_attempt', (attemptNumber) => {
-		console.log(`Attempting to reconnect... (${attemptNumber})`);
-	});
+			socket = io(socket_url, {
+				transports: ['websocket'],
+				autoConnect: false,
+				reconnection: true,
+				reconnectionAttempts: 5,
+				reconnectionDelay: 1000,
+				withCredentials: true
+			});
 
-	socket.on('reconnect_failed', () => {
-		console.error('Failed to reconnect to server');
-	});
+			socket.on('connect', () => {
+				console.log('Conectado con ID de sesión:', socket!.id);
+			});
 
-	socket.on('reconnect', (attemptNumber) => {
-		console.log(`Successfully reconnected after ${attemptNumber} attempts`);
-		// Vuelve a registrar al usuario después de reconectar
-		if ($page?.data?.user?._id) {
-			socket.emit('addUser', $page.data.user._id);
-		}
-	});
+			socket.on('disconnect', (reason) => {
+				console.error('Desconectado:', reason);
+			});
 
-	// Limpieza cuando el layout se destruye
-	onDestroy(() => {
-		if ($page.data?.user?._id) {
-			socket.emit('removeUser', $page.data?.user?._id);
-		}
-		socket.disconnect();
-	});
+			socket.on('connect_error', (error) => {
+				console.error('Error de conexión:', error.message);
+			});
+
+			console.log('Socket inicializado');
+
+			socket.connect();
+
+      socketContext.socket = socket      
+		} catch (error) {
+			console.error('Error al inicializar el socket:', error);
+		}   
+	}
+
+  onMount(async () =>  {
+    await initializeSocket()
+  })
+
+  // Establecer el contexto del socket
+	// setContext(SOCKET_CONTEXT, socket);
 
 	let locationAccessKey: string;
 	async function getLocationAccessKey() {
