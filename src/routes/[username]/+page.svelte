@@ -7,32 +7,32 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
-	import { invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
 
-  $: getServerUrl()
+	$: getServerUrl();
 
 	$: dataStatus = data.status;
 	$: userData = data.userData;
 	$: console.log($location_data);
-  $: console.log({userD: $page.data.user})
+	$: console.log({ userD: $page.data.user });
 
 	let products: any[] = [];
-	$: isFollowing = userData.followers?.includes($page.data?.user?._id)
+	$: isFollowing = userData.followers?.includes($page.data?.user?._id);
 
 	$: console.log({ isFollowing });
 
@@ -66,16 +66,13 @@
 	const handleFollow = async (customerId: string) => {
 		if ($page.data.isSession) {
 			try {
-				const followingResponse = await fetch(
-					`${serverUrl}/users/following/${customerId}`,
-					{
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json',
-							Authorization: `Bearer ${data.session}`
-						}
+				const followingResponse = await fetch(`${serverUrl}/users/following/${customerId}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${data.session}`
 					}
-				);
+				});
 
 				if (!followingResponse.ok) {
 					throw new Error('Error al seguir al usuario');
@@ -91,6 +88,34 @@
 			}
 		} else {
 			toast.info('Debes iniciar sesion para seguir a este usuario!!!');
+		}
+	};
+
+	const createConversation = async () => {
+		const conversationData = {
+			members: [$page.data.user?._id, userData._id]
+		};
+
+		try {
+			const response = await fetch(`${serverUrl}/conversations`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(conversationData)
+			});
+
+			const result = await response.json();
+
+			if (result.status === 200) {
+				// Si la conversación se crea correctamente, redirigir al chat
+				const conversationId = result.conversationId;
+				goto(`/chat?conversationId=${conversationId}`); // Redirigir al chat con el nuevo conversationId
+			} else {
+				console.error('Error al crear la conversación:', result.message);
+			}
+		} catch (error) {
+			console.error('Error en la solicitud:', error);
 		}
 	};
 
@@ -154,9 +179,9 @@
 							</Button>
 						{/if}
 
-						<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
-							<span class="text-gray-200">Send Message</span></Button
-						>
+						<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]" on:click={createConversation}>
+							<span class="text-gray-200">Send Message</span>
+						</Button>
 					{/if}
 				</div>
 				<div class="flex gap-10">
