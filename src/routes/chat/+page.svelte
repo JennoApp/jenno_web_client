@@ -151,7 +151,7 @@
 				<!-- Mostrar lista de conversaciones -->
 				{#each conversations as result}
 					<button
-						class="w-full"
+						class={`w-full rounded-lg ${currentChat?._id === result._id ? 'bg-[#303030]': ''}`}
 						on:click={() => {
 							currentChat = result;
               openChatbox = true
