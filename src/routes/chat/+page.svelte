@@ -10,15 +10,16 @@
 	$: console.log({ socket });
 
 	// Estados y variables
-  let conversationId = $page.url.searchParams.get('conversationId')
+	let conversationId = $page.url.searchParams.get('conversationId');
 	let conversations: any[] = [];
 	let messages: any[] = [];
-	let currentChat: any = null
+	let currentChat: any = null;
 	let newMessage: string = '';
 	let arrivalMessage: any = null;
 	let element: HTMLDivElement;
-	let isSmallview: boolean = false;
+	let isSmallview = window.innerWidth < 768;
 	let friendId: string;
+	let openChatbox: boolean = false;
 
 	// Estado para verificar si las conversaciones se cargaron correctamente
 	let isLoadingConversations: boolean = true;
@@ -50,14 +51,12 @@
 
 	onMount(getServerUrl);
 
-	
-
 	// Obtener mensajes de la conversacion actual
 	const getMessages = async (currentChatId: string) => {
-    if (!serverUrl) {
-        console.error('Error: serverUrl no está definido.');
-        return;
-    }
+		if (!serverUrl) {
+			console.error('Error: serverUrl no está definido.');
+			return;
+		}
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
 			const data = await response.json();
@@ -67,20 +66,20 @@
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
 		}
-	};	
+	};
 
-
-   // Reactividad para manejar el cambio de conversación
-  $: if (conversationId && conversations.length > 0) {
-    // Verificar si la conversacion actual es diferente y asignarla
-    if (!currentChat || currentChat._id !== conversationId) {
-      currentChat = conversations.find((conv) => conv._id === conversationId)
-      if (currentChat) {
-        getMessages(currentChat._id)
-        friendId = currentChat.members.find((member: any) => member !== $page.data.user._id)
-      }
-    }
-  }
+	// Reactividad para manejar el cambio de conversación
+	$: if (conversationId && conversations.length > 0) {
+		// Verificar si la conversacion actual es diferente y asignarla
+		if (!currentChat || currentChat._id !== conversationId) {
+			currentChat = conversations.find((conv) => conv._id === conversationId);
+			if (currentChat) {
+				getMessages(currentChat._id);
+				friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
+				openChatbox = true;
+			}
+		}
+	}
 
 	// Enviar mensaje
 	const handleSendMessage = async () => {
@@ -121,6 +120,11 @@
 		}
 	};
 
+	// Listener para manejar cambios de tamaño de pantalla
+	window.addEventListener('resize', () => {
+		isSmallview = window.innerWidth < 768;
+	});
+
 	// Desplazar hacia abajo en los mensajes
 	const scrollToBottom = (node: HTMLDivElement) => {
 		node?.scroll({ top: node.scrollHeight, behavior: 'smooth' });
@@ -135,7 +139,7 @@
 	<div class="flex m-0 p-0">
 		<!-- ChatMenu -->
 		<div
-			class={`w-full md:w-1/4 top-14 h-[calc(100vh-56px)] ${isSmallview === true ? 'hidden md:block' : ''}`}
+			class={`w-full md:w-1/4 top-14 h-[calc(100vh-56px)] ${openChatbox && isSmallview ? 'hidden' : ''}`}
 		>
 			<div class="w-full p-3">
 				<!-- Buscador de usuarios de mensajes dejado para despues; se agrega 'hidden' -->
@@ -150,7 +154,8 @@
 						class="w-full"
 						on:click={() => {
 							currentChat = result;
-							isSmallview = !isSmallview;
+              openChatbox = true
+              if (isSmallview) isSmallview = true
 						}}
 					>
 						<Conversation conversation={result} userId={$page.data.user._id} />
@@ -160,15 +165,15 @@
 		</div>
 
 		<!-- ChatBox -->
-		<div class={`w-full ${isSmallview === true ? '' : 'hidden'}`}>
+		<div class={`w-full ${openChatbox ? '' : 'hidden'}`}>
 			<div class="flex flex-col w-full top-14 h-[calc(100vh-56px)]">
 				<div class="p-3 h-[calc(100vh-100px)]">
 					<!-- ChatBox Head -->
-					{#if isSmallview === true}
+					{#if isSmallview}
 						<button
 							class={`${isSmallview === true ? '' : 'hidden'}`}
 							on:click={() => {
-								isSmallview = !isSmallview;
+                openChatbox = false
 							}}
 						>
 							<!-- Close Icon -->
@@ -216,7 +221,8 @@
 		<iconify-icon icon="mdi:conversation" height="5rem" width="5rem" class="text-[#707070] mb-4" />
 		<p class="text-lg text-[#707070] mb-2">Aún no tienes ninguna conversación</p>
 		<p class="text-lg text-[#707070]">
-			Puedes comenzar una conversación explorando las tiendas o conectándote con otros usuarios. ¡Descubre productos interesantes y haz nuevos amigos!
+			Puedes comenzar una conversación explorando las tiendas o conectándote con otros usuarios.
+			¡Descubre productos interesantes y haz nuevos amigos!
 		</p>
 	</div>
 {/if}
