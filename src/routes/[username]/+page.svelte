@@ -97,7 +97,7 @@
 		};
 
 		try {
-			const response = await fetch(`${serverUrl}/conversations`, {
+			const response = await fetch(`${serverUrl}/chat/conversations`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
