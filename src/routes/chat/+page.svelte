@@ -71,11 +71,14 @@
 
 
    // Reactividad para manejar el cambio de conversación
-  $: if (currentChat && currentChat._id !== conversationId) {
-    currentChat = conversations.find((conv) => conv._id === conversationId);
-    if (currentChat) {
-      getMessages(currentChat._id);
-      friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
+  $: if (conversationId && conversations.length > 0) {
+    // Verificar si la conversacion actual es diferente y asignarla
+    if (!currentChat || currentChat._id !== conversationId) {
+      currentChat = conversations.find((conv) => conv._id === conversationId)
+      if (currentChat) {
+        getMessages(currentChat._id)
+        friendId = currentChat.members.find((member: any) => member !== $page.data.user._id)
+      }
     }
   }
 
