@@ -1,40 +1,70 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 
 	export let conversation: any[];
 	export let userId: string;
 
 	let user: any = null;
-  // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	let serverUrl: string;
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+	// Obtener url del servidor
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-  $: getServerUrl()
-
-	$: {
-		const friendId = conversation?.members.find((m) => m !== userId);
-
-		const getUser = async () => {
-			try {
-				const response = await fetch(`${serverUrl}/users/${friendId}`);
-				const data = await response.json();
-				user = data;
-				console.log(data);
-			} catch (err) {
-				console.log(err);
+			if (data.server_url) {
+				serverUrl = data.server_url; // Asignar la URL del servidor
+			} else {
+				console.error('Error: server_url no está presente en la respuesta.');
 			}
-		};
-		getUser();
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
 	}
+
+	// Obtener datos del usuario amigo
+	async function getUser(friendId: string) {
+		if (!serverUrl) {
+			console.error('Error: serverUrl no está definido.');
+			return;
+		}
+
+		if (!friendId) {
+			console.error('Error: friendId no está definido.');
+			return;
+		}
+
+		try {
+			const response = await fetch(`${serverUrl}/users/${friendId}`);
+
+			if (!response.ok) {
+				console.error(`Error: Falló la solicitud con el estado ${response.status}`);
+				return;
+			}
+
+			const data = await response.json();
+			user = data; // Asignar datos del amigo
+			console.log('Datos del amigo:', data);
+		} catch (err) {
+			console.error('Error al obtener datos del amigo:', err);
+		}
+	}
+
+	// Ejecutar al montar el componente
+	onMount(async () => {
+		await getServerUrl(); // Obtener serverUrl primero
+
+		// Identificar el ID del amigo y obtener sus datos
+		const friendId = conversation?.members.find((m) => m !== userId);
+		if (friendId) {
+			await getUser(friendId);
+		} else {
+			console.error('Error: friendId no se pudo determinar.');
+		}
+	});
 </script>
+
 <div class="flex items-center p-3 cursor-pointer hover:bg-gray-200 dark:hover:bg-[#202020]">
 	{#if user?.profileImg !== ''}
 		<img
