@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { format } from 'timeago.js';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 
 	export let own: boolean;
@@ -22,17 +23,32 @@
     }
   }
 
-  $: getServerUrl()
+  onMount(async () => {
+    await getServerUrl()
+  })
 
 	const getFriendImg = async (id: string) => {
-		const response = await fetch(`${serverUrl}/users/getprofileimg/${id}`);
-		const data = await response.json();
-		friendImg = data;
+     if (!serverUrl) {
+        console.error('Error: serverUrl no está definido.');
+        return;
+    }
 
-		return data;
+    if (!id) {
+        console.error('Error: friendId no está definido.');
+        return;
+    }
+    try {
+        const response = await fetch(`${serverUrl}/users/getprofileimg/${id}`);
+        const data = await response.json();
+        friendImg = data;
+
+        return data;
+    } catch (error) {
+        console.error('Error al obtener la imagen del amigo:', error);
+    }	
 	};
 
-	$: {
+	$: if (friendId && serverUrl) {
 		getFriendImg(friendId);
 	}
 
