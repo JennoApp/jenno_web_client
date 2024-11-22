@@ -3,53 +3,63 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-
 	export let own: boolean;
 	export let friendId: any;
 	export let message: any;
 
 	let friendImg: string;
 
-  // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			if (data.server_url) {
+				serverUrl = data.server_url;
+			} else {
+				console.error('Error: server_url no está presente en la respuesta.');
+			}
+		} catch (error) {
+			console.error('Error al obtener serverUrl:', error);
+		}
+	}
 
-  onMount(async () => {
-    await getServerUrl()
-  })
+	onMount(async () => {
+		await getServerUrl();
+	});
 
 	const getFriendImg = async (id: string) => {
-     if (!serverUrl) {
-        console.error('Error: serverUrl no está definido.');
-        return;
-    }
+		if (!serverUrl) {
+			console.error('Error: serverUrl no está definido.');
+			return;
+		}
 
-    if (!id) {
-        console.error('Error: friendId no está definido.');
-        return;
-    }
-    try {
-        const response = await fetch(`${serverUrl}/users/getprofileimg/${id}`);
-        const data = await response.json();
-        friendImg = data;
+		if (!id) {
+			console.error('Error: friendId no está definido.');
+			return;
+		}
+		try {
+			const response = await fetch(`${serverUrl}/users/getprofileimg/${id}`);
+			if (!response.ok) {
+				console.error('Error en la respuesta del servidor:', response.status);
+				return;
+			}
 
-        return data;
-    } catch (error) {
-        console.error('Error al obtener la imagen del amigo:', error);
-    }	
+			const data = await response.json();
+			friendImg = data;
+
+			return data;
+		} catch (error) {
+			console.error('Error al obtener la imagen del amigo:', error);
+		}
 	};
 
 	$: if (friendId && serverUrl) {
 		getFriendImg(friendId);
+	} else {
+		console.error('Error: serverUrl o friendId no están definidos.');
 	}
 
 	$: console.log(friendImg);
@@ -80,14 +90,10 @@
 		</div>
 	{/if}
 
-{#if own === false}
+	{#if own === false}
 		<div class="flex">
 			{#if friendImg?.profileImg !== ''}
-				<img
-					src={friendImg?.profileImg}
-					alt=""
-					class="w-8 h-8 rounded-full object-cover mr-3"
-				/>
+				<img src={friendImg?.profileImg} alt="" class="w-8 h-8 rounded-full object-cover mr-3" />
 			{:else}
 				<iconify-icon
 					icon="mdi:user"

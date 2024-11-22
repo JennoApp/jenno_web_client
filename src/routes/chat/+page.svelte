@@ -157,6 +157,8 @@
       scrollToBottom(element)
     }
 	});
+
+  $: console.log({messages})
 </script>
 
 {#if conversations.length > 0}
