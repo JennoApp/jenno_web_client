@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 	import { getContext, onMount, afterUpdate } from 'svelte';
 	import * as m from '$paraglide/messages';
+	import { toast } from 'svelte-sonner';
 
 	// Obtener el socket del contexto
 	const { socket }: { socket: any } = getContext('socket');
@@ -57,10 +58,20 @@
 			console.error('Error: serverUrl no está definido.');
 			return;
 		}
+		if (!currentChatId) {
+			console.error('Error: currentChatId no está definido o es inválido.');
+			return;
+		}
+
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
-			const data = await response.json();
+			if (!response.ok) {
+				console.error(`Error: ${response.statusText} (${response.status})`);
+				messages = []; // Asegurar que se limpia el estado en caso de error
+				return;
+			}
 
+			const data = await response.json();
 			messages = [...(data?.messages ?? [])];
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
@@ -83,19 +94,27 @@
 
 	// Enviar mensaje
 	const handleSendMessage = async () => {
+		if (!newMessage.trim() || !currentChat) {
+			console.log('El mensaje está vacío o no hay una conversación seleccionada.');
+			return;
+		}
+
 		const message = {
+			conversationId: currentChat._id,
 			sender: $page.data.user._id,
-			text: newMessage,
-			conversationId: currentChat._id
+			text: newMessage
 		};
 
+		// Obtener el ID del receptor
 		const receiverId = currentChat?.members.find((member: any) => member !== $page.data.user._id);
 
+		/*
 		socket?.emit('sendMessage', {
 			senderId: $page.data.user._id,
 			receiverId: receiverId,
 			text: newMessage
 		});
+    */
 
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages`, {
@@ -103,20 +122,18 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({
-					conversationId: message.conversationId,
-					sender: message.sender,
-					text: message.text
-				})
+				body: JSON.stringify(message)
 			});
 
 			const data = await response.json();
-			messages = [...messages, data?.savedMessage];
+			messages = [...(messages || []), data?.savedMessage];
 
-			console.log(data);
+			newMessage = '';
+			console.log('Mensaje enviado:', data);
 			return data;
-		} catch (err) {
-			console.log(err);
+		} catch (error) {
+			console.log('Error al enviar el mensaje:', error);
+			toast.error('Hubo un problema al enviar el mensaje. Por favor, intentalo de nuevo.');
 		}
 	};
 
@@ -127,11 +144,18 @@
 
 	// Desplazar hacia abajo en los mensajes
 	const scrollToBottom = (node: HTMLDivElement) => {
-		node?.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+		if (node) {
+			node?.scroll({
+				top: node.scrollHeight,
+				behavior: 'smooth'
+			});
+		}
 	};
 
 	afterUpdate(() => {
-		if (messages && element) scrollToBottom(element);
+		if (messages?.length > 0 && element) {
+      scrollToBottom(element)
+    }
 	});
 </script>
 
@@ -151,11 +175,11 @@
 				<!-- Mostrar lista de conversaciones -->
 				{#each conversations as result}
 					<button
-						class={`w-full rounded-lg ${currentChat?._id === result._id ? 'bg-[#303030]': ''}`}
+						class={`w-full rounded-lg ${currentChat?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
 							currentChat = result;
-              openChatbox = true
-              if (isSmallview) isSmallview = true
+							openChatbox = true;
+							if (isSmallview) isSmallview = true;
 						}}
 					>
 						<Conversation conversation={result} userId={$page.data.user._id} />
@@ -173,7 +197,7 @@
 						<button
 							class={`${isSmallview === true ? '' : 'hidden'}`}
 							on:click={() => {
-                openChatbox = false
+								openChatbox = false;
 							}}
 						>
 							<!-- Close Icon -->
