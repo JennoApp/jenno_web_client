@@ -83,7 +83,7 @@
 			const data = await response.json();
 			console.log('Mensajes obtenidos:', data?.messages);
 
-			messages = [...(data?.messages ?? [])];
+			messages = [...(data?.messages ?? [])].reverse()
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
