@@ -50,29 +50,33 @@
 		}
 	}
 
-	onMount(getServerUrl);
+	onMount(async () => {
+   await getServerUrl()
+  });
 
 	// Obtener mensajes de la conversacion actual
 	const getMessages = async (currentChatId: string) => {
+    console.log('Intentando obtener mensajes para:', currentChatId);
+
 		if (!serverUrl) {
 			console.error('Error: serverUrl no está definido.');
 			return;
 		}
-		if (!currentChatId) {
-			console.error('Error: currentChatId no está definido o es inválido.');
-			return;
-		}
-
+		
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
+      console.log('Respuesta del servidor:', response);
+
 			if (!response.ok) {
 				console.error(`Error: ${response.statusText} (${response.status})`);
-				messages = []; // Asegurar que se limpia el estado en caso de error
+				messages = []; 
 				return;
 			}
 
 			const data = await response.json();
-			messages = [...(data?.messages ?? [])];
+      console.log('Mensajes obtenidos:', data?.messages);
+			
+      messages = [...(data?.messages ?? [])];
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
@@ -85,6 +89,7 @@
 		if (!currentChat || currentChat._id !== conversationId) {
 			currentChat = conversations.find((conv) => conv._id === conversationId);
 			if (currentChat) {
+        console.log('Cargando mensajes para conversación:', currentChat._id)
 				getMessages(currentChat._id);
 				friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
 				openChatbox = true;
@@ -180,6 +185,7 @@
 						class={`w-full rounded-lg ${currentChat?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
 							currentChat = result;
+              conversationId = result._id
 							openChatbox = true;
 							if (isSmallview) isSmallview = true;
 						}}
@@ -210,7 +216,7 @@
 					{#if currentChat}
 						<!-- Chatbox Body -->
 						<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
-							{#each messages as message}
+							{#each messages as message (message._id)}
 								<Message own={message?.sender === $page.data.user._id} {friendId} {message} />
 							{/each}
 						</div>
