@@ -19,7 +19,7 @@
 	let arrivalMessage: any = null;
 	let element: HTMLDivElement;
 	let isSmallview = window.innerWidth < 768;
-	let friendId: string;
+	let friendId: string | null;
 	let openChatbox: boolean = false;
 
 	// Estado para verificar si las conversaciones se cargaron correctamente
@@ -83,19 +83,19 @@
 		}
 	};
 
-	// Reactividad para manejar el cambio de conversación
-	$: if (conversationId && conversations.length > 0) {
-		// Verificar si la conversacion actual es diferente y asignarla
-		if (!currentChat || currentChat._id !== conversationId) {
-			currentChat = conversations.find((conv) => conv._id === conversationId);
-			if (currentChat) {
-				console.log('Cargando mensajes para conversación:', currentChat._id);
-				getMessages(currentChat._id);
-				friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
-				openChatbox = true;
-			}
-		}
-	}
+	// // Reactividad para manejar el cambio de conversación
+	// $: if (conversationId && conversations.length > 0) {
+	// 	// Verificar si la conversacion actual es diferente y asignarla
+	// 	if (!currentChat || currentChat._id !== conversationId) {
+	// 		currentChat = conversations.find((conv) => conv._id === conversationId);
+	// 		if (currentChat) {
+	// 			console.log('Cargando mensajes para conversación:', currentChat._id);
+	// 			getMessages(currentChat._id);
+	// 			friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
+	// 			openChatbox = true;
+	// 		}
+	// 	}
+	// }
 
 	// Enviar mensaje
 	const handleSendMessage = async () => {
@@ -170,15 +170,69 @@
 		conversationId = id;
 	};
 
+	// $: if (conversationId) {
+	// 	console.log('Cambiando conversationId a:', conversationId);
+
+	// 	// Si la conversación actual es diferente, actualizarla.
+	// 	if (!currentChat || currentChat._id !== conversationId) {
+	// 		currentChat = conversations.find((conv) => conv._id === conversationId);
+	// 		if (currentChat) {
+	// 			console.log('Cargando mensajes para conversación:', currentChat._id);
+
+	// 			// Obtener mensajes de la conversación
+	// 			getMessages(currentChat._id);
+
+	// 			// Determinar el ID del amigo basado en los miembros de la conversación
+	// 			friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
+	// 		} else {
+	// 			console.warn('No se encontró una conversación con el ID:', conversationId);
+	// 		}
+	// 	}
+
+	// 	// getMessages(conversationId); // Llama a la función cuando cambia
+
+	// 	// Abre la caja de chat y verifica si es una vista pequeña.
+	// 	openChatbox = true;
+	// 	if (isSmallview) isSmallview = true;
+
+	// 	console.log('openChatbox:', openChatbox, 'isSmallview:', isSmallview);
+	// }
+
 	$: if (conversationId) {
 		console.log('Cambiando conversationId a:', conversationId);
-		getMessages(conversationId); // Llama a la función cuando cambia
 
-		// Abre la caja de chat y verifica si es una vista pequeña.
+		// Encontrar la conversación actual (si no existe o cambia el ID)
+		const newChat = conversations.find((conv) => conv._id === conversationId);
+		if (newChat) {
+			// Actualizar `currentChat` solo si cambia
+			if (!currentChat || currentChat._id !== newChat._id) {
+				currentChat = newChat;
+				console.log('Actualizando conversación a:', currentChat._id);
+			}
+
+			// Actualizar el ID del amigo basado en los miembros
+			friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
+
+			// Obtener mensajes de la conversación (siempre que cambie `conversationId`)
+			console.log('Cargando mensajes para conversación:', currentChat._id);
+			getMessages(currentChat._id);
+		} else {
+			console.warn('No se encontró una conversación con el ID:', conversationId);
+			currentChat = null;
+			friendId = null;
+		}
+
+		// Abrir la caja de chat y manejar vistas pequeñas
 		openChatbox = true;
 		if (isSmallview) isSmallview = true;
 
-		console.log('openChatbox:', openChatbox, 'isSmallview:', isSmallview);
+		console.log('openChatbox:', openChatbox, 'isSmallview:', isSmallview, 'friendId:', friendId);
+	}
+
+	$: if (!conversationId) {
+		currentChat = null;
+		friendId = null;
+		console.log('conversationId no definido, limpiando datos.');
 	}
 </script>
 

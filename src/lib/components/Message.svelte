@@ -8,9 +8,9 @@
 	export let message: any;
 
 	let friendImg: string;
+  let serverUrl: string | undefined
 
-	// Obtener url del servidor
-	let serverUrl: string;
+	// Obtener url del servidor	
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -26,9 +26,9 @@
 		}
 	}
 
-	onMount(async () => {
-		await getServerUrl();
-	});
+	// onMount(async () => {
+	// 	await getServerUrl();
+	// });
 
 	const getFriendImg = async (id: string) => {
 		if (!serverUrl) {
@@ -54,12 +54,17 @@
 		} catch (error) {
 			console.error('Error al obtener la imagen del amigo:', error);
 		}
-	};
+	}
 
-	$: if (friendId && serverUrl) {
+  onMount(async () => {
+    await getServerUrl()
+    if (friendId) {
+      await getFriendImg(friendId)
+    }
+  })
+
+	$: if (serverUrl && friendId) {
 		getFriendImg(friendId);
-	} else {
-		console.error('Error: serverUrl o friendId no están definidos.');
 	}
 
 	$: console.log(friendImg);
