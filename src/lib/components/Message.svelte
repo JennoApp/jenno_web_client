@@ -6,25 +6,26 @@
 	export let own: boolean;
 	export let friendId: any;
 	export let message: any;
+  export let serverUrl: string | undefined
 
 	let friendImg: string;
-  let serverUrl: string | undefined
+  // let serverUrl: string | undefined
 
-	// Obtener url del servidor	
-	async function getServerUrl() {
-		try {
-			const response = await fetch(`/api/server`);
-			const data = await response.json();
+	// // Obtener url del servidor	
+	// async function getServerUrl() {
+	// 	try {
+	// 		const response = await fetch(`/api/server`);
+	// 		const data = await response.json();
 
-			if (data.server_url) {
-				serverUrl = data.server_url;
-			} else {
-				console.error('Error: server_url no está presente en la respuesta.');
-			}
-		} catch (error) {
-			console.error('Error al obtener serverUrl:', error);
-		}
-	}
+	// 		if (data.server_url) {
+	// 			serverUrl = data.server_url;
+	// 		} else {
+	// 			console.error('Error: server_url no está presente en la respuesta.');
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Error al obtener serverUrl:', error);
+	// 	}
+	// }
 
 	// onMount(async () => {
 	// 	await getServerUrl();
@@ -57,7 +58,7 @@
 	}
 
   onMount(async () => {
-    await getServerUrl()
+    // await getServerUrl()
     if (friendId) {
       await getFriendImg(friendId)
     }

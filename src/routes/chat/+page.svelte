@@ -22,6 +22,8 @@
 	let friendId: string | null;
 	let openChatbox: boolean = false;
 
+  $: console.log({conversationId})
+
 	// Estado para verificar si las conversaciones se cargaron correctamente
 	let isLoadingConversations: boolean = true;
 
@@ -38,13 +40,18 @@
 	$: console.log({ conversations, isLoadingConversations });
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl: string | undefined = undefined;
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
 			const data = await response.json();
 
-			serverUrl = data.server_url;
+			if (data.server_url) {
+				serverUrl = data.server_url
+				console.log('serverUrl:', serverUrl)
+			} else {
+				console.error('Error: server_url no está presente en la respuesta.');
+			}
 		} catch (error) {
 			console.error('Error al solicitar Server Url');
 		}
@@ -82,20 +89,6 @@
 			messages = [];
 		}
 	};
-
-	// // Reactividad para manejar el cambio de conversación
-	// $: if (conversationId && conversations.length > 0) {
-	// 	// Verificar si la conversacion actual es diferente y asignarla
-	// 	if (!currentChat || currentChat._id !== conversationId) {
-	// 		currentChat = conversations.find((conv) => conv._id === conversationId);
-	// 		if (currentChat) {
-	// 			console.log('Cargando mensajes para conversación:', currentChat._id);
-	// 			getMessages(currentChat._id);
-	// 			friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
-	// 			openChatbox = true;
-	// 		}
-	// 	}
-	// }
 
 	// Enviar mensaje
 	const handleSendMessage = async () => {
@@ -170,35 +163,7 @@
 		conversationId = id;
 	};
 
-	// $: if (conversationId) {
-	// 	console.log('Cambiando conversationId a:', conversationId);
-
-	// 	// Si la conversación actual es diferente, actualizarla.
-	// 	if (!currentChat || currentChat._id !== conversationId) {
-	// 		currentChat = conversations.find((conv) => conv._id === conversationId);
-	// 		if (currentChat) {
-	// 			console.log('Cargando mensajes para conversación:', currentChat._id);
-
-	// 			// Obtener mensajes de la conversación
-	// 			getMessages(currentChat._id);
-
-	// 			// Determinar el ID del amigo basado en los miembros de la conversación
-	// 			friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
-	// 		} else {
-	// 			console.warn('No se encontró una conversación con el ID:', conversationId);
-	// 		}
-	// 	}
-
-	// 	// getMessages(conversationId); // Llama a la función cuando cambia
-
-	// 	// Abre la caja de chat y verifica si es una vista pequeña.
-	// 	openChatbox = true;
-	// 	if (isSmallview) isSmallview = true;
-
-	// 	console.log('openChatbox:', openChatbox, 'isSmallview:', isSmallview);
-	// }
-
-	$: if (conversationId) {
+	$: if (conversationId && serverUrl && conversations.length > 0) {
 		console.log('Cambiando conversationId a:', conversationId);
 
 		// Encontrar la conversación actual (si no existe o cambia el ID)
@@ -288,7 +253,7 @@
 						<!-- Chatbox Body -->
 						<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
 							{#each messages as message (message._id)}
-								<Message own={message?.sender === $page.data.user._id} {friendId} {message} />
+								<Message own={message?.sender === $page.data.user._id} {friendId} {message} serverUrl={serverUrl} />
 							{/each}
 						</div>
 
