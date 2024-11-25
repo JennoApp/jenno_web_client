@@ -51,32 +51,32 @@
 	}
 
 	onMount(async () => {
-   await getServerUrl()
-  });
+		await getServerUrl();
+	});
 
 	// Obtener mensajes de la conversacion actual
 	const getMessages = async (currentChatId: string) => {
-    console.log('Intentando obtener mensajes para:', currentChatId);
+		console.log('Intentando obtener mensajes para:', currentChatId);
 
 		if (!serverUrl) {
 			console.error('Error: serverUrl no está definido.');
 			return;
 		}
-		
+
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
-      console.log('Respuesta del servidor:', response);
+			console.log('Respuesta del servidor:', response);
 
 			if (!response.ok) {
 				console.error(`Error: ${response.statusText} (${response.status})`);
-				messages = []; 
+				messages = [];
 				return;
 			}
 
 			const data = await response.json();
-      console.log('Mensajes obtenidos:', data?.messages);
-			
-      messages = [...(data?.messages ?? [])];
+			console.log('Mensajes obtenidos:', data?.messages);
+
+			messages = [...(data?.messages ?? [])];
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
@@ -89,7 +89,7 @@
 		if (!currentChat || currentChat._id !== conversationId) {
 			currentChat = conversations.find((conv) => conv._id === conversationId);
 			if (currentChat) {
-        console.log('Cargando mensajes para conversación:', currentChat._id)
+				console.log('Cargando mensajes para conversación:', currentChat._id);
 				getMessages(currentChat._id);
 				friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
 				openChatbox = true;
@@ -159,11 +159,27 @@
 
 	afterUpdate(() => {
 		if (messages?.length > 0 && element) {
-      scrollToBottom(element)
-    }
+			scrollToBottom(element);
+		}
 	});
 
-  $: console.log({messages})
+	$: console.log({ messages });
+
+	const selectConversation = (id: string) => {
+		console.log('Seleccionando conversacion:', id);
+		conversationId = id;
+	};
+
+	$: if (conversationId) {
+		console.log('Cambiando conversationId a:', conversationId);
+		getMessages(conversationId); // Llama a la función cuando cambia
+
+		// Abre la caja de chat y verifica si es una vista pequeña.
+		openChatbox = true;
+		if (isSmallview) isSmallview = true;
+
+		console.log('openChatbox:', openChatbox, 'isSmallview:', isSmallview);
+	}
 </script>
 
 {#if conversations.length > 0}
@@ -184,8 +200,9 @@
 					<button
 						class={`w-full rounded-lg ${currentChat?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
+							selectConversation(result._id);
 							currentChat = result;
-              conversationId = result._id
+							conversationId = result._id;
 							openChatbox = true;
 							if (isSmallview) isSmallview = true;
 						}}
