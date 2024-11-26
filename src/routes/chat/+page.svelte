@@ -22,7 +22,7 @@
 	let friendId: string | null;
 	let openChatbox: boolean = false;
 
-	$: console.log({ conversationId });
+	$: console.log({ conversationId })
 
 	// Estado para verificar si las conversaciones se cargaron correctamente
 	let isLoadingConversations: boolean = true;
@@ -83,7 +83,7 @@
 			const data = await response.json();
 			console.log('Mensajes obtenidos:', data?.messages);
 
-			messages = [...(data?.messages ?? [])].reverse();
+      messages = data?.messages ? [...data.messages.reverse()] : [];
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
@@ -99,7 +99,7 @@
 		// Verificar si el mensaje pertenece a la conversación actual
 		if (currentChat?._id === data.conversationId) {
 			// Actualizar los mensajes de la conversación actual
-			messages = [...messages, data];
+			messages = [data, ...messages];
 			console.log('Mensaje añadido a la conversación actual:', data.text);
 		} else {
 			console.log('Mensaje recibido pero no pertenece a la conversación actual.');
@@ -140,7 +140,7 @@
 			});
 
 			const data = await response.json();
-			messages = [...(messages || []), data?.savedMessage];
+      messages = [data?.savedMessage, ...messages];
 
 			newMessage = '';
 			console.log('Mensaje enviado:', data);
