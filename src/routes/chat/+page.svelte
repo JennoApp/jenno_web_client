@@ -83,7 +83,7 @@
 			const data = await response.json();
 			console.log('Mensajes obtenidos:', data?.messages);
 
-      messages = data?.messages ? [...data.messages.reverse()] : [];
+      messages = data?.messages ?? [];
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
@@ -99,7 +99,7 @@
 		// Verificar si el mensaje pertenece a la conversación actual
 		if (currentChat?._id === data.conversationId) {
 			// Actualizar los mensajes de la conversación actual
-			messages = [data, ...messages];
+			messages = [...messages, data]
 			console.log('Mensaje añadido a la conversación actual:', data.text);
 		} else {
 			console.log('Mensaje recibido pero no pertenece a la conversación actual.');
@@ -140,7 +140,7 @@
 			});
 
 			const data = await response.json();
-      messages = [data?.savedMessage, ...messages];
+      messages = [...messages, data?.savedMessage];
 
 			newMessage = '';
 			console.log('Mensaje enviado:', data);
