@@ -128,7 +128,7 @@
 
 		// Emitir mensaje con socket
 		socket?.emit('sendMessage', {
-			senderId: $page.data.user._id,
+			sender: $page.data.user._id,
 			receiverId: receiverId,
 			text: newMessage,
 			conversationId: currentChat._id
