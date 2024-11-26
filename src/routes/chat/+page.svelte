@@ -22,7 +22,7 @@
 	let friendId: string | null;
 	let openChatbox: boolean = false;
 
-	$: console.log({ conversationId })
+	$: console.log({ conversationId });
 
 	// Estado para verificar si las conversaciones se cargaron correctamente
 	let isLoadingConversations: boolean = true;
@@ -83,7 +83,7 @@
 			const data = await response.json();
 			console.log('Mensajes obtenidos:', data?.messages);
 
-      messages = data?.messages ?? [];
+			messages = data?.messages;
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
@@ -98,9 +98,13 @@
 
 		// Verificar si el mensaje pertenece a la conversación actual
 		if (currentChat?._id === data.conversationId) {
-			// Actualizar los mensajes de la conversación actual
-			messages = [...messages, data]
-			console.log('Mensaje añadido a la conversación actual:', data.text);
+			const messageExists = messages.some((msg) => msg._id === data._id);
+			if (!messageExists) {
+				messages = [...messages, data]; // Agregar mensaje solo si no existe
+				console.log('Mensaje añadido a la conversación actual:', data.text);
+			} else {
+				console.log('Mensaje duplicado ignorado:', data.text);
+			}
 		} else {
 			console.log('Mensaje recibido pero no pertenece a la conversación actual.');
 		}
@@ -127,7 +131,7 @@
 			senderId: $page.data.user._id,
 			receiverId: receiverId,
 			text: newMessage,
-      conversationId: currentChat._id
+			conversationId: currentChat._id
 		});
 
 		try {
@@ -140,7 +144,7 @@
 			});
 
 			const data = await response.json();
-      messages = [...messages, data?.savedMessage];
+			// messages = [...messages, data?.savedMessage];
 
 			newMessage = '';
 			console.log('Mensaje enviado:', data);
