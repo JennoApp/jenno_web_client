@@ -5,6 +5,9 @@
 	import { getContext, onMount, afterUpdate } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
+	import { messages, currentChat, isLoadingMessages } from '$lib/stores/messagesStore';
+	import { get } from 'svelte/store';
+	import { error } from '@sveltejs/kit';
 
 	// Obtener el socket del contexto
 	const { socket }: { socket: any } = getContext('socket');
@@ -13,21 +16,20 @@
 	// Estados y variables
 	let conversationId = $page.url.searchParams.get('conversationId');
 	let conversations: any[] = [];
-	let messages: any[] = [];
-	let currentChat: any = null;
 	let newMessage: string = '';
-	let arrivalMessage: any = null;
 	let element: HTMLDivElement;
 	let isSmallview = window.innerWidth < 768;
 	let friendId: string | null;
 	let openChatbox: boolean = false;
+	let currentChatValue;
 
-	$: console.log({ conversationId });
+	// Suscripción reactiva al store
+	$: currentChatValue = $currentChat;
 
 	// Estado para verificar si las conversaciones se cargaron correctamente
 	let isLoadingConversations: boolean = true;
 
-	// Obtener conversaciones del servidor (usando datos proporcionados por `load`)
+	// Obtener conversaciones del servidor
 	$: {
 		if ($page.data.conversations) {
 			conversations = $page.data.conversations;
@@ -63,6 +65,7 @@
 
 	// Obtener mensajes de la conversacion actual
 	const getMessages = async (currentChatId: string) => {
+		isLoadingMessages.set(true);
 		console.log('Intentando obtener mensajes para:', currentChatId);
 
 		if (!serverUrl) {
@@ -74,43 +77,40 @@
 			const response = await fetch(`${serverUrl}/chat/messages/${currentChatId}`);
 			console.log('Respuesta del servidor:', response);
 
-			if (!response.ok) {
-				console.error(`Error: ${response.statusText} (${response.status})`);
-				messages = [];
-				return;
+			if (response.ok) {
+				const data = await response.json();
+				messages.set(data.messages);
+			} else {
+				messages.set([]);
 			}
-
-			const data = await response.json();
-			console.log('Mensajes obtenidos:', data?.messages);
-
-			messages = data?.messages;
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
-			messages = [];
+			messages.set([]);
+		} finally {
+			isLoadingMessages.set(false);
 		}
 	};
 
 	$: console.log({ currentChat });
 
 	// Escuchar mensajes entrantes
-	$: {
-		socket?.on('getMessage', (data: any) => {
-			console.log('Nuevo mensaje recibido por socket:', data);
+	socket?.on('getMessage', (data: any) => {
+		if (!data || !data.conversationId || !data._id) {
+			console.warn('Datos de mensaje inválidos recibidos:', data);
+			return;
+		}
 
-			// Verificar si el mensaje pertenece a la conversación actual
-			if (currentChat?._id === data.conversationId) {
-				const messageExists = messages.some((msg) => msg._id === data._id);
-				if (!messageExists) {
-					messages = [...messages, data]; // Agregar mensaje solo si no existe
-					console.log('Mensaje añadido a la conversación actual:', data.text);
-				} else {
-					console.log('Mensaje duplicado ignorado:', data.text);
-				}
-			} else {
-				console.log('Mensaje recibido pero no pertenece a la conversación actual.');
+		const currentChatValue = get(currentChat);
+		const messagesValue = get(messages);
+
+		if (currentChatValue?._id === data.conversationId) {
+			const messageExists = messagesValue.some((msg) => msg._id === data._id);
+			if (!messageExists) {
+				messages.set([...messagesValue, data]);
 			}
-		});
-	}
+		}
+	});
+
 	// Enviar mensaje
 	const handleSendMessage = async () => {
 		if (!newMessage.trim() || !currentChat) {
@@ -118,21 +118,27 @@
 			return;
 		}
 
+		const currentChatValue = get(currentChat);
+		if (!currentChatValue) return;
+
 		const message = {
-			conversationId: currentChat._id,
+			conversationId: currentChatValue._id,
 			sender: $page.data.user._id,
-			text: newMessage
+			text: newMessage,
+			_id: ''
 		};
 
 		// Obtener el ID del receptor
-		const receiverId = currentChat?.members.find((member: any) => member !== $page.data.user._id);
+		const receiverId = currentChatValue?.members.find(
+			(member: any) => member !== $page.data.user._id
+		);
 
 		// Emitir mensaje con socket
 		socket?.emit('sendMessage', {
 			sender: $page.data.user._id,
-			receiverId: receiverId,
+			receiverId,
 			text: newMessage,
-			conversationId: currentChat._id
+			conversationId: currentChatValue._id
 		});
 
 		try {
@@ -144,12 +150,11 @@
 				body: JSON.stringify(message)
 			});
 
-			const data = await response.json();
-			// messages = [...messages, data?.savedMessage];
-
-			newMessage = '';
-			console.log('Mensaje enviado:', data);
-			return data;
+			if (response.ok) {
+				const data = await response.json();
+				messages.update((msgs) => [...msgs, data.savedMessage]);
+				newMessage = '';
+			}
 		} catch (error) {
 			console.log('Error al enviar el mensaje:', error);
 			toast.error('Hubo un problema al enviar el mensaje. Por favor, intentalo de nuevo.');
@@ -172,7 +177,7 @@
 	};
 
 	afterUpdate(() => {
-		if (messages?.length > 0 && element) {
+		if (get(messages)?.length > 0 && element) {
 			scrollToBottom(element);
 		}
 	});
@@ -182,6 +187,11 @@
 	const selectConversation = (id: string) => {
 		console.log('Seleccionando conversacion:', id);
 		conversationId = id;
+		const selectedChat = conversations.find((conv) => conv._id === id);
+		if (selectedChat) {
+			currentChat.set(selectedChat);
+			getMessages(selectedChat._id);
+		}
 	};
 
 	$: if (conversationId && serverUrl && conversations.length > 0) {
@@ -191,20 +201,26 @@
 		const newChat = conversations.find((conv) => conv._id === conversationId);
 		if (newChat) {
 			// Actualizar `currentChat` solo si cambia
-			if (!currentChat || currentChat._id !== newChat._id) {
-				currentChat = newChat;
-				console.log('Actualizando conversación a:', currentChat._id);
+			if (!currentChatValue || currentChatValue._id !== newChat._id) {
+				currentChat.set(newChat)
+				console.log('Actualizando conversación a:', newChat._id);
 			}
 
 			// Actualizar el ID del amigo basado en los miembros
-			friendId = currentChat.members.find((member: any) => member !== $page.data.user._id);
+			friendId = newChat.members.find((member: any) => member !== $page.data.user._id);
 
 			// Obtener mensajes de la conversación (siempre que cambie `conversationId`)
-			console.log('Cargando mensajes para conversación:', currentChat._id);
-			getMessages(currentChat._id);
+			console.log('Cargando mensajes para conversación:', newChat._id);
+			getMessages(newChat._id)
+        .then((m: any) => {
+          messages.set(m)
+        })
+        .catch((error) => {
+          console.error('Error al cargar los mensages:', error)
+        })
 		} else {
 			console.warn('No se encontró una conversación con el ID:', conversationId);
-			currentChat = null;
+			currentChat.set(null);
 			friendId = null;
 		}
 
@@ -216,9 +232,11 @@
 	}
 
 	$: if (!conversationId) {
-		currentChat = null;
+		currentChat.set(null);
 		friendId = null;
 		console.log('conversationId no definido, limpiando datos.');
+
+		messages.set([]);
 	}
 </script>
 
@@ -238,10 +256,10 @@
 				<!-- Mostrar lista de conversaciones -->
 				{#each conversations as result}
 					<button
-						class={`w-full rounded-lg ${currentChat?._id === result._id ? 'bg-[#303030]' : ''}`}
+						class={`w-full rounded-lg ${currentChatValue?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
 							selectConversation(result._id);
-							currentChat = result;
+							currentChat.set(result)
 							conversationId = result._id;
 							openChatbox = true;
 							if (isSmallview) isSmallview = true;
@@ -273,7 +291,7 @@
 					{#if currentChat}
 						<!-- Chatbox Body -->
 						<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
-							{#each messages as message (message._id)}
+							{#each $messages as message (message._id)}
 								<Message
 									own={message?.sender === $page.data.user._id}
 									{friendId}
