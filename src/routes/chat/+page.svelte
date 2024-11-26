@@ -93,23 +93,24 @@
 	$: console.log({ currentChat });
 
 	// Escuchar mensajes entrantes
-	socket?.on('getMessage', (data: any) => {
-		console.log('Nuevo mensaje recibido por socket:', data);
+	$: {
+		socket?.on('getMessage', (data: any) => {
+			console.log('Nuevo mensaje recibido por socket:', data);
 
-		// Verificar si el mensaje pertenece a la conversación actual
-		if (currentChat?._id === data.conversationId) {
-			const messageExists = messages.some((msg) => msg._id === data._id);
-			if (!messageExists) {
-				messages = [...messages, data]; // Agregar mensaje solo si no existe
-				console.log('Mensaje añadido a la conversación actual:', data.text);
+			// Verificar si el mensaje pertenece a la conversación actual
+			if (currentChat?._id === data.conversationId) {
+				const messageExists = messages.some((msg) => msg._id === data._id);
+				if (!messageExists) {
+					messages = [...messages, data]; // Agregar mensaje solo si no existe
+					console.log('Mensaje añadido a la conversación actual:', data.text);
+				} else {
+					console.log('Mensaje duplicado ignorado:', data.text);
+				}
 			} else {
-				console.log('Mensaje duplicado ignorado:', data.text);
+				console.log('Mensaje recibido pero no pertenece a la conversación actual.');
 			}
-		} else {
-			console.log('Mensaje recibido pero no pertenece a la conversación actual.');
-		}
-	});
-
+		});
+	}
 	// Enviar mensaje
 	const handleSendMessage = async () => {
 		if (!newMessage.trim() || !currentChat) {
