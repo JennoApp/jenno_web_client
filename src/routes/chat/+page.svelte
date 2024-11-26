@@ -100,7 +100,7 @@
 		if (currentChat?._id === data.conversationId) {
 			// Actualizar los mensajes de la conversación actual
 			messages = [...messages, data];
-			console.log('Mensaje añadido a la conversación actual:', data);
+			console.log('Mensaje añadido a la conversación actual:', data.text);
 		} else {
 			console.log('Mensaje recibido pero no pertenece a la conversación actual.');
 		}
@@ -126,7 +126,8 @@
 		socket?.emit('sendMessage', {
 			senderId: $page.data.user._id,
 			receiverId: receiverId,
-			text: newMessage
+			text: newMessage,
+      conversationId: currentChat._id
 		});
 
 		try {
