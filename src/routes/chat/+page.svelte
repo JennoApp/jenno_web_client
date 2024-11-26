@@ -22,7 +22,7 @@
 	let friendId: string | null;
 	let openChatbox: boolean = false;
 
-  $: console.log({conversationId})
+	$: console.log({ conversationId });
 
 	// Estado para verificar si las conversaciones se cargaron correctamente
 	let isLoadingConversations: boolean = true;
@@ -47,8 +47,8 @@
 			const data = await response.json();
 
 			if (data.server_url) {
-				serverUrl = data.server_url
-				console.log('serverUrl:', serverUrl)
+				serverUrl = data.server_url;
+				console.log('serverUrl:', serverUrl);
 			} else {
 				console.error('Error: server_url no está presente en la respuesta.');
 			}
@@ -83,12 +83,28 @@
 			const data = await response.json();
 			console.log('Mensajes obtenidos:', data?.messages);
 
-			messages = [...(data?.messages ?? [])].reverse()
+			messages = [...(data?.messages ?? [])].reverse();
 		} catch (error) {
 			console.error('Error obteniendo mensajes:', error);
 			messages = [];
 		}
 	};
+
+	$: console.log({ currentChat });
+
+	// Escuchar mensajes entrantes
+	socket?.on('getMessage', (data: any) => {
+		console.log('Nuevo mensaje recibido por socket:', data);
+
+		// Verificar si el mensaje pertenece a la conversación actual
+		if (currentChat?._id === data.conversationId) {
+			// Actualizar los mensajes de la conversación actual
+			messages = [...messages, data];
+			console.log('Mensaje añadido a la conversación actual:', data);
+		} else {
+			console.log('Mensaje recibido pero no pertenece a la conversación actual.');
+		}
+	});
 
 	// Enviar mensaje
 	const handleSendMessage = async () => {
@@ -106,13 +122,12 @@
 		// Obtener el ID del receptor
 		const receiverId = currentChat?.members.find((member: any) => member !== $page.data.user._id);
 
-		/*
+		// Emitir mensaje con socket
 		socket?.emit('sendMessage', {
 			senderId: $page.data.user._id,
 			receiverId: receiverId,
 			text: newMessage
 		});
-    */
 
 		try {
 			const response = await fetch(`${serverUrl}/chat/messages`, {
@@ -253,7 +268,12 @@
 						<!-- Chatbox Body -->
 						<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
 							{#each messages as message (message._id)}
-								<Message own={message?.sender === $page.data.user._id} {friendId} {message} serverUrl={serverUrl} />
+								<Message
+									own={message?.sender === $page.data.user._id}
+									{friendId}
+									{message}
+									{serverUrl}
+								/>
 							{/each}
 						</div>
 

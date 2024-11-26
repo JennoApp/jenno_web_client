@@ -28,7 +28,7 @@
 
   setContext(SOCKET_CONTEXT, socketContext)
 
-	async function initializeSocket() {
+	async function initializeSocket(userId: string) {
 		try {
 			const response = await fetch('/api/socketurl');
 			const { socket_url } = await response.json();
@@ -44,6 +44,11 @@
 
 			socket.on('connect', () => {
 				console.log('Conectado con ID de sesión:', socket!.id);
+
+        // Agregar usuario al backend
+        if (userId) {
+          socket?.emit('addUser', userId)
+        }
 			});
 
 			socket.on('disconnect', (reason) => {
@@ -55,7 +60,6 @@
 			});
 
 			console.log('Socket inicializado');
-
 			socket.connect();
 
       socketContext.socket = socket      
@@ -65,7 +69,7 @@
 	}
 
   onMount(async () =>  {
-    await initializeSocket()
+    await initializeSocket($page.data?.user?._id)
   })
 
   // Establecer el contexto del socket

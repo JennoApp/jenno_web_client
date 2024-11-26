@@ -9,28 +9,7 @@
   export let serverUrl: string | undefined
 
 	let friendImg: string;
-  // let serverUrl: string | undefined
-
-	// // Obtener url del servidor	
-	// async function getServerUrl() {
-	// 	try {
-	// 		const response = await fetch(`/api/server`);
-	// 		const data = await response.json();
-
-	// 		if (data.server_url) {
-	// 			serverUrl = data.server_url;
-	// 		} else {
-	// 			console.error('Error: server_url no está presente en la respuesta.');
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Error al obtener serverUrl:', error);
-	// 	}
-	// }
-
-	// onMount(async () => {
-	// 	await getServerUrl();
-	// });
-
+  
 	const getFriendImg = async (id: string) => {
 		if (!serverUrl) {
 			console.error('Error: serverUrl no está definido.');
@@ -67,9 +46,6 @@
 	$: if (serverUrl && friendId) {
 		getFriendImg(friendId);
 	}
-
-	$: console.log(friendImg);
-	$: console.log(friendId);
 </script>
 
 <div class="flex flex-col mb-3">
