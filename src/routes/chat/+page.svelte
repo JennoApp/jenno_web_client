@@ -112,8 +112,10 @@
 		const messagesValue = get(messages);
 
 		if (currentChatValue?._id === data.conversationId) {
-			// messages.set([...messagesValue, data]);
-			messages.update((msgs) => [...msgs, data]);
+			const messageExists = messagesValue.some((msg) => msg._id === _id);
+			if (!messageExists) {
+				messages.update((msgs) => [...msgs, data]);
+			}
 		}
 	});
 
