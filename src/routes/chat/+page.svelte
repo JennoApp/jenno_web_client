@@ -212,12 +212,6 @@
 			// Obtener mensajes de la conversación (siempre que cambie `conversationId`)
 			console.log('Cargando mensajes para conversación:', newChat._id);
 			getMessages(newChat._id)
-        .then((m: any) => {
-          messages.set(m)
-        })
-        .catch((error) => {
-          console.error('Error al cargar los mensages:', error)
-        })
 		} else {
 			console.warn('No se encontró una conversación con el ID:', conversationId);
 			currentChat.set(null);
