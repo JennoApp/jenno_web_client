@@ -100,6 +100,14 @@
 			return;
 		}
 
+		const { conversationId, _id, text, sender } = data;
+
+		// Validar campos obligatorios
+		if (!conversationId || !_id || !text || !sender) {
+			console.warn('Datos de mensaje incompletos recibidos:', data);
+			return;
+		}
+
 		const currentChatValue = get(currentChat);
 		const messagesValue = get(messages);
 
@@ -122,10 +130,10 @@
 		if (!currentChatValue) return;
 
 		const message = {
+      _id: '',
 			conversationId: currentChatValue._id,
 			sender: $page.data.user._id,
-			text: newMessage,
-			_id: ''
+			text: newMessage	
 		};
 
 		// Obtener el ID del receptor
@@ -135,6 +143,7 @@
 
 		// Emitir mensaje con socket
 		socket?.emit('sendMessage', {
+      _id: '',
 			sender: $page.data.user._id,
 			receiverId,
 			text: newMessage,
@@ -152,8 +161,16 @@
 
 			if (response.ok) {
 				const data = await response.json();
-				messages.update((msgs) => [...msgs, data.savedMessage]);
-				newMessage = '';
+				if (data?.savedMessage && data.savedMessage._id && data.savedMessage.conversationId) {
+					messages.update((msgs) => [...msgs, data.savedMessage]);
+					newMessage = '';
+				} else {
+					console.error('Respuesta inesperada del servidor:', data);
+					toast.error('El mensaje no pudo ser enviado. Intenta de nuevo.');
+				}
+			} else {
+				console.error('Error en la respuesta del servidor:', response.statusText);
+				toast.error('Hubo un problema al enviar el mensaje. Por favor, intentalo de nuevo.');
 			}
 		} catch (error) {
 			console.log('Error al enviar el mensaje:', error);
@@ -202,7 +219,7 @@
 		if (newChat) {
 			// Actualizar `currentChat` solo si cambia
 			if (!currentChatValue || currentChatValue._id !== newChat._id) {
-				currentChat.set(newChat)
+				currentChat.set(newChat);
 				console.log('Actualizando conversación a:', newChat._id);
 			}
 
@@ -211,7 +228,7 @@
 
 			// Obtener mensajes de la conversación (siempre que cambie `conversationId`)
 			console.log('Cargando mensajes para conversación:', newChat._id);
-			getMessages(newChat._id)
+			getMessages(newChat._id);
 		} else {
 			console.warn('No se encontró una conversación con el ID:', conversationId);
 			currentChat.set(null);
@@ -253,7 +270,7 @@
 						class={`w-full rounded-lg ${currentChatValue?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
 							selectConversation(result._id);
-							currentChat.set(result)
+							currentChat.set(result);
 							conversationId = result._id;
 							openChatbox = true;
 							if (isSmallview) isSmallview = true;
