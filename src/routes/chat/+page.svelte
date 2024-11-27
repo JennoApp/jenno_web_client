@@ -130,7 +130,6 @@
 		if (!currentChatValue) return;
 
 		const message = {
-      _id: '',
 			conversationId: currentChatValue._id,
 			sender: $page.data.user._id,
 			text: newMessage	
