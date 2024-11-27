@@ -112,10 +112,8 @@
 		const messagesValue = get(messages);
 
 		if (currentChatValue?._id === data.conversationId) {
-			const messageExists = messagesValue.some((msg) => msg._id === data._id);
-			if (!messageExists) {
-				messages.set([...messagesValue, data]);
-			}
+			// messages.set([...messagesValue, data]);
+			messages.update((msgs) => [...msgs, data]);
 		}
 	});
 
@@ -132,7 +130,7 @@
 		const message = {
 			conversationId: currentChatValue._id,
 			sender: $page.data.user._id,
-			text: newMessage	
+			text: newMessage
 		};
 
 		// Obtener el ID del receptor
@@ -142,7 +140,7 @@
 
 		// Emitir mensaje con socket
 		socket?.emit('sendMessage', {
-      _id: '',
+			_id: '',
 			sender: $page.data.user._id,
 			receiverId,
 			text: newMessage,
@@ -161,7 +159,7 @@
 			if (response.ok) {
 				const data = await response.json();
 				if (data?.savedMessage && data.savedMessage._id && data.savedMessage.conversationId) {
-					messages.update((msgs) => [...msgs, data.savedMessage]);
+					// messages.update((msgs) => [...msgs, data.savedMessage]);
 					newMessage = '';
 				} else {
 					console.error('Respuesta inesperada del servidor:', data);
