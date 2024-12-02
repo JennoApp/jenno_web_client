@@ -128,13 +128,14 @@ export const actions: Actions = {
         })
       })
 
-      // const result = await response.json()
+      const result = await response.json() 
 
-      if (response.status === 401) {
-        console.log("el producto no se ha podido crear")
+      if (!response.ok) {
+        console.error('Error del servidor:', result)
         return {
           success: false,
-          status: response.status
+          status: response.status,
+          errors: result
         }
       }
 
@@ -144,8 +145,7 @@ export const actions: Actions = {
       }
 
     } catch (error: any) {
-      // const { fieldErrors: errors } = error?.flatten()
-      console.log({ error })
+      console.error("Error inesperado:", error)
       return {
         success: false,
         status: 500,
