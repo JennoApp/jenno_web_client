@@ -21,6 +21,7 @@ export const actions: Actions = {
       });
 
       if (!existingProductResponse.ok) {
+        console.error(await existingProductResponse.text());
         throw new Error('Error al obtener el producto existente');
       }
 
@@ -49,6 +50,8 @@ export const actions: Actions = {
 
       const imageResult = await imageResponse.json()
       imagesUrls = imageResult.images
+    } else {
+      console.warn("No files to upload")
     }
 
     const productname = formData?.get('productname')
