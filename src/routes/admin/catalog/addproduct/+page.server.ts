@@ -6,7 +6,7 @@ export const actions: Actions = {
     const formData = await request.formData()
     const uploadedFiles = formData.getAll('files') as File[]
     const tokenJwt = cookies.get('session')
-    let productId = formData?.get('productId') as string | undefined
+    let productId = formData?.get('productId') as string
     let imagesUrls: string[] = []
     const country: string[] = ['Colombia']
 
@@ -120,7 +120,7 @@ export const actions: Actions = {
       // subir nuevas imagenes solo si hay archivos seleccionados
       // tambien si se esta creando un nuevo producto el backend
       // actualiza el producto para incluir las imagenes
-      if (uploadedFiles && uploadedFiles.length > 0) {
+      if (productId && typeof productId === 'string' && uploadedFiles && uploadedFiles.length > 0) {
         const imageFormData = new FormData()
         uploadedFiles.forEach(file => {
           imageFormData.append('files', file)
