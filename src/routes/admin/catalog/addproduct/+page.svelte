@@ -92,10 +92,12 @@
 	$: console.log($location_data);
 
 	onMount(async () => {
-		const productId = $page.url.searchParams.get('id') as string
-    console.log("Product ID:", productId);
+		await getServerUrl();
 
-		if (productId !== null || productId !== undefined) {
+		const productId = $page.url.searchParams.get('id') as string;
+		console.log('Product ID:', productId);
+
+		if (serverUrl && productId) {
 			try {
 				const response = await fetch(`${serverUrl}/products/${productId}`);
 				const productData = await response.json();
@@ -106,7 +108,7 @@
 				console.log('Error al cargar los datos del producto:', error);
 			}
 		}
-	})
+	});
 
 	$: if (product && product.options) {
 		optionsItems = product.options.map((option: any) => ({
