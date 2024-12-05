@@ -6,80 +6,40 @@ export const actions: Actions = {
     const formData = await request.formData()
     const uploadedFiles = formData.getAll('files') as File[]
     const tokenJwt = cookies.get('session')
-    const productId = formData?.get('productId')
-
+    let productId = formData?.get('productId') as string | undefined
     let imagesUrls: string[] = []
     const country: string[] = ['Colombia']
 
-    if (productId) {
-      // Obtener el producto existente para obtener las imágenes actuales
-      const existingProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
-        method: 'GET',
-        headers: {
-          "Authorization": `Bearer ${tokenJwt}`
-        }
-      });
 
-      if (!existingProductResponse.ok) {
-        console.error(await existingProductResponse.text());
-        throw new Error('Error al obtener el producto existente');
-      }
-
-      const existingProduct = await existingProductResponse.json();
-      imagesUrls = existingProduct.imgs || [];  // Cargar las imágenes existentes
-    }
-
-    // subir nuevas imagenes solo si hay archivos seleccionados
-    if (uploadedFiles && uploadedFiles.length > 0) {
-      const imageFormData = new FormData()
-      uploadedFiles.forEach(file => {
-        imageFormData.append('files', file)
-      })
-
-      const imageResponse = await fetch(`${PRIVATE_SERVER_URL}/products/upload-images/${productId}`, {
-        method: 'POST',
-        headers: {
-          "Authorization": `Bearer ${tokenJwt}`
-        },
-        body: imageFormData
-      })
-
-      if (!imageResponse.ok) {
-        throw new Error('Error al subir las imágenes')
-      }
-
-      const imageResult = await imageResponse.json()
-      imagesUrls = imageResult.images
-    } else {
-      console.warn("No files to upload")
-    }
-
-    const productname = formData?.get('productname')
-    const description = formData.get('description')
-    const price = formData.get('price')
-    const quantity = formData.get('quantity')
-    const SKU = formData.get('SKU')
-    const category = formData.get('category')
-    const shippingfee = formData.get('shippingfee')
-    const weight = formData.get('weight')
-    const length = formData.get('length')
-    const width = formData.get('width')
-    const height = formData.get('height')
-    const status = formData.get('status')
-    const visibility = formData.get('visibility')
-    const countryform = formData.get('country')
-
-    if (countryform !== null || countryform !== undefined) {
-      country.push(countryform as string)
-    }
+    // Extraer datos generales del producto
+    const productData = {
+      productname: formData.get('productname'),
+      description: formData.get('description'),
+      imgs: imagesUrls,
+      price: formData.get('price'),
+      quantity: formData.get('quantity'),
+      SKU: formData.get('SKU'),
+      category: formData.get('category'),
+      shippingfee: formData.get('shippingfee'),
+      weight: formData.get('weight'),
+      dimensions: {
+        length: formData.get('length'),
+        width: formData.get('width'),
+        height: formData.get('height'),
+      },
+      status: formData.get('status'),
+      visibility: formData.get('visibility'),
+      country: country.concat(formData.get('country') as string || []),
+      options: [] as any[],
+      especifications: [] as any[]
+    };
 
     // Extraer las opciones
-    const optionsItems = []
     for (let i = 0; i < 2; i++) {
       const optionname = formData.get(`optionname${i}`)
       const options = formData.get(`options${i}`)
       if (optionname && options) {
-        optionsItems.push({
+        productData.options.push({
           name: optionname.toString(),
           optionslist: options.toString().split(',').map(option => option.trim())
         })
@@ -87,64 +47,107 @@ export const actions: Actions = {
     }
 
     // Extraer las especificaciones
-    const especificationsItems = [];
     for (let i = 0; i < 10; i++) { // Asumiendo un máximo de 10 especificaciones
       const title = formData.get(`especificationtitle${i}`);
       const content = formData.get(`especificationcontent${i}`);
       if (title && content) {
-        especificationsItems.push({
+        productData.especifications.push({
           title: title.toString(),
           content: content.toString()
         });
       }
     }
 
-    // Enviar los datos del producto
     try {
-      const response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${tokenJwt}` // autorizaicion jwt token
-        },
-        body: JSON.stringify({
-          productId,
-          productname,
-          imgs: imagesUrls,
-          price,
-          quantity,
-          SKU,
-          description,
-          category,
-          weight,
-          shippingfee,
-          dimensions: {
-            length,
-            width,
-            height
+      // Si no hay "productId" crea un nuevo product
+      if (!productId) {
+        const createProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${tokenJwt}`
           },
-          status,
-          country,
-          visibility,
-          options: optionsItems,
-          especifications: especificationsItems
+          body: JSON.stringify(productData)
         })
-      })
-
-      const result = await response.json() 
-
-      if (!response.ok) {
-        console.error('Error del servidor:', result)
-        return {
-          success: false,
-          status: response.status,
-          errors: result
+        if (!createProductResponse.ok) {
+          const errorResponse = await createProductResponse.json()
+          console.error('Error del servidor:', errorResponse)
+          return {
+            success: false,
+            status: createProductResponse.status,
+            errors: errorResponse
+          }
         }
+
+        const createdProduct = await createProductResponse.json()
+
+        productId = createdProduct?._id
+      } else {
+        // Si existe un productId, obtener el producto existente para mantener sus imágenes actuales
+        const existingProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
+          method: 'GET',
+          headers: {
+            "Authorization": `Bearer ${tokenJwt}`
+          }
+        });
+
+        if (!existingProductResponse.ok) {
+          console.error(await existingProductResponse.text());
+          throw new Error('Error al obtener el producto existente');
+        }
+
+        const existingProduct = await existingProductResponse.json();
+        imagesUrls = existingProduct.imgs || [];
+        productData.imgs = imagesUrls
+
+        // Si ya existe un productId, se actualiza el producto
+        const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${tokenJwt}`
+          },
+          body: JSON.stringify(productData)
+        });
+
+        if (!updateResponse.ok) {
+          const errorResponse = await updateResponse.json();
+          console.error('Error al actualizar el producto:', errorResponse);
+          return { success: false, status: updateResponse.status, errors: errorResponse };
+        }
+      }
+
+      // subir nuevas imagenes solo si hay archivos seleccionados
+      // tambien si se esta creando un nuevo producto el backend
+      // actualiza el producto para incluir las imagenes
+      if (uploadedFiles && uploadedFiles.length > 0) {
+        const imageFormData = new FormData()
+        uploadedFiles.forEach(file => {
+          imageFormData.append('files', file)
+        })
+
+        const imageResponse = await fetch(`${PRIVATE_SERVER_URL}/products/upload-images/${productId}`, {
+          method: 'POST',
+          headers: {
+            "Authorization": `Bearer ${tokenJwt}`
+          },
+          body: imageFormData
+        })
+
+        if (!imageResponse.ok) {
+          throw new Error('Error al subir las imágenes')
+        }
+
+        const imageResult = await imageResponse.json()
+        imagesUrls = imageResult.images
+      } else {
+        console.warn("No files to upload")
       }
 
       return {
         success: true,
-        status: response.status
+        status: 200,
+        images: imagesUrls
       }
 
     } catch (error: any) {
