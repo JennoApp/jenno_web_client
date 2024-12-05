@@ -13,36 +13,35 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import CurrencyInput from '@canutin/svelte-currency-input';
-  import { location_data } from '$lib/stores/ipaddressStore'
-  import * as m from '$paraglide/messages'
-
+	import { location_data } from '$lib/stores/ipaddressStore';
+	import * as m from '$paraglide/messages';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
 	let especificationsItems: any[] = [];
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
 
-  $: getServerUrl()
+	$: getServerUrl();
 
 	$: if (form?.status === 201) {
 		console.log(`formStatus: ${form.status}`);
-    if (product) {
-      toast.success('Producto Actualizado!');
-    } else {
-      toast.success('Producto creado!');
-    }	
+		if (product) {
+			toast.success('Producto Actualizado!');
+		} else {
+			toast.success('Producto creado!');
+		}
 		goto('/admin/catalog');
 	}
 
@@ -87,41 +86,43 @@
 
 	/// load product data for update
 
-	let product: any
+	let product: any;
 
-	$: console.log(product)
-  $: console.log($location_data)
+	$: console.log(product);
+	$: console.log($location_data);
 
-	onMount(async () => {
+	$: async () => {
 		const queryParams = $page.url
 		const productId = queryParams.searchParams.get('id')
 
+    console.log("Product ID:", productId);
+
 		if (productId !== null) {
 			try {
-				const response = await fetch(`${serverUrl}/products/${productId}`)
-				const productData = await response.json()
+				const response = await fetch(`${serverUrl}/products/${productId}`);
+				const productData = await response.json();
 
-				product = productData
-				console.log({ productData })
+				product = productData;
+				console.log({ productData });
 			} catch (error) {
-				console.log('Error al cargar los datos del producto:', error)
+				console.log('Error al cargar los datos del producto:', error);
 			}
 		}
-	})
+	}
 
 	$: if (product && product.options) {
 		optionsItems = product.options.map((option: any) => ({
 			name: option.name,
 			optionslist: option.optionslist
-		}))
+		}));
 	}
 
-  $: if (product && product.especifications) {
-    especificationsItems = product.especifications.map((especification: any) => ({
-      title: especification.title,
-      content: especification.content
-    }))
-  }
+	$: if (product && product.especifications) {
+		especificationsItems = product.especifications.map((especification: any) => ({
+			title: especification.title,
+			content: especification.content
+		}));
+	}
 </script>
 
 <div class="flex p-5">
@@ -146,11 +147,11 @@
 
 <form method="POST" enctype="multipart/form-data" action="?/saveProduct" use:enhance>
 	<div class="flex flex-row gap-4 p-5">
-    <!-- Product Id hidden -->
-    {#if product}
-      <input type="hidden" name="productId" value={product._id}>
-      <input type="hidden" name="imagesUrls" value={JSON.stringify(product.imgs)}/> 
-    {/if}
+		<!-- Product Id hidden -->
+		{#if product}
+			<input type="hidden" name="productId" value={product._id} />
+			<input type="hidden" name="imagesUrls" value={JSON.stringify(product.imgs)} />
+		{/if}
 
 		<!-- Columna 1 -->
 		<div class="w-full">
@@ -200,8 +201,7 @@
 							name="price"
 							value={product !== undefined ? product.price : 0}
 							locale="es-CO"
-							currency={$location_data.data[0].country_module.currencies
-                        [0].code}
+							currency={$location_data.data[0].country_module.currencies[0].code}
 							fractionDigits={0}
 							required
 							inputClasses={{
@@ -270,7 +270,8 @@
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
 						<button
 							class="bg-purple-600 text-white dark:bg-[#303030] h-8 w-32 rounded-md"
-							on:click|preventDefault={addOptionsItem}>{m.admin_catalog_addproduct_options_button()}</button
+							on:click|preventDefault={addOptionsItem}
+							>{m.admin_catalog_addproduct_options_button()}</button
 						>
 					</div>
 				</Card.Header>
@@ -341,12 +342,12 @@
 								{/each}
 							</Table.Body>
 						</Table.Root>
-          {:else if product !== undefined}
-            <div class="flex gap-3 mt-5">
-            {#each product.imgs as image, i}
-              <img class="h-14 w-14 rounded-md object-fill" src={image} alt={`image ${i}`}/>
-            {/each}
-            </div>
+					{:else if product !== undefined}
+						<div class="flex gap-3 mt-5">
+							{#each product.imgs as image, i}
+								<img class="h-14 w-14 rounded-md object-fill" src={image} alt={`image ${i}`} />
+							{/each}
+						</div>
 					{/if}
 				</Card.Content>
 			</Card.Root>
@@ -356,15 +357,14 @@
 					<Card.Title>{m.admin_catalog_addproduct_shipping()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
-          <!-- Shipping fee -->
-            <div class="flex gap-3 items-center w-full">
+					<!-- Shipping fee -->
+					<div class="flex gap-3 items-center w-full">
 						<label for="shippingfee">{m.admin_catalog_addproduct_shipping_shipment_value()}:</label>
 						<CurrencyInput
 							name="shippingfee"
 							value={product !== undefined ? product.shippingfee : 0}
 							locale="es-CO"
-							currency={$location_data.data[0].country_module.currencies
-                        [0].code}
+							currency={$location_data.data[0].country_module.currencies[0].code}
 							fractionDigits={0}
 							required
 							inputClasses={{
@@ -377,7 +377,7 @@
 							{/if}
 						</label>
 					</div>
-          <!-- Optional shiping product info -->
+					<!-- Optional shiping product info -->
 					<div class="mt-5">
 						<label for="weight">{m.admin_catalog_addproduct_shipping_weight()}</label>
 						<Input
@@ -433,7 +433,8 @@
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_specifications()}</h3>
 						<button
 							class="bg-purple-600 dark:bg-[#303030] text-white h-8 w-32 rounded-md"
-							on:click|preventDefault={addEspecificationsItem}>{m.admin_catalog_addproduct_specifications_button()}</button
+							on:click|preventDefault={addEspecificationsItem}
+							>{m.admin_catalog_addproduct_specifications_button()}</button
 						>
 					</div>
 				</Card.Header>
@@ -442,11 +443,20 @@
 					<Card.Content class="flex gap-5 items-center">
 						<div class="flex gap-3 items-center">
 							<label for="optionname">{m.admin_catalog_addproduct_specifications_title()}: </label>
-							<Input class="overflow-x-scroll" type="text" name={`especificationtitle${i}`} value={product !== undefined ? especification?.title : ""} />
+							<Input
+								class="overflow-x-scroll"
+								type="text"
+								name={`especificationtitle${i}`}
+								value={product !== undefined ? especification?.title : ''}
+							/>
 						</div>
 						<div class="flex gap-3 w-full items-center">
 							<label for="options">{m.admin_catalog_addproduct_specifications_content()}:</label>
-							<Textarea class="dark:bg-[#121212]" name={`especificationcontent${i}`} value={product !== undefined ? especification?.content : ""} />
+							<Textarea
+								class="dark:bg-[#121212]"
+								name={`especificationcontent${i}`}
+								value={product !== undefined ? especification?.content : ''}
+							/>
 						</div>
 						<button
 							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
@@ -475,9 +485,15 @@
 							</Select.Trigger>
 							<Select.Content>
 								<Select.Group>
-									<Select.Item value="in_stock">{m.admin_catalog_addproduct_status_select_instock()}</Select.Item>
-									<Select.Item value="sold_out">{m.admin_catalog_addproduct_status_select_soldout()}</Select.Item>
-									<Select.Item value="on_sale">{m.admin_catalog_addproduct_status_select_onsale()}</Select.Item>
+									<Select.Item value="in_stock"
+										>{m.admin_catalog_addproduct_status_select_instock()}</Select.Item
+									>
+									<Select.Item value="sold_out"
+										>{m.admin_catalog_addproduct_status_select_soldout()}</Select.Item
+									>
+									<Select.Item value="on_sale"
+										>{m.admin_catalog_addproduct_status_select_onsale()}</Select.Item
+									>
 									<!-- <Select.Item value="active">active</Select.Item>
 									<Select.Item value="paused">paused</Select.Item>
 									<Select.Item value="inactive">inactive</Select.Item> -->
@@ -500,17 +516,24 @@
 				</Card.Header>
 				<Card.Content>
 					<div class="flex items-center">
-						<input class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-purple-600" type="checkbox" name="visibility" checked  />
+						<input
+							class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-purple-600"
+							type="checkbox"
+							name="visibility"
+							checked
+						/>
 						<span class="ml-2">{m.admin_catalog_addproduct_visibility()}</span>
 					</div>
 				</Card.Content>
 			</Card.Root>
 
-      <!-- Hidden Input country info -->
-       <input class="hidden" type="text" name="country" value={$location_data.data[0].country}>
+			<!-- Hidden Input country info -->
+			<input class="hidden" type="text" name="country" value={$location_data.data[0].country} />
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700">{m.admin_catalog_addproduct_button()}</Button>
+				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700"
+					>{m.admin_catalog_addproduct_button()}</Button
+				>
 			</div>
 		</div>
 	</div>
