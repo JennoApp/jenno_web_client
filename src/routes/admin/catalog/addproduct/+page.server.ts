@@ -120,7 +120,7 @@ export const actions: Actions = {
       // subir nuevas imagenes solo si hay archivos seleccionados
       // tambien si se esta creando un nuevo producto el backend
       // actualiza el producto para incluir las imagenes
-      if (productId && typeof productId === 'string' && uploadedFiles && uploadedFiles.length > 0) {
+      if (productId && uploadedFiles.length > 0) {
         const imageFormData = new FormData()
         uploadedFiles.forEach(file => {
           imageFormData.append('files', file)
@@ -135,13 +135,12 @@ export const actions: Actions = {
         })
 
         if (!imageResponse.ok) {
-          throw new Error('Error al subir las imágenes')
+          const errorResponse = await imageResponse.json()
+          throw new Error(errorResponse.message || 'Error al subir las imágenes')
         }
 
         const imageResult = await imageResponse.json()
         imagesUrls = imageResult.images
-      } else {
-        console.warn("No files to upload")
       }
 
       return {
