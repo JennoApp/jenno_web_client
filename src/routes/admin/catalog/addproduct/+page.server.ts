@@ -58,7 +58,7 @@ export const actions: Actions = {
       }
     }
 
-    try {
+    try { 
       // Si no hay "productId" crea un nuevo product
       if (!productId) {
         const createProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
@@ -83,6 +83,8 @@ export const actions: Actions = {
 
         productId = createdProduct?._id
       } else {
+        console.log('Constructed URL:', `${PRIVATE_SERVER_URL}/products/${productId}`);
+
         // Si existe un productId, obtener el producto existente para mantener sus imágenes actuales
         const existingProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
           method: 'GET',
