@@ -24,8 +24,6 @@
 		}
 	}
 
-	$: getServerUrl();
-
 	$: dataStatus = data.status;
 	$: userData = data.userData;
 	$: console.log($location_data);
@@ -38,6 +36,7 @@
 
 	// Cargar productos del Usuario
 	async function loadProducts(userId: any, country?: string) {
+    await getServerUrl()
 		const limit: number = 20;
 		try {
 			const response = await fetch(
@@ -64,6 +63,7 @@
 	$: console.log({ userData });
 
 	const handleFollow = async (customerId: string) => {
+    await getServerUrl()
 		if ($page.data.isSession) {
 			try {
 				const followingResponse = await fetch(`${serverUrl}/users/following/${customerId}`, {
@@ -97,6 +97,7 @@
 		};
 
 		try {
+      await getServerUrl()
 			const response = await fetch(`${serverUrl}/chat/conversations`, {
 				method: 'POST',
 				headers: {

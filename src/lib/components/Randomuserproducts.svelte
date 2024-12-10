@@ -3,25 +3,23 @@
 
 	export let user: string;
 
-  // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
 
-  $: getServerUrl()
-
-	$: console.log({ user });
 	let products: any[];
 
 	async function loadProducts(userId: string) {
+		await getServerUrl();
 		const response = await fetch(`${serverUrl}/products/user/random/${userId}`);
 		const data = await response.json();
 		products = data;

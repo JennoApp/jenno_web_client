@@ -38,10 +38,9 @@
     }
   }
 
-  $: getServerUrl()
-
-
 	onMount(async () => {
+    await getServerUrl();
+
 		if (!data || !data?.user) {
 			console.error(
 				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'

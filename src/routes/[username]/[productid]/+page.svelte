@@ -58,8 +58,6 @@
     }
   }
 
-  $: getServerUrl()
-
 	/// Sync Corousels index
 	let api: CarouselAPI;
 	let indexCarousel = 0;
@@ -71,6 +69,7 @@
 	let openDialogreview = false;
 
 	onMount(async () => {
+    await getServerUrl()
 		if (!product || !product?.user) {
 			console.error(
 				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
