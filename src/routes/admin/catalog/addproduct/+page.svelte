@@ -43,7 +43,10 @@
 			toast.success('Producto creado!');
 		}
 		goto('/admin/catalog');
-	}
+	} else {
+    console.error(form?.errors)
+    toast.error('Error al crear o actualizar el producto')
+  }
 
 	$: console.log({ errors: form?.errors });
 
