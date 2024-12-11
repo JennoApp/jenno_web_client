@@ -88,19 +88,27 @@ export const actions: Actions = {
         console.log('Constructed URL:', `${PRIVATE_SERVER_URL}/products/${productId}`);
 
         // Si ya existe un productId, se actualiza el producto
-        const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
+        const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${tokenJwt}`
           },
-          body: JSON.stringify(productData)
+          body: JSON.stringify({
+            productId,
+            ...productData
+          })
         });
 
         if (!updateResponse.ok) {
           const errorResponse = await updateResponse.json();
           console.error('Error al actualizar el producto:', errorResponse);
-          return { success: false, status: updateResponse.status, errors: errorResponse };
+
+          return { 
+            success: false, 
+            status: updateResponse.status, 
+            errors: errorResponse.message 
+          };
         }
       }
 
