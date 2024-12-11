@@ -60,7 +60,7 @@ export const actions: Actions = {
       }
     }
 
-    try { 
+    try {
       // Si no hay "productId" crea un nuevo product
       if (!productId) {
         const createProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
@@ -71,7 +71,17 @@ export const actions: Actions = {
           },
           body: JSON.stringify(productData)
         })
-        if (!createProductResponse.ok) {
+
+        if (createProductResponse.ok) {
+          const product = await createProductResponse.json()
+
+          productId = product._id
+          return {
+            success: true,
+            status: 201,
+            product: product
+          }
+        } else {
           const errorResponse = await createProductResponse.json()
           console.error('Error del servidor:', errorResponse)
           return {
@@ -80,13 +90,7 @@ export const actions: Actions = {
             errors: errorResponse
           }
         }
-
-        const createdProduct = await createProductResponse.json()
-
-        productId = createdProduct?._id
       } else {
-        console.log('Constructed URL:', `${PRIVATE_SERVER_URL}/products/${productId}`);
-
         // Si ya existe un productId, se actualiza el producto
         const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: 'POST',
@@ -100,14 +104,22 @@ export const actions: Actions = {
           })
         });
 
-        if (!updateResponse.ok) {
+        if (updateResponse.ok) {
+          const product = await updateResponse.json()
+
+          return {
+            success: true,
+            status: 201,
+            product: product
+          }
+        } else {
           const errorResponse = await updateResponse.json();
           console.error('Error al actualizar el producto:', errorResponse);
 
-          return { 
-            success: false, 
-            status: updateResponse.status, 
-            errors: errorResponse.message 
+          return {
+            success: false,
+            status: updateResponse.status,
+            errors: errorResponse.message
           };
         }
       }
