@@ -33,8 +33,6 @@
 		}
 	}
 
-	$: getServerUrl();
-
 	$: if (form?.status === 201) {
 		console.log(`formStatus: ${form.status}`);
 		if (product) {
@@ -43,7 +41,9 @@
 			toast.success('Producto creado!');
 		}
 		goto('/admin/catalog');
-	} else {
+	}
+
+  $: if (form?.errors) {
     console.error(form?.errors)
     toast.error('Error al crear o actualizar el producto')
   }
@@ -126,6 +126,11 @@
 			content: especification.content
 		}));
 	}
+
+  $: if (product) {
+    console.log({productId: product._id})
+    console.log({imagesUrl: product.imgs})
+  }
 </script>
 
 <div class="flex p-5">

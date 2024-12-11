@@ -7,7 +7,9 @@ export const actions: Actions = {
     const uploadedFiles = formData.getAll('files') as File[]
     const tokenJwt = cookies.get('session')
     let productId = formData?.get('productId') as string
-    let imagesUrls: string[] = []
+    let imagesUrls = productId
+      ? JSON.parse(formData.get('imagesUrls') as string || '[]')
+      : []
     const country: string[] = ['Colombia']
 
 
@@ -85,23 +87,6 @@ export const actions: Actions = {
       } else {
         console.log('Constructed URL:', `${PRIVATE_SERVER_URL}/products/${productId}`);
 
-        // Si existe un productId, obtener el producto existente para mantener sus imágenes actuales
-        const existingProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
-          method: 'GET',
-          headers: {
-            "Authorization": `Bearer ${tokenJwt}`
-          }
-        });
-
-        if (!existingProductResponse.ok) {
-          console.error(await existingProductResponse.text());
-          throw new Error('Error al obtener el producto existente');
-        }
-
-        const existingProduct = await existingProductResponse.json();
-        imagesUrls = existingProduct.imgs || [];
-        productData.imgs = imagesUrls
-
         // Si ya existe un productId, se actualiza el producto
         const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/products/${productId}`, {
           method: 'POST',
@@ -142,13 +127,13 @@ export const actions: Actions = {
         }
 
         const imageResult = await imageResponse.json()
-        imagesUrls = imageResult.images
+        productData.imgs = imageResult.images
       }
 
       return {
         success: true,
         status: 200,
-        images: imagesUrls
+        product: productData
       }
 
     } catch (error: any) {
