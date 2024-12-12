@@ -61,9 +61,10 @@ export const actions: Actions = {
     }
 
     try {
-      // Si no hay "productId" crea un nuevo product
+      // Crear o actualizar el producto
+      let response;
       if (!productId) {
-        const createProductResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
+        response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -71,28 +72,8 @@ export const actions: Actions = {
           },
           body: JSON.stringify(productData)
         })
-
-        if (createProductResponse.ok) {
-          const product = await createProductResponse.json()
-
-          productId = product._id
-          return {
-            success: true,
-            status: 201,
-            product: product
-          }
-        } else {
-          const errorResponse = await createProductResponse.json()
-          console.error('Error del servidor:', errorResponse)
-          return {
-            success: false,
-            status: createProductResponse.status,
-            errors: errorResponse
-          }
-        }
       } else {
-        // Si ya existe un productId, se actualiza el producto
-        const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/products`, {
+        response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: 'POST',
           headers: {
             "Content-Type": "application/json",
@@ -103,31 +84,23 @@ export const actions: Actions = {
             ...productData
           })
         });
+      }
 
-        if (updateResponse.ok) {
-          const product = await updateResponse.json()
-
-          return {
-            success: true,
-            status: 201,
-            product: product
-          }
-        } else {
-          const errorResponse = await updateResponse.json();
-          console.error('Error al actualizar el producto:', errorResponse);
-
-          return {
-            success: false,
-            status: updateResponse.status,
-            errors: errorResponse.message
-          };
+      if (!response.ok) {
+        const errorResponse = await response.json()
+        console.error('Error del servidor:', errorResponse)
+        return {
+          success: false,
+          status: response.status,
+          errors: errorResponse
         }
       }
 
-      // subir nuevas imagenes solo si hay archivos seleccionados
-      // tambien si se esta creando un nuevo producto el backend
-      // actualiza el producto para incluir las imagenes
-      if (productId && uploadedFiles.length > 0) {
+      const product = await response.json()
+      productId = product._id
+
+      // Subir imagenes si hay archivos seleccionados
+      if (uploadedFiles.length > 0) {
         const imageFormData = new FormData()
         uploadedFiles.forEach(file => {
           imageFormData.append('files', file)
@@ -152,7 +125,7 @@ export const actions: Actions = {
 
       return {
         success: true,
-        status: 200,
+        status: 201,
         product: productData
       }
 
