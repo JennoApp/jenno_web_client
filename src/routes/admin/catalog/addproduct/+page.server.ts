@@ -72,6 +72,9 @@ export const actions: Actions = {
           },
           body: JSON.stringify(productData)
         })
+
+        const product = await response.json()
+        productId = product._id
       } else {
         response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: 'POST',
@@ -95,9 +98,6 @@ export const actions: Actions = {
           errors: errorResponse
         }
       }
-
-      const product = await response.json()
-      productId = product._id
 
       // Subir imagenes si hay archivos seleccionados
       if (uploadedFiles.length > 0) {
