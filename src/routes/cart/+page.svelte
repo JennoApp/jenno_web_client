@@ -5,9 +5,9 @@
 		decrementCartItem,
 		removeFromCart,
 		getTotal,
-    subtotal as sub,
-    transferStripe,
-    total as T,
+		subtotal as sub,
+		transferStripe,
+		total as T
 	} from '$lib/stores/cartStore';
 	import { onDestroy } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
@@ -52,15 +52,13 @@
 	);
 
 	// Calcular la comision del 3%
-	const P_goal = subtotal + totalEnvio
-	const F_fixed = 0
-	const F_percent = 0.03
+	const P_goal = subtotal + totalEnvio;
+	const F_fixed = 0;
+	const F_percent = 0.03;
 
-	const P_charge = (P_goal + F_fixed) / (1 - F_percent)
+	const P_charge = (P_goal + F_fixed) / (1 - F_percent);
 
 	// const transferStripe = P_charge - P_goal
-
-
 </script>
 
 {#if $cartItems.length === 0}
@@ -174,20 +172,30 @@
 			</div>
 
 			<!-- Delivery -->
+			<!-- <div class="flex justify-between my-1 mr-5">
+				<div class="flex gap-1">
+					<h3>{m.cart_summary_shipment()}</h3>
+					<!- {#if $location_data !== undefined}
+            <h3>-</h3>
+            <h3 class="ml-1 font-semibold">{$location_data?.data[0].region}</h3>
+          {/if} ->
+				</div>
+				<p>{formatPrice(calculateTotalShippingFee($cartItems), 'es-CO', 'COP')}</p>
+			</div> -->
+
+			<!-- Delivery -->
 			<div class="flex justify-between my-1 mr-5">
 				<div class="flex gap-1">
 					<h3>{m.cart_summary_shipment()}</h3>
-					<!-- {#if $location_data !== undefined}
-            <h3>-</h3>
-            <h3 class="ml-1 font-semibold">{$location_data?.data[0].region}</h3>
-          {/if} -->
+					<h3 class="ml-1 text-sm text-gray-500">
+						(El envío se coordinará manualmente y se paga contra entrega)
+					</h3>
 				</div>
-				<p>{formatPrice(calculateTotalShippingFee($cartItems), 'es-CO', 'COP')}</p>
+				<p class="text-gray-400 text-sm">Beta: Sin costos de envío automáticos</p>
 			</div>
-
 			<!-- tax -->
 			<div class="flex justify-between my-1 mr-5">
-        <h3>transferencia</h3>
+				<h3>transferencia</h3>
 				<p>{formatPrice($transferStripe, 'es-CO', 'COP')}</p>
 			</div>
 

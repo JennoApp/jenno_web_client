@@ -78,7 +78,7 @@
 	}
 
 	function addEspecificationsItem() {
-		if (especificationsItems.length < 10) {
+		if (especificationsItems.length < 7) {
 			especificationsItems = [...especificationsItems, especificationsItems];
 		}
 	}
@@ -243,7 +243,7 @@
 							{/if}
 						</label>
 					</div>
-					<div>
+					<!-- <div>
 						<label for="SKU">{m.admin_catalog_addproduct_inventory_sku()}</label>
 						<Input type="text" name="SKU" value={`${product !== undefined ? product.SKU : ''}`} />
 						<label for="SKU">
@@ -251,7 +251,7 @@
 								<span class="dark:text-red-500 font-medium">{form?.errors?.SKU[0]}</span>
 							{/if}
 						</label>
-					</div>
+					</div> -->
 				</Card.Content>
 			</Card.Root>
 
@@ -360,12 +360,12 @@
 				</Card.Content>
 			</Card.Root>
 
-			<Card.Root class="mb-4">
+			<!-- <Card.Root class="mb-4">
 				<Card.Header>
 					<Card.Title>{m.admin_catalog_addproduct_shipping()}</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<!-- Shipping fee -->
+					<!- Shipping fee ->
 					<div class="flex gap-3 items-center w-full">
 						<label for="shippingfee">{m.admin_catalog_addproduct_shipping_shipment_value()}:</label>
 						<CurrencyInput
@@ -385,7 +385,7 @@
 							{/if}
 						</label>
 					</div>
-					<!-- Optional shiping product info -->
+					<!- Optional shiping product info ->
 					<div class="mt-5">
 						<label for="weight">{m.admin_catalog_addproduct_shipping_weight()}</label>
 						<Input
@@ -433,7 +433,7 @@
 						</div>
 					</div>
 				</Card.Content>
-			</Card.Root>
+			</Card.Root> -->
 
 			<Card.Root class="mb-4">
 				<Card.Header>
