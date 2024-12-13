@@ -200,7 +200,7 @@
 			</div>
 
 			<button
-				class="bg-purple-600 hover:bg-purple-500 dark:bg-[#303030] border-none rounded w-full h-12 text-white text-base cursor-pointer hover:dark:bg-[#353535]"
+				class="bg-gray-300 hover:bg-gray-400 dark:bg-[#303030] border-none rounded w-full h-12 font-medium dark:text-white text-base cursor-pointer hover:dark:bg-[#353535]"
 				on:click={() => goto('/cart/paymentroute/shipping')}
 			>
 				{m.cart_summary_button()}

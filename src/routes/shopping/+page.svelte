@@ -96,11 +96,11 @@
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink justify-between">
-	<h2 class="text-xl font-semibold text-gray-200">Compras</h2>
+	<h2 class="text-xl font-semibold dark:text-gray-200">Compras</h2>
 
 	<div class="flex gap-3">
 		<Button
-			class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
+			class="text-black bg-gray-200 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-gray-300 dark:text-gray-200"
 			on:click={() => {
 				goto('/shopping/reviews');
 			}}
@@ -109,12 +109,12 @@
 				icon="ic:round-reviews"
 				height="1.1rem"
 				width="1.1rem"
-				class="text-gray-200 flex justify-center items-center"
+				class="dark:text-gray-200 flex justify-center items-center"
 			/>
 			<span class="ml-3">Valoración y Reseñas</span></Button
 		>
 		<Button
-			class="bg-purple-600 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-purple-500 dark:text-gray-200"
+			class="text-black bg-gray-200 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-gray-300 dark:text-gray-200"
 			on:click={() => {
 				goto('/shopping/history');
 			}}
@@ -123,7 +123,7 @@
 				icon="material-symbols:history"
 				height="1.1rem"
 				width="1.1rem"
-				class="text-gray-200 flex justify-center items-center"
+				class="dark:text-gray-200 flex justify-center items-center"
 			/>
 			<span class="ml-3">Historial</span></Button
 		>

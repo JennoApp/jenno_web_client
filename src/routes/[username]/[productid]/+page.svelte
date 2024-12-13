@@ -319,7 +319,7 @@
 			</div>
 			<button
 				on:click={() => handleBuyNow()}
-				class="bg-purple-600 dark:bg-purple-600 border-none rounded w-full h-12 text-white text-base cursor-pointer hover:bg-purple-700 hover:dark:bg-purple-700"
+				class="bg-gray-200 dark:bg-gray-200 border-none rounded w-full h-12 text-[#202020] text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#202020] dark:hover:text-white"
 				>{m.card_button_buynow()}</button
 			>
 		</div>

@@ -56,7 +56,7 @@
 
 			<Input type="file" name="profile" class="ml-10" />
 		</div>
-		<Button type="submit" class="ml-5 bg-purple-600 dark:bg-[#202020] hover:bg-purple-700 dark:hover:bg-[#252525] text-white"
+		<Button type="submit" class="ml-5 text-black dark:text-white bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
 			>{m.settings_profile_uploadimage_button()}</Button
 		>
 	</form>
@@ -167,9 +167,9 @@
 		{/if}
 
 		<button
-			class="h-10 w-96 mt-10 border border-gray-200 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
+			class="h-10 w-96 mt-10 border border-gray-200 dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 		>
-			<span class="text-lg font-semibold">{m.settings_profilw_update_button()}</span>
+			<span class="text-base font-semibold">{m.settings_profilw_update_button()}</span>
 		</button>
 	</form>
 </div>

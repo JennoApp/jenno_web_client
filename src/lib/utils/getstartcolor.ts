@@ -13,6 +13,6 @@ export const getStartColor = (rating: number) => {
     } else if (rating >= 0.5) {
       return 'text-yellow-100'
     } else if (rating == 0) {
-      return 'text-gray-200'
+      return 'dark:text-gray-200'
     }
   }

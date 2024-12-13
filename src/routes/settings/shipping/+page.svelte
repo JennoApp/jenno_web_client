@@ -130,7 +130,7 @@
 
 		<!-- Shipping Submit -->
 		<button
-			class="h-10 w-full mt-4 border border-purple-600 dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-white hover:bg-purple-700 dark:hover:bg-[#252525]"
+			class="h-10 w-full mt-4 border border-gray-200 dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-white hover:bg-gray-300 dark:hover:bg-[#252525]"
 		>
 			{m.settings_shipping_update_button()}
 		</button>

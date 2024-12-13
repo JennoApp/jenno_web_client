@@ -300,7 +300,15 @@
 
 					{#if currentChat}
 						<!-- Chatbox Body -->
-						<div bind:this={element} class="mx-5 pt-5 pr-5 h-[90%] overflow-y-scroll">
+						<div
+							bind:this={element}
+							class="mx-5 pt-5 pr-5 h-[90%] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-100
+              [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+            dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+						>
 							{#each $messages as message (message._id)}
 								<Message
 									own={message?.sender === $page.data.user._id}
@@ -325,7 +333,7 @@
 									bind:value={newMessage}
 								></textarea>
 								<button
-									class="w-20 h-10 border-none rounded-lg bg-purple-600 dark:bg-[#202020] text-white"
+									class="w-20 h-10 border-none rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-white dark:hover:bg-[#252525]"
 								>
 									{m.chat_page_message_button()}
 								</button>

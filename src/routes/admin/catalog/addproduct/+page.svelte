@@ -213,7 +213,7 @@
 							fractionDigits={0}
 							required
 							inputClasses={{
-								formatted: 'bg-[#121212] h-9 rounded-md p-2'
+								formatted: 'bg-gray-100 border border-gray-200 dark:border-none dark:bg-[#121212] h-9 rounded-md p-2'
 							}}
 						/>
 						<label for="price">
@@ -277,7 +277,7 @@
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
 						<button
-							class="bg-purple-600 text-white dark:bg-[#303030] h-8 w-32 rounded-md"
+							class="bg-gray-200 dark:text-white dark:bg-[#303030] h-8 w-32 rounded-md"
 							on:click|preventDefault={addOptionsItem}
 							>{m.admin_catalog_addproduct_options_button()}</button
 						>
@@ -304,7 +304,7 @@
 							/>
 						</div>
 						<button
-							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
+							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-600 dark:hover:bg-red-600"
 							on:click|preventDefault={() => removeOptionItem(i)}
 						>
 							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
@@ -376,7 +376,7 @@
 							fractionDigits={0}
 							required
 							inputClasses={{
-								formatted: 'bg-[#121212] h-9 rounded-md p-2'
+								formatted: 'bg-gray-100 border border-gray-200 dark:border-none dark:bg-[#121212] h-9 rounded-md p-2'
 							}}
 						/>
 						<label for="shippingfee">
@@ -440,7 +440,7 @@
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_specifications()}</h3>
 						<button
-							class="bg-purple-600 dark:bg-[#303030] text-white h-8 w-32 rounded-md"
+							class="bg-gray-200 dark:bg-[#303030] dark:text-white h-8 w-32 rounded-md"
 							on:click|preventDefault={addEspecificationsItem}
 							>{m.admin_catalog_addproduct_specifications_button()}</button
 						>
@@ -467,7 +467,7 @@
 							/>
 						</div>
 						<button
-							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-500"
+							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-600 dark:hover:bg-red-600"
 							on:click|preventDefault={() => removeEspecificationItem(i)}
 						>
 							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
@@ -525,7 +525,7 @@
 				<Card.Content>
 					<div class="flex items-center">
 						<input
-							class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-purple-600"
+							class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-black dark:checked:bg-white"
 							type="checkbox"
 							name="visibility"
 							checked
@@ -539,7 +539,7 @@
 			<input class="hidden" type="text" name="country" value={$location_data.data[0].country} />
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm bg-purple-600 text-white hover:bg-purple-700"
+				<Button type="submit" class="px-5 rounded-sm bg-gray-200 dark:bg-[#202020] text-black dark:text-white hover:bg-gray-300 dark:hover:bg-[#252525]"
 					>{m.admin_catalog_addproduct_button()}</Button
 				>
 			</div>
