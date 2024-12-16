@@ -19,6 +19,7 @@
 	export let form: ActionData;
 	let optionsItems: any[] = [];
 	let especificationsItems: any[] = [];
+  
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -29,7 +30,7 @@
 
 			serverUrl = data.server_url;
 		} catch (error) {
-			console.error('Error al solicitar Paypal Id');
+			console.error('Error al solicitar Server Url');
 		}
 	}
 
@@ -90,6 +91,8 @@
 	/// load product data for update
 
 	let product: any;
+  let visibility: boolean
+  let isvisibilityInitialized = false
 
 	$: console.log(product);
 	$: console.log($location_data);
@@ -127,10 +130,15 @@
 		}));
 	}
 
-  $: if (product) {
+  $: if (product && !isvisibilityInitialized) {
     console.log({productId: product._id})
     console.log({imagesUrl: product.imgs})
+    visibility = product.visibility
+    isvisibilityInitialized = true
   }
+
+
+  $: console.log({visibility})
 </script>
 
 <div class="flex p-5">
@@ -525,12 +533,14 @@
 				<Card.Content>
 					<div class="flex items-center">
 						<input
-							class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-black dark:checked:bg-white"
+							class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-green-600"
 							type="checkbox"
-							name="visibility"
-							checked
+              bind:checked={visibility}
 						/>
 						<span class="ml-2">{m.admin_catalog_addproduct_visibility()}</span>
+
+            <!-- Hidden input para garantizar que siempre haya un valor -->
+            <input type="hidden" name="visibility" value={visibility}>
 					</div>
 				</Card.Content>
 			</Card.Root>

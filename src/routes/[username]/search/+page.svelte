@@ -19,9 +19,9 @@
     }
   }
 
-  $: getServerUrl()
-
 	const fetchSearchProducts = async (param: string) => {
+    await getServerUrl()
+
 		const response = await fetch(
 			`${serverUrl}/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
 		);

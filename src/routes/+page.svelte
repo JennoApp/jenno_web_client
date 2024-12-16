@@ -20,18 +20,17 @@
 
       serverUrl = data.server_url 
     } catch (error) {
-      console.error('Error al solicitar Paypal Id')
+      console.error('Error al solicitar Server Url')
     }
   }
-
-  $: getServerUrl()
 
 	////////
 	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
-		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}`);
+    await getServerUrl()
 
+		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}`);
 		const newData = await response.json();
 
 		// Agregar los nuevos productos a la variable products
@@ -71,8 +70,9 @@
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
 		try {
-			const response = await fetch(`${serverUrl}/products/categories/random?limit=${10}`);
+      await getServerUrl()
 
+			const response = await fetch(`${serverUrl}/products/categories/random?limit=${10}`);
 			if (response.ok) {
 				const data = await response.json();
 				console.log(data);
