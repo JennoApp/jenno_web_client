@@ -20,9 +20,10 @@
     }
   }
 
-  $: getServerUrl()
 
   const deleteProduct = async (id: any) => {
+    await getServerUrl()
+
     const response = await fetch(`${serverUrl}/products/${id}`, {
       method: 'DELETE'
     })
@@ -42,14 +43,6 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
-			<DropdownMenu.Label>Actions</DropdownMenu.Label>
-			<!-- <DropdownMenu.Item
-				on:click={() => {
-					navigator.clipboard.writeText(id);
-				}}
-			>
-				Copy payment ID
-			</DropdownMenu.Item> -->
 			<DropdownMenu.Item on:click={() => {
         goto(`/admin/catalog/addproduct?id=${id}`)
       }}>
@@ -76,8 +69,5 @@
 				<span class="ml-3">Eliminar</span>
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
-		<!-- <DropdownMenu.Separator />
-		<DropdownMenu.Item>View customer</DropdownMenu.Item>
-		<DropdownMenu.Item>View payment details</DropdownMenu.Item> -->
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

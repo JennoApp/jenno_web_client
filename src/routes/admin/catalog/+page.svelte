@@ -11,6 +11,7 @@
 	import DataTableActions from './data-table-actions.svelte';
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
+	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
 
 	export let data: PageServerData;
 	const currentPage = data.meta?.page;
@@ -79,18 +80,19 @@
 					exclude: true
 				}
 			}
-		}),
-		/*
+		}),	
 		table.column({
 			accessor: 'visibility',
-			header: 'Visibility',
+			header: `Visibilidad`,
 			plugins: {
 				filter: {
 					exclude: true
 				}
-			}
+			},
+      cell: ({ value }) => {
+        return createRender(StatusVisibility, { status: value })
+      }
 		}),
-    */
 		table.column({
 			accessor: ({ _id }) => _id,
 			header: '',
