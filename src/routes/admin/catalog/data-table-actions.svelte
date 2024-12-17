@@ -49,8 +49,9 @@
       })
 
       if (response.ok) {
-        invalidateAll()
         toast.success('Visibilidad actualizada correctamente')
+
+        goto(location.pathname)
       } else {
         toast.error('Error al actualizar visibilidad')
       }
