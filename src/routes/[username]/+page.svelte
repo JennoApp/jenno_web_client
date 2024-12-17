@@ -10,6 +10,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
+  let userInfo: any = $page.data.user
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -92,6 +93,12 @@
 	};
 
 	const createConversation = async () => {
+    // Verificar si el usuario está en sesión
+    if (!userInfo || !userInfo._id) {
+      toast.error('Debes iniciar sesión para crear una conversación.');
+      return
+    }
+
 		const conversationData = {
 			members: [$page.data.user?._id, userData._id]
 		};

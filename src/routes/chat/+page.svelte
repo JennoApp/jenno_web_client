@@ -266,7 +266,7 @@
 				<!-- Mostrar lista de conversaciones -->
 				{#each conversations as result}
 					<button
-						class={`w-full rounded-lg ${currentChatValue?._id === result._id ? 'bg-[#303030]' : ''}`}
+						class={`w-full mb-1 rounded-lg ${currentChatValue?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
 							selectConversation(result._id);
 							currentChat.set(result);

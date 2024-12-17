@@ -88,7 +88,7 @@
 		'/register/personal',
 		'/register/business',
 		'/forgotpassword'
-	];
+	]
 
 	//verifica si la sesion de usuario esta activa
 	let userInfo: any = $page.data.user;
