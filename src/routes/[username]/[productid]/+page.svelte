@@ -40,6 +40,7 @@
 	import { toast } from 'svelte-sonner';
 
 	export let data: PageServerData;
+  let userInfo: any = $page.data.user
 	// let product: CardData
 	$: product = data.product;
 
@@ -98,16 +99,28 @@
 	let selectedOptions: any[] = [];
 
 	function handleAddToCart() {
+    // Verificar si el usuario está en sesión
+    if (!userInfo || !userInfo._id) {
+      toast.error('Debes iniciar sesión para agregar al carrito.');
+      return
+    }
+
 		if (selectedOptions.length === 0) {
-			toast.error('Please select options before adding to cart');
+			toast.error('Selecciona una opcion antes de agregar al carrito.');
 			return;
 		}
 		addToCart(product, selectedOptions, quantity);
 	}
 
 	function handleBuyNow() {
+    // Verificar si el usuario está en sesión
+    if (!userInfo || !userInfo._id) {
+      toast.error('Debes iniciar sesión para agregar al carrito.');
+      return
+    }
+
 		if (selectedOptions.length === 0) {
-			toast.error('Please select options before adding to cart');
+			toast.error('Selecciona una opcion antes de agregar al carrito.');
 			return;
 		}
 		addToCart(product, selectedOptions, quantity);
