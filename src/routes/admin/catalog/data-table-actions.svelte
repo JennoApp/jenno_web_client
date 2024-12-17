@@ -2,36 +2,62 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { MoreHorizontal } from 'lucide-svelte';
-  import { goto, invalidateAll } from '$app/navigation'
-  import { toast } from 'svelte-sonner'
+	import { goto, invalidateAll } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
 
 	export let id: string;
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
+
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
+
+	const deleteProduct = async (id: any) => {
+		await getServerUrl();
+
+		const response = await fetch(`${serverUrl}/products/${id}`, {
+			method: 'DELETE'
+		});
+
+		if (response.ok) {
+			invalidateAll();
+			toast.success('Producto Eliminado!');
+		}
+	};
+
+
+  const updateVisibility = async (productId: string ,visibility: boolean) => {
     try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+      await getServerUrl()
 
-      serverUrl = data.server_url 
+      const response = await fetch(`${serverUrl}/products/updatevisibility/${productId}`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          visibility: visibility
+        })
+      })
+
+      if (response.ok) {
+        invalidateAll()
+        toast.success('Visibilidad actualizada correctamente')
+      } else {
+        toast.error('Error al actualizar visibilidad')
+      }
+
     } catch (error) {
-      console.error('Error al solicitar Paypal Id')
+      console.error('Error en la solicitud:', error)
     }
-  }
-
-
-  const deleteProduct = async (id: any) => {
-    await getServerUrl()
-
-    const response = await fetch(`${serverUrl}/products/${id}`, {
-      method: 'DELETE'
-    })
-
-    if(response.ok) {
-      invalidateAll() 
-      toast.success('Producto Eliminado!')
-    } 
   }
 </script>
 
@@ -43,23 +69,36 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
-			<DropdownMenu.Item on:click={() => {
-        goto(`/admin/catalog/addproduct?id=${id}`)
-      }}>
-        <iconify-icon
+			<DropdownMenu.Sub>
+				<DropdownMenu.SubTrigger>Visibilidad</DropdownMenu.SubTrigger>
+				<DropdownMenu.SubContent>
+					<DropdownMenu.Item on:click={() => {
+            updateVisibility(id, true)
+          }}>visible</DropdownMenu.Item>
+					<DropdownMenu.Item on:click={() => {
+            updateVisibility(id, false)
+          }}>ocultar</DropdownMenu.Item>
+				</DropdownMenu.SubContent>
+			</DropdownMenu.Sub>
+			<DropdownMenu.Item
+				on:click={() => {
+					goto(`/admin/catalog/addproduct?id=${id}`);
+				}}
+			>
+				<iconify-icon
 					icon="material-symbols:update"
 					height="1.1rem"
 					width="1.1rem"
 					class="text-gray-200 flex justify-center items-center"
 				/>
 				<span class="ml-3">Actualizar</span>
-      </DropdownMenu.Item>
-			<DropdownMenu.Item 
-        class="bg-red-500 bg-opacity-60"
-        on:click={() => {
-          deleteProduct(id)
-        }}
-      >
+			</DropdownMenu.Item>
+			<DropdownMenu.Item
+				class="bg-red-500 bg-opacity-60"
+				on:click={() => {
+					deleteProduct(id);
+				}}
+			>
 				<iconify-icon
 					icon="material-symbols:delete"
 					height="1.1rem"
