@@ -272,7 +272,7 @@
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
 
 		<!-- Product Description -->
-		<div class="h-auto max-h-40 w-full mt-1">
+		<div class="h-auto max-h-48 w-full mt-1 overflow-hidden relative text-left">
 			<p>{product.description}</p>
 		</div>
 

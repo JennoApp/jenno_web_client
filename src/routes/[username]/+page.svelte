@@ -95,7 +95,7 @@
 	const createConversation = async () => {
     // Verificar si el usuario está en sesión
     if (!userInfo || !userInfo._id) {
-      toast.error('Debes iniciar sesión para crear una conversación.');
+      toast.error('Debes iniciar sesión para enviar un mensaje.');
       return
     }
 

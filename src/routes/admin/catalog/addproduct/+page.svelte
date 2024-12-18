@@ -19,7 +19,6 @@
 	export let form: ActionData;
 	let optionsItems: any[] = [];
 	let especificationsItems: any[] = [];
-  
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -44,10 +43,10 @@
 		goto('/admin/catalog');
 	}
 
-  $: if (form?.errors) {
-    console.error(form?.errors)
-    toast.error('Error al crear o actualizar el producto')
-  }
+	$: if (form?.errors) {
+		console.error(form?.errors);
+		toast.error('Error al crear o actualizar el producto');
+	}
 
 	$: console.log({ errors: form?.errors });
 
@@ -55,10 +54,19 @@
 
 	function handleFiles(event: any) {
 		const files = event.target.files;
-		fileList = Array.from(files).map((file) => ({
-			name: file.name,
-			size: file.size
-		}));
+
+		if (files.length > 5) {
+			toast.error('No puedes cargar mas de 5 imagenes.')
+			fileList = [];
+		} else {
+			fileList = [];
+			for (let i = 0; i < files.length; i++) {
+				fileList.push({
+					name: files[i].name,
+					size: files[i].size
+				});
+			}
+		}
 	}
 
 	function formatFileSize(size: any) {
@@ -91,8 +99,8 @@
 	/// load product data for update
 
 	let product: any;
-  let visibility: boolean
-  let isvisibilityInitialized = false
+	let visibility: boolean;
+	let isvisibilityInitialized = false;
 
 	$: console.log(product);
 	$: console.log($location_data);
@@ -130,15 +138,14 @@
 		}));
 	}
 
-  $: if (product && !isvisibilityInitialized) {
-    console.log({productId: product._id})
-    console.log({imagesUrl: product.imgs})
-    visibility = product.visibility
-    isvisibilityInitialized = true
-  }
+	$: if (product && !isvisibilityInitialized) {
+		console.log({ productId: product._id });
+		console.log({ imagesUrl: product.imgs });
+		visibility = product.visibility;
+		isvisibilityInitialized = true;
+	}
 
-
-  $: console.log({visibility})
+	$: console.log({ visibility });
 </script>
 
 <div class="flex p-5">
@@ -193,8 +200,9 @@
 					<div>
 						<label for="description">{m.admin_catalog_addproduct_product_description()}</label>
 						<Textarea
-							class="resize-y"
+							class="h-20 resize-y"
 							name="description"
+							maxlength={300}
 							value={`${product !== undefined ? product.description : ''}`}
 						/>
 						<label for="description">
@@ -221,7 +229,8 @@
 							fractionDigits={0}
 							required
 							inputClasses={{
-								formatted: 'bg-gray-100 border border-gray-200 dark:border-none dark:bg-[#121212] h-9 rounded-md p-2'
+								formatted:
+									'bg-gray-100 border border-gray-200 dark:border-none dark:bg-[#121212] h-9 rounded-md p-2'
 							}}
 						/>
 						<label for="price">
@@ -335,9 +344,9 @@
 							{#if form?.errors?.files}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.files[0]}</span>
 							{/if}
-						</label>
+						</label> 
 					</div>
-					{#if fileList.length !== 0}
+					{#if fileList.length > 0}
 						<Table.Root class="mt-3">
 							<Table.Header>
 								<Table.Row>
@@ -535,12 +544,12 @@
 						<input
 							class="h-5 w-5 appearance-none rounded-md border cursor-pointer checked:bg-green-600"
 							type="checkbox"
-              bind:checked={visibility}
+							bind:checked={visibility}
 						/>
 						<span class="ml-2">{m.admin_catalog_addproduct_visibility()}</span>
 
-            <!-- Hidden input para garantizar que siempre haya un valor -->
-            <input type="hidden" name="visibility" value={visibility}>
+						<!-- Hidden input para garantizar que siempre haya un valor -->
+						<input type="hidden" name="visibility" value={visibility} />
 					</div>
 				</Card.Content>
 			</Card.Root>
@@ -549,7 +558,9 @@
 			<input class="hidden" type="text" name="country" value={$location_data.data[0].country} />
 
 			<div class="w-full flex justify-end">
-				<Button type="submit" class="px-5 rounded-sm bg-gray-200 dark:bg-[#202020] text-black dark:text-white hover:bg-gray-300 dark:hover:bg-[#252525]"
+				<Button
+					type="submit"
+					class="px-5 rounded-sm bg-gray-200 dark:bg-[#202020] text-black dark:text-white hover:bg-gray-300 dark:hover:bg-[#252525]"
 					>{m.admin_catalog_addproduct_button()}</Button
 				>
 			</div>
