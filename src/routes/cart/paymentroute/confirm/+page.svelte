@@ -19,21 +19,7 @@
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
-
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
-
-  $: getServerUrl()
-
+ 
 	let shippingData = $page.data?.user?.shippingInfo;
 
 	onMount(() => {
@@ -51,12 +37,7 @@
     } catch (error) {
       console.error('Error al solicitar Paypal Id')
     }
-  }
-
-	function getTotalFormatted() {
-		const total = getTotal();
-		return total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-	}
+  }	
 
 	let items = [];
 	let openDialogPayment = false;
@@ -120,28 +101,8 @@
 		quantity: 1
 	});
 
-	const handleSubmitPayment = async () => {
-		const response = await fetch(`${serverUrl}/payments/stripe`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(productsFormattedStripe)
-		});
-
-		const response_data = await response.json();
-
-		if (response.status === 201) {
-			window.location = response_data?.url;
-		} else {
-			toast.error('Error en solicitud de pago!!!');
-		}
-
-		console.log({ response_data });
-	};
-
+	
 	////////
-	$: console.log({ productsFormattedStripe });
 	$: console.log($cartItems);
 	$: console.log(shippingData);
 	$: console.log($location_data);
