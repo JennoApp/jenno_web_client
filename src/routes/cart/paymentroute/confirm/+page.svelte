@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
-
 	import { loadScript } from '@paypal/paypal-js';
 	import {
 		cartItems,
@@ -19,164 +18,31 @@
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
 
- 
-	let shippingData = $page.data?.user?.shippingInfo;
-
-	onMount(() => {
-		fetchExchangeRate();
-    getPaypalClientId()
-	});
-
-  let paypalClientId: string
-  async function getPaypalClientId() {
-    try {
-      const response = await fetch(`/api/paypal`)
-      const data = await response.json()
-
-      paypalClientId = data.clientId 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }	
-
-	let items = [];
+	let shippingData = $page.data?.user?.shippingInfo;	
 	let openDialogPayment = false;
 
-	// calcular el subtotal de los productos en el carrito
-	$: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
 
-	// Calcular el costo total de envío
+	// Estado del carrito y calculos
+	$: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
 	$: totalEnvio = $cartItems.reduce(
 		(acc, product) => acc + product.shippingfee * product.amount,
 		0
 	);
-
-	// Calcular la comision del 3%
-	const F_fixed = 0;
-	const F_percent = 0.03;
-
 	$: P_goal = subtotal + totalEnvio;
-	$: P_charge = (P_goal + F_fixed) / (1 - F_percent);
-	$: tStripe = P_charge - P_goal;
-
-	// transformar datos para stripe
-	$: productsFormattedStripe = $cartItems.map((product) => ({
-		price_data: {
-			product_data: {
-				name: product.productname,
-				description: product?.description,
-				images: [product.imgs[0]]
-			},
-			currency: 'cop',
-			unit_amount: product.price * 100
-		},
-		quantity: product.amount
-	}));
-
-	// Añadir el ítem de transferencia de Stripe a la lista de productos
-	$: productsFormattedStripe.push({
-		price_data: {
-			product_data: {
-				name: 'Transferencia Stripe',
-				description: 'Costo de transferencia de Stripe',
-				images: []
-			},
-			currency: 'cop',
-			unit_amount: Math.round(tStripe * 100) // Convertir a centavos y redondear
-		},
-		quantity: 1
-	});
-
-	// Añadir el ítem de costo de envío a la lista de productos
-	$: productsFormattedStripe.push({
-		price_data: {
-			product_data: {
-				name: 'Costo de Envío',
-				description: 'Costo total de envío',
-				images: []
-			},
-			currency: 'cop',
-			unit_amount: Math.round(totalEnvio * 100) // Convertir a centavos y redondear
-		},
-		quantity: 1
-	});
-
-	
-	////////
-	$: console.log($cartItems);
-	$: console.log(shippingData);
-	$: console.log($location_data);
-
-	//////////////////
-	let paypal: any;
-
-	async function paypalInit() {
-		try {
-			paypal = await loadScript({
-				clientId: paypalClientId
-			});
-		} catch (error) {
-			console.error('failed to load the Paypal SDK script', error);
-		}
-
-		if (paypal) {
-			console.log('paypal started');
-			try {
-				await paypal
-					.Buttons({
-						style: {
-							color: 'blue',
-							shape: 'rect'
-						},
-						createOrder: function (data: any, actions: any) {
-							const formattedUsdEquivalent = parseFloat(usdEquivalent).toFixed(2);
-							console.log('usdEquivalent enviado a PayPal:', formattedUsdEquivalent);
-
-							// Set up the transaction
-							return actions.order.create({
-								purchase_units: [
-									{
-										amount: {
-                      currency_code: "USD",
-											value: formattedUsdEquivalent
-										}
-									}
-								],
-								application_context: {
-									shipping_preference: 'NO_SHIPPING'
-								}
-							});
-						}
-					})
-					.render('#paypal-button-container');
-			} catch (error) {
-				console.error('Failed to render the Paypal Buttons', error);
-			}
-		}
-	}
-
-	// $: paypalInit();
-	$: if (usdEquivalent > 0) {
-		paypalInit(); // Solo inicializa PayPal cuando el valor de usdEquivalent está listo
-	}
-
-	let paypalButtonLoaded = false;
-
-	$: if (usdEquivalent && paypalButtonLoaded) {
-		document.getElementById('paypal-button-container').innerHTML = ''; // Eliminar el botón existente
-		paypalInit(); // Volver a inicializar PayPal con el valor actualizado
-	}
 
 
+  // Conversion a USD
+  let exchangeRate = 0
+	let usdEquivalent: number = 0
 
-	let exchangeRate = 0;
-	let usdEquivalent: any;
+  onMount(() => {
+    fetchExchangeRate()
+  })
 
-	// obtener la tasa de cambio de COP a USD
 	async function fetchExchangeRate() {
 		try {
 			const response = await fetch(
-				'https://v6.exchangerate-api.com/v6/2f1a8fc7fbff4f769bb0d245/latest/USD'
+				'https://v6.exchangerate-api.com/v6/0d8412accab4eaef08baff7f/latest/USD'
 			);
 			const data = await response.json();
 			exchangeRate = data.conversion_rates.COP;
@@ -186,14 +52,12 @@
 	}
 
 	$: if (exchangeRate && $T) {
-		usdEquivalent = $T / exchangeRate;
+		usdEquivalent = parseFloat(($T / exchangeRate).toFixed(2))
 	} else {
 		usdEquivalent = 0;
 	}
 
-	$: console.log({ exchangeRate });
-	$: console.log({ T: $T });
-	$: console.log(usdEquivalent);
+	$: console.log({ exchangeRate, T: $T, usdEquivalent });
 </script>
 
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
@@ -305,9 +169,9 @@
 		</Dialog.Header>
 		<Dialog.Description>
 			<div class="h-auto">
-        {#if usdEquivalent !== 0}
-          <PaymentButtons TotalAmount={usdEquivalent} />      
-        {/if}	
+				{#if usdEquivalent !== 0}
+					<PaymentButtons TotalAmount={usdEquivalent} />
+				{/if}
 			</div>
 		</Dialog.Description>
 	</Dialog.Content>
