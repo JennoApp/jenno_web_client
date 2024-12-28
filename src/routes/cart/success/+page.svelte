@@ -18,9 +18,9 @@
     }
   }
 
-  $: getServerUrl()
-
 	async function createOrders() {
+    await getServerUrl()
+
 		const items = $cartItems;
 		const buyer = $page.data.user;
 

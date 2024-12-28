@@ -24,6 +24,12 @@ export async function initializePayPal(clientId: string, usdAmount: number, cont
             },
           });
         },
+        onApprove(data: any, actions: any) {
+          return actions.order.capture().then(() => {
+            // Redirigir al usuario a la página de éxito
+            window.location.href = '/cart/success';
+          });
+        }
       }).render(`#${containerId}`);
     }
   } catch (error) {
