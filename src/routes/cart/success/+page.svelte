@@ -5,22 +5,20 @@
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error el solicitar Server Url');
+		}
+	}
 
 	async function createOrders() {
-    await getServerUrl()
-
 		const items = $cartItems;
 		const buyer = $page.data.user;
 
@@ -30,18 +28,26 @@
 		const buyerName = buyer?.username;
 		let buyerProfileImg = buyer?.profileImg;
 
-    if (buyerProfileImg == null || buyerProfileImg == undefined) {
-      buyerProfileImg = ""
+    if (!items || items.length === 0) {
+      toast.error('El carrito esta vacio')
+      return
     }
 
-		if (!buyerId || !buyerName) {
-			toast.error('Informacion del comprador imcompleta');
+		if (buyerProfileImg == null || buyerProfileImg == undefined) {
+			buyerProfileImg = '';
+		}
+
+		if (!buyer) {
+			toast.error('No se encotro la informacion del comprador');
 			return;
 		}
 
 		const maxAttempts = 3;
 
 		try {
+			await getServerUrl();
+      console.log('Server Url:', serverUrl)
+
 			for (let item of items) {
 				let success = false;
 				let attemps = 0;
@@ -59,24 +65,31 @@
 							selectedOptions: item.selectedOptions
 						};
 
+            console.log('Intentando crear orden:', orderData);
+
 						const response = await fetch(`${serverUrl}/orders`, {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'
 							},
+              credentials: 'include',
 							body: JSON.stringify(orderData)
 						});
 
 						if (!response.ok) {
-							throw new Error('Error al crear la orden');
+              const errorText = await response.text()
+              console.error('Backend Error:', errorText)
+							throw new Error(`Error al crear la orden: ${response.statusText}`);
 						}
 
-            success = true
+						success = true;
 					} catch (error) {
-            if (attemps >= maxAttempts) {
-              throw new Error(`Error al crear la orden despues de ${maxAttempts} intentos`)
-            }
-          }
+            console.error(`Intento ${attemps + 1} fallido:`, error)
+            attemps++;
+						if (attemps >= maxAttempts) {
+							throw new Error(`Error al crear la orden despues de ${maxAttempts} intentos`);
+						}
+					}
 				}
 			}
 
