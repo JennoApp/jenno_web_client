@@ -67,12 +67,11 @@
 
             console.log('Intentando crear orden:', orderData);
 
-						const response = await fetch(`${serverUrl}/orders`, {
+						const response = await fetch(`${serverUrl}/orders/createOrder`, {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'
 							},
-              credentials: 'include',
 							body: JSON.stringify(orderData)
 						});
 
