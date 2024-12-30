@@ -102,17 +102,16 @@
 		}
 	}
 
-	onMount(() => {
-		invalidateAll();
+	onMount(async () => {
+    console.log('Componente montado')
+    await getServerUrl()
 	});
 
 	$: if ($page.data.user) {
 		createOrders();
 	}
 
-	$: {
-		console.log($cartItems);
-	}
+	console.log($cartItems);
 </script>
 
 <div class="flex justify-center w-full h-[calc(100vh-56px)]">
