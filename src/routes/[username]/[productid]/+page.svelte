@@ -40,24 +40,24 @@
 	import { toast } from 'svelte-sonner';
 
 	export let data: PageServerData;
-  let userInfo: any = $page.data.user
+	let userInfo: any = $page.data.user;
 	// let product: CardData
 	$: product = data.product;
 
 	$: console.log({ product: data.product });
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
 
 	/// Sync Corousels index
 	let api: CarouselAPI;
@@ -70,7 +70,7 @@
 	let openDialogreview = false;
 
 	onMount(async () => {
-    await getServerUrl()
+		await getServerUrl();
 		if (!product || !product?.user) {
 			console.error(
 				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
@@ -97,13 +97,14 @@
 	let rating = 4.3;
 	let quantity: number = 1;
 	let selectedOptions: any[] = [];
+	let userName = '';
 
 	function handleAddToCart() {
-    // Verificar si el usuario está en sesión
-    if (!userInfo || !userInfo._id) {
-      toast.error('Debes iniciar sesión para agregar al carrito.');
-      return
-    }
+		// Verificar si el usuario está en sesión
+		if (!userInfo || !userInfo._id) {
+			toast.error('Debes iniciar sesión para agregar al carrito.');
+			return;
+		}
 
 		if (selectedOptions.length === 0) {
 			toast.error('Selecciona una opcion antes de agregar al carrito.');
@@ -113,11 +114,11 @@
 	}
 
 	function handleBuyNow() {
-    // Verificar si el usuario está en sesión
-    if (!userInfo || !userInfo._id) {
-      toast.error('Debes iniciar sesión para agregar al carrito.');
-      return
-    }
+		// Verificar si el usuario está en sesión
+		if (!userInfo || !userInfo._id) {
+			toast.error('Debes iniciar sesión para agregar al carrito.');
+			return;
+		}
 
 		if (selectedOptions.length === 0) {
 			toast.error('Selecciona una opcion antes de agregar al carrito.');
@@ -161,6 +162,24 @@
 
 	$: totalStars = calculateStars(product.reviews || []);
 	$: console.log({ totalStars });
+
+
+  // get username
+  async function getUserName(id: string) {
+		try {
+			await getServerUrl();
+			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
+
+			if (response.ok) {
+				const data = await response.json();
+				userName = data.username;
+			}
+		} catch (error) {
+			console.error('Error al cargar el nombre del usuario');
+		}
+	}
+
+	$: getUserName(product.user);
 </script>
 
 <svelte:head>
@@ -225,7 +244,7 @@
 				</h2>
 			</div>
 
-			<a href={`/${product.username}`}>
+			<a href={`/${userName}`}>
 				<div
 					class="flex justify-evenly px-3 items-center gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
 				>
@@ -242,7 +261,7 @@
 							<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" />
 						</div>
 					{/if}
-					<h2 class="text-lg font-semibold">{product?.username}</h2>
+					<h2 class="text-lg font-semibold">{userName}</h2>
 				</div>
 			</a>
 		</div>

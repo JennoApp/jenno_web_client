@@ -127,7 +127,7 @@
 				setTimeout(() => {
 					goto('/', { replaceState: true}).then(() => {
             location.reload()
-          }) 
+          })
 				}, 100)
 			} else {
         location.reload()
@@ -183,7 +183,7 @@
 								<img class="h-6 object-cover" src="/logo-dark.png" alt="logo" />
 							{/if}
 
-							{#if $location_data !== undefined}
+							{#if $location_data?.data[0]?.country_module?.global?.alpha2}
 								<span
 									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
 									>{$location_data?.data[0]?.country_module?.global?.alpha2}</span

@@ -39,9 +39,11 @@
 	async function loadProducts(userId: any, country?: string) {
     await getServerUrl()
 		const limit: number = 20;
+
+    const resolvedCountry = country || "Colombia"
 		try {
 			const response = await fetch(
-				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${country}`
+				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
 			);
 			const { data } = await response.json();
 
@@ -161,9 +163,9 @@
 			</div>
 
 			<div class="mx-5 md:w-5/12">
-				<div class="flex flex-col gap-3 items-start">
-					<h2 class="text-2xl font-medium">{user?.displayname}</h2>
-					<p class="flex flex-wrap">
+				<div class="flex flex-col gap-3 items-center md:items-start">
+					<h2 class="text-2xl font-medium text-center md:text-left">{user?.displayname}</h2>
+					<p class="flex flex-wrap text-center md:text-left">
 						{user?.bio !== undefined ? user?.bio : ''}
 					</p>
 				</div>

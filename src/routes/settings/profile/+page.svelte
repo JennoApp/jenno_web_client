@@ -5,28 +5,28 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
-  import * as Select from '$lib/components/ui/select';
-  import { countryList } from '$lib/utils/countries'
-  import * as m from '$paraglide/messages'
+	import * as Select from '$lib/components/ui/select';
+	import { countryList } from '$lib/utils/countries';
+	import * as m from '$paraglide/messages';
 
 	export let data: PageServerData;
 	export let form: ActionData;
 
 	let userInfo: any = null;
-  let selectedCountry: any = ''
+	let selectedCountry: any = '';
 
 	$: userInfo = $page.data.user;
 
 	$: if (form?.success) {
 		toast.success('Informacion Actualizada!');
-    setTimeout(() => {
-       location.reload()
-    }, 1000)
+		setTimeout(() => {
+			location.reload();
+		}, 1000);
 	}
 
-  // Debuging
-  $: console.log({ userInfo });
-  $: console.log({ data })
+	// Debuging
+	$: console.log({ userInfo });
+	$: console.log({ data });
 </script>
 
 <div class="flex items-center w-full md:w-11/12 h-32">
@@ -40,7 +40,9 @@
 		<div class="flex items-center">
 			<div class="w-36">
 				{#if data?.user?.profileImg !== ''}
-					<div class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full">
+					<div
+						class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full"
+					>
 						<img
 							src={`${data?.user?.profileImg}`}
 							alt={`${data?.user?.username}`}
@@ -48,7 +50,9 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full">
+					<div
+						class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full"
+					>
 						<iconify-icon icon="mdi:user" height="3rem" width="3rem" class="text-[#707070]" />
 					</div>
 				{/if}
@@ -56,7 +60,9 @@
 
 			<Input type="file" name="profile" class="ml-10" />
 		</div>
-		<Button type="submit" class="ml-5 text-black dark:text-white bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+		<Button
+			type="submit"
+			class="ml-5 text-black dark:text-white bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
 			>{m.settings_profile_uploadimage_button()}</Button
 		>
 	</form>
@@ -69,7 +75,9 @@
 			{m.settings_profile_title_account_info()}
 		</h2>
 		<div class="flex gap-5 items-center mt-5">
-			<label for="username" class="text-base font-medium">{m.settings_profile_account_name()}:</label>
+			<label for="username" class="text-base font-medium"
+				>{m.settings_profile_account_name()}:</label
+			>
 			<input
 				type="text"
 				name="username"
@@ -89,7 +97,9 @@
 
 		<!-- Country Input -->
 		<div class="flex flex-col mt-3">
-			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.settings_profile_account_country()}</label>
+			<label for="email" class="text-base dark:text-gray-200 font-medium"
+				>{m.settings_profile_account_country()}</label
+			>
 			<Select.Root
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
@@ -123,7 +133,9 @@
 		</div>
 		<div class="hidden">
 			<div class="flex gap-5 items-center mt-5">
-				<label for="country" class="text-base font-medium">{m.settings_profile_account_country()}:</label>
+				<label for="country" class="text-base font-medium"
+					>{m.settings_profile_account_country()}:</label
+				>
 				<input
 					type="text"
 					name="country"
@@ -137,7 +149,9 @@
 			<div class="mt-10">
 				<h2 class="mt-5 text-xl font-semibold">{m.settings_profile_title_legal_info()}</h2>
 				<div class="flex gap-5 items-center mt-5">
-					<label for="legal_name" class="text-base font-medium">{m.settings_profile_legal_name()}:</label>
+					<label for="legal_name" class="text-base font-medium"
+						>{m.settings_profile_legal_name()}:</label
+					>
 					<input
 						type="text"
 						name="legal_name"
@@ -146,7 +160,9 @@
 					/>
 				</div>
 				<div class="flex gap-5 items-center mt-5">
-					<label for="legal_lastname" class="text-base font-medium">{m.settings_profile_legal_lastname()}:</label>
+					<label for="legal_lastname" class="text-base font-medium"
+						>{m.settings_profile_legal_lastname()}:</label
+					>
 					<input
 						type="text"
 						name="legal_lastname"
@@ -155,7 +171,9 @@
 					/>
 				</div>
 				<div class="flex gap-5 items-center mt-5">
-					<label for="taxid" class="text-base font-medium">{m.settings_profile_legal_taxid()}:</label>
+					<label for="taxid" class="text-base font-medium"
+						>{m.settings_profile_legal_taxid()}:</label
+					>
 					<input
 						type="text"
 						name="taxid"

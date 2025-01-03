@@ -12,13 +12,11 @@ const LanguageSchema = z
   })
 
 export const load: PageServerLoad = async ({ fetch, url }) => {
-  const country = url.searchParams.get('country') || ''
+  const country = url.searchParams.get('country') || 'Colombia'
   const category = url.searchParams.get('category') || ''
   const limit: number = 20
-  
-  const response = await fetch(`${PRIVATE_SERVER_URL}/products?page=${1}&limit=${limit}&country=${country}&category=${category}`)
 
-  console.log(category)
+  const response = await fetch(`${PRIVATE_SERVER_URL}/products?page=${1}&limit=${limit}&country=${country}&category=${category}`)
 
   if (!response.ok) {
     return {
@@ -27,7 +25,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
     }
   }
 
-  
   const { data, meta } = await response.json()
   console.log({productsData: data})
 

@@ -10,8 +10,17 @@ export const actions: Actions = {
     let imagesUrls = productId
       ? JSON.parse(formData.get('imagesUrls') as string || '[]')
       : []
-    const country: string[] = ['Colombia']
 
+    // Obtener y procesar el país
+    const receivedCountries = (formData.get('country') as string || '').split(',').map(country => country.trim());
+
+    // Verificar y agregar "Colombia" si no está presente
+    if (!receivedCountries.includes('Colombia')) {
+      receivedCountries.unshift('Colombia'); // Agregar "Colombia" al inicio
+    }
+
+    // Configurar la lista final de países
+    const country = receivedCountries.length > 0 ? receivedCountries : ['Colombia'];
 
     // Extraer datos generales del producto
     const productData = {
@@ -31,7 +40,7 @@ export const actions: Actions = {
       },
       status: formData.get('status'),
       visibility: formData.get('visibility'),
-      country: country.concat(formData.get('country') as string || []),
+      country,
       options: [] as any[],
       especifications: [] as any[]
     };

@@ -97,7 +97,7 @@
 	}
 </script>
 
-<a href={`/${data.username}/${data._id}`}>
+<a href={`/${userName}/${data._id}`}>
 	<div
 		class="h-[380px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525]"
 	>
