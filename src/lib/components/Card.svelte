@@ -24,6 +24,7 @@
 
 	let profileImg = '';
 	let openDialogreview = false;
+	let userName = '';
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -75,6 +76,22 @@
 	$: totalStars = calculateStars(data?.reviews || []);
 	$: console.log({ data: data?.reviews });
 
+	async function getUserName(id: string) {
+		try {
+			await getServerUrl();
+			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
+
+			if (response.ok) {
+				const data = await response.json();
+				userName = data.username;
+			}
+		} catch (error) {
+			console.error('Error al cargar el nombre del usuario');
+		}
+	}
+
+  $: getUserName(data.user)
+
 	function handleOpenDialgoReview() {
 		openDialogreview = true;
 	}
@@ -95,9 +112,11 @@
 						></iconify-icon>
 					</div>
 				{/if}
-				<a href={`/${data.username}`}>
-					<h4 class="ml-2 font-medium">{data.username}</h4>
-				</a>
+				{#if userName !== ''}
+					<a href={`/${userName}`}>
+						<h4 class="ml-2 font-medium">{userName}</h4>
+					</a>
+				{/if}
 			</div>
 			<div class="hidden">
 				<!-- oculto los simbolos para agregar funcionalidad posteriormente -->

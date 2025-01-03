@@ -16,12 +16,12 @@
   let selectedCountry: any = ''
 
 	$: userInfo = $page.data.user;
-	
+
 	$: if (form?.success) {
 		toast.success('Informacion Actualizada!');
     setTimeout(() => {
        location.reload()
-    }, 1000) 
+    }, 1000)
 	}
 
   // Debuging
@@ -74,7 +74,7 @@
 				type="text"
 				name="username"
 				class="h-8 border rounded-md text-black font-semibold px-2"
-				bind:value={userInfo.username}
+				bind:value={userInfo.displayname}
 			/>
 		</div>
 		<div class="flex gap-5 items-center mt-5">
@@ -90,7 +90,7 @@
 		<!-- Country Input -->
 		<div class="flex flex-col mt-3">
 			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.settings_profile_account_country()}</label>
-			<Select.Root 
+			<Select.Root
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
 				}}
