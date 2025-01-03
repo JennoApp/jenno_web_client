@@ -162,7 +162,7 @@
 
 			<div class="mx-5 md:w-5/12">
 				<div class="flex flex-col gap-3 items-start">
-					<h2 class="text-2xl font-medium">{user?.username}</h2>
+					<h2 class="text-2xl font-medium">{user?.displayname}</h2>
 					<p class="flex flex-wrap">
 						{user?.bio !== undefined ? user?.bio : ''}
 					</p>

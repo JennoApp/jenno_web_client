@@ -25,21 +25,21 @@
 	let profileImg = '';
 	let openDialogreview = false;
 
-  // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url 
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
 
 	onMount(async () => {
-    await getServerUrl();
+		await getServerUrl();
 
 		if (!data || !data?.user) {
 			console.error(
@@ -140,23 +140,27 @@
 					></iconify-icon>
 				</button>
 
-        <button class="flex items-center" on:click|preventDefault={() => {
-          const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`
-          navigator.clipboard.writeText(product_link)
-            .then(() => {
-              toast.success('Enlace copiado al portapapeles')
-            })
-            .catch(err => {
-              toast.error("Error al copiar el enlace. Intentelo nuevamente")
-            }) 
-        }}>
-          <iconify-icon
-					class="text-[#707070] dark:text-white"
-					icon="bitcoin-icons:share-filled"
-					height="1.5rem"
-					width="1.5rem"
-				></iconify-icon>
-        </button>	
+				<button
+					class="flex items-center"
+					on:click|preventDefault={() => {
+						const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
+						navigator.clipboard
+							.writeText(product_link)
+							.then(() => {
+								toast.success('Enlace copiado al portapapeles');
+							})
+							.catch((err) => {
+								toast.error('Error al copiar el enlace. Intentelo nuevamente');
+							});
+					}}
+				>
+					<iconify-icon
+						class="text-[#707070] dark:text-white"
+						icon="bitcoin-icons:share-filled"
+						height="1.5rem"
+						width="1.5rem"
+					></iconify-icon>
+				</button>
 			</div>
 
 			<div class="save hidden">
@@ -177,81 +181,66 @@
 				<h2 class="m-1 mt-1 text-lg font-semibold">{formatPrice(data.price, 'es-CO', 'COP')}</h2>
 			</div>
 		</div>
-
-		<!-- Commerce -->
-		<!-- <div class="flex justify-evenly mx-2 mt-2 gap-1">	
-			<button
-				class="bg-gray-200 hover:bg-gray-300 text-black dark:bg-[#404040] font-normal rounded w-full h-8 dark:text-gray-200 text-base cursor-pointer"
-				on:click|preventDefault={() => addToCart(data)}
-			>
-				{m.card_button_addtocart()}
-			</button>
-      <button
-				class="bg-purple-600 hover:bg-purple-700 font-normal rounded w-full h-8 text-gray-200 text-base cursor-pointer z-10"
-				on:click|preventDefault={() => {
-					addToCart(data);
-					goto('/cart');
-				}}
-			>
-				{m.card_button_buynow()}
-			</button>
-		</div> -->
 	</div>
 </a>
 
 <!-- Dialog Reviews -->
-<Dialog.Root bind:open={openDialogreview}>
-	<Dialog.Trigger />
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
-		</Dialog.Header>
-		<div>
-			{#if data?.reviews.length === 0}
-				<div>
-					<h2>No hay reseñas disponibles</h2>
-				</div>
-			{:else}
-				<ScrollArea class="max-h-[600px] w-full">
-					{#each data?.reviews as review}
-						<div class="m-3">
-							<div class="flex items-center justify-between">
-								<div class="flex gap-2 items-center">
-									{#if review.userProfileImg !== ''}
-										<img
-											src={review.userProfileImg}
-											alt={review.userName}
-											class="h-9 w-9 object-cover ml-1 rounded-full"
-										/>
-									{:else}
-										<iconify-icon
-											icon="mdi:user"
-											height="1.5rem"
-											width="1.5rem"
-											class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
-										/>
-									{/if}
-									<h3 class="text-base font-semibold">{review.userName}</h3>
-								</div>
-
-								<div class="flex">
-									{#each Array(review.stars) as _, i}
-										<iconify-icon
-											icon="mdi:star"
-											height="1.5rem"
-											width="1.5rem"
-											class="flex justify-center items-center h-9 w-9 {getStartColor(review.stars)}"
-										/>
-									{/each}
-								</div>
-							</div>
+{#if openDialogreview}
+	<Dialog.Root bind:open={openDialogreview}>
+		<Dialog.Trigger />
+		<Dialog.Content>
+			<Dialog.Header>
+				<Dialog.Title>{m.product_page_reviews()}</Dialog.Title>
+			</Dialog.Header>
+			<div>
+				{#if data?.reviews.length === 0}
+					<div>
+						<h2>No hay reseñas disponibles</h2>
+					</div>
+				{:else}
+					<ScrollArea class="max-h-[600px] w-full">
+						{#each data?.reviews as review}
 							<div class="m-3">
-								<p>{review.review}</p>
+								<div class="flex items-center justify-between">
+									<div class="flex gap-2 items-center">
+										{#if review.userProfileImg !== ''}
+											<img
+												src={review.userProfileImg}
+												alt={review.userName}
+												class="h-9 w-9 object-cover ml-1 rounded-full"
+											/>
+										{:else}
+											<iconify-icon
+												icon="mdi:user"
+												height="1.5rem"
+												width="1.5rem"
+												class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
+											/>
+										{/if}
+										<h3 class="text-base font-semibold">{review.userName}</h3>
+									</div>
+
+									<div class="flex">
+										{#each Array(review.stars) as _, i}
+											<iconify-icon
+												icon="mdi:star"
+												height="1.5rem"
+												width="1.5rem"
+												class="flex justify-center items-center h-9 w-9 {getStartColor(
+													review.stars
+												)}"
+											/>
+										{/each}
+									</div>
+								</div>
+								<div class="m-3">
+									<p>{review.review}</p>
+								</div>
 							</div>
-						</div>
-					{/each}
-				</ScrollArea>
-			{/if}
-		</div>
-	</Dialog.Content>
-</Dialog.Root>
+						{/each}
+					</ScrollArea>
+				{/if}
+			</div>
+		</Dialog.Content>
+	</Dialog.Root>
+{/if}
