@@ -55,7 +55,7 @@ export const actions: Actions = {
     const tokenJwt = cookies.get('session')
 
     // info
-    const username = formData.get("username")
+    let username = formData.get("username")
     const email = formData.get('email')
     const bio = formData.get('bio')
     const country = formData.get('country')
@@ -68,6 +68,19 @@ export const actions: Actions = {
     console.log({ username, email, bio, country, legalName, legalLastName, taxID })
 
     try {
+      // validar y procesar el username: convertir a minisculas y eliminar espacios
+      let displayname
+      if (typeof username === "string") {
+        displayname = username
+        username = username.toLowerCase().replace(/\s+/g, '') 
+      } else {
+        console.error("El valor de username no es una cadena.")
+        return {
+          success: false,
+          message: 'El username proporcionado no es valido'
+        }
+      }
+
       // Actualiza infomacion del usuario
       const updateResponse = await fetch(`${PRIVATE_SERVER_URL}/users/updateuser`, {
         method: "POST",
@@ -77,6 +90,7 @@ export const actions: Actions = {
         },
         body: JSON.stringify({
           username: username,
+          displayname: displayname,
           email: email,
           bio: bio,
           country: country,
