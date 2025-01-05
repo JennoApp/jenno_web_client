@@ -106,7 +106,7 @@
 			return;
 		}
 
-		if (selectedOptions.length === 0) {
+		if (product.options.length > 0 && selectedOptions.length === 0) {
 			toast.error('Selecciona una opcion antes de agregar al carrito.');
 			return;
 		}
@@ -120,7 +120,7 @@
 			return;
 		}
 
-		if (selectedOptions.length === 0) {
+		if (product.options.length > 0 && selectedOptions.length === 0) {
 			toast.error('Selecciona una opcion antes de agregar al carrito.');
 			return;
 		}
@@ -163,9 +163,8 @@
 	$: totalStars = calculateStars(product.reviews || []);
 	$: console.log({ totalStars });
 
-
-  // get username
-  async function getUserName(id: string) {
+	// get username
+	async function getUserName(id: string) {
 		try {
 			await getServerUrl();
 			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
@@ -237,16 +236,38 @@
 
 	<div class="flex flex-col justify-between w-full md:w-1/2 ml-2">
 		<div class="flex justify-between">
-			<div>
+			<div class="mr-5">
 				<h1 class="text-3xl">{product?.productname}</h1>
 				<h2 class="text-base font-medium text-[#707070]">
 					{product?.category.charAt(0).toUpperCase() + product?.category.slice(1)}
 				</h2>
+
+				<div class="flex gap-5 items-center mt-1">
+					<div
+						class="flex gap-1 items-center justify-center w-16 h-8 bg-gray-200 dark:bg-[#303030] px-1 mt-1 rounded-lg"
+					>
+						<iconify-icon
+							class={getStartColor(totalStars)}
+							icon="mdi:star"
+							height="1.5rem"
+							width="1.5rem"
+						></iconify-icon>
+						{#if totalStars !== 0}
+							<span class="text-base font-semibold">{totalStars}</span>
+						{/if}
+					</div>
+
+					<button on:click|preventDefault={() => handleOpenDialgoReview()}>
+						<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">
+							{m.product_page_reviews()}
+						</h3>
+					</button>
+				</div>
 			</div>
 
 			<a href={`/${userName}`}>
 				<div
-					class="flex justify-evenly px-3 items-center gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
+					class="flex flex-col items-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
 				>
 					{#if profileImg}
 						<img
@@ -264,28 +285,6 @@
 					<h2 class="text-lg font-semibold">{userName}</h2>
 				</div>
 			</a>
-		</div>
-
-		<div class="flex gap-5 items-center">
-			<div
-				class="flex gap-1 items-center justify-center w-16 h-8 bg-gray-200 dark:bg-[#303030] px-1 mt-1 rounded-lg"
-			>
-				<iconify-icon
-					class={getStartColor(totalStars)}
-					icon="mdi:star"
-					height="1.5rem"
-					width="1.5rem"
-				></iconify-icon>
-				{#if totalStars !== 0}
-					<span class="text-base font-semibold">{totalStars}</span>
-				{/if}
-			</div>
-
-			<button on:click|preventDefault={() => handleOpenDialgoReview()}>
-				<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">
-					{m.product_page_reviews()}
-				</h3>
-			</button>
 		</div>
 
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>

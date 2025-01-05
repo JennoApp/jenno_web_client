@@ -9,7 +9,8 @@ interface Product {
   imgs: [string];
   price: number;
   shippingfee: number
-  user: string
+  user: string,
+  options: []
 }
 
 interface SelectedOption {
@@ -32,10 +33,10 @@ if (browser) {
 }
 
 // No solo agrega el producto al carrito sino que tambien
-// incrementa una unidad cuando este ya esta agregado 
+// incrementa una unidad cuando este ya esta agregado
 export function addToCart(product: Product, selectedOptions: SelectedOption[] = [], quantity: number = 1) {
-  // Exit if no options are selected 
-  if (selectedOptions.length === 0) {
+  // Exit if no options are selected
+  if (product.options.length > 0 && selectedOptions.length === 0) {
     console.warn("No options selected")
     return
   }
@@ -55,7 +56,6 @@ export function addToCart(product: Product, selectedOptions: SelectedOption[] = 
     const cartItem: CartItem = {...product, amount: quantity, selectedOptions}
     items = [...items, cartItem]
   }
-
 
   cartItems.set(items)
 }

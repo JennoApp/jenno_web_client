@@ -88,7 +88,7 @@
 		'/register/personal',
 		'/register/business',
 		'/forgotpassword'
-	]
+	];
 
 	//verifica si la sesion de usuario esta activa
 	let userInfo: any = $page.data.user;
@@ -125,13 +125,13 @@
 
 			if (restrictedPaths.some((path) => currentPath.startsWith(path))) {
 				setTimeout(() => {
-					goto('/', { replaceState: true}).then(() => {
-            location.reload()
-          })
-				}, 100)
+					goto('/', { replaceState: true }).then(() => {
+						location.reload();
+					});
+				}, 100);
 			} else {
-        location.reload()
-      }
+				location.reload();
+			}
 		} else {
 			toast.error('No se ha podido cerrar sesion');
 		}
@@ -357,10 +357,14 @@
 												<div class="flex flex-col items-start">
 													<h2 class="text-lg">{cartItem.productname}</h2>
 													<p class="text-base dark:text-white">${cartItem.price}</p>
-													<div class="flex gap-1">
-														<h3>{cartItem.selectedOptions[0].name}:</h3>
-														<p>{cartItem.selectedOptions[0].value}</p>
-													</div>
+
+													<!-- Mostrar selectedOptions solo si existen -->
+													{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
+														<div class="flex gap-1">
+															<h3>{cartItem.selectedOptions[0].name}:</h3>
+															<p>{cartItem.selectedOptions[0].value}</p>
+														</div>
+													{/if}
 												</div>
 
 												<div class="flex w-full justify-center items-center mt-2">

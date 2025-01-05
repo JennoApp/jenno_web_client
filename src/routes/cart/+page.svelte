@@ -93,10 +93,13 @@
 								<p class="text-base dark:text-white">
 									{formatPrice(cartItem.price, 'es-CO', 'COP')}
 								</p>
-								<div class="flex gap-3">
-									<h3>{cartItem.selectedOptions[0].name}:</h3>
-									<p>{cartItem.selectedOptions[0].value}</p>
-								</div>
+								<!-- Mostrar selectedOptions solo si existen -->
+								{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
+									<div class="flex gap-3">
+										<h3>{cartItem.selectedOptions[0].name}:</h3>
+										<p>{cartItem.selectedOptions[0].value}</p>
+									</div>
+								{/if}
 							</div>
 
 							<div class="flex justify-center items-center mt-2 mr-14">
@@ -140,7 +143,10 @@
 						<Table.Head>{m.cart_order_tableheader_shop()}</Table.Head>
 						<Table.Head>{m.cart_order_tableheader_price()}</Table.Head>
 						<Table.Head>{m.cart_order_tableheader_quantity()}</Table.Head>
-						<Table.Head>Opciones</Table.Head>
+						<!-- Mostrar selectedOptions solo si existen -->
+						{#if $cartItems.some((cartItem) => cartItem.selectedOptions && cartItem.selectedOptions.length > 0)}
+							<Table.Head>Opciones</Table.Head>
+						{/if}
 						<Table.Head>{m.cart_order_tableheader_total()}</Table.Head>
 					</Table.Row>
 				</Table.Header>
@@ -154,9 +160,16 @@
 							>
 							<Table.Cell>{formatPrice(cartItem.price, 'es-CO', 'COP')}</Table.Cell>
 							<Table.Cell class="mx-3">{cartItem.amount}</Table.Cell>
-							<Table.Cell
-								>{cartItem.selectedOptions[0].name}: {cartItem.selectedOptions[0].value}</Table.Cell
-							>
+							<!-- Mostrar las opciones o una "X" si no existen -->
+							{#if $cartItems.some((cartItem) => cartItem.selectedOptions && cartItem.selectedOptions.length > 0)}
+								<Table.Cell>
+									{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
+										{cartItem.selectedOptions[0].name}: {cartItem.selectedOptions[0].value}
+									{:else}
+										<iconify-icon icon="basil:cross-solid" width="35" height="35"></iconify-icon>
+									{/if}
+								</Table.Cell>
+							{/if}
 							<Table.Cell
 								>{formatPrice(cartItem.price * cartItem.amount, 'es-CO', 'COP')}</Table.Cell
 							>
