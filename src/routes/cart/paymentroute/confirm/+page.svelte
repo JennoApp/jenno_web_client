@@ -18,9 +18,8 @@
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
 
-	let shippingData = $page.data?.user?.shippingInfo;	
+	let shippingData = $page.data?.user?.shippingInfo;
 	let openDialogPayment = false;
-
 
 	// Estado del carrito y calculos
 	$: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
@@ -30,14 +29,13 @@
 	);
 	$: P_goal = subtotal + totalEnvio;
 
+	// Conversion a USD
+	let exchangeRate = 0;
+	let usdEquivalent: number = 0;
 
-  // Conversion a USD
-  let exchangeRate = 0
-	let usdEquivalent: number = 0
-
-  onMount(() => {
-    fetchExchangeRate()
-  })
+	onMount(() => {
+		fetchExchangeRate();
+	});
 
 	async function fetchExchangeRate() {
 		try {
@@ -52,7 +50,7 @@
 	}
 
 	$: if (exchangeRate && $T) {
-		usdEquivalent = parseFloat(($T / exchangeRate).toFixed(2))
+		usdEquivalent = parseFloat(($T / exchangeRate).toFixed(2));
 	} else {
 		usdEquivalent = 0;
 	}
@@ -75,10 +73,13 @@
 					<div class="flex w-full mx-7 justify-between">
 						<div class="flex gap-5 items-center">
 							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-							<div class="flex gap-3">
-								<h3>{cartItem.selectedOptions[0].name}:</h3>
-								<p>{cartItem.selectedOptions[0].value}</p>
-							</div>
+							<!-- Mostrar selectedOptions solo si existen -->
+							{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
+								<div class="flex gap-3">
+									<h3>{cartItem.selectedOptions[0].name}:</h3>
+									<p>{cartItem.selectedOptions[0].value}</p>
+								</div>
+							{/if}
 							<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
 							<div class="flex gap-1">
 								<h3>Cantidad:</h3>
@@ -152,7 +153,9 @@
 			class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			on:click={() => {
 				openDialogPayment = true;
-        toast.info("Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.")
+				toast.info(
+					'Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.'
+				);
 			}}
 		>
 			Pagar
