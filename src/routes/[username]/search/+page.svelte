@@ -13,7 +13,7 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
       console.error('Error al solicitar Paypal Id')
     }
@@ -22,12 +22,17 @@
 	const fetchSearchProducts = async (param: string) => {
     await getServerUrl()
 
+    console.log({
+      serverUrl,
+      username: $page.params.username,
+      query: param,
+    })
+
 		const response = await fetch(
 			`${serverUrl}/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
 		);
 
 		const { data } = await response.json();
-
 		productsSearch = data
 	};
 
@@ -51,7 +56,7 @@
 		<p class="text-lg text-[#707070]">
 			Intenta con otros términos o categorías para encontrar lo que buscas.
 		</p>
-	</div>	
+	</div>
 {/if}
 
 <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0">
