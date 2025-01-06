@@ -44,28 +44,69 @@
 		isActiveSearchInput = !isActiveSearchInput;
 	}
 
-	const handleSearch = () => {
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
+
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
+
+	async function getUserId(username: string) {
+		await getServerUrl();
+
+		const response = await fetch(`${serverUrl}/users/getUserId/${username}`);
+		if (!response.ok) {
+			throw new Error('Error al obtener el Id del usuario');
+		}
+
+		const { id } = await response.json();
+		return id;
+	}
+
+	const handleSearch = async () => {
 		if (searchInputValue !== '') {
-			if (!rutasExcluidas.includes($page.url.pathname.split('/')[1])) {
-				setSearch(searchInputValue);
-				dialogOpen = false;
-				goto(`/${$page.url.pathname.split('/')[1]}/search`);
-				searchInputValue = '';
-			} else {
-				setSearch(searchInputValue);
-				console.log($search);
-				dialogOpen = false;
-				goto('/search');
-				searchInputValue = '';
+			try {
+        const username = $page.url.pathname.split('/')[1]
+        const userId = await getUserId(username)
+
+        const queryParams = new URLSearchParams({
+          query: searchInputValue,
+          id: userId
+        }).toString()
+
+				if (!rutasExcluidas.includes(username)) {
+					setSearch(searchInputValue);
+					dialogOpen = false;
+					goto(`/${username}/search?${queryParams}`);
+					searchInputValue = '';
+				} else {
+					setSearch(searchInputValue);
+					dialogOpen = false;
+					goto(`/search?${queryParams}`);
+					searchInputValue = '';
+				}
+			} catch (error) {
+				console.error('Error al obtener el ID del usuario:', error);
 			}
 		}
 	};
 
 	const handleGlobalSearch = () => {
-		if (searchInputValue !== '') {
+		if (searchInputValue.trim() !== '') {
 			setSearch(searchInputValue);
+
+      const queryParams = new URLSearchParams({
+        query: searchInputValue.trim()
+      }).toString()
+
 			dialogOpen = false;
-			goto('/search');
+			goto(`/search?${queryParams}`);
 			searchInputValue = '';
 		}
 	};
