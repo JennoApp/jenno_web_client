@@ -70,17 +70,18 @@
 	}
 
 	const handleSearch = async () => {
-		if (searchInputValue !== '') {
+		if (searchInputValue.trim() !== '') {
 			try {
-        const username = $page.url.pathname.split('/')[1]
-        const userId = await getUserId(username)
-
-        const queryParams = new URLSearchParams({
-          query: searchInputValue,
-          id: userId
-        }).toString()
+				const username = $page.url.pathname.split('/')[1];
 
 				if (!rutasExcluidas.includes(username)) {
+					const userId = await getUserId(username);
+
+					const queryParams = new URLSearchParams({
+						query: searchInputValue,
+						id: userId
+					}).toString();
+
 					setSearch(searchInputValue);
 					dialogOpen = false;
 					goto(`/${username}/search?${queryParams}`);
@@ -88,7 +89,7 @@
 				} else {
 					setSearch(searchInputValue);
 					dialogOpen = false;
-					goto(`/search?${queryParams}`);
+					goto(`/search`);
 					searchInputValue = '';
 				}
 			} catch (error) {
@@ -101,9 +102,9 @@
 		if (searchInputValue.trim() !== '') {
 			setSearch(searchInputValue);
 
-      const queryParams = new URLSearchParams({
-        query: searchInputValue.trim()
-      }).toString()
+			const queryParams = new URLSearchParams({
+				query: searchInputValue.trim()
+			}).toString();
 
 			dialogOpen = false;
 			goto(`/search?${queryParams}`);

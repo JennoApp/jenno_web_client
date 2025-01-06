@@ -19,8 +19,10 @@
     }
   }
 
-	const fetchSearchProducts = async (param: string) => {
+	const fetchSearchProducts = async (userId: string, param: string) => {
     await getServerUrl()
+
+    // const userId = $page.url.searchParams.get('id')
 
     console.log({
       serverUrl,
@@ -29,18 +31,25 @@
     })
 
 		const response = await fetch(
-			`${serverUrl}/products/searchbyuser/${$page.params.username}?query=${param}&page=${1}&limit=${20}`
+			`${serverUrl}/products/searchbyuser/${userId}?query=${param}&page=${1}&limit=${20}`
 		);
 
 		const { data } = await response.json();
+
+    console.log({data})
+
 		productsSearch = data
 	};
 
+  $: userId = $page.url.searchParams.get('id')
+  $: console.log({userId})
+
   onMount(() => {
-    fetchSearchProducts($search)
+   const userId = $page.url.searchParams.get('id')
+    fetchSearchProducts(userId as string, $search)
   })
 
-	$: fetchSearchProducts($search);
+	$: fetchSearchProducts(userId as string, $search);
   $: console.log({productsSearch})
 </script>
 
