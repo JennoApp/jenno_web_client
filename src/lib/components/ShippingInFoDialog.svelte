@@ -13,13 +13,12 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
       console.error('Error al solicitar Paypal Id')
     }
   }
 
-  $: getServerUrl()
 
   function openDialog() {
     open = true
@@ -28,6 +27,8 @@
   // $: console.log({id: shippingInfo.buyerId})
 
   async function getShippingInfo(id: string) {
+    await getServerUrl()
+
     const response = await fetch(`${serverUrl}/users/shippingInfo/${id}`)
     const data = await response.json()
     userShippingInfo = data
@@ -53,31 +54,31 @@
           <h3>Direccion:</h3>
           <p>{userShippingInfo?.shippingInfo?.address}</p>
         </div>
-        
+
         <div class="flex gap-2">
-          <h3>Ciudad:</h3> 
+          <h3>Ciudad:</h3>
           <h3>{userShippingInfo?.shippingInfo?.city}</h3>
         </div>
-        
+
         <div class="flex gap-2">
-          <h3>Estado:</h3> 
+          <h3>Estado:</h3>
           <h3>{userShippingInfo?.shippingInfo?.state}</h3>
         </div>
 
         <div class="flex gap-2">
-          <h3>Pais:</h3> 
+          <h3>Pais:</h3>
           <h3>{userShippingInfo?.shippingInfo?.country}</h3>
         </div>
 
         <div class="flex gap-2">
-          <h3>Telefono:</h3> 
+          <h3>Telefono:</h3>
           <h3>{userShippingInfo?.shippingInfo?.phoneNumber}</h3>
         </div>
-        
+
         <div class="flex gap-2">
-          <h3>Codigo Postal:</h3> 
+          <h3>Codigo Postal:</h3>
           <h3>{userShippingInfo?.shippingInfo?.postalCode}</h3>
-        </div>    
+        </div>
       </div>
 		</Dialog.Header>
 	</Dialog.Content>
