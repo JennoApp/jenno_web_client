@@ -1,9 +1,12 @@
 <script>
-  export let options
+	export let options;
 </script>
 
-
-<div class="flex gap-1">
-  <span>{options.name}:</span> 
-  <span>{options.value}</span>
-</div>
+{#if options}
+	<div class="flex gap-1">
+		<span>{options?.name}:</span>
+		<span>{options?.value}</span>
+	</div>
+{:else}
+	<iconify-icon icon="basil:cross-solid" width="35" height="35"></iconify-icon>
+{/if}

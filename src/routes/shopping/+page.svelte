@@ -76,13 +76,13 @@
 				return createRender(Options, { options: value });
 			}
 		}),
-		// table.column({
-		// 	header: `${m.shopping_tableheader_status()}`,
-		// 	accessor: (row) => row.status,
-		// 	cell: ({ value }) => {
-		// 		return createRender(Status, { status: value }) || `<span>${value}</span>`;
-		// 	}
-		// }),
+		table.column({
+			header: `${m.shopping_tableheader_status()}`,
+			accessor: (row) => row.status,
+			cell: ({ value }) => {
+				return createRender(Status, { status: value }) || `<span>${value}</span>`;
+			}
+		}),
 		table.column({
 			header: ` `,
 			accessor: (row) => format(row.updatedAt)
