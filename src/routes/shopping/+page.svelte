@@ -19,7 +19,7 @@
   function changePage(newPage: number) {
     const searchParams = new URLSearchParams(window.location.search)
     searchParams.set('page', newPage.toString())
-    invalidateAll()  
+    invalidateAll()
   }
 
 	const table = createTable(readable(data.products), {
@@ -76,13 +76,13 @@
 				return createRender(Options, { options: value });
 			}
 		}),
-		table.column({
-			header: `${m.shopping_tableheader_status()}`,
-			accessor: (row) => row.status,
-			cell: ({ value }) => {
-				return createRender(Status, { status: value }) || `<span>${value}</span>`;
-			}
-		}),
+		// table.column({
+		// 	header: `${m.shopping_tableheader_status()}`,
+		// 	accessor: (row) => row.status,
+		// 	cell: ({ value }) => {
+		// 		return createRender(Status, { status: value }) || `<span>${value}</span>`;
+		// 	}
+		// }),
 		table.column({
 			header: ` `,
 			accessor: (row) => format(row.updatedAt)
@@ -130,7 +130,7 @@
 	</div>
 </div>
 
-{#if data?.products.length !== 0}
+{#if data?.products?.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
 	{:else}
