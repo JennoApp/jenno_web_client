@@ -237,7 +237,7 @@
 		</div>
 	{/if}
 {:else}
-	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+	<div class="flex flex-col items-center justify-center h-full w-full">
 		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
