@@ -23,7 +23,7 @@
     invalidateAll()
   }
 
-  const table = createTable(readable(data.shoppingWithoutReviews), {
+  const table = createTable(readable(data?.shoppingWithoutReviews), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
@@ -40,7 +40,7 @@
 				}
 			},
 			cell: ({ value }) => {
-				return createRender(Image, { url: value.imgs[0] });
+				return createRender(Image, { url: value?.imgs[0] });
 			}
 		}),
 		table.column({
@@ -52,23 +52,23 @@
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_quantity()}`,
-			accessor: (row) => row.product.amount
+			accessor: (row) => row.product?.amount
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_price()}`,
-			accessor: (row) => row.product.price
+			accessor: (row) => row.product?.price
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_total()}`,
-			accessor: (row) => row.product.price * row.product.amount
+			accessor: (row) => row.product?.price * row.product?.amount
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_category()}`,
-			accessor: (row) => row.product.category
+			accessor: (row) => row.product?.category
 		}),
     table.column({
 			header: 'Opciones',
-			accessor: (row) => row.product.selectedOptions[0],
+			accessor: (row) => row.product?.selectedOptions[0],
       cell: ({value}) => {
         return createRender(Options, {options: value})
       }
