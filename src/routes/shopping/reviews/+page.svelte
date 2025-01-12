@@ -17,13 +17,15 @@
   export let data: PageServerData
   const currentPage = data.meta?.page
 
+  console.log({data})
+
   function changePage(newPage: number) {
     const searchParams = new URLSearchParams(window.location.search)
     searchParams.set('page', newPage.toString())
     invalidateAll()
   }
 
-  const table = createTable(readable(data?.shoppingWithoutReviews), {
+  const table = createTable(readable(data.shoppingWithoutReviews), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
