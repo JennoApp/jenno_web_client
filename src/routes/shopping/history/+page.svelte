@@ -28,7 +28,7 @@
 		invalidateAll();
 	}
 
-	const table = createTable(readable(data.salesList), {
+	const table = createTable(readable(data.shoppingList), {
 		page: addPagination(),
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
@@ -151,7 +151,7 @@
 	</div>
 </div>
 
-{#if data?.salesList.length !== 0}
+{#if data?.shoppingList.length !== 0}
 	{#if data.sucess === false}
 		<h1>Error al hacer la solicitud</h1>
 	{:else}

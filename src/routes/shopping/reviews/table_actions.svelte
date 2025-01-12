@@ -18,7 +18,7 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
       console.error('Error al solicitar Paypal Id')
     }
@@ -91,7 +91,7 @@
 				reviewText = '';
         openDialog = false
 
-				toast.success('Reseña enviada con exito!'); 
+				toast.success('Reseña enviada con exito!');
 			} else {
         const errorData = await response.json();
 				console.error('Error en la respuesta del servidor:', errorData);
@@ -170,7 +170,7 @@
 					on:click={() => {
 						sendReview(id);
 					}}
-					class="dark:bg-purple-600 dark:text-gray-200">Enviar Reseña</Button
+					class="bg-gray-200 text-black dark:bg-[#202020] dark:text-gray-200">Enviar Reseña</Button
 				>
 			</div>
 		</div>

@@ -7,17 +7,17 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
     const session = cookies.get('session') as string
     if (session) {
       const user = jwt.decode(session)
-      
+
       // Obtener la pagina actual
       const page = parseInt(url.searchParams.get('page') || '1')
       const limit = 10
 
       // Fetch the orders list data
-      const response = await fetch(`${PRIVATE_SERVER_URL}/users/orderscompleted/${user?.sub}?page=${page}&limit=${limit}`);
+      const response = await fetch(`${PRIVATE_SERVER_URL}/users/shoppingcompleted/${user?.sub}?page=${page}&limit=${limit}`);
       const { data, meta } = await response.json()
 
       // Fetch details for each order
-      const salesList = await Promise.all(
+      const shoppingList = await Promise.all(
         data.map(async (orderId: string) => {
         const orderResponse = await fetch(`${PRIVATE_SERVER_URL}/orders/${orderId}`);
         return await orderResponse.json();
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
     );
 
       return {
-        salesList,
+        shoppingList,
         meta: meta,
         sucess: true
       }

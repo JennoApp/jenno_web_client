@@ -201,7 +201,7 @@
 		</div>
 	{/if}
 {:else}
-	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+	<div class="flex flex-col items-center justify-center h-full w-full">
 		<iconify-icon
 			icon="fa6-solid:cart-shopping"
 			height="5rem"
