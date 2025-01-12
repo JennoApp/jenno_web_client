@@ -74,10 +74,6 @@
 			}
 		}),
 		table.column({
-			header: `${m.shopping_tableheader_sku()}`,
-			accessor: (row) => row.product.SKU
-		}),
-		table.column({
 			header: `${m.shopping_tableheader_category()}`,
 			accessor: (row) => row.product.category
 		}),
