@@ -20,7 +20,7 @@
   function changePage(newPage: number) {
     const searchParams = new URLSearchParams(window.location.search)
     searchParams.set('page', newPage.toString())
-    invalidateAll()  
+    invalidateAll()
   }
 
   const table = createTable(readable(data.shoppingWithoutReviews), {
@@ -45,7 +45,7 @@
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_name()}`,
-			accessor: (row) => row.product.productname,
+			accessor: (row) => row.product?.productname,
 			cell: ({ value }) => {
 				return value || 'No Name';
 			}
@@ -61,10 +61,6 @@
 		table.column({
 			header: `${m.shopping_tableheader_total()}`,
 			accessor: (row) => row.product.price * row.product.amount
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_sku()}`,
-			accessor: (row) => row.product.SKU
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_category()}`,
@@ -144,7 +140,7 @@
 				placeholder="Filter names..."
 				type="text"
 				bind:value={$filterValue}
-			/>   
+			/>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
 			<Table.Root {...$tableAttrs}>
