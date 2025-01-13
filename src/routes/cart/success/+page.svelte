@@ -106,7 +106,9 @@
     await getServerUrl()
 	});
 
-	$: if ($page.data.user) {
+  let ordersCreated = false
+	$: if ($page.data.user && !ordersCreated) {
+    ordersCreated = true
 		createOrders();
 	}
 
