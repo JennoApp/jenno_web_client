@@ -12,6 +12,7 @@
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
 	import { goto, invalidateAll } from '$app/navigation';
+  import { formatPrice } from '$lib/utils/formatprice';
 
 	export let data: PageServerData
   const currentPage = data.meta?.page
@@ -55,11 +56,17 @@
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_price()}`,
-			accessor: (row) => row.product.price
+			accessor: (row) => row.product.price,
+      cell: ({ value }) => {
+				return formatPrice(value, 'es-CO', 'COP');
+			}
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_total()}`,
-			accessor: (row) => row.product.price * row.product.amount
+			accessor: (row) => row.product.price * row.product.amount,
+      cell: ({ value }) => {
+				return formatPrice(value, 'es-CO', 'COP');
+			}
 		}),
 		table.column({
 			header: `${m.shopping_tableheader_category()}`,
