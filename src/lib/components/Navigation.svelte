@@ -33,6 +33,7 @@
 		'chat',
 		'shopping',
 		'forgotpassword',
+    'resetpassword',
 		// languages
 		'es'
 	];
@@ -129,7 +130,8 @@
 		'/register',
 		'/register/personal',
 		'/register/business',
-		'/forgotpassword'
+		'/forgotpassword',
+    '/resetpassword'
 	];
 
 	//verifica si la sesion de usuario esta activa
