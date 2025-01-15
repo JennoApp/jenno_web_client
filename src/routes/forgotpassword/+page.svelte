@@ -11,18 +11,17 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
-      console.error('Error al solicitar Paypal Id')
+      console.error('Error al obtener la URL del servidor:', error)
     }
   }
 
-  $: getServerUrl()
-
   async function handleForm() {
-    console.log({email})
     try {
-      const response = await fetch(`${serverUrl}/users/forgotpassword`, {
+      await getServerUrl()
+
+      const response = await fetch(`${serverUrl}/mails/resetpassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -30,7 +29,7 @@
         body: JSON.stringify({
           email: email
         })
-      }) 
+      })
 
       if (response.ok) {
         toast.success('Correo enviado exitosamente')
@@ -38,10 +37,10 @@
         toast.error('Error al enviar el correo. Intente nuevamente!')
       }
     } catch(error) {
-      console.log(error)
-    } 
+      console.log('Error en la solicitud:', error)
+      toast.error('Error en la solicitud')
+    }
   }
-
 </script>
 
 
@@ -62,8 +61,7 @@
 		<!-- Login Submit -->
 		<button
 			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
-			>{m.forgotpassword_button_title()}</button
-		>
+			>{m.forgotpassword_button_title()}</button>
 	</form>
 
 </div>
