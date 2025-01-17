@@ -9,7 +9,10 @@ const getConversations = async (userid: string) => {
     const data = await response.json();
 
     if (response.ok && data?.conversations) {
-      return data.conversations;
+      return data.conversations.map((conversation: any) => ({
+        ...conversation,
+        unreadCount: conversation.unreadCount || 0
+      }))
     } else {
       console.warn('No conversations found, initializing as empty array');
       return [];
@@ -29,10 +32,16 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
   }
 
-  // Llamar a la función para obtener conversaciones
-  const conversations = await getConversations(userId);
-
-  return {
-    conversations,
+  try {
+    const conversations = await getConversations(userId);
+    return {
+      conversations
+    };
+  } catch (error) {
+    console.error('Error en la carga del servidor:', error);
+    return {
+      status: 500,
+      error: 'Hubo un problema al cargar las conversaciones.'
+    };
   }
 }

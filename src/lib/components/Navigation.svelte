@@ -33,7 +33,7 @@
 		'chat',
 		'shopping',
 		'forgotpassword',
-    'resetpassword',
+		'resetpassword',
 		// languages
 		'es'
 	];
@@ -131,7 +131,7 @@
 		'/register/personal',
 		'/register/business',
 		'/forgotpassword',
-    '/resetpassword'
+		'/resetpassword'
 	];
 
 	//verifica si la sesion de usuario esta activa
@@ -355,6 +355,17 @@
 
 				{#if userInfo}
 					<div class="flex items-center gap-3">
+						<HoverCard.Root openDelay={100}>
+							<HoverCard.Trigger>
+                <iconify-icon
+									icon="mdi:bell"
+									height="1.3rem"
+									width="1.3rem"
+									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
+								/>
+              </HoverCard.Trigger>
+							<HoverCard.Content>SvelteKit - Web development, streamlined</HoverCard.Content>
+						</HoverCard.Root>
 						<div>
 							<a href="/chat">
 								<iconify-icon

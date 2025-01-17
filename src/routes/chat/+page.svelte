@@ -275,7 +275,11 @@
 							if (isSmallview) isSmallview = true;
 						}}
 					>
-						<Conversation conversation={result} userId={$page.data.user._id} />
+						<Conversation
+              conversation={result}
+              userId={$page.data.user._id}
+              unreadCount={result.unreadCount}
+            />
 					</button>
 				{/each}
 			</div>

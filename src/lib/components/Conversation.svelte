@@ -3,6 +3,7 @@
 
 	export let conversation: any[];
 	export let userId: string;
+	export let unreadCount: number;
 
 	let user: any = null;
 	let serverUrl: string;
@@ -19,7 +20,7 @@
 				console.error('Error: server_url no está presente en la respuesta.');
 			}
 		} catch (error) {
-			console.error('Error al solicitar Paypal Id');
+			console.error('Error al obtener la Url del Servidor:', error);
 		}
 	}
 
@@ -65,7 +66,9 @@
 	});
 </script>
 
-<div class="flex items-center p-3 cursor-pointer bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]">
+<div
+	class="flex items-center p-3 cursor-pointer bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+>
 	{#if user?.profileImg !== ''}
 		<img
 			src={user?.profileImg}
@@ -80,5 +83,12 @@
 			class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#181818] rounded-full mr-5"
 		/>
 	{/if}
-	<span class="font-medium">{user?.username}</span>
+	<div class="flex flex-col">
+		<span class="font-medium">{user?.username}</span>
+		{#if unreadCount > 0}
+			<span class="text-sm text-red-500 font-bold">
+				{unreadCount} mensaje{unreadCount > 1 ? 's' : ''} no leído{unreadCount > 1 ? 's' : ''}
+			</span>
+		{/if}
+	</div>
 </div>
