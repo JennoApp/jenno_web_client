@@ -132,7 +132,8 @@
 		const message = {
 			conversationId: currentChatValue._id,
 			sender: $page.data.user._id,
-			text: newMessage
+			text: newMessage,
+      isRead: false,
 		};
 
 		// Obtener el ID del receptor
@@ -146,7 +147,8 @@
 			sender: $page.data.user._id,
 			receiverId,
 			text: newMessage,
-			conversationId: currentChatValue._id
+			conversationId: currentChatValue._id,
+      isRead: false
 		});
 
 		try {
