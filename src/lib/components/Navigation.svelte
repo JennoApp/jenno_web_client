@@ -218,8 +218,11 @@
     }
   }
 
-  $: if (userInfo) {
-    getUnreadConversations($page.data.user._id)
+  $: {
+    console.log({ user: $page.data.user })
+    if ($page.data.user) {
+      getUnreadConversations($page.data.user._id)
+    }
   }
 
   $: console.log({ $unreadConversationsCount })
