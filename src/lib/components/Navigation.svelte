@@ -20,6 +20,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
+  import { unreadConversationsCount } from '$lib/stores/conversationsStore'
 
 	const rutasExcluidas = [
 		'',
@@ -200,6 +201,26 @@
 	};
 
 	let dialogOpen = false;
+
+
+  // Obtener el numero de conversaciones no leidas
+  async function getUnreadConversations(userId: string) {
+    try {
+      const response = await fetch(`${serverUrl}/chat/conversations/unread/${userId}`)
+
+      if(response.ok) {
+        const data = await response.json()
+        unreadConversationsCount.set(data.unreadConversations)
+      }
+
+    } catch (error) {
+      console.error("Error al obtener el numero de Conversaciones no leidos")
+    }
+  }
+
+  $: getUnreadConversations($page.data.user._id)
+
+  $: console.log({ $unreadConversationsCount })
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -374,6 +395,14 @@
 									width="1.3rem"
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
+
+                {#if $unreadConversationsCount !== 0}
+									<span
+										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+									>
+										{$unreadConversationsCount}
+									</span>
+								{/if}
 							</a>
 						</div>
 						<HoverCard.Root openDelay={100}>
