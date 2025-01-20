@@ -220,7 +220,7 @@
     }
   }
 
-  $: if ($page.data.user && serverUrl) {
+  $: if ($page.data.user) {
     console.log({ user: $page.data.user })
     if ($page.data.user) {
       getUnreadConversations($page.data.user._id)
