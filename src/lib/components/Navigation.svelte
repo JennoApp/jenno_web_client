@@ -218,7 +218,9 @@
     }
   }
 
-  $: getUnreadConversations($page.data.user._id)
+  $: if (userInfo) {
+    getUnreadConversations($page.data.user._id)
+  }
 
   $: console.log({ $unreadConversationsCount })
 </script>
