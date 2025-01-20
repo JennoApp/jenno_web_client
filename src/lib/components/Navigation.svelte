@@ -20,7 +20,7 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
-  import { unreadConversationsCount } from '$lib/stores/conversationsStore'
+	import { unreadConversationsCount } from '$lib/stores/conversationsStore';
 
 	const rutasExcluidas = [
 		'',
@@ -202,32 +202,28 @@
 
 	let dialogOpen = false;
 
+	// Obtener el numero de conversaciones no leidas
+	async function getUnreadConversations(userId: string) {
+		try {
+			await getServerUrl();
 
-  // Obtener el numero de conversaciones no leidas
-  async function getUnreadConversations(userId: string) {
-    try {
-      await getServerUrl()
+			const response = await fetch(`${serverUrl}/chat/conversations/unread/${userId}`);
 
-      const response = await fetch(`${serverUrl}/chat/conversations/unread/${userId}`)
+			if (response.ok) {
+				const data = await response.json();
+				unreadConversationsCount.set(data.unreadConversations);
+			}
+		} catch (error) {
+			console.error('Error al obtener el numero de Conversaciones no leidos');
+		}
+	}
 
-      if(response.ok) {
-        const data = await response.json()
-        unreadConversationsCount.set(data.unreadConversations)
-      }
-
-    } catch (error) {
-      console.error("Error al obtener el numero de Conversaciones no leidos")
-    }
-  }
-
-  $: if ($page.data.user) {
-    console.log({ user: $page.data.user })
-    if ($page.data.user) {
-      getUnreadConversations($page.data.user._id)
-    }
-  }
-
-  $: console.log({ $unreadConversationsCount })
+	$: if ($page.data.user) {
+		console.log({ user: $page.data.user });
+		if ($page.data.user) {
+			getUnreadConversations($page.data.user._id);
+		}
+	}
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -385,17 +381,18 @@
 					<div class="flex items-center gap-3">
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger>
-                <iconify-icon
+								<iconify-icon
 									icon="mdi:bell"
 									height="1.3rem"
 									width="1.3rem"
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
-              </HoverCard.Trigger>
+							</HoverCard.Trigger>
 							<HoverCard.Content>SvelteKit - Web development, streamlined</HoverCard.Content>
 						</HoverCard.Root>
-						<div>
-							<a href="/chat">
+
+						<HoverCard.Root openDelay={100}>
+							<HoverCard.Trigger href="/chat" class="relative">
 								<iconify-icon
 									icon="mdi:conversation"
 									height="1.3rem"
@@ -403,15 +400,16 @@
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
 
-                {#if $unreadConversationsCount !== 0}
+								{#if $unreadConversationsCount !== 0}
 									<span
 										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
 									>
 										{$unreadConversationsCount}
 									</span>
 								{/if}
-							</a>
-						</div>
+							</HoverCard.Trigger>
+							<HoverCard.Content>SvelteKit - Conversation List</HoverCard.Content>
+						</HoverCard.Root>
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger href="/cart" class="relative">
 								<iconify-icon
