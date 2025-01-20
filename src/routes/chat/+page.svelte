@@ -133,7 +133,7 @@
 			conversationId: currentChatValue._id,
 			sender: $page.data.user._id,
 			text: newMessage,
-      isRead: false,
+			isRead: false
 		};
 
 		// Obtener el ID del receptor
@@ -148,7 +148,7 @@
 			receiverId,
 			text: newMessage,
 			conversationId: currentChatValue._id,
-      isRead: false
+			isRead: false
 		});
 
 		try {
@@ -202,13 +202,41 @@
 
 	$: console.log({ messages });
 
-	const selectConversation = (id: string) => {
-		console.log('Seleccionando conversacion:', id);
-		conversationId = id;
-		const selectedChat = conversations.find((conv) => conv._id === id);
+	const selectConversation = async (conversation: any) => {
+		console.log('Seleccionando conversacion:', conversation.id);
+
+		currentChat.set(conversation);
+		conversationId = conversation._id;
+		openChatbox = true;
+		if (isSmallview) isSmallview = true;
+
+		const selectedChat = conversations.find((conv) => conv._id === conversation.id);
 		if (selectedChat) {
 			currentChat.set(selectedChat);
 			getMessages(selectedChat._id);
+		}
+
+		if (conversation.unreadCount > 0) {
+			try {
+				const userId = $page.data.user._id;
+				const response = await fetch(
+					`${serverUrl}/chat/messages/markasread/${conversationId}/${userId}`,
+					{
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						}
+					}
+				);
+
+				if (!response.ok) {
+					throw new Error('Error al marcar mensajes como leídos');
+				}
+
+				console.log('Mensajes marcados como leídos con éxito');
+			} catch (error) {
+				console.error('Error al marcar mensajes como leídos:', error);
+			}
 		}
 	};
 
@@ -270,18 +298,14 @@
 					<button
 						class={`w-full mb-1 rounded-lg ${currentChatValue?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
-							selectConversation(result._id);
-							currentChat.set(result);
-							conversationId = result._id;
-							openChatbox = true;
-							if (isSmallview) isSmallview = true;
+							selectConversation(result);
 						}}
 					>
 						<Conversation
-              conversation={result}
-              userId={$page.data.user._id}
-              unreadCount={result.unreadCount}
-            />
+							conversation={result}
+							userId={$page.data.user._id}
+							unreadCount={result.unreadCount}
+						/>
 					</button>
 				{/each}
 			</div>
