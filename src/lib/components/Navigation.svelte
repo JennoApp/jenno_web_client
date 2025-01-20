@@ -206,6 +206,8 @@
   // Obtener el numero de conversaciones no leidas
   async function getUnreadConversations(userId: string) {
     try {
+      await getServerUrl()
+
       const response = await fetch(`${serverUrl}/chat/conversations/unread/${userId}`)
 
       if(response.ok) {
@@ -218,7 +220,7 @@
     }
   }
 
-  $: {
+  $: if ($page.data.user && serverUrl) {
     console.log({ user: $page.data.user })
     if ($page.data.user) {
       getUnreadConversations($page.data.user._id)
