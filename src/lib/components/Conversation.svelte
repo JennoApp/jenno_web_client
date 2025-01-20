@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	export let conversation: any[];
+	export let conversation: any;
 	export let userId: string;
 	export let unreadCount: number;
 
@@ -57,7 +57,7 @@
 		await getServerUrl(); // Obtener serverUrl primero
 
 		// Identificar el ID del amigo y obtener sus datos
-		const friendId = conversation?.members.find((m) => m !== userId);
+		const friendId = conversation?.members.find((m: any) => m !== userId);
 		if (friendId) {
 			await getUser(friendId);
 		} else {

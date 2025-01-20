@@ -8,6 +8,7 @@
 	import { messages, currentChat, isLoadingMessages } from '$lib/stores/messagesStore';
 	import { get } from 'svelte/store';
 	import { error } from '@sveltejs/kit';
+	import { conversations as conversationsStore } from '$lib/stores/conversationsStore';
 
 	// Obtener el socket del contexto
 	const { socket }: { socket: any } = getContext('socket');
@@ -33,13 +34,14 @@
 	$: {
 		if ($page.data.conversations) {
 			conversations = $page.data.conversations;
+			conversationsStore.set(conversations);
 			isLoadingConversations = false;
 		} else {
 			isLoadingConversations = true;
 		}
 	}
 
-	$: console.log({ conversations, isLoadingConversations });
+	$: console.log({ conversationsStore, isLoadingConversations });
 
 	// Obtener url del servidor
 	let serverUrl: string | undefined = undefined;
@@ -205,12 +207,15 @@
 	const selectConversation = async (conversation: any) => {
 		console.log('Seleccionando conversacion:', conversation.id);
 
+		// Actualiza el chat actual en el store
 		currentChat.set(conversation);
 		conversationId = conversation._id;
 		openChatbox = true;
 		if (isSmallview) isSmallview = true;
 
-		const selectedChat = conversations.find((conv) => conv._id === conversation.id);
+		// Ecuentra la conversacion en el store y actualiza el chat actual
+		const selectedChat = $conversationsStore.find((conv) => conv._id === conversation.id);
+
 		if (selectedChat) {
 			currentChat.set(selectedChat);
 			getMessages(selectedChat._id);
@@ -234,17 +239,22 @@
 				}
 
 				console.log('Mensajes marcados como leídos con éxito');
+
+				// Actualiza la conversación en el store para reflejar el cambio en `unreadCount`
+				conversationsStore.update((convs) =>
+					convs.map((conv) => (conv._id === conversation._id ? { ...conv, unreadCount: 0 } : conv))
+				);
 			} catch (error) {
 				console.error('Error al marcar mensajes como leídos:', error);
 			}
 		}
 	};
 
-	$: if (conversationId && serverUrl && conversations.length > 0) {
+	$: if (conversationId && serverUrl && $conversationsStore.length > 0) {
 		console.log('Cambiando conversationId a:', conversationId);
 
 		// Encontrar la conversación actual (si no existe o cambia el ID)
-		const newChat = conversations.find((conv) => conv._id === conversationId);
+		const newChat = $conversationsStore.find((conv) => conv._id === conversationId);
 		if (newChat) {
 			// Actualizar `currentChat` solo si cambia
 			if (!currentChatValue || currentChatValue._id !== newChat._id) {
@@ -280,7 +290,7 @@
 	}
 </script>
 
-{#if conversations.length > 0}
+{#if $conversationsStore.length > 0}
 	<div class="flex m-0 p-0">
 		<!-- ChatMenu -->
 		<div
@@ -294,7 +304,7 @@
 					class="w-[90%] py-3 border-t-0 border-b-2 border-b-gray-300 dark:border-b-[#202020] dark:bg-[#121212] placeholder:text-[#707070] placeholder:pl-3 outline-none hidden"
 				/>
 				<!-- Mostrar lista de conversaciones -->
-				{#each conversations as result}
+				{#each $conversationsStore as result}
 					<button
 						class={`w-full mb-1 rounded-lg ${currentChatValue?._id === result._id ? 'bg-[#303030]' : ''}`}
 						on:click={() => {
