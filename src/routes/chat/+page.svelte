@@ -112,7 +112,7 @@
 
 		const currentChatValue = get(currentChat);
 		const messagesValue = get(messages);
-		const conversationsValue = get(conversationsStore);
+		const conversationsValue = $conversationsStore
 
 		// si el chat esta abierto
 		if (currentChatValue?._id === data.conversationId) {
