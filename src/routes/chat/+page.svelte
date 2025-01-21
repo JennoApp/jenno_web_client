@@ -7,8 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import { messages, currentChat, isLoadingMessages } from '$lib/stores/messagesStore';
 	import { get } from 'svelte/store';
-	import { error } from '@sveltejs/kit';
-	import { conversations as conversationsStore } from '$lib/stores/conversationsStore';
+	import { conversations as conversationsStore, unreadConversationsCount } from '$lib/stores/conversationsStore';
 
 	// Obtener el socket del contexto
 	const { socket }: { socket: any } = getContext('socket');
@@ -244,6 +243,8 @@
 				conversationsStore.update((convs) =>
 					convs.map((conv) => (conv._id === conversation._id ? { ...conv, unreadCount: 0 } : conv))
 				);
+
+        unreadConversationsCount.update((count) => count - 1)
 			} catch (error) {
 				console.error('Error al marcar mensajes como leídos:', error);
 			}

@@ -55,7 +55,7 @@
 
 			serverUrl = data.server_url;
 		} catch (error) {
-			console.error('Error al solicitar Paypal Id');
+			console.error('Error al obtener el Url del servidor');
 		}
 	}
 
