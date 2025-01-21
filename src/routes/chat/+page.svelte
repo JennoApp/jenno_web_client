@@ -18,7 +18,6 @@
 
 	// Estados y variables
 	let conversationId = $page.url.searchParams.get('conversationId');
-	let conversations: any = [];
 	let newMessage: string = '';
 	let element: HTMLDivElement;
 	let isSmallview = window.innerWidth < 768;
@@ -35,8 +34,7 @@
 	// Obtener conversaciones del servidor
 	$: {
 		if ($page.data.conversations) {
-			conversations = $page.data.conversations;
-			conversationsStore.set(conversations);
+			conversationsStore.set($page.data.conversations);
 			isLoadingConversations = false;
 		} else {
 			isLoadingConversations = true;
@@ -114,7 +112,7 @@
 
 		const currentChatValue = get(currentChat);
 		const messagesValue = get(messages);
-		const conversationsValue: any = get(conversations);
+		const conversationsValue = get(conversationsStore);
 
 		// si el chat esta abierto
 		if (currentChatValue?._id === data.conversationId) {
@@ -133,7 +131,7 @@
 				}
 				return conversation;
 			});
-			conversations.set(updatedConversations);
+			conversationsStore.set(updatedConversations);
 		} else {
 			// Si el chat NO está abierto, actualizar la conversación
 			const updatedConversations = conversationsValue.map((conversation: any) => {
@@ -159,7 +157,7 @@
 				});
 			}
 
-			conversations.set(updatedConversations); // Actualizar el store de conversaciones
+			conversationsStore.set(updatedConversations); // Actualizar el store de conversaciones
 		}
 	});
 
@@ -307,7 +305,7 @@
 			}
 
 			// Actualizar el ID del amigo basado en los miembros
-			friendId = newChat.members.find((member: any) => member !== $page.data.user._id);
+			friendId = newChat.members.find((member: any) => member !== $page.data.user._id) as string
 
 			// Obtener mensajes de la conversación (siempre que cambie `conversationId`)
 			console.log('Cargando mensajes para conversación:', newChat._id);
