@@ -7,7 +7,10 @@
 	import { toast } from 'svelte-sonner';
 	import { messages, currentChat, isLoadingMessages } from '$lib/stores/messagesStore';
 	import { get } from 'svelte/store';
-	import { conversations as conversationsStore, unreadConversationsCount } from '$lib/stores/conversationsStore';
+	import {
+		conversations as conversationsStore,
+		unreadConversationsCount
+	} from '$lib/stores/conversationsStore';
 
 	// Obtener el socket del contexto
 	const { socket }: { socket: any } = getContext('socket');
@@ -15,7 +18,7 @@
 
 	// Estados y variables
 	let conversationId = $page.url.searchParams.get('conversationId');
-	let conversations: any[] = [];
+	let conversations: any = [];
 	let newMessage: string = '';
 	let element: HTMLDivElement;
 	let isSmallview = window.innerWidth < 768;
@@ -111,12 +114,52 @@
 
 		const currentChatValue = get(currentChat);
 		const messagesValue = get(messages);
+		const conversationsValue: any = get(conversations);
 
+		// si el chat esta abierto
 		if (currentChatValue?._id === data.conversationId) {
 			const messageExists = messagesValue.some((msg) => msg._id === _id);
 			if (!messageExists) {
 				messages.update((msgs) => [...msgs, data]);
 			}
+
+			// marcar como leido
+			const updatedConversations = conversationsValue.map((conversation: any) => {
+				if (conversation._id === data.conversationId) {
+					const updatedUnreadCount = { ...conversation.unreadCount };
+					delete updatedUnreadCount[sender]; // Eliminar el contador de no leídos para el remitente
+					conversation.unreadCount = updatedUnreadCount;
+					conversation.updatedAt = new Date(); // Actualizar la fecha de la última conversación
+				}
+				return conversation;
+			});
+			conversations.set(updatedConversations);
+		} else {
+			// Si el chat NO está abierto, actualizar la conversación
+			const updatedConversations = conversationsValue.map((conversation: any) => {
+				if (conversation._id === data.conversationId) {
+					// Mover la conversación al principio si ya existe
+					const updatedUnreadCount = { ...conversation.unreadCount };
+					updatedUnreadCount[sender] = (updatedUnreadCount[sender] || 0) + 1; // Incrementar los no leídos
+					conversation.unreadCount = updatedUnreadCount;
+					conversation.updatedAt = new Date(); // Actualizar la fecha de la última conversación
+				}
+				return conversation;
+			});
+
+			// Si la conversación no está en la lista de conversaciones, agregarla
+			const existingConversation = updatedConversations.find(
+				(conv: any) => conv._id === data.conversationId
+			);
+			if (!existingConversation) {
+				updatedConversations.unshift({
+					...data,
+					unreadCount: { [sender]: 1 },
+					updatedAt: new Date()
+				});
+			}
+
+			conversations.set(updatedConversations); // Actualizar el store de conversaciones
 		}
 	});
 
@@ -244,7 +287,7 @@
 					convs.map((conv) => (conv._id === conversation._id ? { ...conv, unreadCount: 0 } : conv))
 				);
 
-        unreadConversationsCount.update((count) => count - 1)
+				unreadConversationsCount.update((count) => count - 1);
 			} catch (error) {
 				console.error('Error al marcar mensajes como leídos:', error);
 			}
