@@ -9,10 +9,12 @@ const getConversations = async (userid: string) => {
     const data = await response.json();
 
     if (response.ok && data?.conversations) {
-      return data.conversations.map((conversation: any) => ({
-        ...conversation,
-        unreadCount: conversation.unreadCount || 0
-      }))
+      return data.conversations
+        .map((conversation: any) => ({
+          ...conversation,
+          unreadCount: conversation.unreadCount || 0
+        }))
+        .sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     } else {
       console.warn('No conversations found, initializing as empty array');
       return [];
