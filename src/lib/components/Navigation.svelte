@@ -391,8 +391,8 @@
 							<HoverCard.Content>SvelteKit - Web development, streamlined</HoverCard.Content>
 						</HoverCard.Root>
 
-						<HoverCard.Root openDelay={100}>
-							<HoverCard.Trigger href="/chat" class="relative">
+						<div class="relative">
+							<a href="/chat">
 								<iconify-icon
 									icon="mdi:conversation"
 									height="1.3rem"
@@ -407,9 +407,9 @@
 										{$unreadConversationsCount}
 									</span>
 								{/if}
-							</HoverCard.Trigger>
-							<HoverCard.Content>SvelteKit - Conversation List</HoverCard.Content>
-						</HoverCard.Root>
+							</a>
+						</div>
+
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger href="/cart" class="relative">
 								<iconify-icon
