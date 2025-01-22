@@ -96,7 +96,7 @@
 	$: console.log({ currentChat });
 
 	// Escuchar mensajes entrantes
-	socket?.on('getMessage', (data: any) => {
+	socket?.on('getMessage', async (data: any) => {
 		if (!data || !data.conversationId || !data._id) {
 			console.warn('Datos de mensaje inválidos recibidos:', data);
 			return;
@@ -121,6 +121,25 @@
 			if (!messageExists) {
 				messages.update((msgs) => [...msgs, data]);
 			}
+
+      // Llamar al backend para marcar los mensajes como leídos
+		try {
+			const response = await fetch(
+				`${serverUrl}/chat/messages/markasread/${conversationId}/${sender}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+
+			if (!response.ok) {
+				throw new Error('Error al marcar mensajes como leídos');
+			}
+		} catch (error) {
+			console.error('Error al sincronizar mensajes leídos:', error);
+		}
 
 			// marcar como leido
 			const updatedConversations = conversationsValue.map((conversation: any) => {
