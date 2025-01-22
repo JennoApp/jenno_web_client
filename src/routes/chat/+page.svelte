@@ -112,7 +112,8 @@
 
 		const currentChatValue = get(currentChat);
 		const messagesValue = get(messages);
-		const conversationsValue = $conversationsStore
+		const conversationsValue = get(conversationsStore);
+		const unreadCountValue = get(unreadConversationsCount);
 
 		// si el chat esta abierto
 		if (currentChatValue?._id === data.conversationId) {
@@ -157,7 +158,11 @@
 				});
 			}
 
-			conversationsStore.set(updatedConversations); // Actualizar el store de conversaciones
+			// Actualizar el store de conversaciones
+			conversationsStore.set(updatedConversations);
+
+			// Incrementar el contador de conversaciones no leídas
+			unreadConversationsCount.set(unreadCountValue + 1);
 		}
 	});
 
@@ -305,7 +310,7 @@
 			}
 
 			// Actualizar el ID del amigo basado en los miembros
-			friendId = newChat.members.find((member: any) => member !== $page.data.user._id) as string
+			friendId = newChat.members.find((member: any) => member !== $page.data.user._id) as string;
 
 			// Obtener mensajes de la conversación (siempre que cambie `conversationId`)
 			console.log('Cargando mensajes para conversación:', newChat._id);
