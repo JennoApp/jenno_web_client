@@ -12,7 +12,7 @@
 		removeFromCart,
 		getTotal
 	} from '$lib/stores/cartStore';
-	import { onDestroy } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
 	import { setSearch, search } from '$lib/stores/searchStore';
 	import Autocomplete from './Autocomplete.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
@@ -21,6 +21,11 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import { unreadConversationsCount } from '$lib/stores/conversationsStore';
+	import { get } from 'svelte/store';
+	import { currentChat } from '$lib/stores/messagesStore';
+
+	const { socket }: { socket: any } = getContext('socket');
+	$: console.log({ socket });
 
 	const rutasExcluidas = [
 		'',
@@ -224,6 +229,24 @@
 			getUnreadConversations($page.data.user._id);
 		}
 	}
+
+	// Actualizar informacion en tiempo real
+	socket?.on('getMessage', (data: any) => {
+    // Verificar si los datos son válidos
+    if (!data || !data.conversationId || !data._id) {
+        console.warn('Datos de mensaje inválidos recibidos:', data);
+        return;
+    }
+
+    const { conversationId, sender } = data;
+    const currentChatValue = get(currentChat)
+		const unreadCountValue = get(unreadConversationsCount);
+
+		// Incrementar el contador de conversaciones no leídas
+    if (currentChatValue?._id !== conversationId) {
+        unreadConversationsCount.set(unreadCountValue + 1);
+    }
+	});
 </script>
 
 {#if !paths.includes($page.url.pathname)}
