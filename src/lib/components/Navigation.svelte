@@ -23,7 +23,15 @@
 	import { unreadConversationsCount } from '$lib/stores/conversationsStore';
 	import { get } from 'svelte/store';
 	import { currentChat } from '$lib/stores/messagesStore';
-	import { fetchNotifications, notifications, totalPages } from '$lib/stores/notificationsStore';
+	import {
+		fetchNotifications,
+		fetchUnreadNotificationsCount,
+		notifications,
+		totalPages,
+
+		unreadNotificationsCount
+
+	} from '$lib/stores/notificationsStore';
 	import ScrollArea from './ui/scroll-area/scroll-area.svelte';
 
 	const { socket }: { socket: any } = getContext('socket');
@@ -232,15 +240,17 @@
 
 			// Cargar notificaciones
 			fetchNotifications(serverUrl, $page.data.user._id);
+			fetchUnreadNotificationsCount(serverUrl, $page.data.user._id);
 		}
 	}
 
+  let currentPage = 1
+
 	// Funcion para cargar mas notificaciones
 	function loadMoreNotifications() {
-		let page = 1;
-		if (page < $totalPages) {
-			page++;
-			fetchNotifications(serverUrl, $page.data.user._id, page);
+		if (currentPage < $totalPages) {
+			currentPage++;
+			fetchNotifications(serverUrl, $page.data.user._id, currentPage);
 		}
 	}
 
@@ -417,20 +427,28 @@
 				{#if userInfo}
 					<div class="flex items-center gap-3">
 						<HoverCard.Root openDelay={100}>
-							<HoverCard.Trigger>
+							<HoverCard.Trigger class="relative">
 								<iconify-icon
 									icon="mdi:bell"
 									height="1.3rem"
 									width="1.3rem"
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
+
+								{#if $unreadNotificationsCount !== 0}
+									<span
+										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+									>
+										{$unreadNotificationsCount}
+									</span>
+								{/if}
 							</HoverCard.Trigger>
 							<HoverCard.Content>
-								<ScrollArea class="h-[200px] w-[350px] rounded-md border p-4">
+								<ScrollArea class="h-[200px] w-full max-w-[300px] rounded-md border bg-[#202020] p-4 shadow-lg">
 									<!-- Lista de notificaciones -->
 									{#each $notifications as notification}
 										<div class="mb-2">
-											<p class="text-sm font-medium">{notification?.message}</p>
+											<p class="text-sm font-medium text-gray-200">{notification?.message}</p>
 											<p class="text-xs text-gray-500">
 												{new Date(notification?.createdAt).toLocaleString()}
 											</p>
@@ -438,14 +456,14 @@
 									{/each}
 
 									<!-- Botón para cargar más -->
-									<!-- {#if page < $totalPages}
+									{#if currentPage < $totalPages}
 										<button
-											class="mt-2 text-blue-500 hover:underline"
+											class="mt-2 text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
 											on:click={loadMoreNotifications}
 										>
 											Cargar más
 										</button>
-									{/if} -->
+									{/if}
 								</ScrollArea>
 							</HoverCard.Content>
 						</HoverCard.Root>
