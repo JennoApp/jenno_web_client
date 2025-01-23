@@ -28,9 +28,7 @@
 		fetchUnreadNotificationsCount,
 		notifications,
 		totalPages,
-
 		unreadNotificationsCount
-
 	} from '$lib/stores/notificationsStore';
 	import ScrollArea from './ui/scroll-area/scroll-area.svelte';
 
@@ -244,7 +242,7 @@
 		}
 	}
 
-  let currentPage = 1
+	let currentPage = 1;
 
 	// Funcion para cargar mas notificaciones
 	function loadMoreNotifications() {
@@ -443,27 +441,29 @@
 									</span>
 								{/if}
 							</HoverCard.Trigger>
-							<HoverCard.Content>
-								<ScrollArea class="h-[200px] w-full  rounded-md border p-4 shadow-lg">
-									<!-- Lista de notificaciones -->
-									{#each $notifications as notification}
-										<div class="mb-2 bg-[#202020]">
-											<p class="text-sm font-medium text-gray-200">{notification?.message}</p>
-											<p class="text-xs text-gray-500">
-												{new Date(notification?.createdAt).toLocaleString()}
-											</p>
-										</div>
-									{/each}
+							<HoverCard.Content class="w-80">
+								<ScrollArea class="h-full w-full">
+									<div class="flex flex-col gap-2">
+										<!-- Lista de notificaciones -->
+										{#each $notifications as notification}
+											<div class="mb-2 bg-[#202020] p-3 rounded-md">
+												<p class="text-sm font-medium text-gray-200">{notification?.message}</p>
+												<p class="text-xs text-gray-500">
+													{new Date(notification?.createdAt).toLocaleString()}
+												</p>
+											</div>
+										{/each}
 
-									<!-- Botón para cargar más -->
-									{#if currentPage < $totalPages}
-										<button
-											class="text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
-											on:click={loadMoreNotifications}
-										>
-											Cargar más
-										</button>
-									{/if}
+										<!-- Botón para cargar más -->
+										{#if currentPage < $totalPages}
+											<button
+												class="text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
+												on:click={loadMoreNotifications}
+											>
+												Cargar más
+											</button>
+										{/if}
+									</div>
 								</ScrollArea>
 							</HoverCard.Content>
 						</HoverCard.Root>
