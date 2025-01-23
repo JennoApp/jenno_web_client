@@ -444,10 +444,10 @@
 								{/if}
 							</HoverCard.Trigger>
 							<HoverCard.Content>
-								<ScrollArea class="h-[200px] w-full max-w-[300px] rounded-md border bg-[#202020] p-4 shadow-lg">
+								<ScrollArea class="h-[200px] w-full  rounded-md border p-4 shadow-lg">
 									<!-- Lista de notificaciones -->
 									{#each $notifications as notification}
-										<div class="mb-2">
+										<div class="mb-2 bg-[#202020]">
 											<p class="text-sm font-medium text-gray-200">{notification?.message}</p>
 											<p class="text-xs text-gray-500">
 												{new Date(notification?.createdAt).toLocaleString()}
@@ -458,7 +458,7 @@
 									<!-- Botón para cargar más -->
 									{#if currentPage < $totalPages}
 										<button
-											class="mt-2 text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
+											class="text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
 											on:click={loadMoreNotifications}
 										>
 											Cargar más
