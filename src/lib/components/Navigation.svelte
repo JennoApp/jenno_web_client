@@ -263,9 +263,6 @@
 		try {
 			const response = await fetch(`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
       });
 			if (!response.ok) {
 				throw new Error('Error al marcar las notificaciones como leidas.');
@@ -451,7 +448,7 @@
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger
 								class="relative"
-								on:click={markNotifications}
+								on:click={() => markNotifications()}
 							>
 								<iconify-icon
 									icon="mdi:bell"
