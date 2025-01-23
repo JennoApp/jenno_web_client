@@ -257,11 +257,19 @@
 		}
 	}
 
-  async function markNotifications() {
-    await getServerUrl()
+	async function markNotifications() {
+		await getServerUrl();
 
-    markNotificationsAsRead(serverUrl, $page.data.user._id)
-  }
+		try {
+			const response = await fetch(`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`);
+			if (!response.ok) {
+				throw new Error('Error al marcar las notificaciones como leidas.');
+			}
+			notifications.set([]);
+		} catch (error) {
+			console.error('Error al marcar las notificaciones no leídas:', error);
+		}
+	}
 
 	// Actualizar informacion en tiempo real
 	socket?.on('getMessage', (data: any) => {
@@ -439,7 +447,7 @@
 							<HoverCard.Trigger
 								class="relative"
 								on:click={() => {
-									markNotifications()
+									markNotifications();
 								}}
 							>
 								<iconify-icon
