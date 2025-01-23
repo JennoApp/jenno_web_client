@@ -34,3 +34,16 @@ export const fetchUnreadNotificationsCount = async (serverUrl: string, userId: s
     console.error('Error al cargar las notificaciones no leídas:', error);
   }
 };
+
+export const markNotificationsAsRead = async (serverUrl: string, userId: string) => {
+  try {
+    const response = await fetch(`${serverUrl}/users/notifications/markasread/${userId}`)
+    if (!response.ok) {
+      throw new Error('Error al marcar las notificaciones como leidas.');
+    }
+    notifications.set([])
+
+  } catch (error) {
+    console.error('Error al marcar las notificaciones no leídas:', error);
+  }
+}

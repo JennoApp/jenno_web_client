@@ -28,7 +28,8 @@
 		fetchUnreadNotificationsCount,
 		notifications,
 		totalPages,
-		unreadNotificationsCount
+		unreadNotificationsCount,
+    markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
 	import ScrollArea from './ui/scroll-area/scroll-area.svelte';
 
@@ -425,7 +426,9 @@
 				{#if userInfo}
 					<div class="flex items-center gap-3">
 						<HoverCard.Root openDelay={100}>
-							<HoverCard.Trigger class="relative">
+							<HoverCard.Trigger class="relative" on:click={() => {
+                markNotificationsAsRead(serverUrl, $page.data.user._id)
+              }}>
 								<iconify-icon
 									icon="mdi:bell"
 									height="1.3rem"
