@@ -244,7 +244,7 @@
 	}
 
 	$: if ($page.data.user) {
-   getConversationAndNotificationData($page.data.user._id)
+		getConversationAndNotificationData($page.data.user._id);
 	}
 
 	let currentPage = 1;
