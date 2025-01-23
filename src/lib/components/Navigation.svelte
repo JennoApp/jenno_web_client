@@ -23,6 +23,8 @@
 	import { unreadConversationsCount } from '$lib/stores/conversationsStore';
 	import { get } from 'svelte/store';
 	import { currentChat } from '$lib/stores/messagesStore';
+	import { fetchNotifications, notifications, totalPages } from '$lib/stores/notificationsStore';
+	import ScrollArea from './ui/scroll-area/scroll-area.svelte';
 
 	const { socket }: { socket: any } = getContext('socket');
 	$: console.log({ socket });
@@ -227,25 +229,37 @@
 		console.log({ user: $page.data.user });
 		if ($page.data.user) {
 			getUnreadConversations($page.data.user._id);
+
+			// Cargar notificaciones
+			fetchNotifications(serverUrl, $page.data.user._id);
+		}
+	}
+
+	// Funcion para cargar mas notificaciones
+	function loadMoreNotifications() {
+		let page = 1;
+		if (page < $totalPages) {
+			page++;
+			fetchNotifications(serverUrl, $page.data.user._id, page);
 		}
 	}
 
 	// Actualizar informacion en tiempo real
 	socket?.on('getMessage', (data: any) => {
-    // Verificar si los datos son válidos
-    if (!data || !data.conversationId || !data._id) {
-        console.warn('Datos de mensaje inválidos recibidos:', data);
-        return;
-    }
+		// Verificar si los datos son válidos
+		if (!data || !data.conversationId || !data._id) {
+			console.warn('Datos de mensaje inválidos recibidos:', data);
+			return;
+		}
 
-    const { conversationId, sender } = data;
-    const currentChatValue = get(currentChat)
+		const { conversationId, sender } = data;
+		const currentChatValue = get(currentChat);
 		const unreadCountValue = get(unreadConversationsCount);
 
 		// Incrementar el contador de conversaciones no leídas
-    if (currentChatValue?._id !== conversationId) {
-        unreadConversationsCount.set(unreadCountValue + 1);
-    }
+		if (currentChatValue?._id !== conversationId) {
+			unreadConversationsCount.set(unreadCountValue + 1);
+		}
 	});
 </script>
 
@@ -411,7 +425,29 @@
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 								/>
 							</HoverCard.Trigger>
-							<HoverCard.Content>SvelteKit - Web development, streamlined</HoverCard.Content>
+							<HoverCard.Content>
+								<ScrollArea class="h-[200px] w-[350px] rounded-md border p-4">
+									<!-- Lista de notificaciones -->
+									{#each $notifications as notification}
+										<div class="mb-2">
+											<p class="text-sm font-medium">{notification?.message}</p>
+											<p class="text-xs text-gray-500">
+												{new Date(notification?.createdAt).toLocaleString()}
+											</p>
+										</div>
+									{/each}
+
+									<!-- Botón para cargar más -->
+									<!-- {#if page < $totalPages}
+										<button
+											class="mt-2 text-blue-500 hover:underline"
+											on:click={loadMoreNotifications}
+										>
+											Cargar más
+										</button>
+									{/if} -->
+								</ScrollArea>
+							</HoverCard.Content>
 						</HoverCard.Root>
 
 						<div class="relative">
