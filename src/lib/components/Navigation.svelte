@@ -29,7 +29,7 @@
 		notifications,
 		totalPages,
 		unreadNotificationsCount,
-    markNotificationsAsRead
+		markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
 	import ScrollArea from './ui/scroll-area/scroll-area.svelte';
 
@@ -232,15 +232,19 @@
 		}
 	}
 
-	$: if ($page.data.user) {
-		console.log({ user: $page.data.user });
-		if ($page.data.user) {
-			getUnreadConversations($page.data.user._id);
+	async function getConversationAndNotificationData(userId: any) {
+		await getServerUrl();
+		if (userId) {
+			getUnreadConversations(userId);
 
 			// Cargar notificaciones
-			fetchNotifications(serverUrl, $page.data.user._id);
-			fetchUnreadNotificationsCount(serverUrl, $page.data.user._id);
+			fetchNotifications(serverUrl, userId);
+			fetchUnreadNotificationsCount(serverUrl, userId);
 		}
+	}
+
+	$: if ($page.data.user) {
+   getConversationAndNotificationData($page.data.user._id)
 	}
 
 	let currentPage = 1;
@@ -426,9 +430,12 @@
 				{#if userInfo}
 					<div class="flex items-center gap-3">
 						<HoverCard.Root openDelay={100}>
-							<HoverCard.Trigger class="relative" on:click={() => {
-                markNotificationsAsRead(serverUrl, $page.data.user._id)
-              }}>
+							<HoverCard.Trigger
+								class="relative"
+								on:click={() => {
+									markNotificationsAsRead(serverUrl, $page.data.user._id);
+								}}
+							>
 								<iconify-icon
 									icon="mdi:bell"
 									height="1.3rem"
