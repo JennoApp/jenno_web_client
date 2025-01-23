@@ -258,11 +258,15 @@
 	}
 
 	async function markNotifications() {
-    console.log("mark notifications")
 		await getServerUrl();
 
 		try {
-			const response = await fetch(`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`);
+			const response = await fetch(`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 			if (!response.ok) {
 				throw new Error('Error al marcar las notificaciones como leidas.');
 			}
