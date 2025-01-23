@@ -257,6 +257,12 @@
 		}
 	}
 
+  async function markNotifications() {
+    await getServerUrl()
+
+    markNotificationsAsRead(serverUrl, $page.data.user._id)
+  }
+
 	// Actualizar informacion en tiempo real
 	socket?.on('getMessage', (data: any) => {
 		// Verificar si los datos son válidos
@@ -433,7 +439,7 @@
 							<HoverCard.Trigger
 								class="relative"
 								on:click={() => {
-									markNotificationsAsRead(serverUrl, $page.data.user._id);
+									markNotifications()
 								}}
 							>
 								<iconify-icon
