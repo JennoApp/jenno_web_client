@@ -258,6 +258,7 @@
 	}
 
 	async function markNotifications() {
+    console.log("mark notifications")
 		await getServerUrl();
 
 		try {
@@ -446,9 +447,7 @@
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger
 								class="relative"
-								on:click={() => {
-									markNotifications();
-								}}
+								on:click={markNotifications}
 							>
 								<iconify-icon
 									icon="mdi:bell"
