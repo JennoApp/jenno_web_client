@@ -16,17 +16,16 @@
 	import { page } from '$app/stores';
 	import { io, type Socket } from 'socket.io-client';
 
-	
 	const SOCKET_CONTEXT = 'socket';
 
 	// Crear e inicializar el contexto dentro del ciclo de vida del componente
 	let socket: Socket | null = null;
 
-  const socketContext = {
-    socket: null as Socket | null
-  }
+	const socketContext = {
+		socket: null as Socket | null
+	};
 
-  setContext(SOCKET_CONTEXT, socketContext)
+	setContext(SOCKET_CONTEXT, socketContext);
 
 	async function initializeSocket(userId: string) {
 		try {
@@ -45,10 +44,10 @@
 			socket.on('connect', () => {
 				console.log('Conectado con ID de sesión:', socket!.id);
 
-        // Agregar usuario al backend
-        if (userId) {
-          socket?.emit('addUser', userId)
-        }
+				// Agregar usuario al backend
+				if (userId) {
+					socket?.emit('addUser', userId);
+				}
 			});
 
 			socket.on('disconnect', (reason) => {
@@ -62,17 +61,17 @@
 			console.log('Socket inicializado');
 			socket.connect();
 
-      socketContext.socket = socket      
+			socketContext.socket = socket;
 		} catch (error) {
 			console.error('Error al inicializar el socket:', error);
-		}   
+		}
 	}
 
-  onMount(async () =>  {
-    await initializeSocket($page.data?.user?._id)
-  })
+	onMount(async () => {
+		await initializeSocket($page.data?.user?._id);
+	});
 
-  // Establecer el contexto del socket
+	// Establecer el contexto del socket
 	// setContext(SOCKET_CONTEXT, socket);
 
 	let locationAccessKey: string;

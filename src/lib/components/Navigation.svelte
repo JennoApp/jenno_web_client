@@ -294,6 +294,17 @@
 			unreadConversationsCount.set(unreadCountValue + 1);
 		}
 	});
+
+	let isDarkMode = false;
+
+	// Actualizar isDarkMode solo en el cliente
+	$: if (typeof window !== 'undefined') {
+			if ($theme === 'system') {
+				isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			} else {
+				isDarkMode = $theme === 'dark';
+			}
+	}
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -304,7 +315,7 @@
 			<div class="flex items-center">
 				<div class="hidden md:block lg:block">
 					<button
-						class="flex justify-center items-center dark:text-white text-xl mr-6"
+						class="flex justify-center items-center text-gray-500 dark:text-white text-xl mr-6"
 						on:click={handleIsClose}
 					>
 						<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -315,10 +326,10 @@
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<!-- Logo  -->
-							{#if $theme === 'light'}
-								<img class="h-6 object-cover" src="/logo-light.png" alt="logo" />
-							{:else}
+							{#if $theme === 'dark' || isDarkMode}
 								<img class="h-6 object-cover" src="/logo-dark.png" alt="logo" />
+							{:else}
+								<img class="h-6 object-cover" src="/logo-light.png" alt="logo" />
 							{/if}
 
 							{#if $location_data?.data[0]?.country_module?.global?.alpha2}
@@ -685,13 +696,13 @@
 				{:else}
 					<div>
 						<button
-							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
+							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
 							on:click={() => goto('/login')}
 						>
 							{m.navbar_button_login()}
 						</button>
 						<button
-							class="bg-[#202020] text-gray-200 w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-[#303030]"
+							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
 							on:click={() => goto('/register')}
 						>
 							{m.navbar_button_register()}

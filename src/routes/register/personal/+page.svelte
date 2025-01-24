@@ -27,12 +27,12 @@
       if (eyeIcon !== null) {
         eyeIcon.textContent = '🙈' // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
       }
-      
+
     } else {
       passwordInput.type = 'password'
       if (eyeIcon !== null) {
-        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta       
-      }      
+        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta
+      }
     }
   }
 
@@ -45,12 +45,12 @@
       if (eyeIcon !== null) {
         eyeIcon.textContent = '🙈' // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
       }
-      
+
     } else {
       passwordInput.type = 'password'
       if (eyeIcon !== null) {
-        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta       
-      }      
+        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta
+      }
     }
   }
 </script>
@@ -158,7 +158,7 @@
 		<div class="flex flex-col">
 			<label for="verified_password" class="text-base dark:text-gray-200 font-medium"
 				>{m.register_personal_password_confirm()}</label
-			>	
+			>
       <div class="relative">
 				<!-- Input de contraseña -->
 				<input
@@ -186,7 +186,7 @@
 
 		<!-- Login Submit -->
 		<button
-			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
+			class="h-10 w-full mt-4 border bg-gray-200 dark:border-[#222222] dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			>{m.register_personal_button_title()}</button
 		>
 	</form>

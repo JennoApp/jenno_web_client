@@ -276,7 +276,7 @@
 		/>
 		<!-- Login Submit -->
 		<button
-			class="h-10 w-full mt-4 border border-[#222222] bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-[#252525]"
+			class="h-10 w-full mt-4 border bg-gray-200 dark:border-[#222222] dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			>{m.register_business_button_title()}</button
 		>
 	</form>
