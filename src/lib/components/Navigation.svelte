@@ -258,12 +258,16 @@
 	}
 
 	async function markNotifications() {
+		console.log('markNotifications ejecutada');
 		await getServerUrl();
 
 		try {
-			const response = await fetch(`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`, {
-        method: 'POST',
-      });
+			const response = await fetch(
+				`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`,
+				{
+					method: 'POST'
+				}
+			);
 			if (!response.ok) {
 				throw new Error('Error al marcar las notificaciones como leidas.');
 			}
@@ -448,7 +452,10 @@
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger
 								class="relative"
-								on:click={() => markNotifications()}
+								on:click={(event) => {
+									event.preventDefault();
+									markNotifications();
+								}}
 							>
 								<iconify-icon
 									icon="mdi:bell"
