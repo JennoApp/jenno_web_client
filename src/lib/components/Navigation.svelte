@@ -484,8 +484,8 @@
 									<div class="flex flex-col gap-2">
 										<!-- Lista de notificaciones -->
 										{#each $notifications as notification}
-											<div class="mb-2 bg-[#202020] p-3 rounded-md">
-												<p class="text-sm font-medium text-gray-200">{notification?.message}</p>
+											<div class="mb-2 bg-gray-200 dark:bg-[#202020] p-3 rounded-md">
+												<p class="text-sm font-medium dark:text-gray-200">{notification?.message}</p>
 												<p class="text-xs text-gray-500">
 													{new Date(notification?.createdAt).toLocaleString()}
 												</p>
