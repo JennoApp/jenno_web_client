@@ -93,20 +93,20 @@
 					{#if !(user?._id === sessionUserData?._id)}
 						<!-- Botón de seguimiento basado en el estado de `isFollowing` -->
 						{#if isFollowing}
-							<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
-								<span class="text-gray-200">Siguiendo</span>
+							<Button class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]">
+								<span class="dark:text-gray-200">Siguiendo</span>
 							</Button>
 						{:else}
 							<Button
 								on:click={() => handleFollow(user?._id)}
-								class="dark:bg-[#202020] dark:hover:bg-[#252525]"
+								class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
 							>
-								<span class="text-gray-200">Seguir</span>
+								<span class="dark:text-gray-200">Seguir</span>
 							</Button>
 						{/if}
 
 						<Button class="dark:bg-[#202020] dark:hover:bg-[#252525]">
-							<span class="text-gray-200">Send Message</span></Button
+							<span class="text-gray-200">Enviar Mensaje</span></Button
 						>
 					{/if}
 				</div>
