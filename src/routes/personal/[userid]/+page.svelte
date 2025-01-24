@@ -14,7 +14,7 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
       console.error('Error al solicitar Paypal Id')
     }
@@ -61,8 +61,8 @@
 		<p>Waiting...</p>
 	{:then user}
 		<!-- user Information -->
-		<div class="flex mt-5 w-full h-48">
-			<div class="flex justify-center w-3/12">
+		<div class="flex flex-col md:flex-row gap-3 mt-5 w-full">
+			<div class="flex justify-center md:w-3/12">
 				{#if user?.profileImg}
 					<img
 						class="w-32 h-32 object-cover rounded-full"
@@ -78,10 +78,10 @@
 				{/if}
 			</div>
 
-			<div class="w-5/12">
-				<div class="flex flex-col gap-3 items-start">
-					<h2 class="text-2xl font-medium">{user?.username}</h2>
-					<p class="flex flex-wrap">
+			<div class="mx-5 md:w-5/12">
+				<div class="flex flex-col gap-3 items-center md:items-start">
+					<h2 class="text-2xl font-medium text-center md:text-left">{user?.username}</h2>
+					<p class="flex flex-wrap text-center md:text-left">
 						{user?.bio !== undefined ? user?.bio : ''}
 					</p>
 				</div>
