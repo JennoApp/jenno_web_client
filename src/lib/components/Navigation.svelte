@@ -271,7 +271,7 @@
 			if (!response.ok) {
 				throw new Error('Error al marcar las notificaciones como leidas.');
 			}
-			notifications.set([]);
+			unreadNotificationsCount.set(0);
 		} catch (error) {
 			console.error('Error al marcar las notificaciones no leídas:', error);
 		}
