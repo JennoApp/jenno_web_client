@@ -87,7 +87,7 @@
 				</div>
 			</div>
 
-			<div class="flex flex-col items-center gap-5 w-4/12">
+			<div class="flex flex-col items-center gap-5 md:w-4/12">
 				<div class="flex items-center gap-5 ml-10">
 					<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
 					{#if !(user?._id === sessionUserData?._id)}
