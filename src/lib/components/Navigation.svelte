@@ -450,27 +450,23 @@
 				{#if userInfo}
 					<div class="flex items-center gap-3">
 						<HoverCard.Root openDelay={100}>
-							<HoverCard.Trigger
-								class="relative"
-								on:click={(event) => {
-									event.preventDefault();
-									markNotifications();
-								}}
-							>
-								<iconify-icon
-									icon="mdi:bell"
-									height="1.3rem"
-									width="1.3rem"
-									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
-								/>
+							<HoverCard.Trigger class="relative">
+								<button on:click|preventDefault={() => markNotifications()}>
+									<iconify-icon
+										icon="mdi:bell"
+										height="1.3rem"
+										width="1.3rem"
+										class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
+									/>
 
-								{#if $unreadNotificationsCount !== 0}
-									<span
-										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
-									>
-										{$unreadNotificationsCount}
-									</span>
-								{/if}
+									{#if $unreadNotificationsCount !== 0}
+										<span
+											class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+										>
+											{$unreadNotificationsCount}
+										</span>
+									{/if}
+								</button>
 							</HoverCard.Trigger>
 							<HoverCard.Content class="w-80">
 								<ScrollArea class="h-full w-full">
