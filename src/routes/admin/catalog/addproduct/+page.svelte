@@ -53,19 +53,18 @@
 	let fileList: any[] = [];
 
 	function handleFiles(event: any) {
-		const files = event.target.files;
+		const files = Array.from(event.target.files)
+
+    console.log({ files })
 
 		if (files.length > 5) {
 			toast.error('No puedes cargar mas de 5 imagenes.')
 			fileList = [];
 		} else {
-			fileList = [];
-			for (let i = 0; i < files.length; i++) {
-				fileList.push({
-					name: files[i].name,
-					size: files[i].size
-				});
-			}
+			fileList = files.map((file: any) => ({
+        name: file.name,
+        size: file.size
+      }))
 		}
 	}
 
@@ -344,7 +343,7 @@
 							{#if form?.errors?.files}
 								<span class="dark:text-red-500 font-medium">{form?.errors?.files[0]}</span>
 							{/if}
-						</label> 
+						</label>
 					</div>
 					{#if fileList.length > 0}
 						<Table.Root class="mt-3">
