@@ -73,7 +73,7 @@
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${data.session}`
+						"Authorization": `Bearer ${data.session}`
 					}
 				});
 
