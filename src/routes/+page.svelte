@@ -118,7 +118,7 @@
 
 <!-- Barra de categorias -->
 <div
-	class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 md:w-full h-12 px-0 my-1 z-20"
+	class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 w-full h-12 px-0 my-1 z-20"
 >
   <!-- Boton de Todos -->
 	<button
