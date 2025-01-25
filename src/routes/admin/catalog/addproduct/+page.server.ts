@@ -96,7 +96,7 @@ export const actions: Actions = {
         const product = await response.json()
         console.log( { product } )
 
-        productId = await product._id
+        productId = product.productId
         console.log("productId asignado:", productId)
       } else {
         // Actualizar un producto existente
@@ -125,8 +125,8 @@ export const actions: Actions = {
 
       // Esperar a que productId tenga un valor válido
       const waitForProductId = async () => {
-        const maxRetries = 15;
-        const retryDelay = 800; // en milisegundos
+        const maxRetries = 5;
+        const retryDelay = 500; // en milisegundos
         let retries = 0;
 
         while (!productId && retries < maxRetries) {
