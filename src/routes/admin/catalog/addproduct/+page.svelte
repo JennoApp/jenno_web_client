@@ -54,14 +54,37 @@
 
 	function handleFiles(event: any) {
 		const files = Array.from(event.target.files)
-
     console.log({ files })
 
 		if (files.length > 5) {
 			toast.error('No puedes cargar mas de 5 imagenes.')
 			fileList = [];
 		} else {
-			fileList = files.map((file: any) => ({
+      // Ordenar los archivos basados en el patron "{nombre}-{numero}"
+      const sortedFiles = files.sort((a: any, b: any) => {
+        const getNumber = (name: any) => {
+          const match = name.match(/-(\d+)$/)
+          return match ? parseInt(match[1], 10) : null
+        }
+
+        const numA = getNumber(a.name)
+        const numB = getNumber(b.name)
+
+        // Si ambos tienen numero, ordenar por numero
+        if ( numA !== null && numB !== null ) {
+          return numA - numB
+        }
+
+        // Si solo uno tiene numero, ese va despues
+        if ( numA !== null) return -1
+        if ( numB !== null) return 1
+
+        // Si ninguno tiene numero, mantener el orden original
+        return 0
+      })
+
+
+			fileList = sortedFiles.map((file: any) => ({
         name: file.name,
         size: file.size
       }))
