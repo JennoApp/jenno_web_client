@@ -94,7 +94,10 @@ export const actions: Actions = {
         }
 
         const product = await response.json()
-        productId = product._id
+        console.log( { product } )
+
+        productId = await product._id
+        console.log("productId asignado:", productId)
       } else {
         // Actualizar un producto existente
         response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
@@ -122,8 +125,8 @@ export const actions: Actions = {
 
       // Esperar a que productId tenga un valor válido
       const waitForProductId = async () => {
-        const maxRetries = 10;
-        const retryDelay = 500; // en milisegundos
+        const maxRetries = 15;
+        const retryDelay = 800; // en milisegundos
         let retries = 0;
 
         while (!productId && retries < maxRetries) {
