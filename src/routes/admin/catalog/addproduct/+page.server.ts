@@ -73,6 +73,7 @@ export const actions: Actions = {
       // Crear o actualizar el producto
       let response;
       if (!productId) {
+        // Crear un producto nuevo
         response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: "POST",
           headers: {
@@ -82,9 +83,20 @@ export const actions: Actions = {
           body: JSON.stringify(productData)
         })
 
+        if (!response.ok) {
+          const errorResponse = await response.json()
+          console.error('Error al crear el producto:', errorResponse)
+          return {
+            success: false,
+            status: response.status,
+            errors: errorResponse,
+          }
+        }
+
         const product = await response.json()
         productId = product._id
       } else {
+        // Actualizar un producto existente
         response = await fetch(`${PRIVATE_SERVER_URL}/products`, {
           method: 'POST',
           headers: {
@@ -96,20 +108,21 @@ export const actions: Actions = {
             ...productData
           })
         });
-      }
 
-      if (!response.ok) {
-        const errorResponse = await response.json()
-        console.error('Error del servidor:', errorResponse)
-        return {
-          success: false,
-          status: response.status,
-          errors: errorResponse
+        if (!response.ok) {
+          const errorResponse = await response.json();
+          console.error('Error al actualizar el producto:', errorResponse);
+          return {
+            success: false,
+            status: response.status,
+            errors: errorResponse,
+          };
         }
       }
 
+
       // Subir imagenes si hay archivos seleccionados
-      if (uploadedFiles.length > 0) {
+      if (uploadedFiles.length > 0 && productId) {
         const imageFormData = new FormData()
         uploadedFiles.forEach(file => {
           imageFormData.append('files', file)
