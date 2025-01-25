@@ -18,7 +18,7 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
       console.error('Error al solicitar Server Url')
     }
@@ -64,7 +64,7 @@
 	});
 	/////////
 
-	let randomCategories: { category: string }[] = [];
+	let randomCategories: string[] = [];
 	let selectedCategory: string | null = $page.url.searchParams.get('category');
 
 	// Cargar las Categorias aleatorias
@@ -133,8 +133,8 @@
 	{#each randomCategories as item}
 		<button
 			class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-			class:selected={selectedCategory === item.category}
-			on:click={() => handleCategoryClick(item.category)}>{item.category}</button
+			class:selected={selectedCategory === item}
+			on:click={() => handleCategoryClick(item)}>{item}</button
 		>
 	{/each}
 </div>
