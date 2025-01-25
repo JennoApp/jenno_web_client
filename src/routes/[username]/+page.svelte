@@ -10,7 +10,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 
 	export let data: PageServerData;
-  let userInfo: any = $page.data.user
+	let userInfo: any = $page.data.user;
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -37,10 +37,10 @@
 
 	// Cargar productos del Usuario
 	async function loadProducts(userId: any, country?: string) {
-    await getServerUrl()
+		await getServerUrl();
 		const limit: number = 20;
 
-    const resolvedCountry = country || "Colombia"
+		const resolvedCountry = country || 'Colombia';
 		try {
 			const response = await fetch(
 				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
@@ -65,19 +65,24 @@
 
 	$: console.log({ userData });
 
+	$: console.log({ datasession: data.session });
+
 	const handleFollow = async (customerId: string) => {
-    await getServerUrl()
+		await getServerUrl();
 		if ($page.data.isSession) {
 			try {
 				const followingResponse = await fetch(`${serverUrl}/users/following/${customerId}`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						"Authorization": `Bearer ${data.session}`
-					}
+						Authorization: `Bearer ${data.session}`
+					},
+					credentials: 'include'
 				});
 
 				if (!followingResponse.ok) {
+					const errorData = await followingResponse.json();
+					console.error('Error al seguir al usuario', errorData);
 					throw new Error('Error al seguir al usuario');
 				}
 
@@ -95,18 +100,18 @@
 	};
 
 	const createConversation = async () => {
-    // Verificar si el usuario está en sesión
-    if (!userInfo || !userInfo._id) {
-      toast.error('Debes iniciar sesión para enviar un mensaje.');
-      return
-    }
+		// Verificar si el usuario está en sesión
+		if (!userInfo || !userInfo._id) {
+			toast.error('Debes iniciar sesión para enviar un mensaje.');
+			return;
+		}
 
 		const conversationData = {
 			members: [$page.data.user?._id, userData._id]
 		};
 
 		try {
-      await getServerUrl()
+			await getServerUrl();
 			const response = await fetch(`${serverUrl}/chat/conversations`, {
 				method: 'POST',
 				headers: {
@@ -177,7 +182,9 @@
 					{#if !(user?._id === data?.user?._id)}
 						<!-- Botón de seguimiento basado en el estado de `isFollowing` -->
 						{#if isFollowing}
-							<Button class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]">
+							<Button
+								class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+							>
 								<span class="text-black dark:text-gray-200">Siguiendo</span>
 							</Button>
 						{:else}
@@ -189,7 +196,10 @@
 							</Button>
 						{/if}
 
-						<Button class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]" on:click={createConversation}>
+						<Button
+							class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+							on:click={createConversation}
+						>
 							<span class="text-black dark:text-gray-200">Enviar Mensaje</span>
 						</Button>
 					{/if}
