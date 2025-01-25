@@ -120,9 +120,27 @@ export const actions: Actions = {
         }
       }
 
+      // Esperar a que productId tenga un valor válido
+      const waitForProductId = async () => {
+        const maxRetries = 10;
+        const retryDelay = 500; // en milisegundos
+        let retries = 0;
+
+        while (!productId && retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          retries++;
+        }
+
+        if (!productId) {
+          throw new Error("No se pudo obtener un productId válido.");
+        }
+      };
+
+      await waitForProductId();
+
 
       // Subir imagenes si hay archivos seleccionados
-      if (uploadedFiles.length > 0 && productId) {
+      if (uploadedFiles.length > 0) {
         const imageFormData = new FormData()
         uploadedFiles.forEach(file => {
           imageFormData.append('files', file)
