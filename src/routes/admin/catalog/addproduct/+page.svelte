@@ -121,7 +121,7 @@
 	/// load product data for update
 
 	let product: any;
-	let visibility: boolean;
+	let visibility: boolean = true
 	let isvisibilityInitialized = false;
 
 	$: console.log(product);
@@ -571,7 +571,7 @@
 						<span class="ml-2">{m.admin_catalog_addproduct_visibility()}</span>
 
 						<!-- Hidden input para garantizar que siempre haya un valor -->
-						<input type="hidden" name="visibility" value={visibility} />
+						<input type="hidden" name="visibility" value={visibility ? 'true' : 'false' } />
 					</div>
 				</Card.Content>
 			</Card.Root>

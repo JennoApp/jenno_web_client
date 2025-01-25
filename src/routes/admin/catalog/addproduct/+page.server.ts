@@ -39,7 +39,7 @@ export const actions: Actions = {
         height: formData.get('height'),
       },
       status: formData.get('status'),
-      visibility: formData.get('visibility'),
+      visibility: formData.get('visibility') === 'true',
       country,
       options: [] as any[],
       especifications: [] as any[]
