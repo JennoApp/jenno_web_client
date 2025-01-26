@@ -164,7 +164,7 @@
 				<input
 					type="password"
 					id="confirm-password"
-					name="password"
+					name="verified_password"
 					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
 				/>
 
