@@ -2,110 +2,112 @@ import type { Actions } from './$types'
 import { z } from 'zod'
 import { PRIVATE_SERVER_URL } from '$env/static/private'
 
-const registerPersonalSchema = z.object({
-  username: z
-    .string({ required_error: 'Username is required' })
-    .min(1, { message: 'Username is required' })
-    .max(64, { message: 'Username must be less than 64 characters' })
-    .trim(),
-  email: z
-    .string({ required_error: 'Email is required' })
-    .min(1, { message: 'Email is required' })
-    .max(64, { message: 'Email must be less than 64 characters' })
-    .email({ message: 'Email must be a valid email address' }),
-  country: z
-    .string({ required_error: 'Country is required' })
-    .min(1, { message: 'Country is required' })
-    .max(64, { message: 'Country must be less than 64 characters' }),
-  password: z
-    .string({ required_error: 'Password is required' })
-    .min(6, { message: 'Password must be at least 6 characters' })
-    .max(32, { message: 'Password must be less than 32 characters' })
-    .trim(),
-  verified_password: z
-    .string({ required_error: 'Password is required' })
-    .min(6, { message: 'Password must be at least 6 characters' })
-    .max(32, { message: 'Password must be less than 32 characters' })
-    .trim()
-}).superRefine(({ password, verified_password }, ctx) => {
-  if (verified_password !== password) {
-    ctx.addIssue({
-      code: 'custom',
-      message: 'Password and Confirm Password must match',
-      path: ['password']
-    })
-    ctx.addIssue({
-      code: 'custom',
-      message: 'Password and Confirm Password must match',
-      path: ['verified_password']
-    })
-  }
-})
+const registerPersonalSchema = z
+  .object({
+    username: z
+      .string({ required_error: 'El nombre de usuario es obligatorio' })
+      .min(1, { message: 'El nombre de usuario es obligatorio' })
+      .max(64, { message: 'El nombre de usuario debe tener menos de 64 caracteres' })
+      .trim(),
+    email: z
+      .string({ required_error: 'El correo electrónico es obligatorio' })
+      .min(1, { message: 'El correo electrónico es obligatorio' })
+      .max(64, { message: 'El correo electrónico debe tener menos de 64 caracteres' })
+      .email({ message: 'Debe ser una dirección de correo válida' }),
+    country: z
+      .string()
+      .max(64, { message: 'El país debe tener menos de 64 caracteres' })
+      .optional()
+      .default('Colombia'),
+    password: z
+      .string({ required_error: 'La contraseña es obligatoria' })
+      .min(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+      .max(32, { message: 'La contraseña debe tener menos de 32 caracteres' })
+      .trim(),
+    verified_password: z
+      .string({ required_error: 'La confirmación de la contraseña es obligatoria' })
+      .min(6, { message: 'La confirmación de la contraseña debe tener al menos 6 caracteres' })
+      .max(32, { message: 'La confirmación de la contraseña debe tener menos de 32 caracteres' })
+      .trim(),
+  })
+  .superRefine(({ password, verified_password }, ctx) => {
+    if (password !== verified_password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'La contraseña y la confirmación deben coincidir',
+        path: ['password'],
+      });
+      ctx.addIssue({
+        code: 'custom',
+        message: 'La contraseña y la confirmación deben coincidir',
+        path: ['verified_password'],
+      });
+    }
+  });
 
 export const actions: Actions = {
   personal: async ({ request, cookies }) => {
     const formData = Object.fromEntries(await request.formData())
 
     try {
-      const { username, email, country, password, verified_password } = registerPersonalSchema.parse(formData)
+      // Validar Formulario
+      const { username, email, country, password } = registerPersonalSchema.parse(formData)
 
-      console.log({ username, email, country, password, verified_password })
+      console.log({ username, email, country, password })
 
-      if (verified_password !== password) {
+
+      // Crear Usuario Personal
+      const responseCreateUser = await fetch(`${PRIVATE_SERVER_URL}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, email, country, password, accountType: 'personal' })
+      })
+
+      const result = await responseCreateUser.json()
+      console.log({ result })
+
+      if (result.statusCode === 401) {
+        console.log("Credenciales incorrectas")
         return {
-          message: "Password and Confirm Password must match",
+          message: 'Hubo un problema al crear la cuenta. Por favor, intente de nuevo.',
           success: false
         }
-      } else {
-        // Crear Usuario Personal
-        const responseCreateUser = await fetch(`${PRIVATE_SERVER_URL}/users`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ username, email, country, password, accountType: 'personal' })
-        })
+      }
 
-        const result = await responseCreateUser.json()
-        console.log({ result })
+      // Logear Usuario
+      const responseLoginUser = await fetch(`${PRIVATE_SERVER_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      })
 
-        if (result.statusCode === 401) {
-          console.log("Credemciales inconrrectas")
-          return {
-            success: false
-          }
-        }
+      const resultLogin = await responseLoginUser.json()
+      console.log({ resultLogin })
 
-        // Logear Usuario
-        const responseLoginUser = await fetch(`${PRIVATE_SERVER_URL}/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ email, password })
-        })
-
-        const resultLogin = await responseLoginUser.json()
-        console.log({ resultLogin })
-
-        if (resultLogin.statusCode === 401) {
-          console.log("Credenciales incorrectas")
-          return {
-            success: false
-          }
-        }
-
-        cookies.set('session', resultLogin.acces_token, {
-          httpOnly: true,
-          sameSite: 'strict',
-          secure: false,
-          path: '/',
-          maxAge: 60 * 60 * 24 * 45
-        })
-
+      if (resultLogin.statusCode === 401) {
+        console.log("Credenciales incorrectas")
         return {
-          success: true
+          message: 'El correo electrónico o la contraseña son incorrectos.',
+          success: false
         }
+      }
+
+      // Establecer Cookie de Sesión
+      cookies.set('session', resultLogin.acces_token, {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: false,
+        path: '/',
+        maxAge: 60 * 60 * 24 * 45 // 45 dias
+      })
+
+      return {
+        success: true,
+        message: 'Registro y login completados con éxito.',
       }
     } catch (err: any) {
       const { fieldErrors: errors } = err?.flatten()
@@ -114,7 +116,8 @@ export const actions: Actions = {
       return {
         data: rest,
         errors,
-        success: false
+        success: false,
+        message: 'Hubo errores en el formulario. Por favor, revise los campos.',
       }
     }
   }
