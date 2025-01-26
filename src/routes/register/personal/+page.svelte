@@ -10,11 +10,11 @@
 	export let form: ActionData;
   let selectedCountry: any = ''
 
-	$: console.log(form?.success);
-
 	$: if (form?.success) {
 		toast.success('Usuario creado!');
-		goto('/');
+		goto('/', { replaceState: true }).then(() => {
+      location.reload()
+    })
 	}
 
 
@@ -54,6 +54,11 @@
     }
   }
 </script>
+
+<svelte:head>
+	<title>Register-Personal</title>
+	<meta name="description" content="register personal account" />
+</svelte:head>
 
 <div class="flex flex-col items-center justify-center h-screen w-full">
 	<!-- Header -->

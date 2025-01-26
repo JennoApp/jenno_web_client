@@ -7,7 +7,6 @@
 
 	export let form;
 	$: if (form?.success) {
-		console.log('login succesful');
 		goto('/', { replaceState: true }).then(() => {
       location.reload()
     })
@@ -38,7 +37,7 @@
 
 <svelte:head>
 	<title>Login</title>
-	<meta name="description" content="About this app" />
+	<meta name="description" content="login in app" />
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center h-screen w-full">
