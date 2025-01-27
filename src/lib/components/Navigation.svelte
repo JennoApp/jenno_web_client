@@ -342,7 +342,7 @@
 								class="absolute top-2 text-gray-500 h-5 w-5 text-sm flex items-center justify-center {$location_data !==
 								undefined
 									? 'right-[-50px]'
-									: 'right-[-30px]'}"
+									: 'right-[-30px]'} hidden sm:flex"
 							>
 								beta
 							</span>
