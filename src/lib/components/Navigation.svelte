@@ -694,7 +694,7 @@
 						</DropdownMenu.Root>
 					</div>
 				{:else}
-					<div>
+					<div class="flex justify-center items-center space-x-2">
 						<button
 							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
 							on:click={() => goto('/login')}
