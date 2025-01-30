@@ -40,10 +40,10 @@
 		await getServerUrl();
 		const limit: number = 20;
 
-		const resolvedCountry = country?.trim() || 'Colombia';
+		//const resolvedCountry = country?.trim() || 'Colombia';
 		try {
 			const response = await fetch(
-				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${encodeURIComponent(resolvedCountry)}`
+				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${'Colombia'}`
 			);
 			const { data } = await response.json();
 
