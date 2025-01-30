@@ -15,6 +15,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { io, type Socket } from 'socket.io-client';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
 	const SOCKET_CONTEXT = 'socket';
 
@@ -69,6 +70,8 @@
 
 	onMount(async () => {
 		await initializeSocket($page.data?.user?._id);
+
+		injectAnalytics();
 	});
 
 	// Establecer el contexto del socket
