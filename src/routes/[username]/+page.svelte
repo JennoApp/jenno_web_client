@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
+	import { load } from '../admin/wallet/proxy+page.server';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
@@ -58,7 +59,11 @@
 		console.log('usuario no existe');
 		products = []; // vacia la lista de productos cuando el usuario no existe
 	} else {
-		loadProducts(data.userData._id, $location_data.data[0].country);
+		if ($location_data) {
+			loadProducts(data.userData._id, $location_data.data[0].country);
+		} else {
+			loadProducts(data.userData._id);
+		}
 	}
 
 	$: console.log({ userData });
@@ -131,6 +136,14 @@
 			console.error('Error en la solicitud:', error);
 		}
 	};
+
+	onMount(() => {
+		if ($location_data) {
+			loadProducts(data.userData._id, $location_data.data[0].country);
+		} else {
+			loadProducts(data.userData._id);
+		}
+	});
 </script>
 
 <svelte:head>
