@@ -134,9 +134,9 @@
 		}
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		if ($location_data) {
-			loadProducts(data.userData._id, $location_data.data[0].country);
+			await loadProducts(data.userData._id, $location_data.data[0].country);
 		}
 	});
 </script>
