@@ -9,6 +9,7 @@
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { load } from '../admin/wallet/proxy+page.server';
+	import { resolveConfig } from 'vite';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
@@ -41,10 +42,10 @@
 		await getServerUrl();
 		const limit: number = 20;
 
-		//const resolvedCountry = country?.trim() || 'Colombia';
+		const resolvedCountry = country !== undefined || country !== null ? country : 'Colombia';
 		try {
 			const response = await fetch(
-				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${'Colombia'}`
+				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
 			);
 			const { data } = await response.json();
 
