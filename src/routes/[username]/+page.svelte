@@ -58,9 +58,7 @@
 		console.log('usuario no existe');
 		products = []; // vacia la lista de productos cuando el usuario no existe
 	} else {
-		if ($location_data) {
-			loadProducts(data.userData._id, $location_data.data[0].country);
-		}
+		loadProducts(data.userData._id, $location_data.data[0].country);
 	}
 
 	$: console.log({ userData });
@@ -133,12 +131,6 @@
 			console.error('Error en la solicitud:', error);
 		}
 	};
-
-	onMount(async () => {
-		if ($location_data) {
-			await loadProducts(data.userData._id, $location_data.data[0].country);
-		}
-	});
 </script>
 
 <svelte:head>
