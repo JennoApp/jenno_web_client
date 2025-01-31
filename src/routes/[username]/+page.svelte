@@ -8,8 +8,6 @@
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { load } from '../admin/wallet/proxy+page.server';
-	import { resolveConfig } from 'vite';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
