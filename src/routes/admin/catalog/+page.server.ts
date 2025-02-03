@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import type { PageServerLoad } from './$types'
 import { PRIVATE_SERVER_URL } from '$env/static/private'
 
-export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
+export const load: PageServerLoad = async ({ cookies, url }) => {
   try {
     const session = cookies.get('session') as string
     if (session) {

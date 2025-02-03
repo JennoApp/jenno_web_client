@@ -16,7 +16,7 @@
 
 	export let data: PageServerData;
 
-	let productsData = data.products;
+	$: productsData = data.products;
 	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	$: console.log(data.meta);
@@ -29,8 +29,6 @@
 			console.log({ newPage });
 
 			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
-
-      productsData = data.products;
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
