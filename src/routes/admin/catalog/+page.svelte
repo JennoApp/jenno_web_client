@@ -10,27 +10,28 @@
 	import { Input } from '$lib/components/ui/input';
 	import DataTableActions from './data-table-actions.svelte';
 	import * as m from '$paraglide/messages';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
-  import { page } from '$app/stores'
+	import { page } from '$app/stores';
 
 	export let data: PageServerData;
-  let productsData: any = data.products;
-	const currentPage = data.meta?.page;
 
-	$: console.log(data.meta);
+	$: productsData = $page.data.products;
+	const currentPage = parseInt($page.data.meta?.page?.toString() || '1', 10);
+
+	$: console.log($page.data.meta);
 
 	async function changePage(newPage: number) {
-  try {
-    let query = new URLSearchParams($page.url.searchParams.toString())
-    query.set('page', newPage.toString())
-    console.log({ newPage })
+    if (newPage < 1) return;
+		try {
+			let query = new URLSearchParams($page.url.searchParams.toString());
+			query.set('page', newPage.toString());
+			console.log({ newPage });
 
-    await goto(`${$page.url.pathname}?page=${newPage.toString()}`, { replaceState: false })
-
-  } catch (error) {
-    console.error('Error al cambiar de página', error)
-  }
+			await goto(`${$page.url.pathname}?${query.toString()}}`, { replaceState: false });
+		} catch (error) {
+			console.error('Error al cambiar de página', error);
+		}
 	}
 
 	const table = createTable(readable(productsData), {
@@ -98,9 +99,9 @@
 					exclude: true
 				}
 			},
-      cell: ({ value }) => {
-        return createRender(StatusVisibility, { status: value })
-      }
+			cell: ({ value }) => {
+				return createRender(StatusVisibility, { status: value });
+			}
 		}),
 		table.column({
 			accessor: ({ _id }) => _id,
@@ -129,8 +130,7 @@
 
 	<Button
 		class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
-    on:click={() => goto('/admin/catalog/addproduct')}
-		>{m.admin_catalog_button()}</Button
+		on:click={() => goto('/admin/catalog/addproduct')}>{m.admin_catalog_button()}</Button
 	>
 	<!-- <DropdownMenu.Root>
 		<DropdownMenu.Trigger>
@@ -205,7 +205,7 @@
 					class="border-gray-400 dark:border-[#252525]"
 					variant="outline"
 					size="sm"
-					disabled={!data.meta.hasPreviousPage}
+					disabled={!data.meta.hasPreviousPage || currentPage <= 1}
 					on:click={() => changePage(Number(currentPage) - 1)}
 				>
 					Anterior
