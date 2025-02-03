@@ -15,19 +15,57 @@
   import { page } from '$app/stores'
 
 	export let data: PageServerData;
+  let productsData: any = data.products;
 	const currentPage = data.meta?.page;
 
 	$: console.log(data.meta);
 
-	function changePage(newPage: number) {
+  // Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
+
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
+
+  async function getCatalogProducts(userId: string, page: number, limit: number = 10) {
+    try {
+      await getServerUrl()
+
+      const response = await fetch(`${serverUrl}/products/admin/user/${userId}?page=${page}&limit=${limit}&country=Colombia`)
+
+      if (!response.ok) {
+        throw new Error('Error al cargar los productos del usuario')
+      }
+
+      const { data } = await response.json()
+      productsData = data.products
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+	async function changePage(newPage: number) {
+  try {
 		const searchParams = $page.url.searchParams
 		searchParams.set('page', newPage.toString());
     console.log({ newPage })
 
+    await getCatalogProducts($page.data.user._id, newPage)
+
     invalidateAll()
+  } catch (error) {
+    console.error('Error al cambiar de página', error)
+  }
 	}
 
-	const table = createTable(readable(data.products), {
+	const table = createTable(readable(productsData), {
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
 		})
