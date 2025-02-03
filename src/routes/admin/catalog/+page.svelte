@@ -13,6 +13,7 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
   import { page } from '$app/stores'
+	import { onMount } from 'svelte';
 
 	export let data: PageServerData;
   let productsData: any = data.products;
@@ -20,44 +21,16 @@
 
 	$: console.log(data.meta);
 
-  // Obtener url del servidor
-	let serverUrl: string;
-	async function getServerUrl() {
-		try {
-			const response = await fetch(`/api/server`);
-			const data = await response.json();
-
-			serverUrl = data.server_url;
-		} catch (error) {
-			console.error('Error al solicitar Paypal Id');
-		}
-	}
-
-  async function getCatalogProducts(userId: string, page: number, limit: number = 10) {
-    try {
-      await getServerUrl()
-
-      const response = await fetch(`${serverUrl}/products/admin/user/${userId}?page=${page}&limit=${limit}&country=Colombia`)
-
-      if (!response.ok) {
-        throw new Error('Error al cargar los productos del usuario')
-      }
-
-      const { data } = await response.json()
-      productsData = data.products
-
-    } catch (error) {
-      console.log(error)
-    }
+  $: if (data.products) {
+      $page.url.searchParams.set('page', data.meta.page.toString())
   }
 
 	async function changePage(newPage: number) {
   try {
-		const searchParams = $page.url.searchParams
-		searchParams.set('page', newPage.toString());
+		if ($page) {
+      $page.url.searchParams.set('page', newPage.toString())
+    }
     console.log({ newPage })
-
-    await getCatalogProducts($page.data.user._id, newPage)
 
     invalidateAll()
   } catch (error) {
