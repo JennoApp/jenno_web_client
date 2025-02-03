@@ -16,10 +16,10 @@
 
 	export let data: PageServerData;
 
-	$: productsData = $page.data.products;
-	const currentPage = parseInt($page.data.meta?.page?.toString() || '1', 10);
+	$: productsData = data.products;
+	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
-	$: console.log($page.data.meta);
+	$: console.log(data.meta);
 
 	async function changePage(newPage: number) {
     if (newPage < 1) return;
