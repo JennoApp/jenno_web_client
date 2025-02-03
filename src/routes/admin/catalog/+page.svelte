@@ -16,8 +16,8 @@
 
 	export let data: PageServerData;
 
-  let productsStore = writable(data.products);
-  const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
+	let productsStore = writable(data.products);
+	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	$: console.log(data.meta);
 
@@ -34,17 +34,33 @@
 		}
 	}
 
-  async function loadProducts(page: number, limit: number = 10) {
-    try {
-      await getServerUrl();
+	async function loadProducts(page: number, limit: number = 10) {
+		try {
+			await getServerUrl();
 
-      const response = await fetch(`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`)
-      const { data } = await response.json();
+			const response = await fetch(
+				`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`
+			);
+			const { data } = await response.json();
 
-      productsStore.set(data.products);
-    } catch (error) {
-      console.error('Error al cargar los productos del usuario: ', error);
-    }
+			productsStore.set(data.products);
+		} catch (error) {
+			console.error('Error al cargar los productos del usuario: ', error);
+		}
+	}
+
+	let table: any;
+	async function buildTable() {
+		table = createTable(productsStore, {
+			filter: addTableFilter({
+				fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
+			}),
+			page: addPagination({})
+		});
+	}
+
+  $: if (data.products) {
+    buildTable();
   }
 
 	async function changePage(newPage: number) {
@@ -56,18 +72,12 @@
 
 			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
 
-      await loadProducts(newPage);
+			await loadProducts(newPage);
+      await buildTable();
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
 	}
-
-	$: table = createTable(productsStore, {
-		filter: addTableFilter({
-			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
-		}),
-    page: addPagination({})
-	});
 
 	const columns = table.createColumns([
 		table.column({
