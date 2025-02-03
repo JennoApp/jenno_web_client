@@ -22,14 +22,13 @@
 	$: console.log(data.meta);
 
   $: if (data.products) {
-      $page.url.searchParams.set('page', data.meta.page.toString())
+    goto(`${$page.url.pathname}?page=${data.meta.page}`, { replaceState: true })
   }
 
 	async function changePage(newPage: number) {
   try {
-		if ($page) {
-      $page.url.searchParams.set('page', newPage.toString())
-    }
+    let query = new URLSearchParams($page.url.searchParams.toString())
+    query.set('page', newPage.toString())
     console.log({ newPage })
 
     invalidateAll()

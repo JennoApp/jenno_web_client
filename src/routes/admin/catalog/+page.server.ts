@@ -8,8 +8,6 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
     if (session) {
       const user = jwt.decode(session)
 
-      url.searchParams.set('page', url.searchParams.get('page') || '1')
-
       // Obtener la pagina actual
       const page = Math.max(parseInt(url.searchParams.get('page') as string))
       const limit = 10
