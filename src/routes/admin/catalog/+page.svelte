@@ -21,8 +21,33 @@
 
 	$: console.log(data.meta);
 
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
+
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
+
+  async function loadProducts(page: number, limit: number = 10) {
+    try {
+      await getServerUrl();
+      const response = await fetch(`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`)
+      const { data } = await response.json();
+
+      productsData = data.products;
+    } catch (error) {
+      console.error('Error al cargar los productos del usuario: ', error);
+    }
+  }
+
 	async function changePage(newPage: number) {
-    if (newPage < 1) return;
+		if (newPage < 1) return;
 		try {
 			let query = new URLSearchParams($page.url.searchParams.toString());
 			query.set('page', newPage.toString());
@@ -30,7 +55,9 @@
 
 			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
 
-      invalidate(() => true)
+      await loadProducts(newPage);
+
+			invalidate(() => true);
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
