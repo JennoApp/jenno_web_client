@@ -3,8 +3,8 @@
 	// import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addTableFilter } from 'svelte-headless-table/plugins';
-	import { readable } from 'svelte/store';
+	import { addTableFilter, addPagination } from 'svelte-headless-table/plugins';
+	import { writable, readable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -16,8 +16,8 @@
 
 	export let data: PageServerData;
 
-	let productsData = data.products;
-	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
+  let productsStore = writable(data.products);
+  const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	$: console.log(data.meta);
 
@@ -37,10 +37,11 @@
   async function loadProducts(page: number, limit: number = 10) {
     try {
       await getServerUrl();
+
       const response = await fetch(`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`)
       const { data } = await response.json();
 
-      productsData = data.products;
+      productsStore.set(data.products);
     } catch (error) {
       console.error('Error al cargar los productos del usuario: ', error);
     }
@@ -56,17 +57,16 @@
 			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
 
       await loadProducts(newPage);
-
-			invalidate(() => true);
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
 	}
 
-	const table = createTable(readable(productsData), {
+	$: table = createTable(productsStore, {
 		filter: addTableFilter({
 			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
-		})
+		}),
+    page: addPagination({})
 	});
 
 	const columns = table.createColumns([
