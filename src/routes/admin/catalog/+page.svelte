@@ -10,13 +10,13 @@
 	import { Input } from '$lib/components/ui/input';
 	import DataTableActions from './data-table-actions.svelte';
 	import * as m from '$paraglide/messages';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
 	import { page } from '$app/stores';
 
 	export let data: PageServerData;
 
-	$: productsData = data.products;
+	let productsData = data.products;
 	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	$: console.log(data.meta);
@@ -29,6 +29,8 @@
 			console.log({ newPage });
 
 			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
+
+      invalidate(() => true)
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
