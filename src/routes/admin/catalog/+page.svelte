@@ -21,17 +21,13 @@
 
 	$: console.log(data.meta);
 
-  // $: if (data) {
-  //   goto(`${$page.url.pathname}?page=${tablePage.toString()}`, { replaceState: true })
-  // }
-
 	async function changePage(newPage: number) {
   try {
     let query = new URLSearchParams($page.url.searchParams.toString())
     query.set('page', newPage.toString())
     console.log({ newPage })
 
-    await goto(`${$page.url.pathname}?page=${newPage.toString()}`, { replaceState: true })
+    await goto(`${$page.url.pathname}?page=${newPage.toString()}`, { replaceState: false })
 
     invalidateAll()
   } catch (error) {
