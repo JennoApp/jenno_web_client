@@ -21,7 +21,7 @@
 	function changePage(newPage: number) {
 		const searchParams = new URLSearchParams(window.location.search);
 		searchParams.set('page', newPage.toString());
-		invalidateAll();
+    console.log({ newPage })
 	}
 
 	const table = createTable(readable(data.products), {
@@ -80,7 +80,7 @@
 					exclude: true
 				}
 			}
-		}),	
+		}),
 		table.column({
 			accessor: 'visibility',
 			header: `Visibilidad`,
