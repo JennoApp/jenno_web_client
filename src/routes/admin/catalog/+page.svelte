@@ -28,7 +28,9 @@
 			query.set('page', newPage.toString());
 			console.log({ newPage });
 
-			await goto(`${$page.url.pathname}?${query.toString()}}`, { replaceState: false });
+			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
+
+      productsData = data.products;
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
