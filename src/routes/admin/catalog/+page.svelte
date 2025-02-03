@@ -21,9 +21,9 @@
 
 	$: console.log(data.meta);
 
-  $: if (data) {
-    goto(`${$page.url.pathname}?page=${tablePage.toString()}`, { replaceState: true })
-  }
+  // $: if (data) {
+  //   goto(`${$page.url.pathname}?page=${tablePage.toString()}`, { replaceState: true })
+  // }
 
 	async function changePage(newPage: number) {
   try {
