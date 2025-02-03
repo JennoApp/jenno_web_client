@@ -17,7 +17,6 @@
 	export let data: PageServerData;
   let productsData: any = data.products;
 	const currentPage = data.meta?.page;
-  let tablePage = $page.url.searchParams.get('page') || 1;
 
 	$: console.log(data.meta);
 
@@ -29,7 +28,6 @@
 
     await goto(`${$page.url.pathname}?page=${newPage.toString()}`, { replaceState: false })
 
-    invalidateAll()
   } catch (error) {
     console.error('Error al cambiar de página', error)
   }
@@ -208,7 +206,7 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasPreviousPage}
-					on:click={() => changePage(Number(tablePage) - 1)}
+					on:click={() => changePage(Number(currentPage) - 1)}
 				>
 					Anterior
 				</Button>
@@ -217,7 +215,7 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasNextPage}
-					on:click={() => changePage(Number(tablePage) + 1)}
+					on:click={() => changePage(Number(currentPage) + 1)}
 				>
 					Siguiente
 				</Button>
