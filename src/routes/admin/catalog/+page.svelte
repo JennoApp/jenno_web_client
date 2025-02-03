@@ -13,7 +13,6 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
   import { page } from '$app/stores'
-	import { onMount } from 'svelte';
 
 	export let data: PageServerData;
   let productsData: any = data.products;
@@ -21,7 +20,7 @@
 
 	$: console.log(data.meta);
 
-  $: if (data.products) {
+  $: if (data) {
     goto(`${$page.url.pathname}?page=${data.meta.page}`, { replaceState: true })
   }
 
@@ -31,7 +30,7 @@
     query.set('page', newPage.toString())
     console.log({ newPage })
 
-    invalidateAll()
+    await goto(`${$page.url.pathname}?page=${newPage.toString()}`, { replaceState: true })
   } catch (error) {
     console.error('Error al cambiar de página', error)
   }
