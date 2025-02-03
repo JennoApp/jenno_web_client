@@ -12,6 +12,7 @@
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
+  import { page } from '$app/stores'
 
 	export let data: PageServerData;
 	const currentPage = data.meta?.page;
@@ -19,9 +20,11 @@
 	$: console.log(data.meta);
 
 	function changePage(newPage: number) {
-		const searchParams = new URLSearchParams(window.location.search);
+		const searchParams = $page.url.searchParams
 		searchParams.set('page', newPage.toString());
     console.log({ newPage })
+
+    invalidateAll()
 	}
 
 	const table = createTable(readable(data.products), {
@@ -197,7 +200,7 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasPreviousPage}
-					on:click={() => changePage(currentPage - 1)}
+					on:click={() => changePage(Number(currentPage) - 1)}
 				>
 					Anterior
 				</Button>
@@ -206,7 +209,7 @@
 					variant="outline"
 					size="sm"
 					disabled={!data.meta.hasNextPage}
-					on:click={() => changePage(currentPage + 1)}
+					on:click={() => changePage(Number(currentPage) + 1)}
 				>
 					Siguiente
 				</Button>

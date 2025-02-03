@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
       const user = jwt.decode(session)
 
       // Obtener la pagina actual
-      const page = parseInt(url.searchParams.get('page') || '1')
+      const page = Math.max(parseInt(url.searchParams.get('page') || '1'))
       const limit = 10
 
       const response = await fetch(`${PRIVATE_SERVER_URL}/products/admin/user/${user?.sub}?page=${page}&limit=${limit}&country=Colombia`)
