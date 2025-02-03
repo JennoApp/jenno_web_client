@@ -16,7 +16,7 @@
 
 	export let data: PageServerData;
 
-	$: productsData = data.products;
+	let productsData = data.products;
 	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	$: console.log(data.meta);
