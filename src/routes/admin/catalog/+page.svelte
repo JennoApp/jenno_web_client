@@ -50,6 +50,10 @@
 	}
 
 	let table: any;
+	let columns: any = null;
+	let headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates;
+  let filterValue = '';
+
 	async function buildTable() {
 		table = createTable(productsStore, {
 			filter: addTableFilter({
@@ -57,11 +61,93 @@
 			}),
 			page: addPagination({})
 		});
+
+		columns = table.createColumns([
+			table.column({
+				header: `${m.admin_catalog_tableheader_image()}`,
+				accessor: `imgs`,
+				plugins: {
+					filter: {
+						exclude: true
+					}
+				},
+				cell: ({ value }) => {
+					return createRender(Image, { url: value[0] });
+				}
+			}),
+			table.column({
+				accessor: 'productname',
+				header: `${m.admin_catalog_tableheader_name()}`
+			}),
+			table.column({
+				accessor: 'category',
+				header: `${m.admin_catalog_tableheader_category()}`,
+				plugins: {
+					filter: {
+						exclude: true
+					}
+				}
+			}),
+			table.column({
+				accessor: 'price',
+				header: `${m.admin_catalog_tableheader_price()}`,
+				plugins: {
+					filter: {
+						exclude: true
+					}
+				},
+				cell: ({ value }) => {
+					const formatted = new Intl.NumberFormat('en-US', {
+						style: 'currency',
+						currency: 'USD'
+					}).format(value);
+					return formatted;
+				}
+			}),
+			table.column({
+				accessor: 'quantity',
+				header: `${m.admin_catalog_tableheader_quantity()}`,
+				plugins: {
+					filter: {
+						exclude: true
+					}
+				}
+			}),
+			table.column({
+				accessor: 'visibility',
+				header: `Visibilidad`,
+				plugins: {
+					filter: {
+						exclude: true
+					}
+				},
+				cell: ({ value }) => {
+					return createRender(StatusVisibility, { status: value });
+				}
+			}),
+			table.column({
+				accessor: ({ _id }) => _id,
+				header: '',
+				plugins: {
+					filter: {
+						exclude: true
+					}
+				},
+				cell: ({ value }) => {
+					return createRender(DataTableActions, { id: value });
+				}
+			})
+		]);
+
+    ({ headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } = table.createViewModel(columns));
+
+    filterValue = pluginStates.filter;
 	}
 
-  $: if (data.products) {
-    buildTable();
-  }
+
+	$: if (data.products) {
+		buildTable();
+	}
 
 	async function changePage(newPage: number) {
 		if (newPage < 1) return;
@@ -73,93 +159,12 @@
 			await goto(`${$page.url.pathname}?${query.toString()}`, { replaceState: false });
 
 			await loadProducts(newPage);
-      await buildTable();
+			await buildTable();
 		} catch (error) {
 			console.error('Error al cambiar de página', error);
 		}
 	}
 
-	const columns = table.createColumns([
-		table.column({
-			header: `${m.admin_catalog_tableheader_image()}`,
-			accessor: `imgs`,
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			},
-			cell: ({ value }) => {
-				return createRender(Image, { url: value[0] });
-			}
-		}),
-		table.column({
-			accessor: 'productname',
-			header: `${m.admin_catalog_tableheader_name()}`
-		}),
-		table.column({
-			accessor: 'category',
-			header: `${m.admin_catalog_tableheader_category()}`,
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			}
-		}),
-		table.column({
-			accessor: 'price',
-			header: `${m.admin_catalog_tableheader_price()}`,
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			},
-			cell: ({ value }) => {
-				const formatted = new Intl.NumberFormat('en-US', {
-					style: 'currency',
-					currency: 'USD'
-				}).format(value);
-				return formatted;
-			}
-		}),
-		table.column({
-			accessor: 'quantity',
-			header: `${m.admin_catalog_tableheader_quantity()}`,
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			}
-		}),
-		table.column({
-			accessor: 'visibility',
-			header: `Visibilidad`,
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			},
-			cell: ({ value }) => {
-				return createRender(StatusVisibility, { status: value });
-			}
-		}),
-		table.column({
-			accessor: ({ _id }) => _id,
-			header: '',
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			},
-			cell: ({ value }) => {
-				return createRender(DataTableActions, { id: value });
-			}
-		})
-	]);
-
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
-		table.createViewModel(columns);
-
-	const { filterValue } = pluginStates.filter;
 
 	$: console.log({ products: data.products });
 </script>
@@ -196,7 +201,7 @@
 				class="max-w-sm placeholder:text-[#707070]"
 				placeholder="Filter names..."
 				type="text"
-				bind:value={$filterValue}
+				bind:value={filterValue}
 			/>
 		</div>
 		<div class="rounded-md border mx-10 my-5">
