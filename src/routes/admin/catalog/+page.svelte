@@ -52,7 +52,7 @@
 	let table: any;
 	let columns: any = null;
 	let headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates;
-  let filterValue = '';
+	let filterValue = '';
 
 	async function buildTable() {
 		table = createTable(productsStore, {
@@ -71,8 +71,11 @@
 						exclude: true
 					}
 				},
-				cell: ({ value }) => {
-					return createRender(Image, { url: value[0] });
+				cell: ({ value }: { value: any }) => {
+					if (Array.isArray(value) && value.length > 0) {
+						return createRender(Image, { url: value[0] });
+					}
+          return ''
 				}
 			}),
 			table.column({
@@ -139,11 +142,11 @@
 			})
 		]);
 
-    ({ headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } = table.createViewModel(columns));
+		({ headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
+			table.createViewModel(columns));
 
-    filterValue = pluginStates.filter;
+		filterValue = pluginStates.filter;
 	}
-
 
 	$: if (data.products) {
 		buildTable();
@@ -164,7 +167,6 @@
 			console.error('Error al cambiar de página', error);
 		}
 	}
-
 
 	$: console.log({ products: data.products });
 </script>
