@@ -38,7 +38,7 @@
 				}
 			},
 			cell: ({ value }) => {
-				return createRender(Image, { url: value.imgs[0] });
+				return createRender(Image, { url: value.imgs[0], iconType: 'product' });
 			}
 		}),
 		table.column({
