@@ -41,15 +41,15 @@
 			);
 			const { data } = await response.json();
 
-			productsStore.set(data.products);
+			productsStore.set(data.data); // devuelve { data: [], meta: {} }
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
 	}
 
-  onMount(async () => {
-   await loadProducts(1, 10);
-  });
+	onMount(async () => {
+		await loadProducts(1, 10);
+	});
 
 	$: console.log({ productsData: $productsStore });
 
