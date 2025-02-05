@@ -19,8 +19,6 @@
 	let productsStore = writable(data.products);
 	const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
-	$: console.log(data.meta);
-
 	// Obtener url del servidor
 	let serverUrl: string;
 	async function getServerUrl() {
@@ -30,7 +28,7 @@
 
 			serverUrl = data.server_url;
 		} catch (error) {
-			console.error('Error al solicitar Paypal Id');
+			console.error('Error al obtener la url del servidor: ', error);
 		}
 	}
 
@@ -48,6 +46,9 @@
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
 	}
+
+  $: loadProducts(1, 10);
+  $: console.log({ productsData: productsStore})
 
 	let table: any;
 	let columns: any = null;
