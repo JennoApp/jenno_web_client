@@ -1,11 +1,22 @@
 <script lang="ts">
   export let url: string | null = null
   export let iconType: 'profileImg' | 'product' = 'profileImg'
+
+  let failedtoLoad = false
+
+  function handleImageError() {
+    failedtoLoad = true
+  }
 </script>
 
 <div class="w-14 h-14 flex justify-center items-center">
-  {#if url}
-    <img class="object-cover rounded-md w-full h-full" src={url} alt="img">
+  {#if url && !failedtoLoad}
+    <img
+      class="object-cover rounded-md w-full h-full"
+      src={url}
+      alt="img"
+      on:error={handleImageError}
+    >
   {:else if iconType === 'profileImg'}
     <iconify-icon
       icon="mdi:user"
