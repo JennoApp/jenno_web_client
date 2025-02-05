@@ -43,10 +43,10 @@
 		}
 	}
 
-  function changePage(newPage: number) {
-    if (newPage < 1) return;
-    loadProducts(newPage, 10);
-  }
+	function changePage(newPage: number) {
+		if (newPage < 1) return;
+		loadProducts(newPage, 10);
+	}
 
 	$: console.log({ productsData: $productsStore });
 </script>
@@ -121,25 +121,33 @@
 		</table>
 	</div>
 
-	<div class="flex items-center justify-end space-x-4 mt-2 m-5">
-		<Button
-			class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
-			variant="outline"
-			size="sm"
-			disabled={!$metaStore.hasPreviousPage}
-			on:click={() => changePage(Number($metaStore.page) - 1)}
-		>
-			Anterior
-		</Button>
-		<Button
-			class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
-			variant="outline"
-			size="sm"
-			disabled={!$metaStore.hasNextPage}
-			on:click={() => changePage(Number($metaStore.page) + 1)}
-		>
-			Siguiente
-		</Button>
+	<div class="flex justify-between mt-2 m-5">
+		<div class="">
+			<h3 class="text-sm dark:text-[#707070]">
+				items: {$metaStore.itemCount} - pages: {$metaStore.pageCount}
+			</h3>
+		</div>
+
+		<div class="flex items-center justify-end space-x-4">
+			<Button
+				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
+				variant="outline"
+				size="sm"
+				disabled={!$metaStore.hasPreviousPage}
+				on:click={() => changePage(Number($metaStore.page) - 1)}
+			>
+				Anterior
+			</Button>
+			<Button
+				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
+				variant="outline"
+				size="sm"
+				disabled={!$metaStore.hasNextPage}
+				on:click={() => changePage(Number($metaStore.page) + 1)}
+			>
+				Siguiente
+			</Button>
+		</div>
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
