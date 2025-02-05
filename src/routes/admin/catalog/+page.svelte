@@ -62,7 +62,7 @@
 
 {#if Array.isArray($productsStore) && $productsStore.length > 0}
 	<div class="overflow-x-auto w-full m-5">
-		<table class="min-w-full border-collapse text-left text-sm">
+		<table class="w-full min-w-[640px] max-w-full border-collapse text-left text-sm">
 			<thead>
 				<tr class="border-b bg-gray-100 dark:bg-[#202020]">
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Imágenes</th>
