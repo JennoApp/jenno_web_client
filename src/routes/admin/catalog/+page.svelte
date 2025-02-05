@@ -41,7 +41,7 @@
 			);
 			const { data } = await response.json();
 
-			productsStore.set(data.data); // devuelve { data: [], meta: {} }
+			productsStore.set(data); // devuelve { data: [], meta: {} }
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
