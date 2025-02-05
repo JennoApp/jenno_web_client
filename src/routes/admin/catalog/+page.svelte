@@ -262,7 +262,7 @@
 	</div>
 {/if} -->
 
-{#if $productsStore.length !== 0}
+{#if Array.isArray($productsStore) && $productsStore.length > 0}
 	<div class="overflow-x-auto w-full">
 		<table class="min-w-full border-collapse text-left text-sm">
 			<thead>
@@ -273,7 +273,6 @@
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Precio</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Cantidad</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Visibilidad</th>
-					<th class="py-2 px-4 font-semibold dark:text-gray-200">Descripción</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Acciones</th>
 				</tr>
 			</thead>
@@ -312,11 +311,6 @@
 						<!-- Visibilidad -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							<StatusVisibility status={product.visibility} />
-						</td>
-
-						<!-- Descripción -->
-						<td class="py-2 px-4 dark:text-gray-200">
-							{product.description || 'Sin descripción'}
 						</td>
 
 						<!-- Acciones -->

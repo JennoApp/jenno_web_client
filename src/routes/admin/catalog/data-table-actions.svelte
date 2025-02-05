@@ -4,6 +4,7 @@
 	import { MoreHorizontal } from 'lucide-svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+	import { Portal } from '$lib/components/ui/dialog';
 
 	export let id: string;
 
@@ -68,7 +69,8 @@
 			<MoreHorizontal class="w-4 h-4" />
 		</Button>
 	</DropdownMenu.Trigger>
-	<DropdownMenu.Content>
+
+	<DropdownMenu.Content class="z-50">
 		<DropdownMenu.Group>
 			<DropdownMenu.Sub>
 				<DropdownMenu.SubTrigger>Visibilidad</DropdownMenu.SubTrigger>
