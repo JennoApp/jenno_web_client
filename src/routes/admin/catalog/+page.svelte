@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	// import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';
 	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
 	import { addTableFilter, addPagination } from 'svelte-headless-table/plugins';
@@ -47,8 +46,8 @@
 		}
 	}
 
-  $: loadProducts(1, 10);
-  $: console.log({ productsData: $productsStore})
+	$: loadProducts(1, 10);
+	$: console.log({ productsData: $productsStore });
 
 	let table: any;
 	let columns: any = null;
@@ -76,7 +75,7 @@
 					if (Array.isArray(value) && value.length > 0) {
 						return createRender(Image, { url: value[0] });
 					}
-          return ''
+					return '';
 				}
 			}),
 			table.column({
@@ -168,8 +167,6 @@
 			console.error('Error al cambiar de página', error);
 		}
 	}
-
-	$: console.log({ products: data.products });
 </script>
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
@@ -179,20 +176,6 @@
 		class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
 		on:click={() => goto('/admin/catalog/addproduct')}>{m.admin_catalog_button()}</Button
 	>
-	<!-- <DropdownMenu.Root>
-		<DropdownMenu.Trigger>
-			<Button
-				class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200               hover:bg-purple-700 dark:hover:bg-[#252525]"
-				>{m.admin_catalog_button()}</Button
-			>
-		</DropdownMenu.Trigger>
-		<DropdownMenu.Content class="bg-background mt-2">
-			<DropdownMenu.Item href="/admin/catalog/addproduct"
-				>{m.admin_catalog_button_addproduct()}</DropdownMenu.Item
-			>
-			<DropdownMenu.Item disabled>{m.admin_catalog_button_addservice()}</DropdownMenu.Item>
-		</DropdownMenu.Content>
-	</DropdownMenu.Root> -->
 </div>
 
 {#if data.products.length !== 0}
@@ -278,3 +261,80 @@
 		</p>
 	</div>
 {/if}
+
+<div class="overflow-x-auto w-full">
+	<table class="min-w-full border-collapse text-left text-sm">
+		<thead>
+			<tr class="border-b bg-gray-100 dark:bg-[#202020]">
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">ID</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Nombre</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Categoría</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Precio</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Cantidad</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Visibilidad</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Imágenes</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Descripción</th>
+				<th class="py-2 px-4 font-semibold dark:text-gray-200">Acciones</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
+			{#each $productsStore as product}
+				<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
+					<!-- ID del producto -->
+					<td class="py-2 px-4 dark:text-gray-200">{product._id}</td>
+
+					<!-- Nombre del producto -->
+					<td class="py-2 px-4 dark:text-gray-200">{product.productname}</td>
+
+					<!-- Categoría -->
+					<td class="py-2 px-4 dark:text-gray-200">{product.category}</td>
+
+					<!-- Precio (con formato) -->
+					<td class="py-2 px-4 dark:text-gray-200">
+						{new Intl.NumberFormat('en-US', {
+							style: 'currency',
+							currency: 'USD'
+						}).format(product.price || 0)}
+					</td>
+
+					<!-- Cantidad -->
+					<td class="py-2 px-4 dark:text-gray-200">{product.quantity}</td>
+
+					<!-- Visibilidad -->
+					<td class="py-2 px-4 dark:text-gray-200">
+						{product.visibility ? 'Visible' : 'Oculto'}
+					</td>
+
+					<!-- Imágenes (mostrar la primera o un recuento) -->
+					<td class="py-2 px-4 dark:text-gray-200">
+						{#if Array.isArray(product.imgs) && product.imgs.length > 0}
+							<!-- Ejemplo: Mostrar solo la primera imagen -->
+							<img src={product.imgs[0]} alt="Producto" class="w-16 h-16 object-cover rounded" />
+							<!-- O mostrar la cantidad: -->
+							<!-- <p>{product.imgs.length} imágenes</p> -->
+						{:else}
+							<span class="text-gray-500 dark:text-gray-400">Sin imágenes</span>
+						{/if}
+					</td>
+
+					<!-- Descripción -->
+					<td class="py-2 px-4 dark:text-gray-200">
+						{product.description || 'Sin descripción'}
+					</td>
+
+					<!-- Acciones -->
+					<td class="py-2 px-4 dark:text-gray-200">
+						<!-- Ejemplo de botón para editar -->
+						<button class="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600">
+							Editar
+						</button>
+						<!-- Ejemplo de botón para eliminar -->
+						<button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+							Eliminar
+						</button>
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
