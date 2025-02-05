@@ -14,9 +14,10 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	// export let data: PageServerData;
+	export let data: PageServerData;
 
-	let productsStore = writable([]);
+	let productsStore = writable(data.products || []);
+	let metaStore = writable(data.meta || {});
 	// const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	// Obtener url del servidor
@@ -39,17 +40,24 @@
 			const response = await fetch(
 				`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`
 			);
-			const { data } = await response.json();
+			const result = await response.json();
 
-			productsStore.set(data); // devuelve { data: [], meta: {} }
+			// devuelve { data: [], meta: {} }
+			productsStore.set(result.data);
+			metaStore.set(result.meta);
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
 	}
 
-	onMount(async () => {
-		await loadProducts(1, 10);
-	});
+  function changePage(newPage: number) {
+    if (newPage < 1) return;
+    loadProducts(newPage, 10);
+  }
+
+	// onMount(async () => {
+	// 	await loadProducts(1, 10);
+	// });
 
 	$: console.log({ productsData: $productsStore });
 
@@ -325,6 +333,27 @@
 				{/each}
 			</tbody>
 		</table>
+	</div>
+
+	<div class="flex items-center justify-end space-x-4">
+		<Button
+			class="border-gray-400 dark:border-[#252525]"
+			variant="outline"
+			size="sm"
+			disabled={!$metaStore.hasPreviousPage}
+			on:click={() => changePage(Number($metaStore.page) - 1)}
+		>
+			Anterior
+		</Button>
+		<Button
+			class="border-gray-400 dark:border-[#252525]"
+			variant="outline"
+			size="sm"
+			disabled={!$metaStore.hasNextPage}
+			on:click={() => changePage(Number($metaStore.page) + 1)}
+		>
+			Siguiente
+		</Button>
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
