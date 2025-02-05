@@ -48,7 +48,7 @@
 	}
 
   $: loadProducts(1, 10);
-  $: console.log({ productsData: productsStore})
+  $: console.log({ productsData: $productsStore})
 
 	let table: any;
 	let columns: any = null;
