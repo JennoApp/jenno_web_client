@@ -14,9 +14,9 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	export let data: PageServerData;
+	// export let data: PageServerData;
 
-	let productsStore = writable(data.products);
+	let productsStore = writable([]);
 	// const currentPage = parseInt(data.meta?.page?.toString() || '1', 10);
 
 	// Obtener url del servidor
