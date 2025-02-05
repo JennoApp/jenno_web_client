@@ -12,6 +12,7 @@
 	import { goto, invalidate } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
 	export let data: PageServerData;
 
@@ -46,7 +47,10 @@
 		}
 	}
 
-	$: loadProducts(1, 10);
+  onMount(async () => {
+   await loadProducts(1, 10);
+  });
+
 	$: console.log({ productsData: $productsStore });
 
 	// let table: any;
