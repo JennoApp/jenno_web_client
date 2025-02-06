@@ -299,12 +299,19 @@
 
 	// Actualizar isDarkMode solo en el cliente
 	$: if (typeof window !== 'undefined') {
-			if ($theme === 'system') {
-				isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			} else {
-				isDarkMode = $theme === 'dark';
-			}
+		if ($theme === 'system') {
+			isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		} else {
+			isDarkMode = $theme === 'dark';
+		}
 	}
+
+  // Estado para saber si la imagen no se pudo cargar
+  let failedToLoad = false;
+
+  function handleImageError() {
+    failedToLoad = true;
+  }
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -485,7 +492,9 @@
 										<!-- Lista de notificaciones -->
 										{#each $notifications as notification}
 											<div class="mb-2 bg-gray-200 dark:bg-[#202020] p-3 rounded-md">
-												<p class="text-sm font-medium dark:text-gray-200">{notification?.message}</p>
+												<p class="text-sm font-medium dark:text-gray-200">
+													{notification?.message}
+												</p>
 												<p class="text-xs text-gray-500">
 													{new Date(notification?.createdAt).toLocaleString()}
 												</p>
@@ -552,11 +561,21 @@
 										<div
 											class="flex flex-row gap-3 items-center rounded-sm p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
 										>
-											<img
-												class="w-12 h-12 object-cover rounded-sm mr-2"
-												src={`${cartItem.imgs[0]}`}
-												alt={`${cartItem.productname}`}
-											/>
+											{#if cartItem.imgs[0] && !failedToLoad}
+												<img
+													class="w-12 h-12 object-cover rounded-sm mr-2"
+													src={`${cartItem.imgs[0]}`}
+													alt={`${cartItem.productname}`}
+                          on:error={handleImageError}
+												/>
+											{:else}
+												<iconify-icon
+													icon="mdi:package-variant-closed"
+													height="1.5rem"
+													width="1.5rem"
+													class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
+												/>
+											{/if}
 											<div class="flex">
 												<div class="flex flex-col items-start">
 													<h2 class="text-lg">{cartItem.productname}</h2>
