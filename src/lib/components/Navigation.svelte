@@ -571,8 +571,8 @@
 											{:else}
 												<iconify-icon
 													icon="mdi:package-variant-closed"
-													height="1.5rem"
-													width="1.5rem"
+													height="2rem"
+													width="2rem"
 													class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
 												/>
 											{/if}
