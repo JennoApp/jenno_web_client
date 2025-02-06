@@ -306,12 +306,12 @@
 		}
 	}
 
-  // Estado para saber si la imagen no se pudo cargar
-  let failedToLoad = false;
+	// Estado para saber si la imagen no se pudo cargar
+	let failedToLoad = false;
 
-  function handleImageError() {
-    failedToLoad = true;
-  }
+	function handleImageError() {
+		failedToLoad = true;
+	}
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -566,7 +566,7 @@
 													class="w-12 h-12 object-cover rounded-sm mr-2"
 													src={`${cartItem.imgs[0]}`}
 													alt={`${cartItem.productname}`}
-                          on:error={handleImageError}
+													on:error={handleImageError}
 												/>
 											{:else}
 												<iconify-icon
