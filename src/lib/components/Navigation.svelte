@@ -557,8 +557,8 @@
 										<h2>{m.navbar_cart_additems()}</h2>
 									</div>
 								{:else}
-									<ScrollArea class="max-h-[66vh] overflow-y-auto p-4" orientation="vertical">
-										<div class="flex flex-col space-y-2">
+									<!-- <ScrollArea class="max-h-[66vh] overflow-y-auto p-4" orientation="vertical"> -->
+										<div class="flex flex-col space-y-2 max-h-[66vh] overflow-auto">
 											{#each $cartItems as cartItem}
 												<div
 													class="flex flex-row gap-3 items-center rounded-sm p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
@@ -628,7 +628,7 @@
 												</div>
 											{/each}
 										</div>
-									</ScrollArea>
+									<!-- </ScrollArea> -->
 
 									<div class="flex justify-between">
 										<a href="/cart" class="hover:underline">{m.navbar_cart_go_to_cart()}</a>
