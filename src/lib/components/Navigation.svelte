@@ -557,78 +557,83 @@
 										<h2>{m.navbar_cart_additems()}</h2>
 									</div>
 								{:else}
-									<!-- <ScrollArea class="max-h-[66vh] overflow-y-auto p-4" orientation="vertical"> -->
-										<div class="flex flex-col space-y-2 max-h-[66vh] overflow-auto">
-											{#each $cartItems as cartItem}
-												<div
-													class="flex flex-row gap-3 items-center rounded-sm p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
-												>
-													{#if cartItem.imgs[0] && !failedToLoad}
-														<img
-															class="w-12 h-12 object-cover rounded-sm mr-2"
-															src={`${cartItem.imgs[0]}`}
-															alt={`${cartItem.productname}`}
-															on:error={handleImageError}
-														/>
-													{:else}
-														<iconify-icon
-															icon="mdi:package-variant-closed"
-															height="2rem"
-															width="2rem"
-															class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
-														/>
-													{/if}
-													<div class="flex">
-														<div class="flex flex-col items-start">
-															<h2 class="text-lg">{cartItem.productname}</h2>
-															<p class="text-base dark:text-white">${cartItem.price}</p>
+									<div
+										class="flex flex-col space-y-2 max-h-[66vh] overflow-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full
+                  [&::-webkit-scrollbar-track]:bg-gray-100
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-thumb]:bg-gray-300
+                  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+									>
+										{#each $cartItems as cartItem}
+											<div
+												class="flex flex-row gap-3 items-center rounded-sm p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
+											>
+												{#if cartItem.imgs[0] && !failedToLoad}
+													<img
+														class="w-12 h-12 object-cover rounded-sm mr-2"
+														src={`${cartItem.imgs[0]}`}
+														alt={`${cartItem.productname}`}
+														on:error={handleImageError}
+													/>
+												{:else}
+													<iconify-icon
+														icon="mdi:package-variant-closed"
+														height="2rem"
+														width="2rem"
+														class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
+													/>
+												{/if}
+												<div class="flex">
+													<div class="flex flex-col items-start">
+														<h2 class="text-lg">{cartItem.productname}</h2>
+														<p class="text-base dark:text-white">${cartItem.price}</p>
 
-															<!-- Mostrar selectedOptions solo si existen -->
-															{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
-																<div class="flex gap-1">
-																	<h3>{cartItem.selectedOptions[0].name}:</h3>
-																	<p>{cartItem.selectedOptions[0].value}</p>
-																</div>
-															{/if}
-														</div>
-
-														<div class="flex w-full justify-center items-center mt-2">
-															<button
-																on:click|preventDefault={() =>
-																	decrementCartItem(cartItem._id, cartItem.selectedOptions)}
-																class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
-															>
-																<!-- Minus Icon -->
-																<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"
-																></iconify-icon>
-															</button>
-															<span class="mx-2 text-black dark:text-white font-medium"
-																>{cartItem.amount}</span
-															>
-															<button
-																on:click|preventDefault={() =>
-																	addToCart(cartItem, cartItem.selectedOptions)}
-																class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
-															>
-																<!-- Plus Icon -->
-																<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"
-																></iconify-icon>
-															</button>
-														</div>
+														<!-- Mostrar selectedOptions solo si existen -->
+														{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
+															<div class="flex gap-1">
+																<h3>{cartItem.selectedOptions[0].name}:</h3>
+																<p>{cartItem.selectedOptions[0].value}</p>
+															</div>
+														{/if}
 													</div>
-													<button
-														on:click|preventDefault={() =>
-															removeFromCart(cartItem._id, cartItem.selectedOptions)}
-														class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
-													>
-														<!-- Close Icon -->
-														<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem"
-														></iconify-icon>
-													</button>
+
+													<div class="flex w-full justify-center items-center mt-2">
+														<button
+															on:click|preventDefault={() =>
+																decrementCartItem(cartItem._id, cartItem.selectedOptions)}
+															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+														>
+															<!-- Minus Icon -->
+															<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"
+															></iconify-icon>
+														</button>
+														<span class="mx-2 text-black dark:text-white font-medium"
+															>{cartItem.amount}</span
+														>
+														<button
+															on:click|preventDefault={() =>
+																addToCart(cartItem, cartItem.selectedOptions)}
+															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+														>
+															<!-- Plus Icon -->
+															<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"
+															></iconify-icon>
+														</button>
+													</div>
 												</div>
-											{/each}
-										</div>
-									<!-- </ScrollArea> -->
+												<button
+													on:click|preventDefault={() =>
+														removeFromCart(cartItem._id, cartItem.selectedOptions)}
+													class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
+												>
+													<!-- Close Icon -->
+													<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem"
+													></iconify-icon>
+												</button>
+											</div>
+										{/each}
+									</div>
 
 									<div class="flex justify-between">
 										<a href="/cart" class="hover:underline">{m.navbar_cart_go_to_cart()}</a>
