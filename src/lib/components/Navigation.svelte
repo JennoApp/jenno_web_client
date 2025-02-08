@@ -487,31 +487,36 @@
 								</button>
 							</HoverCard.Trigger>
 							<HoverCard.Content class="w-80">
-								<ScrollArea class="h-full w-full">
-									<div class="flex flex-col gap-2">
-										<!-- Lista de notificaciones -->
-										{#each $notifications as notification}
-											<div class="mb-2 bg-gray-200 dark:bg-[#202020] p-3 rounded-md">
-												<p class="text-sm font-medium dark:text-gray-200">
-													{notification?.message}
-												</p>
-												<p class="text-xs text-gray-500">
-													{new Date(notification?.createdAt).toLocaleString()}
-												</p>
-											</div>
-										{/each}
+								<div
+									class="flex flex-col space-y-2 max-h-[66vh] overflow-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full
+                  [&::-webkit-scrollbar-track]:bg-gray-100
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+                  [&::-webkit-scrollbar-thumb]:bg-gray-300
+                  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+								>
+									<!-- Lista de notificaciones -->
+									{#each $notifications as notification}
+										<div class="mb-2 bg-gray-200 dark:bg-[#202020] p-3 rounded-md">
+											<p class="text-sm font-medium dark:text-gray-200">
+												{notification?.message}
+											</p>
+											<p class="text-xs text-gray-500">
+												{new Date(notification?.createdAt).toLocaleString()}
+											</p>
+										</div>
+									{/each}
 
-										<!-- Botón para cargar más -->
-										{#if currentPage < $totalPages}
-											<button
-												class="text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
-												on:click={loadMoreNotifications}
-											>
-												Cargar más
-											</button>
-										{/if}
-									</div>
-								</ScrollArea>
+									<!-- Botón para cargar más -->
+									{#if currentPage < $totalPages}
+										<button
+											class="text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
+											on:click={loadMoreNotifications}
+										>
+											Cargar más
+										</button>
+									{/if}
+								</div>
 							</HoverCard.Content>
 						</HoverCard.Root>
 
@@ -587,7 +592,9 @@
 												<div class="flex">
 													<div class="flex flex-col items-start">
 														<h2 class="text-lg">{cartItem.productname}</h2>
-														<p class="text-base dark:text-white">${cartItem.price}</p>
+														<p class="text-base dark:text-white">
+															{formatPrice(cartItem.price, 'es-CO', 'COP')}
+														</p>
 
 														<!-- Mostrar selectedOptions solo si existen -->
 														{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
