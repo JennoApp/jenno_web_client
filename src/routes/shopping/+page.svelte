@@ -130,7 +130,7 @@
 						<td class="py-2 px-4 dark:text-gray-200">{order?.product?.productname}</td>
 
             <!-- Cantidad -->
-						<td class="py-2 px-4 dark:text-gray-200">{order?.amount}</td>
+						<td class="py-2 px-4 dark:text-gray-200 text-center">{order?.amount}</td>
 
 						<!-- Precio (con formato) -->
 						<td class="py-2 px-4 dark:text-gray-200">
