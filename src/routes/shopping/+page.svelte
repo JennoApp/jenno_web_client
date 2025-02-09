@@ -106,6 +106,7 @@
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Precio</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Total</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Categoria</th>
+          <th class="py-2 px-4 font-semibold dark:text-gray-200">Opciones</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Estado</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200"></th>
 				</tr>
@@ -127,6 +128,9 @@
 
 						<!-- Nombre del producto -->
 						<td class="py-2 px-4 dark:text-gray-200">{order?.product?.productname}</td>
+
+            <!-- Cantidad -->
+						<td class="py-2 px-4 dark:text-gray-200">{order?.amount}</td>
 
 						<!-- Precio (con formato) -->
 						<td class="py-2 px-4 dark:text-gray-200">
