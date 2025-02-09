@@ -9,10 +9,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { readable } from 'svelte/store';
 	import { format } from 'timeago.js';
-	import TableData from '$lib/components/Table.svelte';
-	import { page } from '$app/stores';
 	import * as m from '$paraglide/messages';
-	import * as Dialog from '$lib/components/ui/dialog';
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
 	import CustomerCell from '$lib/components/Customer_cell.svelte';
