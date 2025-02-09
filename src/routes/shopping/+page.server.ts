@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 
       // Obtener la pagina actual
       const page = 1
-      const limit = 10
+      const limit = 8
 
       // Fetch the shopping list data
       const response = await fetch(`${PRIVATE_SERVER_URL}/users/shopping/${user?.sub}?page=${page}&limit=${limit}`)

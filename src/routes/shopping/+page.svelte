@@ -28,7 +28,7 @@
 		}
 	}
 
-	async function loadProducts(page: number, limit: number = 10) {
+	async function loadProducts(page: number, limit: number = 8) {
 		try {
 			await getServerUrl();
 
