@@ -33,12 +33,19 @@
 			await getServerUrl();
 
 			const response = await fetch(
-				`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`
+				`${serverUrl}/users/shopping/${$page.data.user._id}?page=${page}&limit=${limit}`
 			);
 			const result = await response.json();
 
+			const products = await Promise.all(
+				result.data.map(async (id: string) => {
+					const productResponse = await fetch(`${serverUrl}/orders/${id}`);
+					return await productResponse.json();
+				})
+			);
+
 			// devuelve { data: [], meta: {} }
-			productsStore.set(result.data);
+			productsStore.set(products);
 			metaStore.set(result.meta);
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
@@ -100,7 +107,7 @@
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Total</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Categoria</th>
 					<th class="py-2 px-4 font-semibold dark:text-gray-200">Estado</th>
-          <th class="py-2 px-4 font-semibold dark:text-gray-200"></th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200"></th>
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
@@ -130,12 +137,14 @@
 						</td>
 
 						<!-- Total -->
-						<td class="py-2 px-4 dark:text-gray-200">{formatPrice(product.price * product.amount, 'es-CO', 'COP')}</td>
+						<td class="py-2 px-4 dark:text-gray-200"
+							>{formatPrice(product.price * product.amount, 'es-CO', 'COP')}</td
+						>
 
-            <!-- Categoría -->
+						<!-- Categoría -->
 						<td class="py-2 px-4 dark:text-gray-200">{product.category}</td>
 
-            <!-- Opciones -->
+						<!-- Opciones -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							<Options options={product.selectedOptions[0]} />
 						</td>
@@ -147,7 +156,7 @@
 
 						<!-- tiempo de actualizacion de <<Estado>> -->
 						<td class="py-2 px-4 dark:text-gray-200">
-              {format(product.updatedAt)}
+							{format(product.updatedAt)}
 						</td>
 					</tr>
 				{/each}
