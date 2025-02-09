@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
       const user = jwt.decode(session)
 
       // Obtener la pagina actual
-      const page = parseInt(url.searchParams.get('page') || '1')
+      const page = 1
       const limit = 10
 
       // Fetch the shopping list data
