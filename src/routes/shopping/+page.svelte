@@ -151,12 +151,12 @@
 
 						<!-- Estado -->
 						<td class="py-2 px-4 dark:text-gray-200">
-							<Status status={order?.product?.status} />
+							<Status status={order?.status} />
 						</td>
 
 						<!-- tiempo de actualizacion de <<Estado>> -->
 						<td class="py-2 px-4 dark:text-gray-200">
-							{format(order?.product?.updatedAt)}
+							{format(order?.updatedAt)}
 						</td>
 					</tr>
 				{/each}
