@@ -12,7 +12,7 @@
 
 	export let data: PageServerData;
 
-	let productsStore = writable(data.products || []);
+	let shoppingOrdersStore = writable(data.products || []);
 	let metaStore = writable(data.meta || {});
 
 	// Obtener url del servidor
@@ -45,7 +45,7 @@
 			);
 
 			// devuelve { data: [], meta: {} }
-			productsStore.set(products);
+			shoppingOrdersStore.set(products);
 			metaStore.set(result.meta);
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
@@ -57,7 +57,7 @@
 		loadProducts(newPage, 10);
 	}
 
-	$: console.log({ productsData: $productsStore });
+	$: console.log({ shoppingOrdersData: $shoppingOrdersStore });
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink justify-between">
@@ -95,7 +95,7 @@
 	</div>
 </div>
 
-{#if Array.isArray($productsStore) && $productsStore.length > 0}
+{#if Array.isArray($shoppingOrdersStore) && $shoppingOrdersStore.length > 0}
 	<div class="overflow-x-auto w-full p-4">
 		<table class="w-full border-collapse text-left text-sm">
 			<thead>
@@ -111,13 +111,13 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
-				{#each $productsStore as product}
+				{#each $shoppingOrdersStore as order}
 					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
-							{#if Array.isArray(product.imgs) && product.imgs.length > 0}
+							{#if Array.isArray(order?.product?.imgs) && order?.product?.imgs.length > 0}
 								<!-- Ejemplo: Mostrar solo la primera imagen -->
-								<img src={product.imgs[0]} alt="Producto" class="w-16 h-16 object-cover rounded" />
+								<img src={order?.product?.imgs[0]} alt="Producto" class="w-16 h-16 object-cover rounded" />
 								<!-- O mostrar la cantidad: -->
 								<!-- <p>{product.imgs.length} imágenes</p> -->
 							{:else}
@@ -126,37 +126,37 @@
 						</td>
 
 						<!-- Nombre del producto -->
-						<td class="py-2 px-4 dark:text-gray-200">{product.productname}</td>
+						<td class="py-2 px-4 dark:text-gray-200">{order?.product?.productname}</td>
 
 						<!-- Precio (con formato) -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							{new Intl.NumberFormat('en-US', {
 								style: 'currency',
 								currency: 'USD'
-							}).format(product.price || 0)}
+							}).format(order?.product?.price || 0)}
 						</td>
 
 						<!-- Total -->
 						<td class="py-2 px-4 dark:text-gray-200"
-							>{formatPrice(product.price * product.amount, 'es-CO', 'COP')}</td
+							>{formatPrice(order?.product?.price * order?.product?.amount, 'es-CO', 'COP')}</td
 						>
 
 						<!-- Categoría -->
-						<td class="py-2 px-4 dark:text-gray-200">{product.category}</td>
+						<td class="py-2 px-4 dark:text-gray-200">{order?.product?.category}</td>
 
 						<!-- Opciones -->
 						<td class="py-2 px-4 dark:text-gray-200">
-							<Options options={product.selectedOptions[0]} />
+							<Options options={order?.product?.selectedOptions[0]} />
 						</td>
 
 						<!-- Estado -->
 						<td class="py-2 px-4 dark:text-gray-200">
-							<Status status={product.status} />
+							<Status status={order?.product?.status} />
 						</td>
 
 						<!-- tiempo de actualizacion de <<Estado>> -->
 						<td class="py-2 px-4 dark:text-gray-200">
-							{format(product.updatedAt)}
+							{format(order?.product?.updatedAt)}
 						</td>
 					</tr>
 				{/each}
