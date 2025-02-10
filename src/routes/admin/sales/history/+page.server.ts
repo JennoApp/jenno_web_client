@@ -8,8 +8,11 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
     if (session) {
       const user = jwt.decode(session)
 
+      const page = 1
+      const limit = 10
+
       // Fetch the orders list data
-      const response = await fetch(`${PRIVATE_SERVER_URL}/users/orderscompleted/${user?.sub}?page=${1}&limit=${10}`);
+      const response = await fetch(`${PRIVATE_SERVER_URL}/users/orderscompleted/${user?.sub}?page=${page}&limit=${limit}`);
       const { data, meta } = await response.json()
 
       // Fetch details for each order

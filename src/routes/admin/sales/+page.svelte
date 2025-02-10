@@ -1,10 +1,5 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addTableFilter } from 'svelte-headless-table/plugins';
-	import * as Table from '$lib/components/ui/table';
-	import Image from '$lib/components/Image.svelte';
-	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { writable } from 'svelte/store';
 	import { format } from 'timeago.js';
