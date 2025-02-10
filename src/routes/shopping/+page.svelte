@@ -12,7 +12,7 @@
 
 	export let data: PageServerData;
 
-	let shoppingOrdersStore = writable(data.products || []);
+	let shoppingOrdersStore = writable(data.shoppingOrders || []);
 	let metaStore = writable(data.meta || {});
 
 	// Obtener url del servidor
@@ -28,7 +28,7 @@
 		}
 	}
 
-	async function loadProducts(page: number, limit: number = 8) {
+	async function loadProducts(page: number, limit: number = 10) {
 		try {
 			await getServerUrl();
 

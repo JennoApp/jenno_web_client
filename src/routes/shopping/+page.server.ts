@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import type { PageServerLoad } from './$types'
 import { PRIVATE_SERVER_URL } from '$env/static/private'
 
-export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
+export const load: PageServerLoad = async ({ cookies, fetch }) => {
   try {
     const session = cookies.get('session') as string
     if (session) {
@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
 
       // Obtener la pagina actual
       const page = 1
-      const limit = 8
+      const limit = 10
 
       // Fetch the shopping list data
       const response = await fetch(`${PRIVATE_SERVER_URL}/users/shopping/${user?.sub}?page=${page}&limit=${limit}`)
