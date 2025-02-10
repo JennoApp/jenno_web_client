@@ -28,7 +28,7 @@
 		}
 	}
 
-	async function loadProducts(page: number, limit: number = 10) {
+	async function loadShoppingOrders(page: number, limit: number = 10) {
 		try {
 			await getServerUrl();
 
@@ -54,7 +54,7 @@
 
 	function changePage(newPage: number) {
 		if (newPage < 1) return;
-		loadProducts(newPage, 10);
+		loadShoppingOrders(newPage, 10);
 	}
 
 	$: console.log({ shoppingOrdersData: $shoppingOrdersStore });

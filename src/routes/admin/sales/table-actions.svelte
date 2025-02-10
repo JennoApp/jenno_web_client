@@ -13,16 +13,16 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
-      console.error('Error al solicitar Paypal Id')
+      console.error('Error al obtener la url del servidor', error)
     }
   }
 
-  $: getServerUrl()
-
 
   async function updateStatus(id: string, status: string) {
+    await getServerUrl()
+
     const response = await fetch(`${serverUrl}/orders/status/${id}`, {
       method: 'PUT',
       headers: {
@@ -50,7 +50,6 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
-			<DropdownMenu.Label>Actions</DropdownMenu.Label>
 			<DropdownMenu.Sub>
 				<DropdownMenu.SubTrigger>Actualizar Estado</DropdownMenu.SubTrigger>
 				<DropdownMenu.SubContent>
