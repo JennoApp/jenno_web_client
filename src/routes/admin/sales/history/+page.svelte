@@ -1,11 +1,7 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
 	import { goto } from '$app/navigation';
-	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
-	import * as Table from '$lib/components/ui/table';
 	import Image from '$lib/components/Image.svelte';
-	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { writable } from 'svelte/store';
 	import { format } from 'timeago.js';
@@ -111,14 +107,7 @@
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							{#if Array.isArray(order?.product?.imgs) && order?.product?.imgs.length > 0}
-								<!-- Ejemplo: Mostrar solo la primera imagen -->
-								<img
-									src={order?.product?.imgs[0]}
-									alt="Producto"
-									class="w-16 h-16 object-cover rounded"
-								/>
-								<!-- O mostrar la cantidad: -->
-								<!-- <p>{product.imgs.length} imágenes</p> -->
+                <Image url={order?.product?.imgs[0]} iconType={"product"} />
 							{:else}
 								<span class="text-gray-500 dark:text-gray-400">Sin imágenes</span>
 							{/if}
