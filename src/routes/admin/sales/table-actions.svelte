@@ -64,7 +64,7 @@
 						/>
 						<span class="ml-3">Enviando</span>
 					</DropdownMenu.Item>
-					<DropdownMenu.Separator />
+					<!-- <DropdownMenu.Separator />
 					<DropdownMenu.Item on:click={() => {
             updateStatus(id, 'cancelled')
           }}>
@@ -86,7 +86,7 @@
 							class="text-gray-200 flex justify-center items-center"
 						/>
 						<span class="ml-3">Devolver</span>
-					</DropdownMenu.Item>
+					</DropdownMenu.Item> -->
 				</DropdownMenu.SubContent>
 			</DropdownMenu.Sub>
 		</DropdownMenu.Group>
