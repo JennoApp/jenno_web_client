@@ -1,119 +1,66 @@
 <script lang="ts">
-  import type { PageServerData } from './$types';
-	import { createTable, Render, Subscribe, createRender } from 'svelte-headless-table';
-	import * as Table from '$lib/components/ui/table';
+	import type { PageServerData } from './$types';
 	import Image from '$lib/components/Image.svelte';
-	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
-	import { readable } from 'svelte/store';
+	import { writable } from 'svelte/store';
 	import { format } from 'timeago.js';
 	import * as m from '$paraglide/messages';
-	import { addPagination, addTableFilter } from 'svelte-headless-table/plugins';
-  import TableActions from './table_actions.svelte'
+	import TableActions from './table_actions.svelte';
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
-  import { goto, invalidateAll } from '$app/navigation'
-  import { formatPrice } from '$lib/utils/formatprice';
+	import { goto } from '$app/navigation';
+	import { formatPrice } from '$lib/utils/formatprice';
+	import { page } from '$app/stores';
 
-  export let data: PageServerData
-  const currentPage = data.meta?.page
+	export let data: PageServerData;
 
-  console.log({data})
+	let shoppingWithoutReviewsStore = writable(data.shoppingWithoutReviews || []);
+	let metaStore = writable(data.meta || {});
 
-  function changePage(newPage: number) {
-    const searchParams = new URLSearchParams(window.location.search)
-    searchParams.set('page', newPage.toString())
-    invalidateAll()
-  }
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-  const table = createTable(readable(data.shoppingWithoutReviews), {
-		page: addPagination(),
-		filter: addTableFilter({
-			fn: ({ filterValue, value }) => value.toLowerCase().includes(filterValue.toLowerCase())
-		})
-	});
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al obtener la url del servidor: ', error);
+		}
+	}
 
-	const columns = table.createColumns([
-		table.column({
-			header: `${m.shopping_tableheader_image()}`,
-			accessor: `product`,
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			},
-			cell: ({ value }) => {
-				return createRender(Image, { url: value?.imgs[0] });
-			}
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_name()}`,
-			accessor: (row) => row.product?.productname,
-			cell: ({ value }) => {
-				return value || 'No Name';
-			}
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_quantity()}`,
-			accessor: (row) => row.product?.amount
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_price()}`,
-			accessor: (row) => row.product?.price,
-      cell: ({ value }) => {
-				return formatPrice(value, 'es-CO', 'COP');
-			}
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_total()}`,
-			accessor: (row) => row.product?.price * row.product?.amount,
-      cell: ({ value }) => {
-				return formatPrice(value, 'es-CO', 'COP');
-			}
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_category()}`,
-			accessor: (row) => row.product?.category
-		}),
-    table.column({
-			header: 'Opciones',
-			accessor: (row) => row.product?.selectedOptions[0],
-      cell: ({value}) => {
-        return createRender(Options, {options: value})
-      }
-		}),
-		table.column({
-			header: `${m.shopping_tableheader_status()}`,
-			accessor: (row) => row.status,
-      cell: ({value}) => {
-        return createRender(Status, { status: value }) || `<span>${value}</span>`
-      }
-		}),
-		table.column({
-			header: ` `,
-			accessor: (row) => format(row.updatedAt)
-		}),
-    table.column({
-			accessor: ({ _id }) => _id,
-			header: '',
-			plugins: {
-				filter: {
-					exclude: true
-				}
-			},
-			cell: ({ value }) => {
-				return createRender(TableActions, { id: value });
-			}
-		})
-	]);
+	async function loadSales(page: number, limit: number = 10) {
+		try {
+			await getServerUrl();
 
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
-		table.createViewModel(columns);
+			const response = await fetch(
+				`${serverUrl}/users/shoppingwithoutreviews/${$page.data.user._id}?page=${page}&limit=${limit}`
+			);
+			const result = await response.json();
 
-	const { filterValue } = pluginStates.filter;
+			const shoppingList = await Promise.all(
+				result.data.map(async (id: string) => {
+					const productResponse = await fetch(`${serverUrl}/orders/${id}`);
+					return await productResponse.json();
+				})
+			);
+
+			// devuelve { data: [], meta: {} }
+			shoppingWithoutReviewsStore.set(shoppingList);
+			metaStore.set(result.meta);
+		} catch (error) {
+			console.error('Error al cargar los productos del usuario: ', error);
+		}
+	}
+
+	function changePage(newPage: number) {
+		if (newPage < 1) return;
+		loadSales(newPage, 10);
+	}
+
+	$: console.log({ shoppingData: $shoppingWithoutReviewsStore });
 </script>
-
-
 
 <div class="flex p-5">
 	<button
@@ -135,93 +82,114 @@
 	</div>
 </div>
 
+{#if Array.isArray($shoppingWithoutReviewsStore) && $shoppingWithoutReviewsStore.length > 0}
+	<div class="overflow-x-auto w-full p-4">
+		<table class="w-full border-collapse text-left text-sm">
+			<thead>
+				<tr class="border-b bg-gray-100 dark:bg-[#202020]">
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Imágen</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Nombre</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Cantidad</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Precio</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Total</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Categoria</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Opciones</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200">Estado</th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200"></th>
+					<th class="py-2 px-4 font-semibold dark:text-gray-200"></th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
+				{#each $shoppingWithoutReviewsStore as order}
+					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
+						<!-- Imágenes (mostrar la primera o un recuento) -->
+						<td class="py-2 px-4 dark:text-gray-200">
+							{#if Array.isArray(order?.product?.imgs) && order?.product?.imgs.length > 0}
+                <Image url={order?.product?.imgs[0]} iconType="product" />
+							{:else}
+								<span class="text-gray-500 dark:text-gray-400">Sin imágenes</span>
+							{/if}
+						</td>
 
-{#if data?.shoppingWithoutReviews.length !== 0}
-	{#if data.sucess === false}
-		<h1>Error al hacer la solicitud</h1>
-	{:else}
-		<div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-			<h2 class="text-xl font-semibold text-gray-200">Compras</h2>
+						<!-- Nombre del producto -->
+						<td class="py-2 px-4 dark:text-gray-200">{order?.product?.productname}</td>
+
+						<!-- Cantidad -->
+						<td class="py-2 px-4 dark:text-gray-200 text-center">{order?.amount}</td>
+
+						<!-- Precio (con formato) -->
+						<td class="py-2 px-4 dark:text-gray-200">
+							{new Intl.NumberFormat('en-US', {
+								style: 'currency',
+								currency: 'USD'
+							}).format(order?.product?.price || 0)}
+						</td>
+
+						<!-- Total -->
+						<td class="py-2 px-4 dark:text-gray-200"
+							>{formatPrice(order?.product?.price * order?.product?.amount, 'es-CO', 'COP')}</td
+						>
+
+						<!-- Categoría -->
+						<td class="py-2 px-4 dark:text-gray-200">{order?.product?.category}</td>
+
+						<!-- Opciones -->
+						<td class="py-2 px-4 dark:text-gray-200">
+							<Options options={order?.product?.selectedOptions[0]} />
+						</td>
+
+						<!-- Estado -->
+						<td class="py-2 px-4 dark:text-gray-200">
+							<Status status={order?.status} />
+						</td>
+
+						<!-- tiempo de actualizacion de <<Estado>> -->
+						<td class="py-2 px-4 dark:text-gray-200">
+							{format(order?.updatedAt)}
+						</td>
+
+						<!-- Acciones -->
+						<td class="py-2 px-4 dark:text-gray-200">
+							<TableActions id={order?._id} />
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="flex justify-between mt-2 m-5">
+		<div class="">
+			<h3 class="text-sm dark:text-[#707070]">
+				Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
+			</h3>
 		</div>
-		<div class="flex items-center justify-between mx-10 mt-5">
-			<Input
-				class="max-w-sm placeholder:text-[#707070]"
-				placeholder="Filter names..."
-				type="text"
-				bind:value={$filterValue}
-			/>
+
+		<div class="flex items-center justify-end space-x-4">
+			<Button
+				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
+				variant="outline"
+				size="sm"
+				disabled={!$metaStore.hasPreviousPage}
+				on:click={() => changePage(Number($metaStore.page) - 1)}
+			>
+				Anterior
+			</Button>
+			<Button
+				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
+				variant="outline"
+				size="sm"
+				disabled={!$metaStore.hasNextPage}
+				on:click={() => changePage(Number($metaStore.page) + 1)}
+			>
+				Siguiente
+			</Button>
 		</div>
-		<div class="rounded-md border mx-10 my-5">
-			<Table.Root {...$tableAttrs}>
-				<Table.Header>
-					{#each $headerRows as headerRow}
-						<Subscribe rowAttrs={headerRow.attrs()}>
-							<Table.Row>
-								{#each headerRow.cells as cell (cell.id)}
-									<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
-										<Table.Head {...attrs}>
-											<Render of={cell.render()} />
-										</Table.Head>
-									</Subscribe>
-								{/each}
-							</Table.Row>
-						</Subscribe>
-					{/each}
-				</Table.Header>
-				<Table.Body {...$tableBodyAttrs}>
-					{#each $pageRows as row (row.id)}
-						<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-							<Table.Row {...rowAttrs}>
-								{#each row.cells as cell (cell.id)}
-									<Subscribe attrs={cell.attrs()} let:attrs>
-										<Table.Cell {...attrs}>
-											<Render of={cell.render()} />
-										</Table.Cell>
-									</Subscribe>
-								{/each}
-							</Table.Row>
-						</Subscribe>
-					{/each}
-				</Table.Body>
-			</Table.Root>
-		</div>
-		<div class="flex justify-between mx-10">
-			<div class="">
-				<h3 class="text-sm dark:text-[#707070]">
-					items: {data.meta.itemCount} - pages: {data.meta.pageCount}
-				</h3>
-			</div>
-			<div class="flex items-center justify-end space-x-4">
-				<Button
-					class="border-gray-400 dark:border-[#252525]"
-					variant="outline"
-					size="sm"
-					disabled={!data.meta.hasPreviousPage}
-					on:click={() => changePage(currentPage - 1)}
-				>
-					Anterior
-				</Button>
-				<Button
-					class="border-gray-400 dark:border-[#252525]"
-					variant="outline"
-					size="sm"
-					disabled={!data.meta.hasNextPage}
-					on:click={() => changePage(currentPage + 1)}
-				>
-					Siguiente
-				</Button>
-			</div>
-		</div>
-	{/if}
+	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-			<iconify-icon
-				icon="ic:round-reviews"
-				height="5rem"
-				width="5rem"
-				class="text-[#707070] mb-4"
-			/>
-			<p class="text-lg font-semibold text-[#707070] mb-2">No tienes Reseñas pendientes</p>
-			<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
-		</div>
+		<iconify-icon icon="ic:round-reviews" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<p class="text-lg font-semibold text-[#707070] mb-2">No tienes Reseñas pendientes</p>
+		<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
+	</div>
 {/if}
