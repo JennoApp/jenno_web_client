@@ -124,7 +124,7 @@
 	<div class="flex justify-between mt-2 m-5">
 		<div class="">
 			<h3 class="text-sm dark:text-[#707070]">
-				items: {$metaStore.itemCount} - pages: {$metaStore.pageCount}
+        Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
 			</h3>
 		</div>
 
