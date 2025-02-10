@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
       const { data, meta } = await response.json()
 
       // Fetch details for each product
-      const products = await Promise.all(
+      const shoppingOrders = await Promise.all(
         data.map(async (id: string) => {
           const productResponse = await fetch(`${PRIVATE_SERVER_URL}/orders/${id}`)
           return await productResponse.json()
@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ cookies, fetch, url }) => {
       )
 
       return {
-        products,
+        shoppingOrders,
         meta: meta,
         sucess: true
       }
