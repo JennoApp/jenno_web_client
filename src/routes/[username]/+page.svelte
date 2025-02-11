@@ -153,7 +153,7 @@
   />
 
   <!-- Open Graph (para Facebook, WhatsApp, etc.) -->
-  <meta property="og:title" content="{data.userData?.displayname} - Mi Tienda en Jenno" />
+  <meta property="og:title" content="{data.userData?.displayname} - Tienda en Jenno" />
   <meta
     property="og:description"
     content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
