@@ -195,7 +195,7 @@
 	<meta property="og:type" content="website" />
   <meta property="og:site_name" content="Jenno" />
 	<meta property="og:url" content={$page.url.href} />
-  <meta property="og:image" content="../static/logo-light.png" />
+  <meta property="og:image" content="https://jenno-aws-bucket.s3.us-east-2.amazonaws.com/opengraph/oplogo.jpg" />
   <meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Previsualización de una tienda en Jenno" />
@@ -207,7 +207,7 @@
 		name="twitter:description"
 		content="Crea tu propia tienda en línea con Jenno y compártela fácilmente en redes sociales. Vende tus productos de forma sencilla y segura."
 	/>
-	<meta name="twitter:image" content="../static/logo-light.png" />
+	<meta name="twitter:image" content="https://jenno-aws-bucket.s3.us-east-2.amazonaws.com/opengraph/oplogo.jpg" />
 	<meta name="twitter:image:alt" content="Previsualización de una tienda en Jenno" />
 </svelte:head>
 
