@@ -90,17 +90,17 @@
 		}
 	}
 
-  $: getUserName(data.user)
+	$: getUserName(data.user);
 
 	function handleOpenDialgoReview() {
 		openDialogreview = true;
 	}
 
-  let imageLoaded = false;
+	let imageLoaded = false;
 
-  function handleImageLoaded() {
-    imageLoaded = true;
-  }
+	function handleImageLoaded() {
+		imageLoaded = true;
+	}
 </script>
 
 <a href={`/${userName}/${data._id}`}>
@@ -112,14 +112,18 @@
 			<div class="flex items-center">
 				{#if profileImg !== ''}
 					<img
-            class="h-7 w-7 object-cover ml-4 rounded-full {imageLoaded ? '' : 'animate-pulse bg-gray-300'}"
-            src={profileImg}
-            alt="logo"
-            on:load={handleImageLoaded}
-          />
+						class="h-7 w-7 object-cover ml-4 rounded-full {imageLoaded
+							? ''
+							: 'animate-pulse bg-[#202020]'}"
+						src={profileImg}
+						alt="logo"
+						on:load={handleImageLoaded}
+					/>
 				{:else}
-					<div class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-gray-300 animate-pulse">
-						<iconify-icon class="text-[#707070]" icon="bxs:store" height="1.5rem" width="1.5rem"
+					<div
+						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-gray-300 animate-pulse"
+					>
+						<iconify-icon class="text-[#353535]" icon="bxs:store" height="1.5rem" width="1.5rem"
 						></iconify-icon>
 					</div>
 				{/if}
@@ -128,6 +132,8 @@
 					<a href={`/${userName}`}>
 						<h4 class="ml-2 font-medium">{userName}</h4>
 					</a>
+				{:else}
+					<h4 class="ml-2 font-medium animate-pulse bg-[#202020] rounded-lg h-5 w-20">{``}</h4>
 				{/if}
 			</div>
 			<div class="hidden">
