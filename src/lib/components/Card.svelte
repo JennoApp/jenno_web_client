@@ -105,7 +105,7 @@
 
 <a href={`/${userName}/${data._id}`}>
 	<div
-		class="h-[380px] max-h-[400px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525]"
+		class="h-[400px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525]"
 	>
 		<!-- Header -->
 		<div class="flex w-full h-12 mt-1 items-center justify-between">
