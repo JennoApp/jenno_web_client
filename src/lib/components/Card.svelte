@@ -114,14 +114,14 @@
 					<img
 						class="h-7 w-7 object-cover ml-4 rounded-full {imageLoaded
 							? ''
-							: 'animate-pulse bg-[#202020]'}"
+							: 'animate-pulse dark:bg-[#202020] bg-gray-300'}"
 						src={profileImg}
 						alt="logo"
 						on:load={handleImageLoaded}
 					/>
 				{:else}
 					<div
-						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-[#303030] animate-pulse"
+						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-gray-300 dark:bg-[#303030] animate-pulse"
 					>
 						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.5rem" width="1.5rem"
 						></iconify-icon>
@@ -132,7 +132,7 @@
 					<a href={`/${userName}`}>
 						<h4 class="ml-2 font-medium {imageLoaded
 							? ''
-							: 'animate-pulse bg-[#202020]'}">{userName}</h4>
+							: 'animate-pulse dark:bg-[#202020]'}">{userName}</h4>
 					</a>
 				{/if}
 			</div>
