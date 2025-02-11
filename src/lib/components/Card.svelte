@@ -123,7 +123,7 @@
 					<div
 						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-[#303030] animate-pulse"
 					>
-						<iconify-icon class="text-[#353535]" icon="bxs:store" height="1.5rem" width="1.5rem"
+						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.5rem" width="1.5rem"
 						></iconify-icon>
 					</div>
 				{/if}
