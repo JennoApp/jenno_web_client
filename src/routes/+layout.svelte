@@ -165,10 +165,10 @@
 </script>
 
 <svelte:head>
-	<title>Jenno</title>
+	<title>Jenno - Crea y comparte tu tienda online</title>
 	<meta
 		name="description"
-		content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."
+		content="Crea tu propia tienda en línea con Jenno y compártela fácilmente en redes sociales. Vende tus productos de forma sencilla y segura."
 	/>
 
 	<script>
@@ -186,15 +186,29 @@
 		})();
 	</script>
 
-	<!-- Open graph -->
-	<meta property="og:title" content="ShopIn" />
-	<meta
+	<!-- Open graph (Facebook, WhatsApp)-->
+  <meta property="og:title" content="Jenno - Crea y comparte tu tienda online" />
+  <meta
 		property="og:description"
-		content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."
+		content="Crea tu propia tienda en línea con Jenno y compártela fácilmente en redes sociales. Vende tus productos de forma sencilla y segura."
 	/>
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="ShopIn" />
+  <meta property="og:site_name" content="Jenno" />
 	<meta property="og:url" content={$page.url.href} />
+  <meta property="og:image" content="../static/logo-light.png" />
+  <meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Previsualización de una tienda en Jenno" />
+
+  <!-- Twitter Cards (Mejora la compatibilidad en Twitter) -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Jenno - Crea y comparte tu tienda online" />
+	<meta
+		name="twitter:description"
+		content="Crea tu propia tienda en línea con Jenno y compártela fácilmente en redes sociales. Vende tus productos de forma sencilla y segura."
+	/>
+	<meta name="twitter:image" content="../static/logo-light.png" />
+	<meta name="twitter:image:alt" content="Previsualización de una tienda en Jenno" />
 </svelte:head>
 
 <Toaster richColors theme="dark" duration={3000} />
