@@ -146,7 +146,48 @@
 </script>
 
 <svelte:head>
-	<title>{userData?.username}</title>
+  <title>{data.userData?.displayname} - Mi Tienda en Jenno</title>
+  <meta
+    name="description"
+    content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
+  />
+
+  <!-- Open Graph (para Facebook, WhatsApp, etc.) -->
+  <meta property="og:title" content="{data.userData?.displayname} - Mi Tienda en Jenno" />
+  <meta
+    property="og:description"
+    content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
+  />
+  <meta property="og:type" content="website" />
+  <!-- Usamos la URL actual; por ejemplo, si usas $page.url.href, asegúrate de importarlo -->
+  <meta property="og:url" content="{$page.url.href}" />
+  <!-- La imagen destacada: si el usuario tiene profileImg, la usamos; de lo contrario, una imagen por defecto -->
+  <meta
+    property="og:image"
+    content="{data.userData?.profileImg || 'https://jenno-aws-bucket.s3.us-east-2.amazonaws.com/opengraph/oplogo.jpg'}"
+  />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta
+    property="og:image:alt"
+    content="Previsualización de la tienda de {data.userData?.displayname}"
+  />
+
+  <!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{data.userData?.displayname} - Mi Tienda en Jenno" />
+  <meta
+    name="twitter:description"
+    content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
+  />
+  <meta
+    name="twitter:image"
+    content="{data.userData?.profileImg || 'https://tu-dominio.com/path/to/default-image.jpg'}"
+  />
+  <meta
+    name="twitter:image:alt"
+    content="Previsualización de la tienda de {data.userData?.displayname}"
+  />
 </svelte:head>
 
 {#if userData}
