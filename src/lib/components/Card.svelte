@@ -121,7 +121,7 @@
 					/>
 				{:else}
 					<div
-						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-gray-300 animate-pulse"
+						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-[#303030] animate-pulse"
 					>
 						<iconify-icon class="text-[#353535]" icon="bxs:store" height="1.5rem" width="1.5rem"
 						></iconify-icon>
@@ -130,10 +130,10 @@
 
 				{#if userName !== ''}
 					<a href={`/${userName}`}>
-						<h4 class="ml-2 font-medium">{userName}</h4>
+						<h4 class="ml-2 font-medium {imageLoaded
+							? ''
+							: 'animate-pulse bg-[#202020]'}">{userName}</h4>
 					</a>
-				{:else}
-					<h4 class="ml-2 font-medium animate-pulse bg-[#202020] rounded-lg h-5 w-20">{``}</h4>
 				{/if}
 			</div>
 			<div class="hidden">
