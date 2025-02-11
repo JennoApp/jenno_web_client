@@ -146,7 +146,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.userData?.displayname} - Mi Tienda en Jenno</title>
+  <title>{data.userData?.displayname} - Tienda en Jenno</title>
   <meta
     name="description"
     content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
@@ -175,7 +175,7 @@
 
   <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="{data.userData?.displayname} - Mi Tienda en Jenno" />
+  <meta name="twitter:title" content="{data.userData?.displayname} - Tienda en Jenno" />
   <meta
     name="twitter:description"
     content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
