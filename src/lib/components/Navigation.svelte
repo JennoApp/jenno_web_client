@@ -31,7 +31,6 @@
 		unreadNotificationsCount,
 		markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
-	import ScrollArea from './ui/scroll-area/scroll-area.svelte';
 
 	const { socket }: { socket: any } = getContext('socket');
 	$: console.log({ socket });

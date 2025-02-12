@@ -167,7 +167,15 @@
 <!-- Dialog Payment -->
 <Dialog.Root bind:open={openDialogPayment}>
 	<Dialog.Trigger />
-	<Dialog.Content class="max-h-screen overflow-auto">
+	<Dialog.Content
+		class="max-h-screen overflow-auto [&::-webkit-scrollbar]:w-2
+           [&::-webkit-scrollbar-track]:rounded-full
+         [&::-webkit-scrollbar-track]:bg-gray-100
+           [&::-webkit-scrollbar-thumb]:rounded-full
+         [&::-webkit-scrollbar-thumb]:bg-gray-300
+         dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+         dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+	>
 		<Dialog.Header>
 			<Dialog.Title>Opciones de Pago</Dialog.Title>
 		</Dialog.Header>
