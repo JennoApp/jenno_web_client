@@ -164,7 +164,7 @@
   <!-- La imagen destacada: si el usuario tiene profileImg, la usamos; de lo contrario, una imagen por defecto -->
   <meta
     property="og:image"
-    content="{data.userData?.profileImg || 'https://jenno-aws-bucket.s3.us-east-2.amazonaws.com/opengraph/oplogo.jpg'}"
+    content="{data.userData?.profileImg || 'https://www.jenno.com.co/oplogo.jpg'}"
   />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -182,7 +182,7 @@
   />
   <meta
     name="twitter:image"
-    content="{data.userData?.profileImg || 'https://tu-dominio.com/path/to/default-image.jpg'}"
+    content="{data.userData?.profileImg || 'https://www.jenno.com.co/oplogo.jpg'}"
   />
   <meta
     name="twitter:image:alt"
