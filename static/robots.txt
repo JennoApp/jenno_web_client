@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Bloquear rutas sensibles
+Disallow: /admin/
+Disallow: /login/
+Disallow: /register/
+Disallow: /forgotpassword/
+Disallow: /resetpassword/
+Disallow: /personal/
+Disallow: /api/
+Disallow: /cart/
+Disallow: /chat/
+Disallow: /following/
+Disallow: /search/
+Disallow: /settings/
+Disallow: /shopping/
