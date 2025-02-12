@@ -167,7 +167,7 @@
 <!-- Dialog Payment -->
 <Dialog.Root bind:open={openDialogPayment}>
 	<Dialog.Trigger />
-	<Dialog.Content class="max-h-screen">
+	<Dialog.Content class="max-h-screen overflow-auto">
 		<Dialog.Header>
 			<Dialog.Title>Opciones de Pago</Dialog.Title>
 		</Dialog.Header>
