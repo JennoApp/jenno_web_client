@@ -182,8 +182,51 @@
 </script>
 
 <svelte:head>
-	<title>{product?.productname}</title>
-	<meta name="description" content={`${product?.description}`} />
+	<title>{data.product?.productname} - Comprar en Jenno</title>
+	<meta
+		name="description"
+		content={data.product?.description ||
+			'Encuentra los mejores productos en Jenno. Compra fácil y seguro.'}
+	/>
+
+	<!-- Open Graph (Facebook, WhatsApp, etc.) -->
+	<meta property="og:title" content="{data.product?.productname} - Comprar en Jenno" />
+	<meta
+		property="og:description"
+		content={data.product?.description ||
+			'Encuentra los mejores productos en Jenno. Compra fácil y seguro.'}
+	/>
+	<meta property="og:type" content="product" />
+	<meta property="og:url" content={$page.url.href} />
+	<meta
+		property="og:image"
+		content={data.product?.imgs[0]}
+	/>
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Imagen del producto {data.product?.productname}" />
+	<meta property="product:brand" content={data.product?.username || 'Marca desconocida'} />
+	<meta property="product:category" content={data.product?.category || 'Otros'} />
+	<meta property="product:price:amount" content={data.product?.price} />
+	<meta property="product:price:currency" content="COP" />
+	<meta
+		property="product:availability"
+		content={data.product?.status === 'in_stock' ? 'in stock' : 'out of stock'}
+	/>
+
+	<!-- Twitter Cards -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{data.product?.productname} - Comprar en Jenno" />
+	<meta
+		name="twitter:description"
+		content={data.product?.description ||
+			'Encuentra los mejores productos en Jenno. Compra fácil y seguro.'}
+	/>
+	<meta
+		name="twitter:image"
+		content={data.product?.imgs[0]}
+	/>
+	<meta name="twitter:image:alt" content="Imagen del producto {data.product?.productname}" />
 </svelte:head>
 
 <div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
