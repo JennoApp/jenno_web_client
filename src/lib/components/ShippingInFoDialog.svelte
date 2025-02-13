@@ -24,8 +24,6 @@
     open = true
   }
 
-  // $: console.log({id: shippingInfo.buyerId})
-
   async function getShippingInfo(id: string) {
     await getServerUrl()
 
@@ -50,6 +48,16 @@
 			<Dialog.Title>Informacion de Envio</Dialog.Title>
 
       <div class="m-5">
+        <div class="flex gap-2">
+          <h3>Nombre o Razón Social:</h3>
+          <p>{userShippingInfo?.shippingInfo?.completeName}</p>
+        </div>
+
+        <div class="flex gap-2">
+          <h3>NIT / Documento de Identidad:</h3>
+          <p>{userShippingInfo?.shippingInfo?.document}</p>
+        </div>
+
         <div class="flex gap-2">
           <h3>Direccion:</h3>
           <p>{userShippingInfo?.shippingInfo?.address}</p>
