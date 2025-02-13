@@ -15,7 +15,7 @@
 
 	$: if (form?.success) {
 		toast.success('Informacion guardada!!');
-		goto('/cart/paymentroute/confirm');
+		goto('/cart/paymentroute/payment');
 	}
 </script>
 

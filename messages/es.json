@@ -242,7 +242,7 @@
   "cart_paymentroute_shipping_city": "Ciudad",
   "cart_paymentroute_shipping_postal": "Codigo Postal",
   "cart_paymentroute_shipping_phone": "telefono",
-  "cart_paymentroute_shipping_button": "Guardar & Siguiente",
+  "cart_paymentroute_shipping_button": "Continuar",
 
   "cart_paymentroute_confirm_button": "Confirmar Pago"
 }

@@ -1,12 +1,8 @@
-import { get, writable } from 'svelte/store'
+import { writable } from 'svelte/store'
 
 
-export const paymentMethod = writable('payu')
+export const paymentMethod = writable<string>()
 
-// export function getPaymentMethod() {
-//   return get(paymentMethod)
-// }
-
-export function updatePaymentMethod(p: string) {
-  paymentMethod.set(p)
+export function updatePaymentMethod(method: string) {
+  paymentMethod.set(method)
 }
