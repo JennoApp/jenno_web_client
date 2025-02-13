@@ -237,7 +237,7 @@
 
   "cart_paymentroute_shipping_title": "Detalles de envío",
   "cart_paymentroute_shipping_address": "Direccion",
-  "cart_paymentroute_shipping_country": "pais",
+  "cart_paymentroute_shipping_country": "Pais",
   "cart_paymentroute_shipping_state": "Estado",
   "cart_paymentroute_shipping_city": "Ciudad",
   "cart_paymentroute_shipping_postal": "Codigo Postal",

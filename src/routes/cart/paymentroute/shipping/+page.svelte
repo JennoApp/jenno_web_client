@@ -39,7 +39,9 @@
 				<input
 					type="text"
 					name="completeName"
-					class="h-9 border rounded-md px-2 text-black"
+					class="h-9 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.completeName
+						? 'border border-red-501'
+						: ''}"
 					value={userData?.shippingInfo?.completeName ?? ''}
 				/>
 				{#if form?.errors?.completeName}
@@ -53,7 +55,9 @@
 				<input
 					type="text"
 					name="document"
-					class="h-9 border rounded-md px-2 text-black"
+					class="h-9 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.document
+						? 'border border-red-501'
+						: ''}"
 					value={userData?.shippingInfo?.document ?? ''}
 				/>
 				{#if form?.errors?.document}
