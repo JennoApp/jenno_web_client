@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { updatePaymentMethod, paymentMethod } from '$lib/stores/paymentMethod';
+  import { toast } from 'svelte-sonner';
 
 	let enumPayments = ['paypal', 'nequi'];
 
 	const selectedPaypalButton = () => {
 		updatePaymentMethod(enumPayments[0]);
+    toast.info('Haz seleccionado Paypal como metodo de pago.');
 	};
 
 	const selectedNequiButton = () => {
 		updatePaymentMethod(enumPayments[1]);
+    toast.info('Haz seleccionado Nequi como metodo de pago.');
 	};
 
 	$: console.log($paymentMethod);
@@ -24,17 +27,17 @@
 				: ''}"
 			on:click={() => selectedNequiButton()}
 		>
-			<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-20 h-20" />
+			<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-24 h-24" />
 		</button>
 
 		<button
-			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
+			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
 			'paypal'
 				? 'border-2 border-purple-600 dark:border-gray-200'
 				: ''}"
 			on:click={() => selectedPaypalButton()}
 		>
-			<iconify-icon icon="logos:paypal" height="5.5rem" width="5.5rem"></iconify-icon>
+			<iconify-icon icon="logos:paypal" height="5rem" width="5rem"></iconify-icon>
 		</button>
 	</div>
 
