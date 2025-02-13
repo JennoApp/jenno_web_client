@@ -3,6 +3,16 @@ import { z } from 'zod'
 import { PRIVATE_SERVER_URL } from '$env/static/private'
 
 const shippingSchema = z.object({
+  completeName: z
+    .string({ required_error: "Complete name is required" })
+    .min(1, { message: "Complete name is required" })
+    .max(64, { message: "Complete name must be less than 64 characters" })
+    .trim(),
+  document: z
+    .string({ required_error: "Document or NIT is required" })
+    .min(1, { message: "Document or NIT is required" })
+    .max(32, { message: "Document or NIT must be less than 32 characters" })
+    .trim(),
   country: z
     .string({ required_error: "Country is required" })
     .min(1, { message: "Country is required" })
@@ -27,7 +37,7 @@ const shippingSchema = z.object({
     .string({ required_error: "Phone number is required"})
     .min(1, { message: "Phone number is required"})
     .max(64, { message: "Phone number must be less than 64 characters"})
-    .trim(), 
+    .trim(),
   postalCode: z
     .string({ required_error: "Phone number is required"})
     .min(1, { message: "Phone number is required"})
@@ -38,18 +48,18 @@ const shippingSchema = z.object({
 export const actions: Actions = {
   shipping: async ({ request, locals }) => {
     const formData = Object.fromEntries(await request.formData())
-     
-    try {
-      const { address, country, state, city, postalCode, phoneNumber } = shippingSchema.parse(formData)
 
-      console.log({ address, country, state, city, postalCode, phoneNumber })
+    try {
+      const { completeName, document, address, country, state, city, postalCode, phoneNumber } = shippingSchema.parse(formData)
+
+      console.log({ completeName, document, address, country, state, city, postalCode, phoneNumber })
 
       const responseUpdateShippinginfo = await fetch(`${PRIVATE_SERVER_URL}/users/shipping/${locals?.user?._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ address, country, state, city, postalCode, phoneNumber })
+        body: JSON.stringify({ completeName, document, address, country, state, city, postalCode, phoneNumber })
       })
 
       const result = await responseUpdateShippinginfo.json()
@@ -61,7 +71,7 @@ export const actions: Actions = {
           success: false
         }
       }
-      
+
       return {
         success: true
       }
@@ -75,6 +85,6 @@ export const actions: Actions = {
       }
     }
 
-  
-  } 
+
+  }
 }

@@ -33,6 +33,34 @@
 			method="POST"
 			use:enhance
 		>
+			<!-- Nombre o Razón Social -->
+			<div class="flex flex-col">
+				<label for="completeName" class="mb-1 font-medium"> Nombre / Razón Social </label>
+				<input
+					type="text"
+					name="completeName"
+					class="h-9 border rounded-md px-2 text-black"
+					value={userData?.shippingInfo?.completeName ?? ''}
+				/>
+				{#if form?.errors?.completeName}
+					<span class="text-red-500 text-sm">{form.errors.completeName[0]}</span>
+				{/if}
+			</div>
+
+			<!-- NIT / Documento de Identidad -->
+			<div class="flex flex-col">
+				<label for="document" class="mb-1 font-medium"> NIT / Documento de Identidad </label>
+				<input
+					type="text"
+					name="document"
+					class="h-9 border rounded-md px-2 text-black"
+					value={userData?.shippingInfo?.document ?? ''}
+				/>
+				{#if form?.errors?.document}
+					<span class="text-red-500 text-sm">{form.errors.document[0]}</span>
+				{/if}
+			</div>
+
 			<!-- Address Input -->
 			<div class="flex flex-col">
 				<label for="address" class="text-base dark:text-gray-201 font-medium"
