@@ -18,9 +18,9 @@
   function paymentSubmit() {
     if ($paymentMethod === '') {
       toast.error('Por favor selecciona un metodo de pago.');
-      return;
+    } else {
+      goto('/cart/paymentroute/confirm');
     }
-    goto('/cart/paymentroute/confirm');
   }
 
 	$: console.log($paymentMethod);
