@@ -54,6 +54,28 @@ export const actions: Actions = {
 
       console.log({ completeName, document, address, country, state, city, postalCode, phoneNumber })
 
+      // Obtener la información actual del usuario
+      const currentShippingInfo = locals?.user?.shippingInfo
+
+      // Si la información no ha cambiado, evitar la llamada al servidor
+      if (
+        currentShippingInfo &&
+        completeName === currentShippingInfo.completeName &&
+        document === currentShippingInfo.document &&
+        address === currentShippingInfo.address &&
+        country === currentShippingInfo.country &&
+        state === currentShippingInfo.state &&
+        city === currentShippingInfo.city &&
+        postalCode === currentShippingInfo.postalCode &&
+        phoneNumber === currentShippingInfo.phoneNumber
+      ) {
+        console.log("No se detectaron cambios en la información de envío")
+        return {
+          success: true
+        }
+      }
+
+      // Si hay cambios, hacer la actualización
       const responseUpdateShippinginfo = await fetch(`${PRIVATE_SERVER_URL}/users/shipping/${locals?.user?._id}`, {
         method: "PUT",
         headers: {
