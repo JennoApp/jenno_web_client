@@ -19,29 +19,29 @@ const shippingSchema = z.object({
     .max(32, { message: "Country must be less than 32 characters" })
     .trim(),
   address: z
-    .string({ required_error: "Adress is required"})
-    .min(1, { message: "Addres is required"})
-    .max(64, { message: "Address must be less than 64 characters"})
+    .string({ required_error: "Adress is required" })
+    .min(1, { message: "Addres is required" })
+    .max(64, { message: "Address must be less than 64 characters" })
     .trim(),
   state: z
-    .string({ required_error: "State is required"})
-    .min(1, { message: "State is required"})
-    .max(64, { message: "State must be less than 64 characters"})
+    .string({ required_error: "State is required" })
+    .min(1, { message: "State is required" })
+    .max(64, { message: "State must be less than 64 characters" })
     .trim(),
   city: z
-    .string({ required_error: "City is required"})
-    .min(1, { message: "City is required"})
-    .max(64, { message: "City must be less than 64 characters"})
+    .string({ required_error: "City is required" })
+    .min(1, { message: "City is required" })
+    .max(64, { message: "City must be less than 64 characters" })
     .trim(),
   phoneNumber: z
-    .string({ required_error: "Phone number is required"})
-    .min(1, { message: "Phone number is required"})
-    .max(64, { message: "Phone number must be less than 64 characters"})
+    .string({ required_error: "Phone number is required" })
+    .min(1, { message: "Phone number is required" })
+    .max(64, { message: "Phone number must be less than 64 characters" })
     .trim(),
   postalCode: z
-    .string({ required_error: "Phone number is required"})
-    .min(1, { message: "Phone number is required"})
-    .max(64, { message: "Phone number must be less than 64 characters"})
+    .string({ required_error: "Phone number is required" })
+    .min(1, { message: "Phone number is required" })
+    .max(64, { message: "Phone number must be less than 64 characters" })
     .trim(),
 })
 
@@ -56,10 +56,10 @@ export const actions: Actions = {
 
       // Obtener la información actual del usuario
       const currentShippingInfo = locals?.user?.shippingInfo
+      console.log({ currentShippingInfo })
 
       // Si la información no ha cambiado, evitar la llamada al servidor
       if (
-        currentShippingInfo &&
         completeName === currentShippingInfo.completeName &&
         document === currentShippingInfo.document &&
         address === currentShippingInfo.address &&
@@ -85,7 +85,7 @@ export const actions: Actions = {
       })
 
       const result = await responseUpdateShippinginfo.json()
-      console.log({result})
+      console.log({ result })
 
       if (result.statusCode === 401) {
         console.log("informacion de envio incorrecta")
