@@ -56,7 +56,6 @@
 			''
 				? 'disabled:bg-black'
 				: ''}"
-			disabled={!$paymentMethod || $paymentMethod === ''}
 			on:click={() => paymentSubmit()}
 		>
 			Continuar
