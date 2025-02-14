@@ -17,7 +17,7 @@
 
   const selectedMercadoPagoButton = () => {
 		updatePaymentMethod(enumPayments[2]);
-    toast.info('Haz seleccionado Nequi como metodo de pago.');
+    toast.info('Haz seleccionado Mercado Pago como metodo de pago.');
 	};
 
   function paymentSubmit() {
