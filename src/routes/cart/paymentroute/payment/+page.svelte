@@ -23,7 +23,7 @@
 		<button
 			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
 			'nequi'
-				? 'border-2 border-purple-600 dark:border-gray-200'
+				? 'border-2 border-[#202020] dark:border-gray-200'
 				: ''}"
 			on:click={() => selectedNequiButton()}
 		>
@@ -33,7 +33,7 @@
 		<button
 			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
 			'paypal'
-				? 'border-2 border-purple-600 dark:border-gray-200'
+				? 'border-2 border-[#202020] dark:border-gray-200'
 				: ''}"
 			on:click={() => selectedPaypalButton()}
 		>
@@ -44,7 +44,7 @@
 	<!-- Shipping Submit -->
 	<div class="flex w-full justify-center">
 		<button
-			class="h-10 w-96 mt-4 border dark:border-[#222222] bg-purple-600 dark:bg-[#202020] rounded-lg text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525] {$paymentMethod ===
+			class="h-10 w-96 mt-4 border dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525] {$paymentMethod ===
 			''
 				? 'disabled:bg-black'
 				: ''}"
