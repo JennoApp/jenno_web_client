@@ -21,7 +21,7 @@
 <div class="w-full h-64 mt-14">
 	<div class="flex gap-5 justify-center items-center h-full w-full">
 		<button
-			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
+			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
 			'nequi'
 				? 'border-2 border-purple-600 dark:border-gray-200'
 				: ''}"
@@ -31,7 +31,7 @@
 		</button>
 
 		<button
-			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
+			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
 			'paypal'
 				? 'border-2 border-purple-600 dark:border-gray-200'
 				: ''}"
