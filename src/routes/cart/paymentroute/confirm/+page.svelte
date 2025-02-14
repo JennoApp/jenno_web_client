@@ -17,6 +17,7 @@
 	import * as m from '$paraglide/messages';
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
+	import { paymentMethod } from '$lib/stores/paymentMethod';
 
 	let shippingData = $page.data?.user?.shippingInfo;
 	let openDialogPayment = false;
@@ -176,13 +177,14 @@
          dark:[&::-webkit-scrollbar-track]:bg-neutral-700
          dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
 	>
-		<Dialog.Header>
-			<Dialog.Title>Opciones de Pago</Dialog.Title>
-		</Dialog.Header>
 		<Dialog.Description>
 			<div class="h-auto">
-				{#if usdEquivalent !== 0}
-					<PaymentButtons TotalAmount={usdEquivalent} />
+				{#if $paymentMethod === 'nequi'}
+					<p class="text-center text-lg font-semibold">Paga con Nequi</p>
+				{:else if $paymentMethod === 'paypal'}
+					{#if usdEquivalent !== 0}
+						<PaymentButtons TotalAmount={usdEquivalent} />
+					{/if}
 				{/if}
 			</div>
 		</Dialog.Description>
