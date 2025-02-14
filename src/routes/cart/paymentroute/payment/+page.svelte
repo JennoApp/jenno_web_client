@@ -3,7 +3,7 @@
 	import { updatePaymentMethod, paymentMethod } from '$lib/stores/paymentMethod';
   import { toast } from 'svelte-sonner';
 
-	let enumPayments = ['paypal', 'nequi'];
+	let enumPayments = ['paypal', 'nequi', 'mercadopago'];
 
 	const selectedPaypalButton = () => {
 		updatePaymentMethod(enumPayments[0]);
@@ -12,6 +12,11 @@
 
 	const selectedNequiButton = () => {
 		updatePaymentMethod(enumPayments[1]);
+    toast.info('Haz seleccionado Nequi como metodo de pago.');
+	};
+
+  const selectedMercadoPagoButton = () => {
+		updatePaymentMethod(enumPayments[2]);
     toast.info('Haz seleccionado Nequi como metodo de pago.');
 	};
 
@@ -28,6 +33,16 @@
 
 <div class="w-full h-64 mt-14">
 	<div class="flex gap-5 justify-center items-center h-full w-full">
+    <button
+			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
+			'nequi'
+				? 'border-2 border-[#202020] dark:border-gray-200'
+				: ''}"
+			on:click={() => selectedMercadoPagoButton()}
+		>
+      <iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem"></iconify-icon>
+		</button>
+
 		<button
 			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
 			'nequi'
