@@ -35,7 +35,7 @@
 	<div class="flex gap-5 justify-center items-center h-full w-full">
     <button
 			class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
-			'nequi'
+			'mercadopago'
 				? 'border-2 border-[#202020] dark:border-gray-200'
 				: ''}"
 			on:click={() => selectedMercadoPagoButton()}
@@ -49,6 +49,7 @@
 				? 'border-2 border-[#202020] dark:border-gray-200'
 				: ''}"
 			on:click={() => selectedNequiButton()}
+      disabled={true}
 		>
 			<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-24 h-24" />
 		</button>

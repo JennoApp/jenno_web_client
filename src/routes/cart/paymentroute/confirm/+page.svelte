@@ -181,6 +181,8 @@
 			<div class="h-auto">
 				{#if $paymentMethod === 'nequi'}
 					<p class="text-center text-lg font-semibold">Paga con Nequi</p>
+        {:else if $paymentMethod === 'mercadoPago'}
+          <p class="text-center text-lg font-semibold">Paga con Mercado Pago</p>
 				{:else if $paymentMethod === 'paypal'}
 					{#if usdEquivalent !== 0}
 						<PaymentButtons TotalAmount={usdEquivalent} />
