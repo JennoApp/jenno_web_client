@@ -15,6 +15,14 @@
     toast.info('Haz seleccionado Nequi como metodo de pago.');
 	};
 
+  function paymentSubmit() {
+    if ($paymentMethod === '') {
+      toast.error('Por favor selecciona un metodo de pago.');
+      return;
+    }
+    goto('/cart/paymentroute/confirm');
+  }
+
 	$: console.log($paymentMethod);
 </script>
 
@@ -49,7 +57,7 @@
 				? 'disabled:bg-black'
 				: ''}"
 			disabled={!$paymentMethod || $paymentMethod === ''}
-			on:click={() => goto('/cart/paymentroute/confirm')}
+			on:click={() => paymentSubmit()}
 		>
 			Continuar
 		</button>
