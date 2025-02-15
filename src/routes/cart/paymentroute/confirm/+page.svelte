@@ -79,7 +79,7 @@
         },
         body: JSON.stringify({
           items,
-          email: $page.data.user.email,
+          email: 'camiloribon31@gmail.com',
         }),
       });
 
