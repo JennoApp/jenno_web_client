@@ -84,12 +84,12 @@
       });
 
       const data = await response.json();
-      if (data.init_point) {
-        goto(data.init_point);
-      } else {
-        toast.error('No se pudo iniciar el pago con Mercado Pago');
-      }
-
+      // if (data.init_point) {
+      //   goto(data.init_point);
+      // } else {
+      //   toast.error('No se pudo iniciar el pago con Mercado Pago');
+      // }
+      console.log('Respuesta de Mercado Pago:', data);
     } catch (error) {
       console.error('Error al pagar con Mercado Pago:', error);
       toast.error('Error al iniciar pago con Mercado Pago');
