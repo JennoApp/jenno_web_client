@@ -85,7 +85,7 @@
 
       const data = await response.json();
       if (data.init_point) {
-        goto(data.init_point);
+         window.location.href = data.init_point
       } else {
         toast.error('No se pudo iniciar el pago con Mercado Pago');
       }
