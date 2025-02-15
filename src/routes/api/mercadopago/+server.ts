@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
     })
 
     return new Response(JSON.stringify({
-      response
+      init_point: response.init_point
     }),
       { status: 200 })
   } catch (error: any) {
