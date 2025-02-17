@@ -109,18 +109,19 @@
 		getRandomCategories();
 	});
 
-  // onMount(() => {
-  //   const urlParams = $page.url.searchParams;
-  //   if (urlParams.get('mpreturn') === '1') {
-  //     // Limpia la URL y fuerza recarga
-  //     window.history.replaceState({}, '', '/');
-  //     window.location.reload();
-  //   }
-  // });
+  onMount(() => {
+    const urlParams = $page.url.searchParams;
+    if (urlParams.get('mpreturn') === '1') {
+      // Limpia la URL y fuerza recarga
+      window.history.replaceState({}, '', '/');
+      window.location.reload();
+    }
+  });
 
-  $: if ($page.url.searchParams.get('mpreturn') === '1') {
-    alert('redirecting to home since mercado pago')
-  }
+  // $: if ($page.url.searchParams.get('mpreturn') === '1') {
+  //   window.history.replaceState({}, '', '/');
+  //   window.location.reload();
+  // }
 </script>
 
 <svelte:head>
