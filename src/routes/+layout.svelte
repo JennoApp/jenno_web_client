@@ -162,6 +162,13 @@
 	// 		}
 	// 	}
 	// });
+
+  onMount(() => {
+    if ($page.url.searchParams.get('mpreturn') === '1') {
+      window.history.replaceState({}, '', '/')
+      invalidateAll()
+    }
+  })
 </script>
 
 <svelte:head>
