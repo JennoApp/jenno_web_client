@@ -22,8 +22,8 @@ export const POST: RequestHandler = async ({ request }) => {
       items: body.items,
       back_urls: {
         success: 'https://www.jenno.com.co/success',
-        failure: 'https://www.jenno.com.co/failure',
-        pending: 'https://www.jenno.com.co/pending'
+        failure: 'https://www.jenno.com.co/',
+        pending: 'https://www.jenno.com.co/'
       },
       auto_return: 'approved',
       payer: {
