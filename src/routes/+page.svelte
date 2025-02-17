@@ -117,11 +117,6 @@
       window.location.reload();
     }
   });
-
-  // $: if ($page.url.searchParams.get('mpreturn') === '1') {
-  //   window.history.replaceState({}, '', '/');
-  //   window.location.reload();
-  // }
 </script>
 
 <svelte:head>

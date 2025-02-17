@@ -36,7 +36,9 @@
 	let usdEquivalent: number = 0;
 
 	onMount(() => {
-		fetchExchangeRate();
+    if ($paymentMethod === 'paypal') {
+      fetchExchangeRate();
+    }
 	});
 
 	async function fetchExchangeRate() {
@@ -59,41 +61,40 @@
 
 	$: console.log({ exchangeRate, T: $T, usdEquivalent });
 
+	async function payWithMercadoPago() {
+		try {
+			// Construir items para la preferencia de Mercado Pago
+			const items = $cartItems.map((item) => ({
+				title: item.productname,
+				description: item.description,
+				quantity: item.amount,
+				currency_id: 'COP',
+				unit_price: item.price
+			}));
 
-  async function payWithMercadoPago() {
-    try {
-      // Construir items para la preferencia de Mercado Pago
-      const items = $cartItems.map(item => ({
-        title: item.productname,
-        description: item.description,
-        quantity: item.amount,
-        currency_id: 'COP',
-        unit_price: item.price,
-      }))
+			// Crear Preferencia de Mercado Pago
+			const response = await fetch('/api/mercadopago', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					items,
+					email: $page.data.user.email
+				})
+			});
 
-      // Crear Preferencia de Mercado Pago
-      const response = await fetch('/api/mercadopago', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items,
-          email: $page.data.user.email,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.init_point) {
-         window.location.href = data.init_point
-      } else {
-        toast.error('No se pudo iniciar el pago con Mercado Pago');
-      }
-    } catch (error) {
-      console.error('Error al pagar con Mercado Pago:', error);
-      toast.error('Error al iniciar pago con Mercado Pago');
-    }
-  }
+			const data = await response.json();
+			if (data.init_point) {
+				window.location.href = data.init_point;
+			} else {
+				toast.error('No se pudo iniciar el pago con Mercado Pago');
+			}
+		} catch (error) {
+			console.error('Error al pagar con Mercado Pago:', error);
+			toast.error('Error al iniciar pago con Mercado Pago');
+		}
+	}
 </script>
 
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
@@ -180,9 +181,11 @@
 				<p>{formatPrice($T, 'es-CO', 'COP')}</p>
 			</div>
 
-			<div class="flex flex-row-reverse">
-				<h3 class="text-gray-400">Equivalente en Dolares: ${usdEquivalent.toFixed(2)}</h3>
-			</div>
+			{#if $paymentMethod === 'paypal'}
+				<div class="flex flex-row-reverse">
+					<h3 class="text-gray-400">Equivalente en Dolares: ${usdEquivalent.toFixed(2)}</h3>
+				</div>
+			{/if}
 		</div>
 
 		<!-- Cofirm Button -->
@@ -218,15 +221,15 @@
 			<div class="h-auto">
 				{#if $paymentMethod === 'nequi'}
 					<p class="text-center text-lg font-semibold">Paga con Nequi</p>
-        {:else if $paymentMethod === 'mercadopago'}
-          <p class="text-center text-lg font-semibold mb-3">Paga con Mercado Pago</p>
-          <!-- Botón para iniciar el flujo de pago con MP -->
-          <button
-            on:click|preventDefault={() => payWithMercadoPago()}
-            class="bg-[#009ee3] hover:bg-[#0087c6] text-white font-medium py-2 px-4 rounded"
-          >
-            Ir a Checkout
-          </button>
+				{:else if $paymentMethod === 'mercadopago'}
+					<p class="text-center text-lg font-semibold mb-3">Paga con Mercado Pago</p>
+					<!-- Botón para iniciar el flujo de pago con MP -->
+					<button
+						on:click|preventDefault={() => payWithMercadoPago()}
+						class="bg-[#009ee3] hover:bg-[#0087c6] text-white font-medium py-2 px-4 rounded"
+					>
+						Ir a Checkout
+					</button>
 				{:else if $paymentMethod === 'paypal'}
 					{#if usdEquivalent !== 0}
 						<PaymentButtons TotalAmount={usdEquivalent} />
