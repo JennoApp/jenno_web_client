@@ -119,7 +119,7 @@
 		await getServerUrl();
 	});
 
-	$: if ($page.data.user && !ordersCreated) {
+	$: if ($page.data.user && !ordersCreated && !skipCreation) {
 		ordersCreated = true;
 		createOrders();
 		invalidateAll();
