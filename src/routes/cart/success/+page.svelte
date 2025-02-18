@@ -7,6 +7,9 @@
 
 	// Obtener url del servidor
 	let serverUrl: string;
+	let ordersCreated = false;
+	let skipCreation = false;
+
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -28,10 +31,10 @@
 		const buyerName = buyer?.username;
 		let buyerProfileImg = buyer?.profileImg;
 
-    if (!items || items.length === 0) {
-      toast.error('El carrito esta vacio')
-      return
-    }
+		if (!items || items.length === 0) {
+			toast.error('El carrito esta vacio');
+			return;
+		}
 
 		if (buyerProfileImg == null || buyerProfileImg == undefined) {
 			buyerProfileImg = '';
@@ -46,7 +49,7 @@
 
 		try {
 			await getServerUrl();
-      console.log('Server Url:', serverUrl)
+			console.log('Server Url:', serverUrl);
 
 			for (let item of items) {
 				let success = false;
@@ -65,7 +68,7 @@
 							selectedOptions: item.selectedOptions
 						};
 
-            console.log('Intentando crear orden:', orderData);
+						console.log('Intentando crear orden:', orderData);
 
 						const response = await fetch(`${serverUrl}/orders/createOrder`, {
 							method: 'POST',
@@ -76,15 +79,15 @@
 						});
 
 						if (!response.ok) {
-              const errorText = await response.text()
-              console.error('Backend Error:', errorText)
+							const errorText = await response.text();
+							console.error('Backend Error:', errorText);
 							throw new Error(`Error al crear la orden: ${response.statusText}`);
 						}
 
 						success = true;
 					} catch (error) {
-            console.error(`Intento ${attemps + 1} fallido:`, error)
-            attemps++;
+						console.error(`Intento ${attemps + 1} fallido:`, error);
+						attemps++;
 						if (attemps >= maxAttempts) {
 							throw new Error(`Error al crear la orden despues de ${maxAttempts} intentos`);
 						}
@@ -97,23 +100,29 @@
 			// vaciar el carrito
 			removeTotal();
 
-      // Recargar la pagina
-      location.reload()
+      // Marcar que las ordenes ya fueron creadas
+      localStorage.setItem('ordersCreated', 'true');
+
+			// Recargar la pagina
+			location.reload();
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
 	}
 
 	onMount(async () => {
-    console.log('Componente montado')
-    await getServerUrl()
+		if (localStorage.getItem('ordersCreated') === 'true') {
+			skipCreation = true;
+			console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
+		}
+
+		await getServerUrl();
 	});
 
-  let ordersCreated = false
 	$: if ($page.data.user && !ordersCreated) {
-    ordersCreated = true
+		ordersCreated = true;
 		createOrders();
-    invalidateAll()
+		invalidateAll();
 	}
 
 	console.log($cartItems);
