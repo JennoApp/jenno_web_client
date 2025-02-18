@@ -96,6 +96,9 @@
 
 			// vaciar el carrito
 			removeTotal();
+
+      // Recargar la pagina
+      location.reload()
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
