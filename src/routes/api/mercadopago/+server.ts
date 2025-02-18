@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const preferenceBody = {
       items: body.items,
       back_urls: {
-        success: 'https://www.jenno.com.co/success',
+        success: 'https://www.jenno.com.co/cart/success',
         failure: 'https://www.jenno.com.co/failure',
         pending: 'https://www.jenno.com.co/pending'
       },
