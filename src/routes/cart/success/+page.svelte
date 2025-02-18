@@ -110,6 +110,7 @@
 	$: if ($page.data.user && !ordersCreated) {
     ordersCreated = true
 		createOrders();
+    invalidateAll()
 	}
 
 	console.log($cartItems);
