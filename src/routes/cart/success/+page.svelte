@@ -129,8 +129,8 @@
 	</div>
 </div> -->
 
-<script>
-  import { goto } from "$app/navigation";}
+<script lang="ts">
+  import { goto } from "$app/navigation";
 
 	export let user;
 	export let cartItems;
