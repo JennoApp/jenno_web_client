@@ -99,7 +99,7 @@
 			removeTotal();
 
 			// Recargar la pagina
-			goto('/success?ordersCreated=true', { invalidateAll: true });
+			location.reload();
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
