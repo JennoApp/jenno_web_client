@@ -104,22 +104,16 @@
 			localStorage.setItem('ordersCreated', 'true');
 
 			// Recargar la pagina
-			goto('/success?ordersCreated=true', {invalidateAll: true});
+			goto('/success?ordersCreated=true', { invalidateAll: true });
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
 	}
 
-	onMount(async () => {
-		try {
-			if (localStorage.getItem('ordersCreated') === 'true') {
-				skipCreation = true;
-				console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
-			}
-		} catch (error) {
-			console.error('Error al acceder a localStorage:', error);
-		}
-	});
+	$: if (localStorage.getItem('ordersCreated') === 'true') {
+		skipCreation = true;
+		console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
+	}
 
 	$: if ($page.data.user && !ordersCreated && !skipCreation) {
 		ordersCreated = true;
