@@ -100,23 +100,26 @@
 			// vaciar el carrito
 			removeTotal();
 
-      // Marcar que las ordenes ya fueron creadas
-      localStorage.setItem('ordersCreated', 'true');
+			// Marcar que las ordenes ya fueron creadas
+			localStorage.setItem('ordersCreated', 'true');
 
 			// Recargar la pagina
-			location.reload();
+			goto('/success?ordersCreated=true');
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
 	}
 
 	onMount(async () => {
-		if (localStorage.getItem('ordersCreated') === 'true') {
-			skipCreation = true;
-			console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
+		try {
+			await getServerUrl();
+			if (localStorage.getItem('ordersCreated') === 'true') {
+				skipCreation = true;
+				console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
+			}
+		} catch (error) {
+			console.error('Error al acceder a localStorage:', error);
 		}
-
-		await getServerUrl();
 	});
 
 	$: if ($page.data.user && !ordersCreated && !skipCreation) {
