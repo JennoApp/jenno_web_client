@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
@@ -8,7 +7,6 @@
 	// Obtener url del servidor
 	let serverUrl: string;
 	let ordersCreated = false;
-	let skipCreation = false;
 
 	async function getServerUrl() {
 		try {
@@ -100,9 +98,6 @@
 			// vaciar el carrito
 			removeTotal();
 
-			// Marcar que las ordenes ya fueron creadas
-			localStorage.setItem('ordersCreated', 'true');
-
 			// Recargar la pagina
 			goto('/success?ordersCreated=true', { invalidateAll: true });
 		} catch (error: any) {
@@ -110,12 +105,7 @@
 		}
 	}
 
-	$: if (localStorage.getItem('ordersCreated') === 'true') {
-		skipCreation = true;
-		console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
-	}
-
-	$: if ($page.data.user && !ordersCreated && !skipCreation) {
+	$: if ($page.data.user && !ordersCreated) {
 		ordersCreated = true;
 		createOrders();
 	}
