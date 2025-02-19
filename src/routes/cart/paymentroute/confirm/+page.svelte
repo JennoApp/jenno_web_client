@@ -36,9 +36,9 @@
 	let usdEquivalent: number = 0;
 
 	onMount(() => {
-    if ($paymentMethod === 'paypal') {
-      fetchExchangeRate();
-    }
+		if ($paymentMethod === 'paypal') {
+			fetchExchangeRate();
+		}
 	});
 
 	async function fetchExchangeRate() {
@@ -93,6 +93,28 @@
 		} catch (error) {
 			console.error('Error al pagar con Mercado Pago:', error);
 			toast.error('Error al iniciar pago con Mercado Pago');
+		}
+	}
+
+	async function handlePaymentButton() {
+		try {
+			const response = await fetch('/api/savecart', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify($cartItems)
+			});
+
+      if (!response.ok) {
+        throw new Error('No se pudo guardar el carrito');
+      }
+
+			openDialogPayment = true;
+			toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
+		} catch (error) {
+			console.error('Error al guardar el carrito:', error);
+			toast.error('No se pudo guardar el carrito');
 		}
 	}
 </script>
@@ -192,12 +214,7 @@
 		<!-- Shipping Submit -->
 		<button
 			class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
-			on:click={() => {
-				openDialogPayment = true;
-				toast.info(
-					'Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.'
-				);
-			}}
+			on:click|preventDefault={() => handlePaymentButton()}
 		>
 			Pagar
 		</button>
