@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
@@ -111,9 +111,9 @@
 	}
 
 	console.log($cartItems);
-</script>
+</script> -->
 
-<div class="flex justify-center w-full h-[calc(100vh-56px)]">
+<!-- <div class="flex justify-center w-full h-[calc(100vh-56px)]">
 	<div class="w-1/2 h-56 mt-40 bg-[#202020] rounded-lg">
 		<h1 class="mt-2 text-3xl font-semibold text-center">Pago Exitoso</h1>
 		<p class="p-5 text-center mt-2 font-medium">
@@ -127,4 +127,25 @@
 			>
 		</div>
 	</div>
-</div>
+</div> -->
+
+<script>
+  import { goto } from "$app/navigation";}
+
+	export let user;
+	export let cartItems;
+	export let ordersCreated;
+	export let error;
+</script>
+
+{#if error}
+	<p class="text-red-500">Ocurrió un error al crear las órdenes: {error}</p>
+{:else if ordersCreated}
+	<h1>Pago Exitoso</h1>
+	<p>¡Gracias por tu compra! Se han creado tus órdenes correctamente.</p>
+{:else}
+	<h1>No se crearon órdenes</h1>
+	<p>Es posible que no tengas carrito o que no haya usuario logueado.</p>
+{/if}
+
+<button on:click={() => goto('/')}> Volver a la tienda </button>
