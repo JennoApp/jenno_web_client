@@ -104,7 +104,7 @@
 			localStorage.setItem('ordersCreated', 'true');
 
 			// Recargar la pagina
-			goto('/success?ordersCreated=true');
+			goto('/success?ordersCreated=true', {invalidateAll: true});
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
@@ -112,7 +112,6 @@
 
 	onMount(async () => {
 		try {
-			await getServerUrl();
 			if (localStorage.getItem('ordersCreated') === 'true') {
 				skipCreation = true;
 				console.log('Se detectó ordersCreated en localStorage, no se crearán órdenes de nuevo.');
@@ -125,7 +124,6 @@
 	$: if ($page.data.user && !ordersCreated && !skipCreation) {
 		ordersCreated = true;
 		createOrders();
-		invalidateAll();
 	}
 
 	console.log($cartItems);
