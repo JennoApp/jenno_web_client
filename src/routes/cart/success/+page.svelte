@@ -1,8 +1,9 @@
-<!-- <script lang="ts">
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
+  import { get } from 'svelte/store';
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -15,45 +16,46 @@
 
 			serverUrl = data.server_url;
 		} catch (error) {
-			console.error('Error el solicitar Server Url');
+			console.error('Error el solicitar Server Url:', error);
 		}
 	}
 
 	async function createOrders() {
-		const items = $cartItems;
-		const buyer = $page.data.user;
+		const items = get(cartItems);
+		const buyer = get(page).data.user;
 
-		console.log({ buyer });
+    if (!items || items.length === 0) {
+			toast.error('El carrito esta vacio');
+			return;
+		}
+
+    if (!buyer) {
+			toast.error('No se encotro la informacion del comprador');
+			return;
+		}
 
 		const buyerId = buyer?._id;
 		const buyerName = buyer?.username;
 		let buyerProfileImg = buyer?.profileImg;
 
-		if (!items || items.length === 0) {
-			toast.error('El carrito esta vacio');
-			return;
-		}
 
 		if (buyerProfileImg == null || buyerProfileImg == undefined) {
 			buyerProfileImg = '';
 		}
 
-		if (!buyer) {
-			toast.error('No se encotro la informacion del comprador');
-			return;
-		}
-
-		const maxAttempts = 3;
-
 		try {
 			await getServerUrl();
-			console.log('Server Url:', serverUrl);
+      if (!serverUrl) {
+				toast.error('No se pudo obtener la URL del servidor');
+				return;
+			}
 
+      const maxAttempts = 3;
 			for (let item of items) {
 				let success = false;
-				let attemps = 0;
+				let attempts = 0;
 
-				while (!success && attemps < maxAttempts) {
+				while (!success && attempts < maxAttempts) {
 					try {
 						const orderData = {
 							product: item,
@@ -84,9 +86,9 @@
 
 						success = true;
 					} catch (error) {
-						console.error(`Intento ${attemps + 1} fallido:`, error);
-						attemps++;
-						if (attemps >= maxAttempts) {
+						console.error(`Intento ${attempts + 1} fallido:`, error);
+						attempts++;
+						if (attempts >= maxAttempts) {
 							throw new Error(`Error al crear la orden despues de ${maxAttempts} intentos`);
 						}
 					}
@@ -105,15 +107,15 @@
 		}
 	}
 
-	$: if ($page.data.user && !ordersCreated) {
+	$: if (get(page).data.user && !ordersCreated) {
 		ordersCreated = true;
 		createOrders();
 	}
 
 	console.log($cartItems);
-</script> -->
+</script>
 
-<!-- <div class="flex justify-center w-full h-[calc(100vh-56px)]">
+<div class="flex justify-center w-full h-[calc(100vh-56px)]">
 	<div class="w-1/2 h-56 mt-40 bg-[#202020] rounded-lg">
 		<h1 class="mt-2 text-3xl font-semibold text-center">Pago Exitoso</h1>
 		<p class="p-5 text-center mt-2 font-medium">
@@ -127,9 +129,9 @@
 			>
 		</div>
 	</div>
-</div> -->
+</div>
 
-<script lang="ts">
+<!-- <script lang="ts">
   import { goto, invalidateAll } from "$app/navigation";
 	import type { PageData } from "../$types";
 
@@ -143,8 +145,8 @@
     invalidate = true
     invalidateAll()
   }
-</script>
-
+</script> -->
+<!--
 {#if error}
 	<p class="text-red-500">Ocurrió un error al crear las órdenes: {error}</p>
 {:else if data?.ordersCreated}
@@ -155,4 +157,4 @@
 	<p>Es posible que no tengas carrito o que no haya usuario logueado.</p>
 {/if}
 
-<button on:click={() => goto('/')}> Volver a la tienda </button>
+<button on:click={() => goto('/')}> Volver a la tienda </button> -->
