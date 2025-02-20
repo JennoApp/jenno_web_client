@@ -131,16 +131,17 @@
 
 <script lang="ts">
   import { goto } from "$app/navigation";
+	import type { PageData } from "../$types";
 
-	export let user;
-	export let cartItems;
-	export let ordersCreated;
+  export let data: PageData
+
+	// export let ordersCreated;
 	export let error;
 </script>
 
 {#if error}
 	<p class="text-red-500">Ocurrió un error al crear las órdenes: {error}</p>
-{:else if ordersCreated}
+{:else if data?.ordersCreated}
 	<h1>Pago Exitoso</h1>
 	<p>¡Gracias por tu compra! Se han creado tus órdenes correctamente.</p>
 {:else}
