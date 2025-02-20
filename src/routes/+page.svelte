@@ -7,30 +7,29 @@
 	import { removeTotal } from '$lib/stores/cartStore';
 	import { toast } from 'svelte-sonner';
 
-
 	export let data: PageServerData;
 
 	let products: any[] = data.products;
 	let pageload = 1;
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url
-    } catch (error) {
-      console.error('Error al solicitar Server Url')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Server Url');
+		}
+	}
 
 	////////
 	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
-    await getServerUrl()
+		await getServerUrl();
 
 		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}`);
 		const newData = await response.json();
@@ -72,7 +71,7 @@
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
 		try {
-      await getServerUrl()
+			await getServerUrl();
 
 			const response = await fetch(`${serverUrl}/products/categories/random?limit=${10}`);
 			if (response.ok) {
@@ -111,24 +110,38 @@
 		getRandomCategories();
 	});
 
-  onMount(() => {
-    const urlParams = $page.url.searchParams;
-    if (urlParams.get('mpreturn') === '1') {
-      // Limpia la URL y fuerza recarga
-      window.history.replaceState({}, '', '/');
-      window.location.reload();
-    }
-  });
+	onMount(() => {
+		const urlParams = $page.url.searchParams;
+		if (urlParams.get('mpreturn') === '1') {
+			// Limpia la URL y fuerza recarga
+			window.history.replaceState({}, '', '/');
+			window.location.reload();
+		}
+	});
 
+	onMount(() => {
+		const params = $page.url.searchParams;
+		const ordersCreated = params.get('ordersCreated');
 
-  $: if ($page.url.searchParams.get('ordersCreated') === '1') {
-    removeTotal()
+		if (ordersCreated === '1') {
+			removeTotal();
+			toast.success('¡Ordenes creadas exitosamente!');
+		} else if (ordersCreated === '0') {
+			toast.error('Error al crear las ordenes');
+		}
 
-    toast.success('¡Ordenes creadas exitosamente!')
+		window.history.replaceState({}, '', '/');
+    location.reload();
+	});
 
-    window.history.replaceState({}, '', '/');
-    location.reload()
-  }
+	// $: if ($page.url.searchParams.get('ordersCreated') === '1') {
+	// 	removeTotal();
+
+	// 	toast.success('¡Ordenes creadas exitosamente!');
+
+	// 	window.history.replaceState({}, '', '/');
+	// 	location.reload();
+	// }
 </script>
 
 <svelte:head>
@@ -140,7 +153,7 @@
 <div
 	class="fixed top-12 flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 w-full h-12 px-0 my-1 z-20"
 >
-  <!-- Boton de Todos -->
+	<!-- Boton de Todos -->
 	<button
 		class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
 		class:selected={!selectedCategory}
@@ -149,7 +162,7 @@
 		Todos
 	</button>
 
-  <!-- Categorias Aleatorias -->
+	<!-- Categorias Aleatorias -->
 	{#each randomCategories as item}
 		<button
 			class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"

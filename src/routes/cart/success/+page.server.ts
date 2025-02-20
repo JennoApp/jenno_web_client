@@ -6,6 +6,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
   // Cargar carrito de la cookie
   const cartCookie = cookies.get('cartItems');
   let cartItems: any
+
   if (cartCookie) {
     try {
       cartItems = JSON.parse(cartCookie);
@@ -26,67 +27,67 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
     };
   }
 
-  const maxAttempts = 3;
+  let ordersCreated = true
 
-  try {
-    for (const item of cartItems) {
-      let success = false;
-      let attempts = 0;
+  for (const item of cartItems) {
+    const maxAttempts = 3;
+    let success = false;
+    let attempts = 0;
 
-      while (!success && attempts < maxAttempts) {
-        try {
-          const orderData = {
-            product: item,
-            buyerId: user._id,
-            sellerId: item?.user,
-            buyerName: user.username,
-            buyerProfileImg: user.profileImg || '',
-            amount: item.amount,
-            status: 'pending', // Estado inicial
-            selectedOptions: item.selectedOptions
-          };
+    while (!success && attempts < maxAttempts) {
+      try {
+        const orderData = {
+          product: item,
+          buyerId: user._id,
+          sellerId: item?.user,
+          buyerName: user.username,
+          buyerProfileImg: user.profileImg || '',
+          amount: item.amount,
+          status: 'pending', // Estado inicial
+          selectedOptions: item.selectedOptions
+        };
 
-          console.log('Intentando crear orden en el servidor:', orderData);
+        console.log('Intentando crear orden en el servidor:', orderData);
 
-          const response = await fetch(`${PRIVATE_SERVER_URL}/orders/createOrder`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-          });
+        const response = await fetch(`${PRIVATE_SERVER_URL}/orders/createOrder`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData)
+        });
 
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Backend Error:', errorText);
-            throw new Error(`Error al crear la orden: ${response.statusText}`);
-          }
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Backend Error:', errorText);
+          throw new Error(`Error al crear la orden: ${response.statusText}`);
+        }
 
-          success = true;
-        } catch (error) {
-          attempts++;
-          console.error(`Intento ${attempts} fallido al crear orden:`, error);
-          if (attempts >= maxAttempts) {
-            throw new Error(`Error al crear la orden después de ${maxAttempts} intentos`);
-          }
+        success = true;
+      } catch (error) {
+        attempts++;
+        console.error(`Intento ${attempts} fallido al crear orden:`, error);
+        if (attempts >= maxAttempts) {
+          ordersCreated = false
+          throw new Error(`Error al crear la orden después de ${maxAttempts} intentos`);
         }
       }
     }
+  }
 
-    console.log('Todas las órdenes se han creado correctamente en el servidor.');
+  if (ordersCreated) {
+    console.log('Todas las órdenes se han creado correctamente en el servidor.')
 
     // Vaciar la cookie del carrito
     cookies.set('cartItems', '', {
       path: '/',
       maxAge: 0
-    });
+    })
 
-    throw redirect(302, '/?ordersCreated=1');
-  } catch (error: any) {
-    console.error('Error creando órdenes:', error);
-    return {
-      user,
-      cartItems,
-      ordersCreated: false,
-      error: error.message
-    };
+    // Redirigir con 1 si se crearon todas las órdenes
+    throw redirect(302, '/?ordersCreated=1')
   }
+
+
+  console.error('Algunas órdenes no se pudieron crear.')
+  // Redirigir con 0 si no se crearon todas las órdenes
+  throw redirect(302, '/?ordersCreated=0')
 }
