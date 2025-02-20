@@ -97,25 +97,28 @@
 	}
 
 	async function handlePaymentButton() {
-		try {
-			const response = await fetch('/api/savecart', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify($cartItems)
-			});
+		// try {
+		// 	const response = await fetch('/api/savecart', {
+		// 		method: 'POST',
+		// 		headers: {
+		// 			'Content-Type': 'application/json'
+		// 		},
+		// 		body: JSON.stringify($cartItems)
+		// 	});
 
-      if (!response.ok) {
-        throw new Error('No se pudo guardar el carrito');
-      }
+		//   if (!response.ok) {
+		//     throw new Error('No se pudo guardar el carrito');
+		//   }
 
-			openDialogPayment = true;
-			toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
-		} catch (error) {
-			console.error('Error al guardar el carrito:', error);
-			toast.error('No se pudo guardar el carrito');
-		}
+		// 	openDialogPayment = true;
+		// 	toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
+		// } catch (error) {
+		// 	console.error('Error al guardar el carrito:', error);
+		// 	toast.error('No se pudo guardar el carrito');
+		// }
+
+		openDialogPayment = true;
+		toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
 	}
 </script>
 

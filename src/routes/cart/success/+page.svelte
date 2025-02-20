@@ -3,7 +3,6 @@
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
-  import { get } from 'svelte/store';
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -21,8 +20,8 @@
 	}
 
 	async function createOrders() {
-		const items = get(cartItems);
-		const buyer = get(page).data.user;
+		const items = $cartItems
+		const buyer = $page.data.user;
 
     if (!items || items.length === 0) {
 			toast.error('El carrito esta vacio');
@@ -107,7 +106,7 @@
 		}
 	}
 
-	$: if (get(page).data.user && !ordersCreated) {
+	$: if ($page.data.user && !ordersCreated) {
 		ordersCreated = true;
 		createOrders();
 	}
