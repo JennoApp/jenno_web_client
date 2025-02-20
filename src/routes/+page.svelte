@@ -128,10 +128,15 @@
 			toast.success('¡Ordenes creadas exitosamente!');
 		} else if (ordersCreated === '0') {
 			toast.error('Error al crear las ordenes');
+		} else {
+			return;
 		}
 
 		window.history.replaceState({}, '', '/');
-    location.reload();
+
+		setTimeout(() => {
+			location.reload();
+		}, 100);
 	});
 
 	// $: if ($page.url.searchParams.get('ordersCreated') === '1') {
