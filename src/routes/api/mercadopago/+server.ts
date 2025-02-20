@@ -37,7 +37,6 @@ export const POST: RequestHandler = async ({ request }) => {
         ]
       },
       installments: 6,
-      binary_mode: true
     }
 
     const response = await preference.create({
