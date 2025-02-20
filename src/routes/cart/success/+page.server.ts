@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types'
 import { PRIVATE_SERVER_URL } from '$env/static/private'
+import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
   // Cargar carrito de la cookie
@@ -78,11 +79,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
       maxAge: 0
     });
 
-    return {
-      user,
-      cartItems: [],
-      ordersCreated: true
-    };
+    throw redirect(302, '/?ordersCreated=1');
   } catch (error: any) {
     console.error('Error creando órdenes:', error);
     return {

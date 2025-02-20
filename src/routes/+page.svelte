@@ -4,6 +4,8 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { removeTotal } from '$lib/stores/cartStore';
+	import { toast } from 'svelte-sonner';
 
 
 	export let data: PageServerData;
@@ -117,6 +119,16 @@
       window.location.reload();
     }
   });
+
+
+  $: if ($page.url.searchParams.get('ordersCreated') === '1') {
+    removeTotal()
+
+    toast.success('¡Ordenes creadas exitosamente!')
+
+    window.history.replaceState({}, '', '/');
+    location.reload()
+  }
 </script>
 
 <svelte:head>
