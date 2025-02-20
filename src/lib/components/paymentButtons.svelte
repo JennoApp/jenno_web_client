@@ -1,6 +1,6 @@
 <script lang="ts">
   import { initializePayPal } from '$lib/utils/paypalUtils'
-	
+
 
   export let TotalAmount: number
 
@@ -10,17 +10,17 @@
       const response = await fetch(`/api/paypal`)
       const data = await response.json()
 
-      paypalClientId = data.clientId 
+      paypalClientId = data.clientId
     } catch (error) {
-      console.error('Error al solicitar Paypal Id')
+      console.error('Error al solicitar Client Id de PayPal')
     }
-  } 
+  }
 
   async function initializePayPalButtons() {
     await getPaypalClientId()
     if (paypalClientId) {
       await initializePayPal(paypalClientId, TotalAmount, 'paypal-button-container')
-    } 
+    }
   }
 
   $: initializePayPalButtons()

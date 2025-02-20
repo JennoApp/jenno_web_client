@@ -28,7 +28,16 @@ export const POST: RequestHandler = async ({ request }) => {
       auto_return: 'approved',
       payer: {
         email: body.email
-      }
+      },
+      payment_methods: {
+        excluded_payment_types: [
+          {
+            id: 'ticket'
+          }
+        ]
+      },
+      installments: 6,
+      binary_mode: true
     }
 
     const response = await preference.create({
