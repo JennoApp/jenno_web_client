@@ -130,13 +130,19 @@
 </div> -->
 
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { goto, invalidateAll } from "$app/navigation";
 	import type { PageData } from "../$types";
 
   export let data: PageData
 
 	// export let ordersCreated;
 	export let error;
+
+  let invalidate = false
+  $: if (data && !invalidate) {
+    invalidate = true
+    invalidateAll()
+  }
 </script>
 
 {#if error}
