@@ -11,10 +11,6 @@
 
 	let progressValue = 0;
 
-	$: isCreating = progressValue < 100;
-
-	$: isCartEmpty = $cartItems || $cartItems.length === 0;
-
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -147,24 +143,19 @@
 		class="text-green-500 mb-4"
 	/>
 
-	{#if isCreating}
-		<h1 class="text-2xl font-semibold text-gray-200 mb-2">Pago Exitoso</h1>
+	<h1 class="text-2xl font-semibold text-gray-200 mb-2">Pago Exitoso</h1>
+
+	{#if $cartItems.length !== 0}
 		<p class="text-md text-gray-400 mb-6">
 			Estamos creando tus órdenes. ¡Por favor, espera un momento!
 		</p>
+		<!-- Barra de progreso -->
+		<Progress value={progressValue} class="w-3/4" />
 	{:else}
-		<h1 class="text-2xl font-semibold text-gray-200 mb-2">¡Órdenes creadas!</h1>
 		<p class="text-md text-gray-400 mb-6">
 			Tus órdenes se han creado correctamente. ¡Gracias por tu compra!
 		</p>
-	{/if}
 
-	{#if $cartItems.length !== 0}
-		<!-- Barra de progreso -->
-		<Progress value={progressValue} class="w-3/4" />
-	{/if}
-
-	{#if !isCreating}
 		<button
 			class="dark:bg-[#303030] w-44 h-10 rounded-lg hover:dark:bg-[#353535] mt-8"
 			on:click={() => goto('/')}
