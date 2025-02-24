@@ -3,10 +3,13 @@
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { toast } from 'svelte-sonner';
+	import Progress from '$lib/components/ui/progress/progress.svelte';
 
 	// Obtener url del servidor
 	let serverUrl: string;
 	let ordersCreated = false;
+
+	let progressValue = 0;
 
 	async function getServerUrl() {
 		try {
@@ -20,15 +23,15 @@
 	}
 
 	async function createOrders() {
-		const items = $cartItems
+		const items = $cartItems;
 		const buyer = $page.data.user;
 
-    if (!items || items.length === 0) {
+		if (!items || items.length === 0) {
 			toast.error('El carrito esta vacio');
 			return;
 		}
 
-    if (!buyer) {
+		if (!buyer) {
 			toast.error('No se encotro la informacion del comprador');
 			return;
 		}
@@ -37,20 +40,23 @@
 		const buyerName = buyer?.username;
 		let buyerProfileImg = buyer?.profileImg;
 
-
 		if (buyerProfileImg == null || buyerProfileImg == undefined) {
 			buyerProfileImg = '';
 		}
 
 		try {
 			await getServerUrl();
-      if (!serverUrl) {
+			if (!serverUrl) {
 				toast.error('No se pudo obtener la URL del servidor');
 				return;
 			}
 
-      const maxAttempts = 3;
+      // Calcular cuánto avanza la barra por cada item creado
+      const totalItems = items.length;
+      const increment = 100 / totalItems;
+
 			for (let item of items) {
+				const maxAttempts = 3;
 				let success = false;
 				let attempts = 0;
 
@@ -84,6 +90,7 @@
 						}
 
 						success = true;
+            progressValue += increment;
 					} catch (error) {
 						console.error(`Intento ${attempts + 1} fallido:`, error);
 						attempts++;
@@ -112,9 +119,11 @@
 	}
 
 	console.log($cartItems);
+
+   $: isCreating = progressValue < 100;
 </script>
 
-<div class="flex justify-center w-full h-[calc(100vh-56px)]">
+<!-- <div class="flex justify-center w-full h-[calc(100vh-56px)]">
 	<div class="w-1/2 h-56 mt-40 bg-[#202020] rounded-lg">
 		<h1 class="mt-2 text-3xl font-semibold text-center">Pago Exitoso</h1>
 		<p class="p-5 text-center mt-2 font-medium">
@@ -128,32 +137,39 @@
 			>
 		</div>
 	</div>
+</div> -->
+
+
+<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
+	<!-- Ícono de éxito -->
+	<iconify-icon
+		icon="material-symbols:check-circle-outline"
+		height="5rem"
+		width="5rem"
+		class="text-green-500 mb-4"
+	/>
+
+  {#if isCreating}
+    <h1 class="text-2xl font-semibold text-gray-200 mb-2">Pago Exitoso</h1>
+    <p class="text-md text-gray-400 mb-6">
+      Estamos creando tus órdenes. ¡Por favor, espera un momento!
+    </p>
+  {:else}
+    <h1 class="text-2xl font-semibold text-gray-200 mb-2">¡Órdenes creadas!</h1>
+    <p class="text-md text-gray-400 mb-6">
+      Tus órdenes se han creado correctamente. ¡Gracias por tu compra!
+    </p>
+  {/if}
+
+	<!-- Barra de progreso -->
+	<Progress value={progressValue} class="w-3/4" />
+
+  {#if !isCreating}
+    <button
+      class="dark:bg-[#303030] w-44 h-10 rounded-lg hover:dark:bg-[#353535] mt-8"
+      on:click={() => goto('/')}
+    >
+      Volver a la tienda
+    </button>
+  {/if}
 </div>
-
-<!-- <script lang="ts">
-  import { goto, invalidateAll } from "$app/navigation";
-	import type { PageData } from "../$types";
-
-  export let data: PageData
-
-	// export let ordersCreated;
-	export let error;
-
-  let invalidate = false
-  $: if (data && !invalidate) {
-    invalidate = true
-    invalidateAll()
-  }
-</script> -->
-<!--
-{#if error}
-	<p class="text-red-500">Ocurrió un error al crear las órdenes: {error}</p>
-{:else if data?.ordersCreated}
-	<h1>Pago Exitoso</h1>
-	<p>¡Gracias por tu compra! Se han creado tus órdenes correctamente.</p>
-{:else}
-	<h1>No se crearon órdenes</h1>
-	<p>Es posible que no tengas carrito o que no haya usuario logueado.</p>
-{/if}
-
-<button on:click={() => goto('/')}> Volver a la tienda </button> -->
