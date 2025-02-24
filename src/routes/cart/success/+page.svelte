@@ -11,6 +11,8 @@
 
 	let progressValue = 0;
 
+	$: isCreating = progressValue < 100;
+
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -51,9 +53,9 @@
 				return;
 			}
 
-      // Calcular cuánto avanza la barra por cada item creado
-      const totalItems = items.length;
-      const increment = 100 / totalItems;
+			// Calcular cuánto avanza la barra por cada item creado
+			const totalItems = items.length;
+			const increment = 100 / totalItems;
 
 			for (let item of items) {
 				const maxAttempts = 3;
@@ -90,7 +92,7 @@
 						}
 
 						success = true;
-            progressValue += increment;
+						progressValue += increment;
 					} catch (error) {
 						console.error(`Intento ${attempts + 1} fallido:`, error);
 						attempts++;
@@ -100,6 +102,9 @@
 					}
 				}
 			}
+
+			// Forzar 100% al finalizar, por si quedó algún decimal
+			progressValue = 100;
 
 			toast.success('Todas las ordenes se han creado correctamente');
 
@@ -114,31 +119,22 @@
 	}
 
 	$: if ($page.data.user && !ordersCreated) {
-		ordersCreated = true;
-		createOrders();
+		const searchParams = $page.url.searchParams;
+		if (searchParams) {
+			const mercadoPagoStatus = searchParams.get('status');
+			const paypalSuccess = searchParams.get('paymentSuccess');
+
+			if (mercadoPagoStatus === 'approved' || paypalSuccess === '1') {
+				ordersCreated = true;
+				createOrders();
+			} else {
+				console.log('No se detecta un pago exitoso');
+			}
+		}
 	}
 
 	console.log($cartItems);
-
-   $: isCreating = progressValue < 100;
 </script>
-
-<!-- <div class="flex justify-center w-full h-[calc(100vh-56px)]">
-	<div class="w-1/2 h-56 mt-40 bg-[#202020] rounded-lg">
-		<h1 class="mt-2 text-3xl font-semibold text-center">Pago Exitoso</h1>
-		<p class="p-5 text-center mt-2 font-medium">
-			¡Gracias por tu compra! Tu pago se ha procesado correctamente
-		</p>
-
-		<div class="text-center mt-14">
-			<button
-				class="dark:bg-[#303030] w-44 h-10 rounded-lg hover:dark:bg-[#353535]"
-				on:click={() => goto('/')}>Volver a la tienda</button
-			>
-		</div>
-	</div>
-</div> -->
-
 
 <div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
 	<!-- Ícono de éxito -->
@@ -149,27 +145,27 @@
 		class="text-green-500 mb-4"
 	/>
 
-  {#if isCreating}
-    <h1 class="text-2xl font-semibold text-gray-200 mb-2">Pago Exitoso</h1>
-    <p class="text-md text-gray-400 mb-6">
-      Estamos creando tus órdenes. ¡Por favor, espera un momento!
-    </p>
-  {:else}
-    <h1 class="text-2xl font-semibold text-gray-200 mb-2">¡Órdenes creadas!</h1>
-    <p class="text-md text-gray-400 mb-6">
-      Tus órdenes se han creado correctamente. ¡Gracias por tu compra!
-    </p>
-  {/if}
+	{#if isCreating}
+		<h1 class="text-2xl font-semibold text-gray-200 mb-2">Pago Exitoso</h1>
+		<p class="text-md text-gray-400 mb-6">
+			Estamos creando tus órdenes. ¡Por favor, espera un momento!
+		</p>
+	{:else}
+		<h1 class="text-2xl font-semibold text-gray-200 mb-2">¡Órdenes creadas!</h1>
+		<p class="text-md text-gray-400 mb-6">
+			Tus órdenes se han creado correctamente. ¡Gracias por tu compra!
+		</p>
+	{/if}
 
 	<!-- Barra de progreso -->
 	<Progress value={progressValue} class="w-3/4" />
 
-  {#if !isCreating}
-    <button
-      class="dark:bg-[#303030] w-44 h-10 rounded-lg hover:dark:bg-[#353535] mt-8"
-      on:click={() => goto('/')}
-    >
-      Volver a la tienda
-    </button>
-  {/if}
+	{#if !isCreating}
+		<button
+			class="dark:bg-[#303030] w-44 h-10 rounded-lg hover:dark:bg-[#353535] mt-8"
+			on:click={() => goto('/')}
+		>
+			Volver a la tienda
+		</button>
+	{/if}
 </div>
