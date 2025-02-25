@@ -11,10 +11,10 @@
 	export let data: PageServerData;
 
 	let productsStore = writable<any>([]);
-  let metaStore = writable<any>()
+	let metaStore = writable<any>();
 
 	productsStore.set(data.products);
-  metaStore.set(data.meta)
+	metaStore.set(data.meta);
 
 	// let products: any[] = data.products;
 	let pageload = 1;
@@ -52,6 +52,31 @@
 
 		return newData;
 	};
+
+	async function loadProducts() {
+		await getServerUrl();
+		// Obtenemos el país desde la URL o usamos 'Colombia' por defecto
+		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const limit = 20;
+		// La categoría en este caso es '' (Todos)
+		const category = '';
+
+		try {
+			const response = await fetch(
+				`${serverUrl}/products?page=1&limit=${limit}&country=${country}&category=${category}`
+			);
+			if (!response.ok) {
+				console.error('Error al cargar productos:', response.statusText);
+				return;
+			}
+			const { data, meta } = await response.json();
+			// Actualizamos los stores con los nuevos datos
+			productsStore.set(data);
+			metaStore.set(meta);
+		} catch (error) {
+			console.error('Error al cargar productos:', error);
+		}
+	}
 
 	onMount(() => {
 		if (!loadingRef) {
@@ -100,35 +125,39 @@
 	async function handleCategoryClick(category: string) {
 		selectedCategory = category;
 
-		const url = new URL(window.location.href);
+		// const url = new URL(window.location.href);
 
-		// actualizar la categoria
+		// // actualizar la categoria
+		// if (category === '') {
+		// 	url.searchParams.delete('category');
+		// } else {
+		// 	url.searchParams.set('category', category);
+		// }
+
 		if (category === '') {
-			url.searchParams.delete('category');
 		} else {
-			url.searchParams.set('category', category);
-		}
-
-		try {
-			const response = await fetch(
-				`https://jenno-backend.vercel.app/products/category/${category}?page=1&limit=5&country=Colombia`
-			);
-			if (!response.ok) {
-				console.error('Error al obtener productos:', response.statusText);
-			} else {
-				const { data, meta } = await response.json();
-				// Se asume que la respuesta trae la lista de productos en la propiedad "products"
-				productsStore.set(data);
+			try {
+				const response = await fetch(
+					`https://jenno-backend.vercel.app/products/category/${category}?page=1&limit=20&country=Colombia`
+				);
+				if (!response.ok) {
+					console.error('Error al obtener productos:', response.statusText);
+				} else {
+					const { data, meta } = await response.json();
+					// Se asume que la respuesta trae la lista de productos en la propiedad "products"
+					productsStore.set(data);
+          metaStore.set(meta)
+				}
+			} catch (error) {
+				console.error('Error en la petición:', error);
 			}
-		} catch (error) {
-			console.error('Error en la petición:', error);
 		}
 
-		// Navegar a la nueva Url
-		await goto(url.toString(), {
-			keepFocus: true,
-			invalidateAll: true
-		});
+		// // Navegar a la nueva Url
+		// await goto(url.toString(), {
+		// 	keepFocus: true,
+		// 	invalidateAll: true
+		// });
 	}
 
 	onMount(() => {
