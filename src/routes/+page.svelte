@@ -12,6 +12,7 @@
 
 	let productsStore = writable<any>([]);
 	let metaStore = writable<any>();
+	let categoryStore = writable<string>('');
 
 	productsStore.set(data.products);
 	metaStore.set(data.meta);
@@ -33,38 +34,52 @@
 	}
 
 	////////
-	let loadingRef: HTMLElement | undefined;
 
 	const loadingProducts = async () => {
 		await getServerUrl();
 
-		const response = await fetch(
-			`${serverUrl}/products?page=${pageload + 1}&limit=${20}&country=${'Colombia'}&category=${''}`
-		);
-		const newData = await response.json();
+		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const limit = 20;
+		const nextPage = pageload + 1;
+		let endpoint = '';
 
-		productsStore.update((products) => [...products, ...newData.data]);
-		// Agregar los nuevos productos a la variable products
-		// products = [...products, newData.data];
+		// Si no hay categoría seleccionada, carga todos los productos
+		if ($categoryStore === '') {
+			endpoint = `${serverUrl}/products?page=${nextPage}&limit=${limit}&country=${country}&category=`;
+		} else {
+			// Si hay categoría seleccionada, se usa el endpoint correspondiente
+			endpoint = `https://jenno-backend.vercel.app/products/category/${$categoryStore}?page=${nextPage}&limit=${limit}&country=${country}`;
+		}
 
-		// incrementar el numero de pagina para la siguiente carga
-		pageload++;
+		try {
+			const response = await fetch(endpoint);
+			if (!response.ok) {
+				console.error('Error al cargar productos:', response.statusText);
+				return;
+			}
+			const newData = await response.json();
 
-		return newData;
+			productsStore.update((products) => [...products, ...newData.data]);
+			metaStore.set(newData.meta);
+			pageload = nextPage;
+
+			return newData;
+		} catch (error) {
+			console.error('Error en loadingProducts:', error);
+		}
 	};
 
-	async function loadProducts() {
+	async function loadInitialProducts() {
 		await getServerUrl();
 		// Obtenemos el país desde la URL o usamos 'Colombia' por defecto
 		const country = $page.url.searchParams.get('country') || 'Colombia';
 		const limit = 20;
 		// La categoría en este caso es '' (Todos)
 		const category = '';
+		const endpoint = `${serverUrl}/products?page=1&limit=${limit}&country=${country}&category=${category}`;
 
 		try {
-			const response = await fetch(
-				`${serverUrl}/products?page=1&limit=${limit}&country=${country}&category=${category}`
-			);
+			const response = await fetch(endpoint);
 			if (!response.ok) {
 				console.error('Error al cargar productos:', response.statusText);
 				return;
@@ -73,24 +88,26 @@
 			// Actualizamos los stores con los nuevos datos
 			productsStore.set(data);
 			metaStore.set(meta);
+			categoryStore.set(category);
+			pageload = 1;
 		} catch (error) {
 			console.error('Error al cargar productos:', error);
 		}
 	}
 
+	// Observer para el scroll infinito
+	let loadingRef: HTMLElement | undefined;
 	onMount(() => {
-		if (!loadingRef) {
-			return;
-		}
+		if (!loadingRef) return;
 
 		const loadingObserver = new IntersectionObserver(async (entries) => {
 			const element = entries[0];
-
-			console.log(element.isIntersecting);
-
+			console.log('Intersecting:', element.isIntersecting);
 			if (element.isIntersecting) {
-				if (data.meta.hasNextPage) {
-					console.log('Loading new products');
+				// Se usa el valor actual de metaStore para determinar si hay siguiente página
+				const currentMeta = $metaStore;
+				if (currentMeta && currentMeta.hasNextPage) {
+					console.log('Cargando nuevos productos...');
 					await loadingProducts();
 				}
 			}
@@ -98,8 +115,8 @@
 
 		loadingObserver.observe(loadingRef);
 	});
-	/////////
 
+	/////////
 	let randomCategories: string[] = [];
 	let selectedCategory: string | null = $page.url.searchParams.get('category');
 
@@ -124,18 +141,10 @@
 	// Funcion para manejar el click en una categoria
 	async function handleCategoryClick(category: string) {
 		selectedCategory = category;
-
-		// const url = new URL(window.location.href);
-
-		// // actualizar la categoria
-		// if (category === '') {
-		// 	url.searchParams.delete('category');
-		// } else {
-		// 	url.searchParams.set('category', category);
-		// }
+		categoryStore.set(category);
 
 		if (category === '') {
-      await loadProducts()
+			await loadInitialProducts();
 		} else {
 			try {
 				const response = await fetch(
@@ -147,18 +156,13 @@
 					const { data, meta } = await response.json();
 					// Se asume que la respuesta trae la lista de productos en la propiedad "products"
 					productsStore.set(data);
-          metaStore.set(meta)
+					metaStore.set(meta);
+					pageload = 1;
 				}
 			} catch (error) {
 				console.error('Error en la petición:', error);
 			}
 		}
-
-		// // Navegar a la nueva Url
-		// await goto(url.toString(), {
-		// 	keepFocus: true,
-		// 	invalidateAll: true
-		// });
 	}
 
 	onMount(() => {
@@ -242,6 +246,7 @@
 
 <br />
 
-{#if data.meta.hasNextPage}
+<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
+{#if $metaStore?.hasNextPage}
 	<div bind:this={loadingRef}>Loading...</div>
 {/if}
