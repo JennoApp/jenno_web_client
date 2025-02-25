@@ -120,10 +120,8 @@
 			const element = entries[0];
 			if (element.isIntersecting) {
 				const currentMeta = $metaStore;
-				if (currentMeta && currentMeta.hasNextPage) {
-					console.log('Cargando nuevos productos...');
-					await loadingProducts();
-				}
+				console.log('Cargando nuevos productos...');
+				await loadingProducts();
 			}
 		});
 		loadingObserver.observe(loadingRef);
