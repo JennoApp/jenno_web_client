@@ -6,14 +6,16 @@
 	import { goto } from '$app/navigation';
 	import { removeTotal } from '$lib/stores/cartStore';
 	import { toast } from 'svelte-sonner';
-  import { writable } from 'svelte/store'
+	import { writable } from 'svelte/store';
 
 	export let data: PageServerData;
 
+	let productsStore = writable<any>([]);
+  let metaStore = writable<any>()
 
-  let productsStore = writable<any>([])
+	productsStore.set(data.products);
+  metaStore.set(data.meta)
 
-  productsStore.set(data.products)
 	// let products: any[] = data.products;
 	let pageload = 1;
 
@@ -36,10 +38,12 @@
 	const loadingProducts = async () => {
 		await getServerUrl();
 
-		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}&limit=${20}&country=${'Colombia'}&category=${''}`);
+		const response = await fetch(
+			`${serverUrl}/products?page=${pageload + 1}&limit=${20}&country=${'Colombia'}&category=${''}`
+		);
 		const newData = await response.json();
 
-    productsStore.update((products) => [...products, ...newData.data])
+		productsStore.update((products) => [...products, ...newData.data]);
 		// Agregar los nuevos productos a la variable products
 		// products = [...products, newData.data];
 
@@ -103,6 +107,21 @@
 			url.searchParams.delete('category');
 		} else {
 			url.searchParams.set('category', category);
+		}
+
+		try {
+			const response = await fetch(
+				`https://jenno-backend.vercel.app/products/category/${category}?page=1&limit=5&country=Colombia`
+			);
+			if (!response.ok) {
+				console.error('Error al obtener productos:', response.statusText);
+			} else {
+				const { data, meta } = await response.json();
+				// Se asume que la respuesta trae la lista de productos en la propiedad "products"
+				productsStore.set(data);
+			}
+		} catch (error) {
+			console.error('Error en la petición:', error);
 		}
 
 		// Navegar a la nueva Url
