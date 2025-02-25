@@ -135,6 +135,7 @@
 		// }
 
 		if (category === '') {
+      await loadProducts()
 		} else {
 			try {
 				const response = await fetch(
