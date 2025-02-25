@@ -96,25 +96,6 @@
 
 	// Observer para el scroll infinito
 	let loadingRef: HTMLElement | undefined;
-	// onMount(() => {
-	// 	if (!loadingRef) return;
-
-	// 	const loadingObserver = new IntersectionObserver(async (entries) => {
-	// 		const element = entries[0];
-	// 		console.log('Intersecting:', element.isIntersecting);
-	// 		if (element.isIntersecting) {
-	// 			// Se usa el valor actual de metaStore para determinar si hay siguiente página
-	// 			const currentMeta = $metaStore;
-	// 			if (currentMeta && currentMeta.hasNextPage) {
-	// 				console.log('Cargando nuevos productos...');
-	// 				await loadingProducts();
-	// 			}
-	// 		}
-	// 	});
-
-	// 	loadingObserver.observe(loadingRef);
-	// });
-
 	$: if (loadingRef) {
 		const loadingObserver = new IntersectionObserver(async (entries) => {
 			const element = entries[0];
