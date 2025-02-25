@@ -6,10 +6,15 @@
 	import { goto } from '$app/navigation';
 	import { removeTotal } from '$lib/stores/cartStore';
 	import { toast } from 'svelte-sonner';
+  import { writable } from 'svelte/store'
 
 	export let data: PageServerData;
 
-	let products: any[] = data.products;
+
+  let productsStore = writable<any>([])
+
+  productsStore.set(data.products)
+	// let products: any[] = data.products;
 	let pageload = 1;
 
 	// Obtener url del servidor
@@ -31,11 +36,12 @@
 	const loadingProducts = async () => {
 		await getServerUrl();
 
-		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}`);
+		const response = await fetch(`${serverUrl}/products?page=${pageload + 1}&limit=${20}&country=${'Colombia'}&category=${''}`);
 		const newData = await response.json();
 
+    productsStore.update((products) => [...products, ...newData.data])
 		// Agregar los nuevos productos a la variable products
-		products = [...products, newData.data];
+		// products = [...products, newData.data];
 
 		// incrementar el numero de pagina para la siguiente carga
 		pageload++;
@@ -180,7 +186,7 @@
 <div
 	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
 >
-	{#each products as productData}
+	{#each $productsStore as productData}
 		<Card data={productData} />
 	{/each}
 </div>
