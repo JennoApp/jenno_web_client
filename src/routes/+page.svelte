@@ -3,7 +3,6 @@
 	import Card from '$lib/components/Card.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 	import { removeTotal } from '$lib/stores/cartStore';
 	import { toast } from 'svelte-sonner';
 	import { writable } from 'svelte/store';
@@ -97,14 +96,29 @@
 
 	// Observer para el scroll infinito
 	let loadingRef: HTMLElement | undefined;
-	onMount(() => {
-		if (!loadingRef) return;
+	// onMount(() => {
+	// 	if (!loadingRef) return;
 
+	// 	const loadingObserver = new IntersectionObserver(async (entries) => {
+	// 		const element = entries[0];
+	// 		console.log('Intersecting:', element.isIntersecting);
+	// 		if (element.isIntersecting) {
+	// 			// Se usa el valor actual de metaStore para determinar si hay siguiente página
+	// 			const currentMeta = $metaStore;
+	// 			if (currentMeta && currentMeta.hasNextPage) {
+	// 				console.log('Cargando nuevos productos...');
+	// 				await loadingProducts();
+	// 			}
+	// 		}
+	// 	});
+
+	// 	loadingObserver.observe(loadingRef);
+	// });
+
+	$: if (loadingRef) {
 		const loadingObserver = new IntersectionObserver(async (entries) => {
 			const element = entries[0];
-			console.log('Intersecting:', element.isIntersecting);
 			if (element.isIntersecting) {
-				// Se usa el valor actual de metaStore para determinar si hay siguiente página
 				const currentMeta = $metaStore;
 				if (currentMeta && currentMeta.hasNextPage) {
 					console.log('Cargando nuevos productos...');
@@ -112,9 +126,8 @@
 				}
 			}
 		});
-
 		loadingObserver.observe(loadingRef);
-	});
+	}
 
 	/////////
 	let randomCategories: string[] = [];
