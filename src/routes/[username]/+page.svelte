@@ -274,7 +274,7 @@
 				{#if user?._id === data?.user?._id}
 					<!-- Botón de Compartir Tienda para el dueño -->
 					<button
-						class="w-full flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
+						class="w-[80%] mx-auto flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
 						on:click|preventDefault={() => {
 							const tienda = data.username; // Se asume que 'data.username' es el identificador de la tienda
 							const store_link = `https://www.jenno.com.co/${tienda}`;
