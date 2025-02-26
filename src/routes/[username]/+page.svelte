@@ -8,9 +8,14 @@
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
+	import { writable } from 'svelte/store';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
+
+	let productsStore = writable<any>([]);
+	let metaStore = writable<any>();
+	let pageload = 1;
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -45,9 +50,12 @@
 			const response = await fetch(
 				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
 			);
-			const { data } = await response.json();
+			const { data, meta } = await response.json();
 
-			products = data;
+			// products = data;
+
+			productsStore.set(data);
+			metaStore.set(meta);
 		} catch (error) {
 			console.log('Error al cargar los productos del usuario: ', error);
 		}
@@ -56,7 +64,10 @@
 	// Carga los datos si el resutaldo del data.Status es diferente a 500
 	$: if (dataStatus === 500) {
 		console.log('usuario no existe');
-		products = []; // vacia la lista de productos cuando el usuario no existe
+		// products = []; // vacia la lista de productos cuando el usuario no existe
+
+		productsStore.set([]);
+		metaStore.set({});
 	} else {
 		if ($location_data) {
 			loadProducts(data.userData._id, $location_data.data[0].country);
@@ -143,51 +154,88 @@
 			loadProducts(data.userData._id);
 		}
 	});
+
+	async function loadingProducts() {
+		await getServerUrl();
+
+		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const limit = 20;
+		const nextPage = pageload + 1;
+
+    try {
+      const response = await fetch(
+        `${serverUrl}/products/user/${data.userData._id}?page=${nextPage}&limit=${limit}&country=${country}`
+      );
+      const result = await response.json();
+      // Agrega los nuevos productos a la store
+      productsStore.update((products) => [...products, ...result.data]);
+      pageload = nextPage;
+      metaStore.set(result.meta);
+    } catch (error) {
+      console.log('Error al cargar más productos:', error);
+    }
+	}
+
+	// --- SCROLL INFINITO CON INTERSECTION OBSERVER ---
+	let loadingRef: HTMLElement | undefined;
+	$: if (loadingRef) {
+		const loadingObserver = new IntersectionObserver(async (entries) => {
+			const element = entries[0];
+			if (element.isIntersecting) {
+				console.log('Cargando nuevos productos...');
+				await loadingProducts();
+			}
+		});
+		loadingObserver.observe(loadingRef);
+	}
 </script>
 
 <svelte:head>
-  <title>{data.userData?.displayname} - Tienda en Jenno</title>
-  <meta
-    name="description"
-    content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
-  />
+	<title>{data.userData?.displayname} - Tienda en Jenno</title>
+	<meta
+		name="description"
+		content={data.userData?.bio ||
+			'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}
+	/>
 
-  <!-- Open Graph (para Facebook, WhatsApp, etc.) -->
-  <meta property="og:title" content="{data.userData?.displayname} - Tienda en Jenno" />
-  <meta
-    property="og:description"
-    content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
-  />
-  <meta property="og:type" content="website" />
-  <!-- Usamos la URL actual; por ejemplo, si usas $page.url.href, asegúrate de importarlo -->
-  <meta property="og:url" content="{$page.url.href}" />
-  <!-- La imagen destacada: si el usuario tiene profileImg, la usamos; de lo contrario, una imagen por defecto -->
-  <meta
-    property="og:image"
-    content="{data.userData?.profileImg || 'https://www.jenno.com.co/oplogo.jpg'}"
-  />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta
-    property="og:image:alt"
-    content="Previsualización de la tienda de {data.userData?.displayname}"
-  />
+	<!-- Open Graph (para Facebook, WhatsApp, etc.) -->
+	<meta property="og:title" content="{data.userData?.displayname} - Tienda en Jenno" />
+	<meta
+		property="og:description"
+		content={data.userData?.bio ||
+			'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}
+	/>
+	<meta property="og:type" content="website" />
+	<!-- Usamos la URL actual; por ejemplo, si usas $page.url.href, asegúrate de importarlo -->
+	<meta property="og:url" content={$page.url.href} />
+	<!-- La imagen destacada: si el usuario tiene profileImg, la usamos; de lo contrario, una imagen por defecto -->
+	<meta
+		property="og:image"
+		content={data.userData?.profileImg || 'https://www.jenno.com.co/oplogo.jpg'}
+	/>
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta
+		property="og:image:alt"
+		content="Previsualización de la tienda de {data.userData?.displayname}"
+	/>
 
-  <!-- Twitter Cards -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="{data.userData?.displayname} - Tienda en Jenno" />
-  <meta
-    name="twitter:description"
-    content="{data.userData?.bio || 'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}"
-  />
-  <meta
-    name="twitter:image"
-    content="{data.userData?.profileImg || 'https://www.jenno.com.co/oplogo.jpg'}"
-  />
-  <meta
-    name="twitter:image:alt"
-    content="Previsualización de la tienda de {data.userData?.displayname}"
-  />
+	<!-- Twitter Cards -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{data.userData?.displayname} - Tienda en Jenno" />
+	<meta
+		name="twitter:description"
+		content={data.userData?.bio ||
+			'Crea y comparte tu tienda online con Jenno. Vende tus productos de forma fácil y segura.'}
+	/>
+	<meta
+		name="twitter:image"
+		content={data.userData?.profileImg || 'https://www.jenno.com.co/oplogo.jpg'}
+	/>
+	<meta
+		name="twitter:image:alt"
+		content="Previsualización de la tienda de {data.userData?.displayname}"
+	/>
 </svelte:head>
 
 {#if userData}
@@ -267,10 +315,15 @@
 
 	<!-- Lista de prod -->
 	<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
-		{#each products as productData}
+		{#each $productsStore as productData}
 			<Card data={productData} />
 		{/each}
 	</div>
+
+	<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
+	{#if $metaStore?.hasNextPage}
+		<div bind:this={loadingRef}>Loading...</div>
+	{/if}
 
 	<!-- Error al encontrar la informacion del usuario -->
 {:else if data?.userData?.error}

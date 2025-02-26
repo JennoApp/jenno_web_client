@@ -100,7 +100,6 @@
 		const loadingObserver = new IntersectionObserver(async (entries) => {
 			const element = entries[0];
 			if (element.isIntersecting) {
-				const currentMeta = $metaStore;
 				console.log('Cargando nuevos productos...');
 				await loadingProducts();
 			}
