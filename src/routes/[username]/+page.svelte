@@ -162,18 +162,18 @@
 		const limit = 20;
 		const nextPage = pageload + 1;
 
-    try {
-      const response = await fetch(
-        `${serverUrl}/products/user/${data.userData._id}?page=${nextPage}&limit=${limit}&country=${country}`
-      );
-      const result = await response.json();
-      // Agrega los nuevos productos a la store
-      productsStore.update((products) => [...products, ...result.data]);
-      pageload = nextPage;
-      metaStore.set(result.meta);
-    } catch (error) {
-      console.log('Error al cargar más productos:', error);
-    }
+		try {
+			const response = await fetch(
+				`${serverUrl}/products/user/${data.userData._id}?page=${nextPage}&limit=${limit}&country=${country}`
+			);
+			const result = await response.json();
+			// Agrega los nuevos productos a la store
+			productsStore.update((products) => [...products, ...result.data]);
+			pageload = nextPage;
+			metaStore.set(result.meta);
+		} catch (error) {
+			console.log('Error al cargar más productos:', error);
+		}
 	}
 
 	// --- SCROLL INFINITO CON INTERSECTION OBSERVER ---
@@ -243,7 +243,7 @@
 		<p>Waiting...</p>
 	{:then user}
 		<!-- user Information -->
-		<div class="flex flex-col md:flex-row gap-3 mt-5 w-full">
+		< class="flex flex-col md:flex-row gap-3 mt-5 w-full">
 			<div class="flex justify-center md:w-3/12">
 				{#if user?.profileImg}
 					<img
@@ -270,11 +270,36 @@
 			</div>
 
 			<div class="flex flex-col items-center gap-5 md:w-4/12">
-				<div class="flex items-center gap-5 ml-10">
+
 					<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
-					{#if !(user?._id === data?.user?._id)}
-						<!-- Botón de seguimiento basado en el estado de `isFollowing` -->
-						{#if isFollowing}
+					{#if user?._id === data?.user?._id}
+						<!-- Botón de Compartir Tienda para el dueño -->
+						<button
+							class="w-full flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-sm"
+							on:click|preventDefault={() => {
+								const tienda = data.username; // Se asume que 'data.username' es el identificador de la tienda
+								const store_link = `https://www.jenno.com.co/${tienda}`;
+								navigator.clipboard
+									.writeText(store_link)
+									.then(() => {
+										toast.success('Enlace copiado al portapapeles');
+									})
+									.catch((err) => {
+										toast.error('Error al copiar el enlace. Inténtalo nuevamente');
+									});
+							}}
+						>
+							<span class="text-black dark:text-gray-200">Compartir Tienda</span>
+							<iconify-icon
+								class="ml-2 text-[#707070] dark:text-white"
+								icon="bitcoin-icons:share-filled"
+								height="1.5rem"
+								width="1.5rem"
+							></iconify-icon>
+						</button>
+					{:else}
+            <div class="flex items-center gap-5 ml-10">
+              {#if isFollowing}
 							<Button
 								class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
 							>
@@ -295,8 +320,10 @@
 						>
 							<span class="text-black dark:text-gray-200">Enviar Mensaje</span>
 						</Button>
-					{/if}
+            </div>
+          {/if}
 				</div>
+
 				<div class="flex gap-10">
 					<div class="text-center">
 						<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
@@ -307,7 +334,6 @@
 						<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
 					</div>
 				</div>
-			</div>
 		</div>
 	{:catch error}
 		<p class="text-red-500">{error.message}</p>
