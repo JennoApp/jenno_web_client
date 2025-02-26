@@ -274,7 +274,7 @@
 				{#if user?._id === data?.user?._id}
 					<!-- Botón de Compartir Tienda para el dueño -->
 					<button
-						class="w-full flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-sm"
+						class="w-full flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
 						on:click|preventDefault={() => {
 							const tienda = data.username; // Se asume que 'data.username' es el identificador de la tienda
 							const store_link = `https://www.jenno.com.co/${tienda}`;
@@ -289,12 +289,6 @@
 						}}
 					>
 						<span class="text-black dark:text-gray-200">Compartir Tienda</span>
-						<iconify-icon
-							class="ml-2 text-[#707070] dark:text-white"
-							icon="bitcoin-icons:share-filled"
-							height="1.5rem"
-							width="1.5rem"
-						></iconify-icon>
 					</button>
 				{:else}
 					<div class="flex items-center gap-5 ml-10">
@@ -321,17 +315,18 @@
 						</Button>
 					</div>
 				{/if}
-			</div>
 
-			<div class="flex gap-10">
-				<div class="text-center">
-					<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
-					<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
+				<div class="flex gap-10">
+					<div class="text-center">
+						<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
+						<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
+					</div>
+					<div class="text-center">
+						<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
+						<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
+					</div>
 				</div>
-				<div class="text-center">
-					<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
-					<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
-				</div>
+
 			</div>
 		</div>
 	{:catch error}
