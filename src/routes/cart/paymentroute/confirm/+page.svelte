@@ -97,28 +97,12 @@
 	}
 
 	async function handlePaymentButton() {
-		// try {
-		// 	const response = await fetch('/api/savecart', {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		body: JSON.stringify($cartItems)
-		// 	});
-
-		//   if (!response.ok) {
-		//     throw new Error('No se pudo guardar el carrito');
-		//   }
-
-		// 	openDialogPayment = true;
-		// 	toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
-		// } catch (error) {
-		// 	console.error('Error al guardar el carrito:', error);
-		// 	toast.error('No se pudo guardar el carrito');
-		// }
-
-		openDialogPayment = true;
-		toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
+		if ($paymentMethod === 'mercadopago') {
+			await payWithMercadoPago();
+		} else {
+			openDialogPayment = true;
+			toast.info('Si experimentas problemas, desactiva extensiones como bloqueadores de anuncios.');
+		}
 	}
 </script>
 
@@ -241,15 +225,6 @@
 			<div class="h-auto">
 				{#if $paymentMethod === 'nequi'}
 					<p class="text-center text-lg font-semibold">Paga con Nequi</p>
-				{:else if $paymentMethod === 'mercadopago'}
-					<p class="text-center text-lg font-semibold mb-3">Paga con Mercado Pago</p>
-					<!-- Botón para iniciar el flujo de pago con MP -->
-					<button
-						on:click|preventDefault={() => payWithMercadoPago()}
-						class="bg-[#009ee3] hover:bg-[#0087c6] text-white font-medium py-2 px-4 rounded"
-					>
-						Ir a Checkout
-					</button>
 				{:else if $paymentMethod === 'paypal'}
 					{#if usdEquivalent !== 0}
 						<PaymentButtons TotalAmount={usdEquivalent} />
