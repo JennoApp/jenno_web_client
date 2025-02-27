@@ -5,9 +5,7 @@
 		decrementCartItem,
 		removeFromCart,
 		getTotal,
-		subtotal as sub,
-		transferStripe,
-		total as T
+		subtotal as sub
 	} from '$lib/stores/cartStore';
 	import { onDestroy } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
@@ -196,20 +194,21 @@
 				<p>{formatPrice(calculateTotalShippingFee($cartItems), 'es-CO', 'COP')}</p>
 			</div> -->
 
-			<!-- Delivery -->
+			<!-- Envío -->
 			<div class="flex justify-between my-1 mr-5">
 				<div class="flex gap-1">
-					<h3>{m.cart_summary_shipment()}</h3>
+					<h3 class="font-semibold">{m.cart_summary_shipment()}</h3>
 					<h3 class="ml-1 text-sm text-gray-500">
 						(El envío se coordinará manualmente y se paga contra entrega)
 					</h3>
 				</div>
-				<p class="text-gray-400 text-sm">Beta: Sin costos de envío automáticos</p>
+				<p class="text-gray-400 text-sm">Beta: No se calcula automáticamente</p>
 			</div>
-			<!-- tax -->
+
+			<!-- Comisión de Pago -->
 			<div class="flex justify-between my-1 mr-5">
-				<h3>transferencia</h3>
-				<p>{formatPrice($transferStripe, 'es-CO', 'COP')}</p>
+				<h3 class="font-semibold">Comisión de Pago</h3>
+				<p class="text-gray-400 text-sm">Se calculará al elegir el método de pago</p>
 			</div>
 
 			<Separator class="bg-[#707070] my-2" />
@@ -217,7 +216,7 @@
 			<!-- Total -->
 			<div class="flex justify-between my-1 mr-5 mt-2">
 				<h3 class="font-bold">{m.cart_summary_total()}</h3>
-				<p>{formatPrice($T, 'es-CO', 'COP')}</p>
+				<p class="text-gray-400 text-sm">Se calculará al confirmar el pago</p>
 			</div>
 
 			<button

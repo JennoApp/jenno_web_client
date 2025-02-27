@@ -102,34 +102,7 @@ export function removeTotal() {
 }
 
 
-// export function calculateTotals() {
-//   let items = get(cartItems)
-
-//   // Calcular el subtotal de los productos en el carrito
-//   const subtotal = items.reduce((acc, product) => acc + product.price * product.amount, 0);
-
-//   // Calcular el costo total de envío
-//   const totalEnvio = items.reduce(
-//     (acc, product) => acc + product.shippingfee * product.amount,
-//     0
-//   );
-
-//   // Calcular la comisión de Stripe usando la fórmula proporcionada
-//   const P_goal = subtotal + totalEnvio;
-//   const F_fixed = 0; // Asumimos que no hay tarifa fija
-//   const F_percent = 0.03; // Tarifa porcentual del 3%
-
-//   const P_charge = (P_goal + F_fixed) / (1 - F_percent);
-//   const transferStripe = P_charge - P_goal;
-
-//   // Calcular el total
-//   const total = subtotal + totalEnvio + transferStripe;
-
-//   return { subtotal, totalEnvio, transferStripe, total };
-// }
-
-
-// Derivados para calcular el subtotal, totalEnvio, transferStripe y total
+// Derivados para calcular los totales sin comisión (estos se mostrarán en el carrito)
 export const subtotal = derived(cartItems, $cartItems =>
   $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0)
 );
@@ -142,13 +115,30 @@ export const P_goal = derived([subtotal, totalEnvio], ([$subtotal, $totalEnvio])
   $subtotal + $totalEnvio
 );
 
-const F_fixed = 0; // Asumimos que no hay tarifa fija
-const F_percent = 0.03; // Tarifa porcentual del 3%
+// Función para calcular la comisión según el método de pago
+export function computeCommission(paymentMethod: string, P_goal: number): number {
+	let config;
+	switch (paymentMethod) {
+		case 'mercadopago':
+      // 3,29% + $800,00 COP
+			config = { fixed: 800, percent: 0.0329 };
+			break;
+		case 'paypal':
+      // 3.40% + $0.30 USD
+			config = { fixed: 0.30, percent: 0.034 };
+			break;
+		default:
+			config = { fixed: 0, percent: 0 };
+			break;
+	}
+	// Fórmula para calcular la comisión: se asume que se quiere que el total recibido sea P_goal,
+	// y se aplica la comisión para saber cuánto se debe cobrar adicionalmente.
+	return (P_goal + config.fixed) / (1 - config.percent) - P_goal;
+}
 
-export const transferStripe = derived(P_goal, $P_goal =>
-  ($P_goal + F_fixed) / (1 - F_percent) - $P_goal
-);
 
-export const total = derived([P_goal, transferStripe], ([$P_goal, $transferStripe]) =>
-  $P_goal + $transferStripe
-);
+export function computeTotal(paymentMethod: string, P_goal: number): number {
+  const commission = computeCommission(paymentMethod, P_goal);
+  return P_goal + commission;
+}
+

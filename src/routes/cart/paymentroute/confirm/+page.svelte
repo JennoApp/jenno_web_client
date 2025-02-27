@@ -3,11 +3,11 @@
 	import { loadScript } from '@paypal/paypal-js';
 	import {
 		cartItems,
+		computeTotal,
+		computeCommission,
 		getTotal,
-		subtotal as sub,
+		subtotal as sub
 		// totalEnvio,
-		transferStripe,
-		total as T
 	} from '$lib/stores/cartStore';
 	import { page } from '$app/stores';
 	import { Separator } from '$lib/components/ui/separator';
@@ -31,10 +31,14 @@
 	);
 	$: P_goal = subtotal + totalEnvio;
 
-	// Conversion a USD
+	$: transferAmount = computeCommission($paymentMethod, P_goal);
+
+	// total a pagar segun metodo de pago seleccionado
+	$: total = computeTotal($paymentMethod, P_goal);
+
+	// Conversion a USD (solo para PayPal)
 	let exchangeRate = 0;
 	let usdEquivalent: number = 0;
-
 	onMount(() => {
 		if ($paymentMethod === 'paypal') {
 			fetchExchangeRate();
@@ -53,13 +57,17 @@
 		}
 	}
 
-	$: if (exchangeRate && $T) {
-		usdEquivalent = parseFloat(($T / exchangeRate).toFixed(2));
+	$: if (exchangeRate && total) {
+		if ($paymentMethod === 'paypal') {
+			usdEquivalent = parseFloat(((total + 0.3) / exchangeRate).toFixed(2));
+		} else {
+			usdEquivalent = parseFloat((total / exchangeRate).toFixed(2));
+		}
 	} else {
 		usdEquivalent = 0;
 	}
 
-	$: console.log({ exchangeRate, T: $T, usdEquivalent });
+	$: console.log({ exchangeRate, T: total, usdEquivalent });
 
 	async function payWithMercadoPago() {
 		try {
@@ -180,14 +188,14 @@
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>transferencia</h3>
-				<p>{formatPrice($transferStripe, 'es-CO', 'COP')}</p>
+				<p>{formatPrice(transferAmount, 'es-CO', 'COP')}</p>
 			</div>
 
 			<Separator class="bg-[#707070] my-1" />
 
 			<div class="flex justify-between gap-2">
 				<h3 class="font-bold">{m.cart_summary_total()}</h3>
-				<p>{formatPrice($T, 'es-CO', 'COP')}</p>
+				<p>{formatPrice(total, 'es-CO', 'COP')}</p>
 			</div>
 
 			{#if $paymentMethod === 'paypal'}

@@ -46,6 +46,7 @@
         <li>Saldo Mercado Pago</li>
         <li>Tarjeta Débito</li>
         <li>Tarjeta Crédito</li>
+        <li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">Comisión: 3,29% + COP $800</li>
       </ul>
     </div>
 
@@ -75,6 +76,7 @@
         <li>Saldo PayPal</li>
         <li>Tarjeta Débito</li>
         <li>Tarjeta Crédito</li>
+        <li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">Comisión: 3.40% + USD $0.30</li>
       </ul>
     </div>
 	</div>
