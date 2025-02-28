@@ -79,13 +79,15 @@
 			// Calcular la comisión para Mercado Pago
 			const commission = computeCommission('mercadopago', P_goal);
 
+      const commissionRounded = Math.round(commission);
+
 			// Agregar un item adicional para el costo de la transferencia (comisión)
 			items.push({
 				title: 'Comisión de transferencia',
 				description: 'Costo de transferencia de pago con Mercado Pago',
 				quantity: 1,
 				currency_id: 'COP',
-				unit_price: commission
+				unit_price: commissionRounded
 			});
 
 			// Crear Preferencia de Mercado Pago
