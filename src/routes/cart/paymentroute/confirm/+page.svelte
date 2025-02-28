@@ -1,11 +1,9 @@
 <script lang="ts">
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { loadScript } from '@paypal/paypal-js';
 	import {
 		cartItems,
 		computeTotal,
 		computeCommission,
-		getTotal,
 		subtotal as sub
 		// totalEnvio,
 	} from '$lib/stores/cartStore';
@@ -13,12 +11,10 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { toast } from 'svelte-sonner';
 	import { formatPrice } from '$lib/utils/formatprice';
-	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
 	import { paymentMethod } from '$lib/stores/paymentMethod';
-	import { goto } from '$app/navigation';
 
 	let shippingData = $page.data?.user?.shippingInfo;
 	let openDialogPayment = false;
@@ -79,6 +75,18 @@
 				currency_id: 'COP',
 				unit_price: item.price
 			}));
+
+			// Calcular la comisión para Mercado Pago
+			const commission = computeCommission('mercadopago', P_goal);
+
+			// Agregar un item adicional para el costo de la transferencia (comisión)
+			items.push({
+				title: 'Comisión de transferencia',
+				description: 'Costo de transferencia de pago con Mercado Pago',
+				quantity: 1,
+				currency_id: 'COP',
+				unit_price: commission
+			});
 
 			// Crear Preferencia de Mercado Pago
 			const response = await fetch('/api/mercadopago', {
@@ -184,7 +192,7 @@
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>{m.cart_summary_shipment()}</h3>
-				<p>{formatPrice(totalEnvio, 'es-CO', 'COP')}</p>
+				(El envío se paga contra entrega)
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>transferencia</h3>
