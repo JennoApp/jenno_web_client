@@ -35,7 +35,6 @@
 	$: console.log($location_data);
 	$: console.log({ userD: $page.data.user });
 
-	let products: any[] = [];
 	$: isFollowing = userData.followers?.includes($page.data?.user?._id);
 
 	$: console.log({ isFollowing });
@@ -45,7 +44,7 @@
 		await getServerUrl();
 		const limit: number = 20;
 
-		const resolvedCountry = country !== undefined || country !== null ? country : 'Colombia';
+		const resolvedCountry = country ?? 'Colombia'
 		try {
 			const response = await fetch(
 				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
