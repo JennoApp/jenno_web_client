@@ -365,7 +365,7 @@
 								quantity--;
 							}
 						}}
-						class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 					>
 						<!-- Minus Icon -->
 						<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -384,7 +384,7 @@
 					<!-- <span class="mx-2 text-xl font-semibold">{quantity}</span> -->
 					<button
 						on:click|preventDefault={() => quantity++}
-						class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 					>
 						<!-- Plus Icon -->
 						<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"></iconify-icon>
