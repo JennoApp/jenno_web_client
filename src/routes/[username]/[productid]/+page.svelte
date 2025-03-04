@@ -198,10 +198,7 @@
 	/>
 	<meta property="og:type" content="product" />
 	<meta property="og:url" content={$page.url.href} />
-	<meta
-		property="og:image"
-		content={data.product?.imgs[0]}
-	/>
+	<meta property="og:image" content={data.product?.imgs[0]} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:alt" content="Imagen del producto {data.product?.productname}" />
@@ -222,10 +219,7 @@
 		content={data.product?.description ||
 			'Encuentra los mejores productos en Jenno. Compra fácil y seguro.'}
 	/>
-	<meta
-		name="twitter:image"
-		content={data.product?.imgs[0]}
-	/>
+	<meta name="twitter:image" content={data.product?.imgs[0]} />
 	<meta name="twitter:image:alt" content="Imagen del producto {data.product?.productname}" />
 </svelte:head>
 
@@ -310,7 +304,7 @@
 
 			<a href={`/${userName}`}>
 				<div
-					class="flex flex-col items-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
+					class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
 				>
 					{#if profileImg}
 						<img
@@ -376,7 +370,13 @@
 						<!-- Minus Icon -->
 						<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
 					</button>
-					<span class="mx-2 text-xl font-semibold">{quantity}</span>
+					<input
+						type="number"
+						bind:value={quantity}
+						min="1"
+						class="mx-2 text-xl font-semibold text-center w-16 bg-transparent outline-none"
+					/>
+					<!-- <span class="mx-2 text-xl font-semibold">{quantity}</span> -->
 					<button
 						on:click|preventDefault={() => quantity++}
 						class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
