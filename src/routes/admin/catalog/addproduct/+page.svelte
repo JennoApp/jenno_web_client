@@ -224,7 +224,7 @@
 						<Textarea
 							class="h-20 resize-y"
 							name="description"
-							maxlength={300}
+							maxlength={400}
 							value={`${product !== undefined ? product.description : ''}`}
 						/>
 						<label for="description">
