@@ -372,7 +372,6 @@
 					</button>
 					<input
 						type="number"
-            id="quantityInput"
 						bind:value={quantity}
 						min="1"
 						class="mx-2 text-xl font-semibold text-center w-16 bg-transparent outline-none appearance-none"
@@ -491,16 +490,3 @@
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
-
-
-<style>
-  .quantityInput::-webkit-inner-spin-button,
-  .quantityInput::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .quantityInput {
-    -moz-appearance: textfield;
-  }
-</style>
