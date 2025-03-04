@@ -238,10 +238,6 @@
 <br />
 
 <!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
-<!-- {#if $metaStore?.hasNextPage}
-	<div bind:this={loadingRef}>Loading...</div>
-{/if} -->
-
 {#if $metaStore?.hasNextPage}
 	<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
 		<svg

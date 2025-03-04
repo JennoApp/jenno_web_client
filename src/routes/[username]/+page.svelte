@@ -44,7 +44,7 @@
 		await getServerUrl();
 		const limit: number = 20;
 
-		const resolvedCountry = country ?? 'Colombia'
+		const resolvedCountry = country ?? 'Colombia';
 		try {
 			const response = await fetch(
 				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
@@ -325,7 +325,6 @@
 						<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
 					</div>
 				</div>
-
 			</div>
 		</div>
 	{:catch error}
@@ -341,7 +340,20 @@
 
 	<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
 	{#if $metaStore?.hasNextPage}
-		<div bind:this={loadingRef}>Loading...</div>
+		<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
+			<svg
+				class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+			>
+				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+				></circle>
+				<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+				></path>
+			</svg>
+			<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
+		</div>
 	{/if}
 
 	<!-- Error al encontrar la informacion del usuario -->
