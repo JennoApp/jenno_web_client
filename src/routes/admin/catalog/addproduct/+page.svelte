@@ -311,6 +311,14 @@
 			</Card.Root>
 
 			<Card.Root class="mb-4">
+        <div class="border border-blue-300 text-blue-800 p-2 rounded-md mt-2">
+          <p>
+						<strong>Nota:</strong> Para crear las opciones del producto, ingrese un nombre
+						descriptivo en el campo <em>Nombre de la opción</em> y, en el campo
+						<em>Lista de opciones</em>, escriba las opciones separadas por una coma (,). Por
+						ejemplo: <em>Color: rojo, azul, verde</em>.
+					</p>
+        </div>
 				<Card.Header>
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
@@ -321,18 +329,6 @@
 						>
 					</div>
 				</Card.Header>
-
-				<!-- Descripción informativa para los usuarios -->
-				<Card.Description
-					class="bg-blue-100 border border-blue-300 text-blue-800 p-2 rounded-md mt-2"
-				>
-					<p>
-						<strong>Nota:</strong> Para crear las opciones del producto, ingrese un nombre
-						descriptivo en el campo <em>Nombre de la opción</em> y, en el campo
-						<em>Lista de opciones</em>, escriba las opciones separadas por una coma (,). Por
-						ejemplo: <em>Color: rojo, azul, verde</em>.
-					</p>
-				</Card.Description>
 
 				<!-- Options List -->
 				{#each optionsItems as option, i}
