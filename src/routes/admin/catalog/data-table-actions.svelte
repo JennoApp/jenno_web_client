@@ -64,8 +64,8 @@
 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
-		<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0">
-			<MoreHorizontal class="w-4 h-4 hover:gray-300" />
+		<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0 hover:bg-gray-300">
+			<MoreHorizontal class="w-4 h-4 dark:hover:gray-300" />
 		</Button>
 	</DropdownMenu.Trigger>
 
@@ -96,7 +96,7 @@
 				<span class="ml-3">Actualizar</span>
 			</DropdownMenu.Item>
 			<DropdownMenu.Item
-				class="bg-red-500 bg-opacity-60"
+				class="bg-red-500 bg-opacity-60 hover:bg-red-600"
 				on:click={() => {
 					deleteProduct(id);
 				}}
