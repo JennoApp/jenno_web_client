@@ -20,7 +20,7 @@
 	{sideOffset}
 	side="right"
 	class={cn(
-		'z-50 overflow-hidden rounded-md bg-[#252525] px-3 py-1.5 text-sm text-popover-foreground shadow-md',
+		'z-50 overflow-hidden rounded-md bg-gray-200 dark:bg-[#252525] px-3 py-1.5 text-sm text-popover-foreground shadow-md',
 		className
 	)}
 	{...$$restProps}
