@@ -53,41 +53,40 @@
 	let fileList: any[] = [];
 
 	function handleFiles(event: any) {
-		const files = Array.from(event.target.files)
-    console.log({ files })
+		const files = Array.from(event.target.files);
+		console.log({ files });
 
 		if (files.length > 5) {
-			toast.error('No puedes cargar mas de 5 imagenes.')
+			toast.error('No puedes cargar mas de 5 imagenes.');
 			fileList = [];
 		} else {
-      // Ordenar los archivos basados en el patron "{nombre}-{numero}"
-      const sortedFiles = files.sort((a: any, b: any) => {
-        const getNumber = (name: any) => {
-          const match = name.match(/-(\d+)$/)
-          return match ? parseInt(match[1], 10) : null
-        }
+			// Ordenar los archivos basados en el patron "{nombre}-{numero}"
+			const sortedFiles = files.sort((a: any, b: any) => {
+				const getNumber = (name: any) => {
+					const match = name.match(/-(\d+)$/);
+					return match ? parseInt(match[1], 10) : null;
+				};
 
-        const numA = getNumber(a.name)
-        const numB = getNumber(b.name)
+				const numA = getNumber(a.name);
+				const numB = getNumber(b.name);
 
-        // Si ambos tienen numero, ordenar por numero
-        if ( numA !== null && numB !== null ) {
-          return numA - numB
-        }
+				// Si ambos tienen numero, ordenar por numero
+				if (numA !== null && numB !== null) {
+					return numA - numB;
+				}
 
-        // Si solo uno tiene numero, ese va despues
-        if ( numA !== null) return -1
-        if ( numB !== null) return 1
+				// Si solo uno tiene numero, ese va despues
+				if (numA !== null) return -1;
+				if (numB !== null) return 1;
 
-        // Si ninguno tiene numero, mantener el orden original
-        return 0
-      })
-
+				// Si ninguno tiene numero, mantener el orden original
+				return 0;
+			});
 
 			fileList = sortedFiles.map((file: any) => ({
-        name: file.name,
-        size: file.size
-      }))
+				name: file.name,
+				size: file.size
+			}));
 		}
 	}
 
@@ -99,7 +98,7 @@
 	}
 
 	function addOptionsItem() {
-		if (optionsItems.length < 2) {
+		if (optionsItems.length < 1) {
 			optionsItems = [...optionsItems, optionsItems];
 		}
 	}
@@ -121,7 +120,7 @@
 	/// load product data for update
 
 	let product: any;
-	let visibility: boolean = true
+	let visibility: boolean = true;
 	let isvisibilityInitialized = false;
 
 	$: console.log(product);
@@ -322,6 +321,18 @@
 						>
 					</div>
 				</Card.Header>
+
+				<!-- Descripción informativa para los usuarios -->
+				<Card.Description
+					class="bg-blue-100 border border-blue-300 text-blue-800 p-2 rounded-md mt-2"
+				>
+					<p>
+						<strong>Nota:</strong> Para crear las opciones del producto, ingrese un nombre
+						descriptivo en el campo <em>Nombre de la opción</em> y, en el campo
+						<em>Lista de opciones</em>, escriba las opciones separadas por una coma (,). Por
+						ejemplo: <em>Color: rojo, azul, verde</em>.
+					</p>
+				</Card.Description>
 
 				<!-- Options List -->
 				{#each optionsItems as option, i}
@@ -538,9 +549,6 @@
 									<Select.Item value="sold_out"
 										>{m.admin_catalog_addproduct_status_select_soldout()}</Select.Item
 									>
-									<Select.Item value="on_sale"
-										>{m.admin_catalog_addproduct_status_select_onsale()}</Select.Item
-									>
 									<!-- <Select.Item value="active">active</Select.Item>
 									<Select.Item value="paused">paused</Select.Item>
 									<Select.Item value="inactive">inactive</Select.Item> -->
@@ -571,7 +579,7 @@
 						<span class="ml-2">{m.admin_catalog_addproduct_visibility()}</span>
 
 						<!-- Hidden input para garantizar que siempre haya un valor -->
-						<input type="hidden" name="visibility" value={visibility ? 'true' : 'false' } />
+						<input type="hidden" name="visibility" value={visibility ? 'true' : 'false'} />
 					</div>
 				</Card.Content>
 			</Card.Root>
