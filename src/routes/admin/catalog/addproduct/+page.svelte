@@ -311,14 +311,14 @@
 			</Card.Root>
 
 			<Card.Root class="mb-4">
-        <div class="bg-blue-200 border border-blue-300 text-blue-800 p-2 rounded-md">
-          <p>
+				<div class="bg-blue-200 border border-blue-300 text-blue-800 p-2 rounded-md">
+					<p>
 						<strong>Nota:</strong> Para crear las opciones del producto, ingrese un nombre
 						descriptivo en el campo <em>Nombre</em> y, en el campo
-						<em>Opciones</em>, escriba las opciones separadas por una coma (,). Por
-						ejemplo: <em>Nombre: Color; Opciones: rojo, azul, verde</em>.
+						<em>Opciones</em>, escriba las opciones separadas por una coma (,). Por ejemplo:
+						<em>Nombre: Color; Opciones: rojo, azul, verde</em>.
 					</p>
-        </div>
+				</div>
 				<Card.Header>
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
@@ -350,7 +350,7 @@
 							/>
 						</div>
 						<button
-							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-600 dark:hover:bg-red-600"
+							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:text-white hover:bg-red-600 dark:hover:bg-red-600"
 							on:click|preventDefault={() => removeOptionItem(i)}
 						>
 							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
@@ -363,6 +363,17 @@
 		<!-- Columna 2 -->
 		<div class="w-full">
 			<Card.Root class="mb-4">
+				<!-- Descripción informativa para la carga de imágenes -->
+				<div
+					class="bg-blue-200 border border-blue-300 text-blue-800 p-2 rounded-md"
+				>
+					<p>
+						<strong>Nota:</strong> Se pueden cargar máximo 5 imágenes. La carga se realiza de forma
+						aleatoria por defecto. Si deseas elegir el orden en el que se mostrarán, nombra tus
+						archivos usando el formato <em>{"{nombre}"}-{"{numero}"}"</em>
+						(ejemplo: <em>producto-1, producto-2, producto-3</em>, etc.).
+					</p>
+				</div>
 				<Card.Header>
 					<Card.Title>{m.admin_catalog_addproduct_images()}</Card.Title>
 				</Card.Header>
@@ -528,7 +539,6 @@
 				</Card.Header>
 				<Card.Content>
 					<div>
-						<Label for="status">{m.admin_catalog_addproduct_specifications()}</Label>
 						<Select.Root
 							selected={{
 								value: product !== undefined ? product.status : ''
