@@ -314,9 +314,9 @@
         <div class="border border-blue-300 text-blue-800 p-2 rounded-md mt-2">
           <p>
 						<strong>Nota:</strong> Para crear las opciones del producto, ingrese un nombre
-						descriptivo en el campo <em>Nombre de la opción</em> y, en el campo
-						<em>Lista de opciones</em>, escriba las opciones separadas por una coma (,). Por
-						ejemplo: <em>Color: rojo, azul, verde</em>.
+						descriptivo en el campo <em>Nombre</em> y, en el campo
+						<em>Opciones</em>, escriba las opciones separadas por una coma (,). Por
+						ejemplo: <em>Nombre: Color; Opciones: rojo, azul, verde</em>.
 					</p>
         </div>
 				<Card.Header>
