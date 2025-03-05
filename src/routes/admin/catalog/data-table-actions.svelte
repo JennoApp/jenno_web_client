@@ -64,7 +64,7 @@
 
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
-		<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0 hover:bg-gray-300">
+		<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0 hover:bg-gray-300 dark:hover:bg-[#252525]">
 			<MoreHorizontal class="w-4 h-4 dark:hover:gray-300" />
 		</Button>
 	</DropdownMenu.Trigger>
