@@ -4,7 +4,6 @@
 	import { MoreHorizontal } from 'lucide-svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
-	import { Portal } from '$lib/components/ui/dialog';
 
 	export let id: string;
 
@@ -66,7 +65,7 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0">
-			<MoreHorizontal class="w-4 h-4" />
+			<MoreHorizontal class="w-4 h-4 hover:gray-300" />
 		</Button>
 	</DropdownMenu.Trigger>
 
@@ -92,7 +91,7 @@
 					icon="material-symbols:update"
 					height="1.1rem"
 					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
+					class="dark:text-gray-200 flex justify-center items-center"
 				/>
 				<span class="ml-3">Actualizar</span>
 			</DropdownMenu.Item>
@@ -106,7 +105,7 @@
 					icon="material-symbols:delete"
 					height="1.1rem"
 					width="1.1rem"
-					class="text-gray-200 flex justify-center items-center"
+					class="dark:text-gray-200 flex justify-center items-center"
 				/>
 				<span class="ml-3">Eliminar</span>
 			</DropdownMenu.Item>

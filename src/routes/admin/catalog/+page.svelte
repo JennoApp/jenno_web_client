@@ -55,7 +55,7 @@
 	<h2 class="text-xl font-semibold dark:text-gray-200">{m.admin_catalog_title()}</h2>
 
 	<Button
-		class="bg-purple-600 dark:bg-[#202020] dark:text-gray-200 hover:bg-purple-700 dark:hover:bg-[#252525]"
+		class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 		on:click={() => goto('/admin/catalog/addproduct')}>{m.admin_catalog_button()}</Button
 	>
 </div>
