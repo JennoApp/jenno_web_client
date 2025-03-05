@@ -38,7 +38,7 @@ export const actions: Actions = {
         width: formData.get('width'),
         height: formData.get('height'),
       },
-      status: formData.get('status'),
+      status: formData.get('status') || 'in_stock',
       visibility: formData.get('visibility') === 'true',
       country,
       options: [] as any[],

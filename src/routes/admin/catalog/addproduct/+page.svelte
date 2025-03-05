@@ -555,9 +555,6 @@
 									<Select.Item value="sold_out"
 										>{m.admin_catalog_addproduct_status_select_soldout()}</Select.Item
 									>
-									<!-- <Select.Item value="active">active</Select.Item>
-									<Select.Item value="paused">paused</Select.Item>
-									<Select.Item value="inactive">inactive</Select.Item> -->
 								</Select.Group>
 							</Select.Content>
 							<Select.Input name="status" />
