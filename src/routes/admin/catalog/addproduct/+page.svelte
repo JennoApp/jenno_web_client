@@ -311,7 +311,7 @@
 			</Card.Root>
 
 			<Card.Root class="mb-4">
-        <div class="border border-blue-300 text-blue-800 p-2 rounded-md mt-2">
+        <div class="bg-blue-200 border border-blue-300 text-blue-800 p-2 rounded-md">
           <p>
 						<strong>Nota:</strong> Para crear las opciones del producto, ingrese un nombre
 						descriptivo en el campo <em>Nombre</em> y, en el campo
