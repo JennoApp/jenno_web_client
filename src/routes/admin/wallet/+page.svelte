@@ -375,6 +375,7 @@
 	<div class="flex items-center justify-between">
 		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_paypal_account()}</h2>
 		<Button
+      class = "bg-gray-200 hover:bg-gray-300"
 			on:click={() => {
 				openDialogwithdraw = true;
 			}}>Retirar</Button
@@ -425,7 +426,7 @@
 			</div>
 		{:else}
 			<button
-				class="flex items-center justify-center bg-[#202020] h-48 w-96 rounded-md"
+				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
 				on:click|preventDefault={() => {
 					openDialogAddCart = true;
 				}}
@@ -513,7 +514,7 @@
 
 					<div class="flex flex-row-reverse">
 						<button
-							class="h-8 p-2 mt-5 bg-purple-600 dark:text-gray-200 hover:bg-purple-700 rounded-md"
+							class="h-8 p-2 mt-5 bg-gray-200 text-black dark:text-gray-200 hover:bg-gray-300 rounded-md"
 							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
 						>
 					</div>
@@ -555,7 +556,7 @@
 						<!-- Mostrar el equivalente en USD -->
 						{#if exchangeRate}
 							<p class="text-gray-500 text-sm">
-								{m.admin_wallet_withdrawals_modal_dollar_equivalent()} 
+								{m.admin_wallet_withdrawals_modal_dollar_equivalent()}
                 ${usdEquivalent.toFixed(2)} USD
 							</p>
 						{:else}
@@ -574,7 +575,7 @@
 				{/if}
 			</div>
 			<div class="flex flex-row-reverse mt-3">
-				<Button type="submit">Retirar</Button>
+				<Button class="bg-gray-200 hover:bg-gray-300" type="submit">Retirar</Button>
 			</div>
 		</form>
 	</Dialog.Content>
