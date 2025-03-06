@@ -375,7 +375,7 @@
 	<div class="flex items-center justify-between">
 		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_paypal_account()}</h2>
 		<Button
-      class = "bg-gray-200 hover:bg-gray-300"
+      class = "bg-gray-200 hover:bg-gray-300 text-black"
 			on:click={() => {
 				openDialogwithdraw = true;
 			}}>Retirar</Button
@@ -505,7 +505,7 @@
 						<label for="">Email PayPal</label>
 						<input
 							bind:value={paypalAccountEmail}
-							class="flex w-full h-8 mt-2 text-gray-200 rounded-md dark:bg-[#202020]"
+							class="flex w-full h-8 mt-2 text-black dark:text-gray-200 rounded-md dark:bg-[#202020] border-none"
 							type="email"
 							placeholder="email@example.com"
 							required
@@ -514,7 +514,7 @@
 
 					<div class="flex flex-row-reverse">
 						<button
-							class="h-8 p-2 mt-5 bg-gray-200 text-black dark:text-gray-200 hover:bg-gray-300 rounded-md"
+							class="h-10 p-2 mt-5 bg-gray-200 text-black dark:text-gray-200 hover:bg-gray-300 rounded-md"
 							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
 						>
 					</div>
