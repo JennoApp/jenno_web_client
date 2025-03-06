@@ -514,7 +514,7 @@
 
 					<div class="flex flex-row-reverse">
 						<button
-							class="h-10 p-2 mt-5 bg-gray-200 text-black dark:text-gray-200 hover:bg-gray-300 rounded-md"
+							class="h-10 p-2 mt-5 bg-gray-200 text-black hover:bg-gray-300 rounded-md"
 							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
 						>
 					</div>
