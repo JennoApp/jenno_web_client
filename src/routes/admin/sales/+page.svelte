@@ -75,7 +75,7 @@
 			icon="material-symbols:history"
 			height="1.1rem"
 			width="1.1rem"
-			class="text-gray-200 flex justify-center items-center"
+			class="text-black dark:text-gray-200 flex justify-center items-center"
 		/>
 		<span class="ml-3">Historial</span></Button
 	>

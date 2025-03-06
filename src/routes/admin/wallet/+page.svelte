@@ -575,7 +575,7 @@
 				{/if}
 			</div>
 			<div class="flex flex-row-reverse mt-3">
-				<Button class="bg-gray-200 hover:bg-gray-300" type="submit">Retirar</Button>
+				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-gray-200" type="submit">Retirar</Button>
 			</div>
 		</form>
 	</Dialog.Content>
