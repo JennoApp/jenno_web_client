@@ -322,7 +322,7 @@
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
-	<h2 class="text-xl font-semibold text-gray-200">{m.admin_wallet_title()}</h2>
+	<h2 class="text-xl font-semibold text-black dark:text-gray-200">{m.admin_wallet_title()}</h2>
 </div>
 
 <div class="grid gap-4 mx-5 md:grid-cols-2 lg:grid-cols-3">

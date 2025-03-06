@@ -64,7 +64,7 @@
 </script>
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
-	<h2 class="text-xl font-semibold text-gray-200">Ventas</h2>
+	<h2 class="text-xl font-semibold text-black dark:text-gray-200">Ventas</h2>
 	<Button
 		class="bg-gray-200 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-gray-300 text-black dark:text-gray-200"
 		on:click={() => {
