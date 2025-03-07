@@ -75,7 +75,10 @@
 				<li>Transferencias</li>
 				<li>Pago con QR</li>
 				<li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
-					Comisión: 1.5% del valor + IVA (máximo $2.900 + IVA)
+					Comisión: 1.5% del valor + IVA
+				</li>
+        <li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
+					(máximo $2.900 + IVA)
 				</li>
 			</ul>
 		</div>
