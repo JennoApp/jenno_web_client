@@ -31,8 +31,8 @@
 	$: console.log($paymentMethod);
 </script>
 
-<div class="w-full h-64 mt-14">
-	<div class="flex gap-5 justify-center items-center h-full w-full">
+<div class="w-full h-80 mt-14">
+	<div class="flex gap-5 justify-center items-start h-full w-full">
 		<!-- Contenedor para Mercado Pago -->
 		<div class="hidden">
 			<div class="flex flex-col items-center">
