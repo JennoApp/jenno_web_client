@@ -438,7 +438,7 @@
 </div>
 
 <div class="m-5 mt-10">
-	<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_button_withdraw_title()}</h2>
+	<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_withdrawals_title()}</h2>
 </div>
 
 {#if withdrawalsPaypalDetails && withdrawalsPaypalDetails.length > 0}
