@@ -42,7 +42,7 @@
 						? 'border-2 border-[#202020] dark:border-gray-200'
 						: ''}"
 					on:click={() => selectedMercadoPagoButton()}
-          disabled
+					disabled
 				>
 					<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem"></iconify-icon>
 				</button>
@@ -58,29 +58,45 @@
 			</div>
 		</div>
 
-		<!-- Contenedor para Mercado Pago -->
+		<!-- Contenedor para Nequi (Próximamente) -->
 		<div class="flex flex-col items-center">
 			<button
-				class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
-				'nequi'
-					? 'border-2 border-[#202020] dark:border-gray-200'
-					: ''}"
-				on:click={() => selectedNequiButton()}
+				class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed"
+				on:click={() => {
+          toast.warning('Nequi estará disponible próximamente.');
+        }}
 			>
 				<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-24 h-24" />
 			</button>
 			<h3 class="mt-2 text-lg font-medium text-gray-700 dark:text-gray-200">Nequi</h3>
-			<ul class="mt-1 text-sm text-gray-600 dark:text-gray-400 text-center">
-				<li>Saldo Nequi</li>
-				<li>Transferencias</li>
-				<li>Pago con QR</li>
-				<li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
-					Comisión: 1.5% del valor + IVA
-				</li>
-        <li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
-					(máximo $2.900 + IVA)
-				</li>
-			</ul>
+			<p class="mt-1 text-sm text-gray-600 dark:text-gray-400 text-center">Próximamente</p>
+		</div>
+
+		<!-- Contenedor para Nequi (Development) -->
+		<div class="hidden">
+			<div class="flex flex-col items-center">
+				<button
+					class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] flex items-center justify-center {$paymentMethod ===
+					'nequi'
+						? 'border-2 border-[#202020] dark:border-gray-200'
+						: ''}"
+					on:click={() => selectedNequiButton()}
+				>
+					<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-24 h-24" />
+				</button>
+				<h3 class="mt-2 text-lg font-medium text-gray-700 dark:text-gray-200">Nequi</h3>
+				<ul class="mt-1 text-sm text-gray-600 dark:text-gray-400 text-center">
+					<li>Saldo Nequi</li>
+					<li>Transferencias</li>
+					<li>Pago con QR</li>
+					<li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
+						Comisión: 1.5% del valor + IVA
+					</li>
+					<li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
+						(máximo $2.900 + IVA)
+					</li>
+				</ul>
+			</div>
 		</div>
 
 		<!-- Contenedor para PayPal -->
