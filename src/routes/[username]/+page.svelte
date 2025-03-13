@@ -294,20 +294,22 @@
 					</button>
 				{:else}
 					<div class="flex items-center gap-5 ml-10">
-						{#if isFollowing}
-							<Button
-								class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-							>
-								<span class="text-black dark:text-gray-200">Siguiendo</span>
-							</Button>
-						{:else}
-							<Button
-								on:click={() => handleFollow(user?._id)}
-								class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-							>
-								<span class="text-black dark:text-gray-200">Seguir</span>
-							</Button>
-						{/if}
+						<div class="hidden">
+							{#if isFollowing}
+								<Button
+									class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+								>
+									<span class="text-black dark:text-gray-200">Siguiendo</span>
+								</Button>
+							{:else}
+								<Button
+									on:click={() => handleFollow(user?._id)}
+									class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+								>
+									<span class="text-black dark:text-gray-200">Seguir</span>
+								</Button>
+							{/if}
+						</div>
 
 						<Button
 							class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
@@ -318,14 +320,16 @@
 					</div>
 				{/if}
 
-				<div class="flex gap-10">
-					<div class="text-center">
-						<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
-						<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
-					</div>
-					<div class="text-center">
-						<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
-						<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
+				<div class="hidden">
+					<div class="flex gap-10">
+						<div class="text-center">
+							<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
+							<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
+						</div>
+						<div class="text-center">
+							<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
+							<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
+						</div>
 					</div>
 				</div>
 			</div>
