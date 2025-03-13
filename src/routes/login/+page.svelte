@@ -7,6 +7,7 @@
 
 	export let form;
 	$: if (form?.redirect) {
+    toast.success('Login exitoso! Redirigiendo...')
 		goto('/', { replaceState: true }).then(() => {
       location.reload()
     })
