@@ -17,10 +17,12 @@ export const actions: Actions = {
     const result = await response.json()
     console.log({ result })
 
-    if (result.statusCode === 401) {
-      console.log("Credenciales incorrectas")
+    if (result.statusCode && result.statusCode !== 200) {
+      console.log("Error en login:", result.message)
       return {
-        success: false
+        success: false,
+        redirect: false,
+        errorMessage: result.message
       }
     }
 
@@ -33,7 +35,8 @@ export const actions: Actions = {
     })
 
     return {
-      success: true
+      success: true,
+      redirect: true
     }
   }
 }

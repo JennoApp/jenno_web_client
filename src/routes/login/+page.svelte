@@ -6,14 +6,14 @@
 	import * as m from '$paraglide/messages';
 
 	export let form;
-	$: if (form?.success) {
+	$: if (form?.redirect) {
 		goto('/', { replaceState: true }).then(() => {
       location.reload()
     })
 	}
 
-	$: if (form?.success === false) {
-		toast.error('Credenciales Incorrectas o Usuario no registrado');
+	$: if (form?.success === false && form?.errorMessage) {
+		toast.error('Credenciales Incorrectas o Usuario no registrado: ' + form.errorMessage);
 	}
 
   function togglePasswordVisibility() {
