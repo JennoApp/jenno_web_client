@@ -190,16 +190,6 @@
 		});
 		loadingObserver.observe(loadingRef);
 	}
-
-  // Creamos una promesa que se resuelve cuando el store ya tiene productos
-  let productsPromise: Promise<any[]> = new Promise((resolve, reject) => {
-    const unsubscribe = productsStore.subscribe((value) => {
-      if (value && value.length > 0) {
-        resolve(value);
-        unsubscribe();
-      }
-    });
-  });
 </script>
 
 <svelte:head>
@@ -348,53 +338,12 @@
 		<p class="text-red-500">{error.message}</p>
 	{/await}
 
-  {#await productsPromise}
-  <div class="flex justify-center items-center py-10">
-    <svg
-      class="animate-spin h-10 w-10 text-gray-500 dark:text-gray-300"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-    </svg>
-    <span class="ml-2 text-gray-500 dark:text-gray-300 text-lg">Cargando productos...</span>
-  </div>
-{:then products}
-  <!-- Lista de prod -->
-  <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
-    {#each products as productData}
-      <Card data={productData} />
-    {/each}
-  </div>
-{:catch error}
-  <p class="text-red-500">Error al cargar los productos.</p>
-{/await}
-
-	<!-- {#if initialLoading}
-		<div class="flex justify-center items-center py-10">
-			<svg
-				class="animate-spin h-10 w-10 text-gray-500 dark:text-gray-300"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-			>
-				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-				></circle>
-				<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-				></path>
-			</svg>
-			<span class="ml-2 text-gray-500 dark:text-gray-300 text-lg">Cargando productos...</span>
-		</div>
-	{:else}
-		 Lista de prod
-		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
-			{#each $productsStore as productData}
-				<Card data={productData} />
-			{/each}
-		</div>
-	{/if} -->
+	<!-- Lista de productos -->
+	<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
+		{#each $productsStore as productData}
+			<Card data={productData} />
+		{/each}
+	</div>
 
 	<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
 	{#if $metaStore?.hasNextPage}
