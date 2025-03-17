@@ -103,7 +103,7 @@
 			console.log(error);
 		}
 	}
-	// $: getPaypalAccount();
+	$: getPaypalAccount();
 
 	// Funcion para agregar una cuenta Paypal
 	async function handleSubmitAddPaypalAccount() {
@@ -312,6 +312,7 @@
 		await fetchWallet($page.data?.user?.walletId);
 		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
+    await getPaypalAccount();
 	});
 
 	$: if (withdrawals) {
