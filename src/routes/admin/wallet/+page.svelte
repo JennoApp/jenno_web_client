@@ -376,7 +376,7 @@
 	<div class="flex items-center justify-between">
 		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_paypal_account()}</h2>
 		<Button
-      class = "bg-gray-200 hover:bg-gray-300 text-black"
+      class = "bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
 			on:click={() => {
 				openDialogwithdraw = true;
 			}}>Retirar</Button
