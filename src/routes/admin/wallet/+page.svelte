@@ -384,7 +384,7 @@
 	</div>
 	<div>
 		{#if paypalAccount}
-			<div class="flex flex-col bg-[#202020] h-48 w-96 rounded-md">
+			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
 				<div class="flex flex-row-reverse h-10 w-full">
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger class="m-2">
@@ -576,7 +576,7 @@
 				{/if}
 			</div>
 			<div class="flex flex-row-reverse mt-3">
-				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-gray-200" type="submit">Retirar</Button>
+				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black" type="submit">Retirar</Button>
 			</div>
 		</form>
 	</Dialog.Content>
