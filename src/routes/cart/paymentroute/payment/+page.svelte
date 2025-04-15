@@ -41,7 +41,6 @@
 					? 'border-2 border-[#202020] dark:border-gray-200'
 					: ''}"
 				on:click={() => selectedMercadoPagoButton()}
-				disabled
 			>
 				<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem"></iconify-icon>
 			</button>
