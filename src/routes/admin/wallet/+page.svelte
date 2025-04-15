@@ -241,7 +241,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${data.sessionToken}`
+					 'Authorization': `Bearer ${data.sessionToken}`
 				},
 				body: JSON.stringify({
 					amount: formattedAmount, //monto en COP
