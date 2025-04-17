@@ -4,7 +4,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
-  import * as m from '$paraglide/messages'
+	import * as m from '$paraglide/messages';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { page } from '$app/stores';
@@ -241,7 +241,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					 'Authorization': `Bearer ${data.sessionToken}`
+					Authorization: `Bearer ${data.sessionToken}`
 				},
 				body: JSON.stringify({
 					amount: formattedAmount, //monto en COP
@@ -312,7 +312,7 @@
 		await fetchWallet($page.data?.user?.walletId);
 		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
-    await getPaypalAccount();
+		await getPaypalAccount();
 	});
 
 	$: if (withdrawals) {
@@ -320,6 +320,28 @@
 			getWithdrawalsPaypalDetails(batchId);
 		});
 	}
+
+	async function getWithdrawalsBalance() {
+		const response = await fetch(`${serverUrl}/wallet/getwithdrawalBalances`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${data.sessionToken}`
+			}
+		});
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log({ data });
+      walletData = data;
+    } else {
+      console.error('Error al obtener la billetera');
+    }
+	}
+
+  $: if (walletData) {
+    getWithdrawalsBalance();
+  }
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -376,7 +398,7 @@
 	<div class="flex items-center justify-between">
 		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_paypal_account()}</h2>
 		<Button
-      class = "bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
+			class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
 			on:click={() => {
 				openDialogwithdraw = true;
 			}}>Retirar</Button
@@ -514,8 +536,7 @@
 					</div>
 
 					<div class="flex flex-row-reverse">
-						<button
-							class="h-10 p-2 mt-5 bg-gray-200 text-black hover:bg-gray-300 rounded-md"
+						<button class="h-10 p-2 mt-5 bg-gray-200 text-black hover:bg-gray-300 rounded-md"
 							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
 						>
 					</div>
@@ -541,7 +562,9 @@
 				handleSubmit(paypalAccount, Number(withdrawalAmountforExchange), Number(usdEquivalent))}
 		>
 			<div class="flex w-full">
-				<label for="withdrawAmount">{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label>
+				<label for="withdrawAmount"
+					>{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label
+				>
 				<div class="flex flex-col w-full">
 					<Input
 						type="text"
@@ -558,7 +581,7 @@
 						{#if exchangeRate}
 							<p class="text-gray-500 text-sm">
 								{m.admin_wallet_withdrawals_modal_dollar_equivalent()}
-                ${usdEquivalent.toFixed(2)} USD
+								${usdEquivalent.toFixed(2)} USD
 							</p>
 						{:else}
 							<p>Obteniendo tasa de cambio...</p>
@@ -576,7 +599,9 @@
 				{/if}
 			</div>
 			<div class="flex flex-row-reverse mt-3">
-				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black" type="submit">Retirar</Button>
+				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black" type="submit"
+					>Retirar</Button
+				>
 			</div>
 		</form>
 	</Dialog.Content>
