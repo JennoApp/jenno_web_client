@@ -25,6 +25,7 @@
 	let withdrawalAmountforExchange = 0;
 	let paypalAccountEmail = '';
 	let paypalAccount: any;
+	let bankAccounts: any[] = []
 	let exchangeRate = 0;
 	let usdEquivalent = 0;
 	let withdrawals: any = [];
@@ -375,7 +376,7 @@
 <div class="m-5 mt-10">
 	<h2 class="my-5 text-xl font-semibold">Cuentas Asociadas</h2>
 
-	<div>
+	<!-- <div>
 		{#if paypalAccount}
 			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
 				<div class="flex flex-row-reverse h-10 w-full">
@@ -419,6 +420,64 @@
 				</div>
 			</div>
 		{:else}
+			<button
+				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
+				on:click|preventDefault={() => {
+					openDialogAddCart = true;
+				}}
+			>
+				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem"></iconify-icon>
+			</button>
+		{/if}
+	</div> -->
+
+	<div class="flex flex-wrap gap-4">
+		{#each bankAccounts as account, index}
+			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
+				<div class="flex flex-row-reverse h-10 w-full">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger class="m-2">
+							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem"></iconify-icon>
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Group>
+								<DropdownMenu.Label>Acciones</DropdownMenu.Label>
+								<DropdownMenu.Item on:click={() => {}}>
+									<iconify-icon
+										icon="material-symbols:update"
+										height="1.1rem"
+										width="1.1rem"
+										class="text-gray-200 flex justify-center items-center"
+									/>
+									<span class="ml-3">Actualizar</span>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									class="hover:!bg-red-500 bg-opacity-60"
+									on:click={() => {
+										// selectedAccount = account;
+										openDialogRemove = true;
+									}}
+								>
+									<iconify-icon
+										icon="material-symbols:delete"
+										height="1.1rem"
+										width="1.1rem"
+										class="text-gray-200 flex justify-center items-center"
+									/>
+									<span class="ml-3">Eliminar</span>
+								</DropdownMenu.Item>
+							</DropdownMenu.Group>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</div>
+				<div class="flex flex-col gap-5 items-center mt-3">
+					<iconify-icon icon="mdi:bank" height="2rem" width="2rem"></iconify-icon>
+					<h1 class="text-lg font-semibold">{account}</h1>
+				</div>
+			</div>
+		{/each}
+
+		{#if bankAccounts.length < 2}
 			<button
 				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
 				on:click|preventDefault={() => {
