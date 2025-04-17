@@ -373,15 +373,8 @@
 </div>
 
 <div class="m-5 mt-10">
-	<div class="flex items-center justify-between">
-		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_paypal_account()}</h2>
-		<Button
-			class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
-			on:click={() => {
-				openDialogwithdraw = true;
-			}}>Retirar</Button
-		>
-	</div>
+	<h2 class="my-5 text-xl font-semibold">Cuentas Asociadas</h2>
+
 	<div>
 		{#if paypalAccount}
 			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
@@ -439,41 +432,48 @@
 </div>
 
 <div class="m-5 mt-10">
-	<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_withdrawals_title()}</h2>
+	<div class="flex items-center justify-between">
+		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_withdrawals_title()}</h2>
+		<Button
+			class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
+			on:click={() => {
+				openDialogwithdraw = true;
+			}}>Retirar</Button
+		>
+	</div>
 </div>
 
 <div class="grid gap-4 mx-5 md:grid-cols-2 lg:grid-cols-3">
-  <!-- Card: Total Retirado -->
-  <Card.Root>
-    <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-      <Card.Title class="text-md font-medium">Total Retirado</Card.Title>
-      <iconify-icon icon="mdi:bank-transfer-out" height="1.5rem" width="1.5rem"></iconify-icon>
-    </Card.Header>
-    <Card.Content>
-      <div class="text-2xl font-bold">
-        {walletData
-          ? formatPrice(walletData?.withdrawalTotalBalance, 'es-CO', 'COP')
-          : 'Cargando...'}
-      </div>
-    </Card.Content>
-  </Card.Root>
+	<!-- Card: Total Retirado -->
+	<Card.Root>
+		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
+			<Card.Title class="text-md font-medium">Total Retirado</Card.Title>
+			<iconify-icon icon="mdi:bank-transfer-out" height="1.5rem" width="1.5rem"></iconify-icon>
+		</Card.Header>
+		<Card.Content>
+			<div class="text-2xl font-bold">
+				{walletData
+					? formatPrice(walletData?.withdrawalTotalBalance, 'es-CO', 'COP')
+					: 'Cargando...'}
+			</div>
+		</Card.Content>
+	</Card.Root>
 
-  <!-- Card: Retiros Pendientes -->
-  <Card.Root>
-    <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-      <Card.Title class="text-md font-medium">Retiros Pendientes</Card.Title>
-      <iconify-icon icon="mdi:timer-sand" height="1.5rem" width="1.5rem"></iconify-icon>
-    </Card.Header>
-    <Card.Content>
-      <div class="text-2xl font-bold">
-        {walletData
-          ? formatPrice(walletData?.withdrawalPendingBalance, 'es-CO', 'COP')
-          : 'Cargando...'}
-      </div>
-    </Card.Content>
-  </Card.Root>
+	<!-- Card: Retiros Pendientes -->
+	<Card.Root>
+		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
+			<Card.Title class="text-md font-medium">Retiros Pendientes</Card.Title>
+			<iconify-icon icon="mdi:timer-sand" height="1.5rem" width="1.5rem"></iconify-icon>
+		</Card.Header>
+		<Card.Content>
+			<div class="text-2xl font-bold">
+				{walletData
+					? formatPrice(walletData?.withdrawalPendingBalance, 'es-CO', 'COP')
+					: 'Cargando...'}
+			</div>
+		</Card.Content>
+	</Card.Root>
 </div>
-
 
 {#if withdrawalsPaypalDetails && withdrawalsPaypalDetails.length > 0}
 	<div class="overflow-x-auto mx-10 my-5 border rounded-md shadow">
