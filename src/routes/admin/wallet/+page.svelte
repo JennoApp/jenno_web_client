@@ -321,27 +321,10 @@
 		});
 	}
 
-	async function getWithdrawalsBalance() {
-		const response = await fetch(`${serverUrl}/wallet/getwithdrawalBalances`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${data.sessionToken}`
-			}
-		});
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log({ data });
-      walletData = data;
-    } else {
-      console.error('Error al obtener la billetera');
-    }
-	}
-
-  onMount (() => {
-    getWithdrawalsBalance();
-  })
+  $: console.log({
+    whitdrawalTotal: walletData.withdrawalTotalBalance,
+    withdrawalPending: walletData.withdrawalPendingBalance
+    })
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
