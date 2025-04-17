@@ -442,6 +442,39 @@
 	<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_withdrawals_title()}</h2>
 </div>
 
+<div class="grid gap-4 mx-5 md:grid-cols-2 lg:grid-cols-3">
+  <!-- Card: Total Retirado -->
+  <Card.Root>
+    <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card.Title class="text-md font-medium">Total Retirado</Card.Title>
+      <iconify-icon icon="mdi:bank-transfer-out" height="1.5rem" width="1.5rem"></iconify-icon>
+    </Card.Header>
+    <Card.Content>
+      <div class="text-2xl font-bold">
+        {walletData
+          ? formatPrice(walletData?.withdrawalTotalBalance, 'es-CO', 'COP')
+          : 'Cargando...'}
+      </div>
+    </Card.Content>
+  </Card.Root>
+
+  <!-- Card: Retiros Pendientes -->
+  <Card.Root>
+    <Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
+      <Card.Title class="text-md font-medium">Retiros Pendientes</Card.Title>
+      <iconify-icon icon="mdi:timer-sand" height="1.5rem" width="1.5rem"></iconify-icon>
+    </Card.Header>
+    <Card.Content>
+      <div class="text-2xl font-bold">
+        {walletData
+          ? formatPrice(walletData?.withdrawalPendingBalance, 'es-CO', 'COP')
+          : 'Cargando...'}
+      </div>
+    </Card.Content>
+  </Card.Root>
+</div>
+
+
 {#if withdrawalsPaypalDetails && withdrawalsPaypalDetails.length > 0}
 	<div class="overflow-x-auto mx-10 my-5 border rounded-md shadow">
 		<table class="min-w-full table-auto divide-y divide-gray-200 dark:divide-[#303030]">
