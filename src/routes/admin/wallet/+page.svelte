@@ -320,11 +320,6 @@
 			getWithdrawalsPaypalDetails(batchId);
 		});
 	}
-
-  $: console.log({
-    whitdrawalTotal: walletData.withdrawalTotalBalance,
-    withdrawalPending: walletData.withdrawalPendingBalance
-    })
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
