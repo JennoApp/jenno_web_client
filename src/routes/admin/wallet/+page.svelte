@@ -713,12 +713,12 @@
 						<select
 							id="bankType"
 							bind:value={bankType}
-							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
 						>
 							<option value="" disabled selected>Selecciona Bancolombia o Nequi</option>
-							<option value="BANCOLÓMBIA">Bancolombia</option>
-							<option value="NEQUI">Nequi</option>
+							<option value="BANCOLÓMBIA" class="dark:text-gray-200">Bancolombia</option>
+							<option value="NEQUI" class="dark:text-gray-200">Nequi</option>
 						</select>
 					</div>
 
@@ -728,13 +728,13 @@
 						<select
 							id="accountType"
 							bind:value={accountType}
-							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
 							disabled={bankType === 'NEQUI'}
 						>
 							<option value="" disabled selected>Selecciona Ahorros o Corriente</option>
-							<option value="AHORROS">Ahorros</option>
-							<option value="CORRIENTE">Corriente</option>
+							<option value="AHORROS" class="dark:text-gray-200">Ahorros</option>
+							<option value="CORRIENTE" class="dark:text-gray-200">Corriente</option>
 						</select>
 						{#if bankType === 'NEQUI'}
 							<p class="text-xs text-gray-500 mt-1">Nequi sólo soporta AHORROS</p>
@@ -750,7 +750,7 @@
 							id="accountNumber"
 							type="text"
 							bind:value={accountNumber}
-							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							placeholder={bankType === 'NEQUI' ? '3001234567' : '0001234567890'}
 							required
 						/>
@@ -763,7 +763,7 @@
 							id="name"
 							type="text"
 							bind:value={name}
-							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							placeholder="Juan Pérez"
 							required
 						/>
@@ -776,12 +776,12 @@
 							<select
 								id="legalIdType"
 								bind:value={legalIdType}
-								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 								required
 							>
 								<option value="" disabled selected>CC o NIT</option>
-								<option value="CC">CC</option>
-								<option value="NIT">NIT</option>
+								<option value="CC" class="dark:text-gray-200">CC</option>
+								<option value="NIT" class="dark:text-gray-200">NIT</option>
 							</select>
 						</div>
 						<div class="w-2/3">
@@ -790,7 +790,7 @@
 								id="legalId"
 								type="text"
 								bind:value={legalId}
-								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 								placeholder="1234567890"
 								required
 							/>
@@ -801,7 +801,7 @@
 					<div class="flex justify-end mt-5">
 						<button
 							type="submit"
-							class="h-10 px-4 bg-gray-200 dark:bg-[#202020] text-black hover:bg-gray-300 rounded-md"
+							class="h-10 px-4 bg-gray-200 text-black hover:bg-gray-300 rounded-md"
 						>
 							{editingBankAccount ? 'Actualizar' : 'Agregar'}
 						</button>
