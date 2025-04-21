@@ -18,18 +18,35 @@
 	export let data: PageData;
 	let serverUrl: string;
 	let walletData: any;
-	let openDialogAddCart = false;
 	let openDialogwithdraw = false;
 	let openDialogRemove = false;
 	let withdrawalAmount = '';
 	let withdrawalAmountforExchange = 0;
 	let paypalAccountEmail = '';
 	let paypalAccount: any;
-	let bankAccounts: any[] = []
+	let bankAccounts: any[] = [];
 	let exchangeRate = 0;
 	let usdEquivalent = 0;
 	let withdrawals: any = [];
 	let withdrawalsPaypalDetails: any = [];
+
+	// Estado del diálogo
+	export let openDialogAddBankAccount = false;
+	// Si estamos editando, guardamos el objeto existente
+	let editingBankAccount: any = null;
+
+  function editBankAccount(account: any) {
+    editingBankAccount = account;
+    openDialogAddBankAccount = true;
+  }
+
+	// Campos del formulario
+	let bankType = '';
+	let accountType = '';
+	let accountNumber = '';
+	let name = '';
+	let legalIdType = '';
+	let legalId = '';
 
 	// Debuging
 	$: console.log({ token: data.sessionToken });
@@ -85,7 +102,7 @@
 	}
 
 	// Obtener detalles de la cuenta Paypal del usuario
-	async function getPaypalAccount() {
+	async function getBankAccounts() {
 		try {
 			if (!serverUrl) {
 				await getServerUrl();
@@ -104,10 +121,10 @@
 			console.log(error);
 		}
 	}
-	$: getPaypalAccount();
+	$: getBankAccounts();
 
 	// Funcion para agregar una cuenta Paypal
-	async function handleSubmitAddPaypalAccount() {
+	async function handleSubmitBankAccount() {
 		try {
 			const response = await fetch(`${serverUrl}/users/paypalaccount/${$page.data.user._id}`, {
 				method: 'PATCH',
@@ -125,9 +142,9 @@
 			// const data = await response.json()
 
 			toast.success(`Cuenta de Paypal guardada con exito`);
-			openDialogAddCart = false;
+			openDialogAddBankAccount = false;
 
-			await getPaypalAccount();
+			await getBankAccounts();
 		} catch (error) {
 			console.error('Error guardando la cuenta de paypal:', error);
 			toast.error('Error al guardar la cuenta de PayPal');
@@ -135,7 +152,7 @@
 	}
 
 	// Eliminar cuenta Paypal
-	async function handleRemovePaypalAccount() {
+	async function handleRemoveBankAccount() {
 		try {
 			const response = await fetch(
 				`${serverUrl}/users/removepaypalaccount/${$page.data.user._id}`,
@@ -151,7 +168,7 @@
 			toast.success(`Cuenta de Paypal eliminada con exito`);
 			openDialogRemove = false;
 
-			await getPaypalAccount();
+			await getBankAccounts();
 		} catch (error) {
 			console.error('Error eliminando la cuenta de paypal:', error);
 			toast.error('Error al eliminar la cuenta de PayPal');
@@ -159,7 +176,7 @@
 	}
 
 	async function actionsPaypalAccount() {
-		openDialogAddCart = true;
+		openDialogAddBankAccount = true;
 	}
 
 	// Formatear moneda
@@ -313,7 +330,7 @@
 		await fetchWallet($page.data?.user?.walletId);
 		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
-		await getPaypalAccount();
+		await getBankAccounts();
 	});
 
 	$: if (withdrawals) {
@@ -431,7 +448,7 @@
 		{/if}
 	</div> -->
 
-	<div class="flex flex-wrap gap-4">
+	<!-- <div class="flex flex-wrap gap-4">
 		{#each bankAccounts as account, index}
 			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
 				<div class="flex flex-row-reverse h-10 w-full">
@@ -481,10 +498,74 @@
 			<button
 				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
 				on:click|preventDefault={() => {
-					openDialogAddCart = true;
+					openDialogAddBankAccount = true;
 				}}
 			>
 				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem"></iconify-icon>
+			</button>
+		{/if}
+	</div>
+</div> -->
+
+	<div class="flex flex-wrap gap-4">
+		{#each bankAccounts as account, i}
+			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
+				<div class="flex flex-row-reverse h-10 w-full">
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger class="m-2">
+							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem" />
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content>
+							<DropdownMenu.Group>
+								<DropdownMenu.Label>Acciones</DropdownMenu.Label>
+								<DropdownMenu.Item on:click={() => editBankAccount(account)}>
+									<iconify-icon
+										icon="material-symbols:update"
+										height="1.1rem"
+										width="1.1rem"
+										class="text-gray-200"
+									/>
+									<span class="ml-3">Actualizar</span>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									class="hover:!bg-red-500 bg-opacity-60"
+									on:click={() => handleRemoveBankAccount()}
+								>
+									<iconify-icon
+										icon="material-symbols:delete"
+										height="1.1rem"
+										width="1.1rem"
+										class="text-gray-200"
+									/>
+									<span class="ml-3">Eliminar</span>
+								</DropdownMenu.Item>
+							</DropdownMenu.Group>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				</div>
+
+				<div class="flex flex-col items-center justify-center flex-1 gap-2">
+					{#if account.bankType === 'NEQUI'}
+						<img src="/logos/nequi.png" alt="Nequi" class="h-12 w-auto" />
+						<div class="text-lg font-semibold">{account.accountNumber}</div>
+					{:else}
+						<img src="/logos/bancolombia.png" alt="Bancolombia" class="h-12 w-auto" />
+						<div class="text-lg font-semibold">{account.accountNumber}</div>
+						<div class="text-sm text-gray-600 dark:text-gray-400">{account.accountType}</div>
+					{/if}
+				</div>
+			</div>
+		{/each}
+
+		{#if bankAccounts.length < 2}
+			<button
+				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
+				on:click={() => {
+					editingBankAccount = null;
+					openDialogAddBankAccount = true;
+				}}
+			>
+				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem" />
 			</button>
 		{/if}
 	</div>
@@ -585,7 +666,7 @@
 {/if}
 
 <!-- Dialog Add Bank Account -->
-<Dialog.Root bind:open={openDialogAddCart}>
+<!-- <Dialog.Root bind:open={openDialogAddCart}>
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
@@ -609,6 +690,121 @@
 						<button class="h-10 p-2 mt-5 bg-gray-200 text-black hover:bg-gray-300 rounded-md"
 							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
 						>
+					</div>
+				</form>
+			</Dialog.Description>
+		</Dialog.Header>
+	</Dialog.Content>
+</Dialog.Root> -->
+
+<!-- Dialog Add/Update Bank Account -->
+<Dialog.Root bind:open={openDialogAddBankAccount}>
+	<Dialog.Trigger />
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>
+				{editingBankAccount ? 'Actualizar Cuenta Bancaria' : 'Agregar Cuenta Bancaria'}
+			</Dialog.Title>
+			<Dialog.Description>
+				<form on:submit|preventDefault={handleSubmitBankAccount}>
+					<!-- 1. Bank Type -->
+					<div class="mt-3">
+						<label for="bankType">Entidad</label>
+						<select
+							id="bankType"
+							bind:value={bankType}
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							required
+						>
+							<option value="" disabled selected>Selecciona Bancolombia o Nequi</option>
+							<option value="BANCOLÓMBIA">Bancolombia</option>
+							<option value="NEQUI">Nequi</option>
+						</select>
+					</div>
+
+					<!-- 2. Account Type -->
+					<div class="mt-3">
+						<label for="accountType">Tipo de Cuenta</label>
+						<select
+							id="accountType"
+							bind:value={accountType}
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							required
+							disabled={bankType === 'NEQUI'}
+						>
+							<option value="" disabled selected>Selecciona Ahorros o Corriente</option>
+							<option value="AHORROS">Ahorros</option>
+							<option value="CORRIENTE">Corriente</option>
+						</select>
+						{#if bankType === 'NEQUI'}
+							<p class="text-xs text-gray-500 mt-1">Nequi sólo soporta AHORROS</p>
+						{/if}
+					</div>
+
+					<!-- 3. Número de Cuenta / Celular -->
+					<div class="mt-3">
+						<label for="accountNumber">
+							{bankType === 'NEQUI' ? 'Número Celular' : 'Número de Cuenta'}
+						</label>
+						<input
+							id="accountNumber"
+							type="text"
+							bind:value={accountNumber}
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							placeholder={bankType === 'NEQUI' ? '3001234567' : '0001234567890'}
+							required
+						/>
+					</div>
+
+					<!-- 4. Nombre del Titular -->
+					<div class="mt-3">
+						<label for="name">Nombre del Titular</label>
+						<input
+							id="name"
+							type="text"
+							bind:value={name}
+							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+							placeholder="Juan Pérez"
+							required
+						/>
+					</div>
+
+					<!-- 5. Tipo y Número de Identificación -->
+					<div class="mt-3 flex gap-2">
+						<div class="w-1/3">
+							<label for="legalIdType">Tipo Identificación</label>
+							<select
+								id="legalIdType"
+								bind:value={legalIdType}
+								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+								required
+							>
+								<option value="" disabled selected>CC o NIT</option>
+								<option value="CC">CC</option>
+								<option value="NIT">NIT</option>
+							</select>
+						</div>
+						<div class="w-2/3">
+							<label for="legalId">Número Identificación</label>
+							<input
+								id="legalId"
+								type="text"
+								bind:value={legalId}
+								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black"
+								placeholder="1234567890"
+								required
+							/>
+						</div>
+					</div>
+
+					<!-- Submit -->
+					<div class="flex justify-end mt-5">
+						<button
+							type="submit"
+							class="h-10 px-4 bg-gray-200 dark:bg-[#202020] text-black hover:bg-gray-300 rounded-md"
+						>
+							{editingBankAccount ? 'Actualizar' : 'Agregar'}
+						</button>
 					</div>
 				</form>
 			</Dialog.Description>
