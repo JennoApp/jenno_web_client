@@ -407,10 +407,10 @@
 
 				<div class="flex flex-col items-center justify-center flex-1 gap-2">
 					{#if account.bankType === 'NEQUI'}
-						<img src="/logos/nequi.png" alt="Nequi" class="h-12 w-auto" />
+            <iconify-icon icon="arcticons:nequi-colombia" height="2rem" width="2rem" />
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 					{:else}
-						<img src="/logos/bancolombia.png" alt="Bancolombia" class="h-12 w-auto" />
+            <iconify-icon icon="arcticons:bancolombia" height="2rem" width="2rem" />
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 						<div class="text-sm text-gray-600 dark:text-gray-400">{account.accountType}</div>
 					{/if}
