@@ -32,7 +32,7 @@
 	let withdrawalsPaypalDetails: any = [];
 
 	// Estado del diálogo
-	export let openDialogAddBankAccount = false;
+	let openDialogAddBankAccount = false;
 	// Si estamos editando, guardamos el objeto existente
 	let editingBankAccount: any = null;
 
@@ -49,17 +49,25 @@
 	let legalIdType = '';
 	let legalId = '';
 
+  $: if (editingBankAccount) {
+    bankType      = editingBankAccount.bankType;
+    accountType   = editingBankAccount.accountType;
+    accountNumber = editingBankAccount.accountNumber;
+    name          = editingBankAccount.name;
+    legalIdType   = editingBankAccount.legalIdType;
+    legalId       = editingBankAccount.legalId;
+  } else {
+    bankType      = '';
+    accountType   = '';
+    accountNumber = '';
+    name          = '';
+    legalIdType   = '';
+    legalId       = '';
+  }
+
 	let serverUrl: string;
 	$: sessionToken = $page.data.sessionToken;
 
-	// Debuging
-	$: console.log({ token: data.sessionToken });
-	$: console.log({ data: $page.data?.user?.walletId });
-	$: console.log({ userData: $page.data?.user });
-	$: console.log({ wallet_id: $page.data.user.walletId });
-	$: console.log({ walletData });
-	$: console.log({ withdrawals });
-	$: console.log({ withdrawalsPaypalDetails });
 
 	// Obtener url del servidor
 	async function getServerUrl() {
