@@ -16,14 +16,11 @@
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
-	let serverUrl: string;
 	let walletData: any;
 	let openDialogwithdraw = false;
 	let openDialogRemove = false;
 	let withdrawalAmount = '';
 	let withdrawalAmountforExchange = 0;
-	let paypalAccountEmail = '';
-	let paypalAccount: any;
 	let bankAccounts: any[] = [];
 	let exchangeRate = 0;
 	let usdEquivalent = 0;
@@ -35,10 +32,10 @@
 	// Si estamos editando, guardamos el objeto existente
 	let editingBankAccount: any = null;
 
-  function editBankAccount(account: any) {
-    editingBankAccount = account;
-    openDialogAddBankAccount = true;
-  }
+	function editBankAccount(account: any) {
+		editingBankAccount = account;
+		openDialogAddBankAccount = true;
+	}
 
 	// Campos del formulario
 	let bankType = '';
@@ -48,13 +45,15 @@
 	let legalIdType = '';
 	let legalId = '';
 
+	let serverUrl: string;
+	$: sessionToken = $page.data.sessionToken;
+
 	// Debuging
 	$: console.log({ token: data.sessionToken });
 	$: console.log({ data: $page.data?.user?.walletId });
 	$: console.log({ userData: $page.data?.user });
 	$: console.log({ wallet_id: $page.data.user.walletId });
 	$: console.log({ walletData });
-	$: console.log({ usreData: paypalAccount });
 	$: console.log({ withdrawals });
 	$: console.log({ withdrawalsPaypalDetails });
 
@@ -101,81 +100,91 @@
 		}
 	}
 
-	// Obtener detalles de la cuenta Paypal del usuario
-	async function getBankAccounts() {
-		try {
-			if (!serverUrl) {
-				await getServerUrl();
-			}
-
-			if (serverUrl) {
-				const response = await fetch(`${serverUrl}/users/getpaypal/${$page.data?.user?._id}`);
-
-				const { account } = await response.json();
-				paypalAccount = account;
-				paypalAccountEmail = account;
-			} else {
-				console.error('ServerUrl no esta definido');
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	}
-	$: getBankAccounts();
-
-	// Funcion para agregar una cuenta Paypal
+	// Funcion para agregar una cuenta Bancaria
 	async function handleSubmitBankAccount() {
 		try {
-			const response = await fetch(`${serverUrl}/users/paypalaccount/${$page.data.user._id}`, {
-				method: 'PATCH',
+			await getServerUrl();
+
+			const userId = $page.data.user._id;
+			const payload = {
+				bankType,
+				accountType: bankType === 'NEQUI' ? 'AHORROS' : accountType,
+				accountNumber: accountNumber.trim(),
+				name: name.trim(),
+				legalIdType,
+				legalId: legalId.trim()
+			};
+
+			const method = editingBankAccount ? 'PATCH' : 'POST';
+			const url = editingBankAccount
+				? `${serverUrl}/wallet/bankAccounts/${editingBankAccount._id}`
+				: `${serverUrl}/wallet/bankAccounts`;
+
+			const response = await fetch(url, {
+				method,
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${sessionToken}`
 				},
-				body: JSON.stringify({
-					paypalAccount: paypalAccountEmail.trim()
-				})
+				body: JSON.stringify(payload)
 			});
 
 			if (!response.ok) {
-				throw new Error('Error actualizando la cuenta del Usuario');
+				throw new Error('Error creando o actualizando la cuenta del Usuario');
 			}
 			// const data = await response.json()
 
-			toast.success(`Cuenta de Paypal guardada con exito`);
+			toast.success(`Cuenta Bancaria Asociada con exito`);
 			openDialogAddBankAccount = false;
 
-			await getBankAccounts();
+			editingBankAccount = null;
+			resetForm();
+			// Recargar los datos de la pagina
+			await fetchWallet($page.data?.user?.walletId);
 		} catch (error) {
 			console.error('Error guardando la cuenta de paypal:', error);
 			toast.error('Error al guardar la cuenta de PayPal');
 		}
 	}
 
-	// Eliminar cuenta Paypal
-	async function handleRemoveBankAccount() {
+	function resetForm() {
+		bankType = '';
+		accountType = '';
+		accountNumber = '';
+		name = '';
+		legalIdType = '';
+		legalId = '';
+	}
+
+	// Eliminar cuenta bancaria
+	async function handleRemoveBankAccount(account: any) {
 		try {
-			const response = await fetch(
-				`${serverUrl}/users/removepaypalaccount/${$page.data.user._id}`,
-				{
-					method: 'DELETE'
+			const res = await fetch(`${serverUrl}/wallet/bankAccounts/${account._id}`, {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${sessionToken}`
 				}
-			);
+			});
+			if (!res.ok) throw new Error(res.statusText);
+			toast.success('Cuenta bancaria eliminada con éxito');
 
-			if (!response.ok) {
-				throw new Error('Error actualizando la cuenta del Usuario');
-			}
-
-			toast.success(`Cuenta de Paypal eliminada con exito`);
-			openDialogRemove = false;
-
-			await getBankAccounts();
-		} catch (error) {
-			console.error('Error eliminando la cuenta de paypal:', error);
-			toast.error('Error al eliminar la cuenta de PayPal');
+			// Recargar los datos de la pagina
+			await fetchWallet($page.data?.user?.walletId);
+		} catch (err) {
+			console.error(err);
+			toast.error('Error al eliminar la cuenta bancaria');
 		}
 	}
 
-	async function actionsPaypalAccount() {
+	// 4) Preparar formulario para editar
+	function actionsBankAccount(account: any) {
+		editingBankAccount = account;
+		bankType = account.bankType;
+		accountType = account.accountType;
+		accountNumber = account.accountNumber;
+		name = account.name;
+		legalIdType = account.legalIdType;
+		legalId = account.legalId;
 		openDialogAddBankAccount = true;
 	}
 
@@ -330,7 +339,6 @@
 		await fetchWallet($page.data?.user?.walletId);
 		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
-		await getBankAccounts();
 	});
 
 	$: if (withdrawals) {
@@ -393,122 +401,8 @@
 <div class="m-5 mt-10">
 	<h2 class="my-5 text-xl font-semibold">Cuentas Asociadas</h2>
 
-	<!-- <div>
-		{#if paypalAccount}
-			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
-				<div class="flex flex-row-reverse h-10 w-full">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger class="m-2">
-							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem"></iconify-icon>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content>
-							<DropdownMenu.Group>
-								<DropdownMenu.Label>Actions</DropdownMenu.Label>
-								<DropdownMenu.Item on:click={() => actionsPaypalAccount()}>
-									<iconify-icon
-										icon="material-symbols:update"
-										height="1.1rem"
-										width="1.1rem"
-										class="text-gray-200 flex justify-center items-center"
-									/>
-									<span class="ml-3">Actualizar</span>
-								</DropdownMenu.Item>
-								<DropdownMenu.Item
-									class="hover:!bg-red-500 bg-opacity-60"
-									on:click={() => {
-										openDialogRemove = true;
-									}}
-								>
-									<iconify-icon
-										icon="material-symbols:delete"
-										height="1.1rem"
-										width="1.1rem"
-										class="text-gray-200 flex justify-center items-center"
-									/>
-									<span class="ml-3">Eliminar</span>
-								</DropdownMenu.Item>
-							</DropdownMenu.Group>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</div>
-				<div class="flex flex-col gap-5 items-center mt-3">
-					<iconify-icon icon="logos:paypal" height="2rem" width="2rem"></iconify-icon>
-					<h1 class="text-lg font-semibold">{paypalAccount}</h1>
-				</div>
-			</div>
-		{:else}
-			<button
-				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
-				on:click|preventDefault={() => {
-					openDialogAddCart = true;
-				}}
-			>
-				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem"></iconify-icon>
-			</button>
-		{/if}
-	</div> -->
-
-	<!-- <div class="flex flex-wrap gap-4">
-		{#each bankAccounts as account, index}
-			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
-				<div class="flex flex-row-reverse h-10 w-full">
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger class="m-2">
-							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem"></iconify-icon>
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content>
-							<DropdownMenu.Group>
-								<DropdownMenu.Label>Acciones</DropdownMenu.Label>
-								<DropdownMenu.Item on:click={() => {}}>
-									<iconify-icon
-										icon="material-symbols:update"
-										height="1.1rem"
-										width="1.1rem"
-										class="text-gray-200 flex justify-center items-center"
-									/>
-									<span class="ml-3">Actualizar</span>
-								</DropdownMenu.Item>
-								<DropdownMenu.Item
-									class="hover:!bg-red-500 bg-opacity-60"
-									on:click={() => {
-										// selectedAccount = account;
-										openDialogRemove = true;
-									}}
-								>
-									<iconify-icon
-										icon="material-symbols:delete"
-										height="1.1rem"
-										width="1.1rem"
-										class="text-gray-200 flex justify-center items-center"
-									/>
-									<span class="ml-3">Eliminar</span>
-								</DropdownMenu.Item>
-							</DropdownMenu.Group>
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</div>
-				<div class="flex flex-col gap-5 items-center mt-3">
-					<iconify-icon icon="mdi:bank" height="2rem" width="2rem"></iconify-icon>
-					<h1 class="text-lg font-semibold">{account}</h1>
-				</div>
-			</div>
-		{/each}
-
-		{#if bankAccounts.length < 2}
-			<button
-				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
-				on:click|preventDefault={() => {
-					openDialogAddBankAccount = true;
-				}}
-			>
-				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem"></iconify-icon>
-			</button>
-		{/if}
-	</div>
-</div> -->
-
 	<div class="flex flex-wrap gap-4">
-		{#each bankAccounts as account, i}
+		{#each bankAccounts as account}
 			<div class="flex flex-col bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md">
 				<div class="flex flex-row-reverse h-10 w-full">
 					<DropdownMenu.Root>
@@ -529,7 +423,7 @@
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
 									class="hover:!bg-red-500 bg-opacity-60"
-									on:click={() => handleRemoveBankAccount()}
+									on:click={() => handleRemoveBankAccount(account._id)}
 								>
 									<iconify-icon
 										icon="material-symbols:delete"
@@ -665,37 +559,6 @@
 	<p class="text-center text-gray-500">{m.admin_wallet_withdrawals_no_data()}</p>
 {/if}
 
-<!-- Dialog Add Bank Account -->
-<!-- <Dialog.Root bind:open={openDialogAddCart}>
-	<Dialog.Trigger />
-	<Dialog.Content>
-		<Dialog.Header>
-			<Dialog.Title
-				>{paypalAccount ? 'Actualizar Cuenta de PayPal' : 'Agregar Cuenta de PayPal'}</Dialog.Title
-			>
-			<Dialog.Description>
-				<form on:submit|preventDefault={handleSubmitAddPaypalAccount}>
-					<div class="mt-3">
-						<label for="">Email PayPal</label>
-						<input
-							bind:value={paypalAccountEmail}
-							class="flex w-full h-8 mt-2 text-black dark:text-gray-200 rounded-md dark:bg-[#202020] border-none"
-							type="email"
-							placeholder="email@example.com"
-							required
-						/>
-					</div>
-
-					<div class="flex flex-row-reverse">
-						<button class="h-10 p-2 mt-5 bg-gray-200 text-black hover:bg-gray-300 rounded-md"
-							>{paypalAccount ? 'Actualizar' : 'Agregar'}</button
-						>
-					</div>
-				</form>
-			</Dialog.Description>
-		</Dialog.Header>
-	</Dialog.Content>
-</Dialog.Root> -->
 
 <!-- Dialog Add/Update Bank Account -->
 <Dialog.Root bind:open={openDialogAddBankAccount}>
@@ -813,7 +676,7 @@
 </Dialog.Root>
 
 <!-- Dialog Withdraw -->
-<Dialog.Root bind:open={openDialogwithdraw}>
+<!-- <Dialog.Root bind:open={openDialogwithdraw}>
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
@@ -843,7 +706,7 @@
 						placeholder="Ingrese el monto"
 					/>
 					<div class="flex justify-between">
-						<!-- Mostrar el equivalente en USD -->
+						-- Mostrar el equivalente en USD --
 						{#if exchangeRate}
 							<p class="text-gray-500 text-sm">
 								{m.admin_wallet_withdrawals_modal_dollar_equivalent()}
@@ -871,7 +734,7 @@
 			</div>
 		</form>
 	</Dialog.Content>
-</Dialog.Root>
+</Dialog.Root> -->
 
 <AlertDialog.Root bind:open={openDialogRemove}>
 	<AlertDialog.Trigger />
@@ -892,7 +755,7 @@
 			>
 			<AlertDialog.Action
 				on:click={() => {
-					handleRemovePaypalAccount();
+					handleRemoveBankAccount();
 				}}>Continuar</AlertDialog.Action
 			>
 		</AlertDialog.Footer>
