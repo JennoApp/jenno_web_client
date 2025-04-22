@@ -13,6 +13,7 @@
 	import { toast } from 'svelte-sonner';
 	import { format } from 'timeago.js';
 	import type { PageData } from './$types';
+  import { enhance } from '$app/forms';
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
@@ -142,8 +143,8 @@
 			// Recargar los datos de la pagina
 			await fetchWallet($page.data?.user?.walletId);
 		} catch (error) {
-			console.error('Error guardando la cuenta de paypal:', error);
-			toast.error('Error al guardar la cuenta de PayPal');
+			console.error('Error guardando la cuenta bancaria:', error);
+			toast.error('Error al guardar la cuenta bancaria');
 		}
 	}
 
@@ -346,6 +347,10 @@
 			getWithdrawalsPaypalDetails(batchId);
 		});
 	}
+
+  $: if(data?.success) {
+    toast.success('Datos guardados o actualizados con éxito');
+  }
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -559,7 +564,6 @@
 	<p class="text-center text-gray-500">{m.admin_wallet_withdrawals_no_data()}</p>
 {/if}
 
-
 <!-- Dialog Add/Update Bank Account -->
 <Dialog.Root bind:open={openDialogAddBankAccount}>
 	<Dialog.Trigger />
@@ -569,12 +573,13 @@
 				{editingBankAccount ? 'Actualizar Cuenta Bancaria' : 'Agregar Cuenta Bancaria'}
 			</Dialog.Title>
 			<Dialog.Description>
-				<form on:submit|preventDefault={handleSubmitBankAccount}>
+				<form method="post" action="?/saveBankAccount" use:enhance>
 					<!-- 1. Bank Type -->
 					<div class="mt-3">
 						<label for="bankType">Entidad</label>
 						<select
 							id="bankType"
+							name="bankType"
 							bind:value={bankType}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
@@ -590,6 +595,7 @@
 						<label for="accountType">Tipo de Cuenta</label>
 						<select
 							id="accountType"
+							name="accountType"
 							bind:value={accountType}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
@@ -611,6 +617,7 @@
 						</label>
 						<input
 							id="accountNumber"
+							name="accountNumber"
 							type="text"
 							bind:value={accountNumber}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
@@ -624,6 +631,7 @@
 						<label for="name">Nombre del Titular</label>
 						<input
 							id="name"
+							name="name"
 							type="text"
 							bind:value={name}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
@@ -638,6 +646,7 @@
 							<label for="legalIdType">Tipo Identificación</label>
 							<select
 								id="legalIdType"
+								name="legalIdType"
 								bind:value={legalIdType}
 								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 								required
@@ -651,6 +660,7 @@
 							<label for="legalId">Número Identificación</label>
 							<input
 								id="legalId"
+								name="legalId"
 								type="text"
 								bind:value={legalId}
 								class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
@@ -659,6 +669,11 @@
 							/>
 						</div>
 					</div>
+
+					<!-- Oculto si es actualización -->
+					{#if editingBankAccount}
+						<input type="hidden" name="accountId" value={editingBankAccount._id} />
+					{/if}
 
 					<!-- Submit -->
 					<div class="flex justify-end mt-5">
