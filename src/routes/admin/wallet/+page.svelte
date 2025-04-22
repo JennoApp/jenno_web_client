@@ -12,11 +12,14 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { format } from 'timeago.js';
-	import type { PageData } from './$types';
-  import { enhance } from '$app/forms';
+	import type { ActionData, PageData } from './$types';
+	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
+  export let form: ActionData;
+
 	let walletData: any;
 	let openDialogwithdraw = false;
 	let openDialogRemove = false;
@@ -348,9 +351,14 @@
 		});
 	}
 
-  $: if(data?.success) {
-    toast.success('Datos guardados o actualizados con éxito');
-  }
+  ///// Funciones de manejo de eventos /////
+  // Manejar el evento de envío del formulario
+  $: if (form?.success) {
+		console.log(`cuenta guardada o actualizada con exito`);
+		goto('/admin/wallet', {
+      invalidateAll: true
+    });
+	}
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -573,7 +581,11 @@
 				{editingBankAccount ? 'Actualizar Cuenta Bancaria' : 'Agregar Cuenta Bancaria'}
 			</Dialog.Title>
 			<Dialog.Description>
-				<form method="post" action="?/saveBankAccount" use:enhance>
+				<form
+					method="post"
+					action="?/saveBankAccount"
+					use:enhance
+				>
 					<!-- 1. Bank Type -->
 					<div class="mt-3">
 						<label for="bankType">Entidad</label>
@@ -770,7 +782,7 @@
 			>
 			<AlertDialog.Action
 				on:click={() => {
-					handleRemoveBankAccount();
+					// handleRemoveBankAccount();
 				}}>Continuar</AlertDialog.Action
 			>
 		</AlertDialog.Footer>
