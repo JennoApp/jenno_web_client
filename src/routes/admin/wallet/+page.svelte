@@ -97,57 +97,11 @@
 
 			const data = await response.json();
 			walletData = data.wallet;
+      bankAccounts = data.wallet.bankAccounts || [];
 
 			return data;
 		} catch (error) {
 			console.error('Error al obtener informacion del wallet del usuario!');
-		}
-	}
-
-	// Funcion para agregar una cuenta Bancaria
-	async function handleSubmitBankAccount() {
-		try {
-			await getServerUrl();
-
-			const userId = $page.data.user._id;
-			const payload = {
-				bankType,
-				accountType: bankType === 'NEQUI' ? 'AHORROS' : accountType,
-				accountNumber: accountNumber.trim(),
-				name: name.trim(),
-				legalIdType,
-				legalId: legalId.trim()
-			};
-
-			const method = editingBankAccount ? 'PATCH' : 'POST';
-			const url = editingBankAccount
-				? `${serverUrl}/wallet/bankAccounts/${editingBankAccount._id}`
-				: `${serverUrl}/wallet/bankAccounts`;
-
-			const response = await fetch(url, {
-				method,
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${sessionToken}`
-				},
-				body: JSON.stringify(payload)
-			});
-
-			if (!response.ok) {
-				throw new Error('Error creando o actualizando la cuenta del Usuario');
-			}
-			// const data = await response.json()
-
-			toast.success(`Cuenta Bancaria Asociada con exito`);
-			openDialogAddBankAccount = false;
-
-			editingBankAccount = null;
-			resetForm();
-			// Recargar los datos de la pagina
-			await fetchWallet($page.data?.user?.walletId);
-		} catch (error) {
-			console.error('Error guardando la cuenta bancaria:', error);
-			toast.error('Error al guardar la cuenta bancaria');
 		}
 	}
 
