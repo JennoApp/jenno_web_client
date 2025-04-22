@@ -42,8 +42,8 @@ export const actions: Actions = {
     // Determine method and URL
     const method = accountId ? 'PATCH' : 'POST';
     const url = accountId
-      ? `${PRIVATE_SERVER_URL}/wallet/bankAccounts/${accountId}`
-      : `${PRIVATE_SERVER_URL}/wallet/bankAccounts`;
+      ? `${PRIVATE_SERVER_URL}/wallet/bankAccounts/update/${accountId}`
+      : `${PRIVATE_SERVER_URL}/wallet/bankAccounts/create`;
 
     // Call backend
     const res = await fetch(url, {
