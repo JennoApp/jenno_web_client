@@ -297,15 +297,6 @@
 			getWithdrawalsPaypalDetails(batchId);
 		});
 	}
-
-  ///// Funciones de manejo de eventos /////
-  // Manejar el evento de envío del formulario
-  $: if (form?.success) {
-		console.log(`cuenta guardada o actualizada con exito`);
-		goto('/admin/wallet', {
-      invalidateAll: true
-    });
-	}
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -531,7 +522,12 @@
 				<form
 					method="post"
 					action="?/saveBankAccount"
-					use:enhance
+					use:enhance={() => {
+            return ({ update }) => {
+              update({ reset: true, invalidateAll: false });
+              openDialogAddBankAccount = false
+            }
+          }}
 				>
 					<!-- 1. Bank Type -->
 					<div class="mt-3">
