@@ -6,7 +6,6 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 	import * as m from '$paraglide/messages';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
 	import { page } from '$app/stores';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { onMount } from 'svelte';
@@ -36,34 +35,40 @@
 	// Si estamos editando, guardamos el objeto existente
 	let editingBankAccount: any = null;
 
-	function editBankAccount(account: any) {
-		editingBankAccount = account;
-		openDialogAddBankAccount = true;
-	}
+  // Campos del formulario
+  let bankType = '';
+  let accountType = '';
+  let accountNumber = '';
+  let name = '';
+  let legalIdType = '';
+  let legalId = '';
 
-	// Campos del formulario
-	let bankType = '';
-	let accountType = '';
-	let accountNumber = '';
-	let name = '';
-	let legalIdType = '';
-	let legalId = '';
+  // Flag para evitar múltiples inicializaciones
+  let isFirstOpen = true;
 
-  $: if (editingBankAccount) {
+  // Solo inicializar una vez cuando se abre el diálogo
+  $: if (openDialogAddBankAccount && isFirstOpen && editingBankAccount) {
     bankType      = editingBankAccount.bankType;
     accountType   = editingBankAccount.accountType;
     accountNumber = editingBankAccount.accountNumber;
     name          = editingBankAccount.name;
     legalIdType   = editingBankAccount.legalIdType;
     legalId       = editingBankAccount.legalId;
-  } else {
-    bankType      = '';
-    accountType   = '';
-    accountNumber = '';
-    name          = '';
-    legalIdType   = '';
-    legalId       = '';
+    isFirstOpen   = false; // ya cargado
   }
+
+  // Reset cuando se cierra el modal
+  $: if (!openDialogAddBankAccount) {
+    isFirstOpen = true; // permite una nueva carga la próxima vez
+    // Opcional: puedes limpiar los campos si es para "crear nueva cuenta"
+  }
+
+  	function editBankAccount(account: any) {
+		editingBankAccount = account;
+		openDialogAddBankAccount = true;
+	}
+
+  /////////////////////////
 
 	let serverUrl: string;
 	$: sessionToken = $page.data.sessionToken;
@@ -113,14 +118,6 @@
 		}
 	}
 
-	function resetForm() {
-		bankType = '';
-		accountType = '';
-		accountNumber = '';
-		name = '';
-		legalIdType = '';
-		legalId = '';
-	}
 
 	// Eliminar cuenta bancaria
 	async function handleRemoveBankAccount(account: any) {
@@ -140,18 +137,6 @@
 			console.error(err);
 			toast.error('Error al eliminar la cuenta bancaria');
 		}
-	}
-
-	// 4) Preparar formulario para editar
-	function actionsBankAccount(account: any) {
-		editingBankAccount = account;
-		bankType = account.bankType;
-		accountType = account.accountType;
-		accountNumber = account.accountNumber;
-		name = account.name;
-		legalIdType = account.legalIdType;
-		legalId = account.legalId;
-		openDialogAddBankAccount = true;
 	}
 
 	// Formatear moneda
@@ -554,7 +539,7 @@
 						<select
 							id="bankType"
 							name="bankType"
-							bind:value={bankType}
+              bind:value={bankType}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
 						>
@@ -570,7 +555,7 @@
 						<select
 							id="accountType"
 							name="accountType"
-							bind:value={accountType}
+              bind:value={accountType}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
 							disabled={bankType === 'NEQUI'}
