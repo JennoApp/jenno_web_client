@@ -523,8 +523,9 @@
 					method="post"
 					action="?/saveBankAccount"
 					use:enhance={() => {
-            return ({ update }) => {
+            return async ({ update }) => {
               update({ reset: true, invalidateAll: false });
+              await fetchWallet($page.data?.user?.walletId);
               openDialogAddBankAccount = false
             }
           }}
