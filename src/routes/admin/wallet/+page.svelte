@@ -523,10 +523,12 @@
 					method="post"
 					action="?/saveBankAccount"
 					use:enhance={() => {
-            return async ({ update }) => {
-              update({ reset: true, invalidateAll: false });
-              await fetchWallet($page.data?.user?.walletId);
+            return async () => {
+              await fetchWallet($page.data?.user?.walletId); // Recargar datos
               openDialogAddBankAccount = false
+              toast.success(
+                editingBankAccount ? 'Cuenta actualizada con éxito' : 'Cuenta agregada con éxito'
+              );
             }
           }}
 				>
