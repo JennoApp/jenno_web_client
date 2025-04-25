@@ -17,7 +17,6 @@
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
-	export let form: ActionData;
 
 	let walletData: any;
 	let openDialogwithdraw = false;
