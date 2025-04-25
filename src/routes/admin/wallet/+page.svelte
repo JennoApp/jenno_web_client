@@ -116,15 +116,15 @@
 	}
 
 	// Eliminar cuenta bancaria
-	async function handleRemoveBankAccount(account: any) {
-		console.log('account:', account);
+	async function handleRemoveBankAccount(accountId: string) {
+		console.log('account:', accountId);
 
-		if (!account || !account._id) {
+		if (!accountId) {
 			toast.error('ID de la cuenta no válido');
 			return;
 		}
 		try {
-			const res = await fetch(`${serverUrl}/wallet/bankAccounts/delete/${account._id}`, {
+			const res = await fetch(`${serverUrl}/wallet/bankAccounts/delete/${accountId}`, {
 				method: 'DELETE',
 				headers: {
 					Authorization: `Bearer ${$page.data.sessionToken}`
