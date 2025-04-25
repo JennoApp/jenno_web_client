@@ -11,14 +11,12 @@
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import { format } from 'timeago.js';
-	import type { ActionData, PageData } from './$types';
+	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
-  export let form: ActionData;
-
 	let walletData: any;
 	let openDialogwithdraw = false;
 	let openDialogRemove = false;
