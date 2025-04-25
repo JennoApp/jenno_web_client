@@ -17,7 +17,7 @@
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
-  export let form: ActionData;
+	export let form: ActionData;
 
 	let walletData: any;
 	let openDialogwithdraw = false;
@@ -35,44 +35,43 @@
 	// Si estamos editando, guardamos el objeto existente
 	let editingBankAccount: any = null;
 
-  // Campos del formulario
-  let bankType = '';
-  let accountType = '';
-  let accountNumber = '';
-  let name = '';
-  let legalIdType = '';
-  let legalId = '';
+	// Campos del formulario
+	let bankType = '';
+	let accountType = '';
+	let accountNumber = '';
+	let name = '';
+	let legalIdType = '';
+	let legalId = '';
 
-  // Flag para evitar múltiples inicializaciones
-  let isFirstOpen = true;
+	// Flag para evitar múltiples inicializaciones
+	let isFirstOpen = true;
 
-  // Solo inicializar una vez cuando se abre el diálogo
-  $: if (openDialogAddBankAccount && isFirstOpen && editingBankAccount) {
-    bankType      = editingBankAccount.bankType;
-    accountType   = editingBankAccount.accountType;
-    accountNumber = editingBankAccount.accountNumber;
-    name          = editingBankAccount.name;
-    legalIdType   = editingBankAccount.legalIdType;
-    legalId       = editingBankAccount.legalId;
-    isFirstOpen   = false; // ya cargado
-  }
+	// Solo inicializar una vez cuando se abre el diálogo
+	$: if (openDialogAddBankAccount && isFirstOpen && editingBankAccount) {
+		bankType = editingBankAccount.bankType;
+		accountType = editingBankAccount.accountType;
+		accountNumber = editingBankAccount.accountNumber;
+		name = editingBankAccount.name;
+		legalIdType = editingBankAccount.legalIdType;
+		legalId = editingBankAccount.legalId;
+		isFirstOpen = false; // ya cargado
+	}
 
-  // Reset cuando se cierra el modal
-  $: if (!openDialogAddBankAccount) {
-    isFirstOpen = true; // permite una nueva carga la próxima vez
-    // Opcional: puedes limpiar los campos si es para "crear nueva cuenta"
-  }
+	// Reset cuando se cierra el modal
+	$: if (!openDialogAddBankAccount) {
+		isFirstOpen = true; // permite una nueva carga la próxima vez
+		// Opcional: puedes limpiar los campos si es para "crear nueva cuenta"
+	}
 
-  	function editBankAccount(account: any) {
+	function editBankAccount(account: any) {
 		editingBankAccount = account;
 		openDialogAddBankAccount = true;
 	}
 
-  /////////////////////////
+	/////////////////////////
 
 	let serverUrl: string;
 	$: sessionToken = $page.data.sessionToken;
-
 
 	// Obtener url del servidor
 	async function getServerUrl() {
@@ -110,14 +109,13 @@
 
 			const data = await response.json();
 			walletData = data.wallet;
-      bankAccounts = data.wallet.bankAccounts || [];
+			bankAccounts = data.wallet.bankAccounts || [];
 
 			return data;
 		} catch (error) {
 			console.error('Error al obtener informacion del wallet del usuario!');
 		}
 	}
-
 
 	// Eliminar cuenta bancaria
 	async function handleRemoveBankAccount(account: any) {
@@ -372,18 +370,30 @@
 									/>
 									<span class="ml-3">Actualizar</span>
 								</DropdownMenu.Item>
-								<DropdownMenu.Item
-									class="hover:!bg-red-500 bg-opacity-60"
-									on:click={() => handleRemoveBankAccount(account._id)}
+
+								<!-- Eliminar vía form action -->
+								<form
+									method="post"
+									action="?/deleteBankAccount"
+									use:enhance={() => {
+										return async () => {
+											await fetchWallet($page.data?.user?.walletId); // Recargar datos
+											openDialogRemove = false;
+											toast.success('Cuenta eliminada con éxito');
+										};
+									}}
 								>
-									<iconify-icon
-										icon="material-symbols:delete"
-										height="1.1rem"
-										width="1.1rem"
-										class="text-gray-200"
-									/>
-									<span class="ml-3">Eliminar</span>
-								</DropdownMenu.Item>
+									<input type="hidden" name="accountId" value={account._id} />
+									<DropdownMenu.Item type="submit" class="hover:!bg-red-500">
+										<iconify-icon
+											icon="material-symbols:delete"
+											height="1.1rem"
+											width="1.1rem"
+											class="text-gray-200"
+										/>
+										<span class="ml-3">Eliminar</span>
+									</DropdownMenu.Item>
+								</form>
 							</DropdownMenu.Group>
 						</DropdownMenu.Content>
 					</DropdownMenu.Root>
@@ -391,10 +401,10 @@
 
 				<div class="flex flex-col items-center justify-center flex-1 gap-2">
 					{#if account.bankType === 'NEQUI'}
-            <iconify-icon icon="arcticons:nequi-colombia" height="5rem" width="5rem" />
+						<iconify-icon icon="arcticons:nequi-colombia" height="5rem" width="5rem" />
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 					{:else}
-            <iconify-icon icon="arcticons:bancolombia" height="5rem" width="5rem" />
+						<iconify-icon icon="arcticons:bancolombia" height="5rem" width="5rem" />
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 						<div class="text-sm text-gray-600 dark:text-gray-400">{account.accountType}</div>
 					{/if}
@@ -523,14 +533,14 @@
 					method="post"
 					action="?/saveBankAccount"
 					use:enhance={() => {
-            return async () => {
-              await fetchWallet($page.data?.user?.walletId); // Recargar datos
-              openDialogAddBankAccount = false
-              toast.success(
-                editingBankAccount ? 'Cuenta actualizada con éxito' : 'Cuenta agregada con éxito'
-              );
-            }
-          }}
+						return async () => {
+							await fetchWallet($page.data?.user?.walletId); // Recargar datos
+							openDialogAddBankAccount = false;
+							toast.success(
+								editingBankAccount ? 'Cuenta actualizada con éxito' : 'Cuenta agregada con éxito'
+							);
+						};
+					}}
 				>
 					<!-- 1. Bank Type -->
 					<div class="mt-3">
@@ -538,7 +548,7 @@
 						<select
 							id="bankType"
 							name="bankType"
-              bind:value={bankType}
+							bind:value={bankType}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
 						>
@@ -554,7 +564,7 @@
 						<select
 							id="accountType"
 							name="accountType"
-              bind:value={accountType}
+							bind:value={accountType}
 							class="w-full h-8 mt-2 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
 							required
 							disabled={bankType === 'NEQUI'}

@@ -62,5 +62,30 @@ export const actions: Actions = {
     }
 
     return { success: true };
+  },
+
+  deleteBankAccount: async ({ request, cookies, fetch }) => {
+    const tokenJwt = cookies.get('session');
+    if (!tokenJwt) return fail(401, { error: 'Usuario no autenticado' });
+
+    const form = await request.formData();
+    const accountId = form.get('accountId') as string;
+    if (!accountId) return fail(400, { error: 'accountId es requerido' });
+
+    const res = await fetch(
+      `${PRIVATE_SERVER_URL}/wallet/bankAccounts/delete/${accountId}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${tokenJwt}` }
+      }
+    );
+
+    if (!res.ok) {
+      const error = await res.text();
+      console.error('Error deleting account:', error);
+      return fail(res.status, { error: 'No se pudo eliminar la cuenta bancaria' });
+    }
+
+    return { : true };
   }
 }
