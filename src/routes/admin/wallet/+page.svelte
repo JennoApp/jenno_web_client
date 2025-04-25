@@ -14,6 +14,7 @@
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import Input from '$lib/components/ui/input/input.svelte';
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
@@ -32,6 +33,7 @@
 	let openDialogAddBankAccount = false;
 	// Si estamos editando, guardamos el objeto existente
 	let editingBankAccount: any = null;
+  let selectedAccountId: string = '';
 
 	// Campos del formulario
 	let bankType = '';
@@ -652,7 +654,7 @@
 </Dialog.Root>
 
 <!-- Dialog Withdraw -->
-<!-- <Dialog.Root bind:open={openDialogwithdraw}>
+<Dialog.Root bind:open={openDialogwithdraw}>
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
@@ -662,10 +664,7 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<form
-			on:submit|preventDefault={() =>
-				handleSubmit(paypalAccount, Number(withdrawalAmountforExchange), Number(usdEquivalent))}
-		>
+		<form on:submit|preventDefault={() => {}}>
 			<div class="flex w-full">
 				<label for="withdrawAmount"
 					>{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label
@@ -681,28 +680,36 @@
 						bind:value={withdrawalAmount}
 						placeholder="Ingrese el monto"
 					/>
-					<div class="flex justify-between">
-						-- Mostrar el equivalente en USD --
-						{#if exchangeRate}
-							<p class="text-gray-500 text-sm">
-								{m.admin_wallet_withdrawals_modal_dollar_equivalent()}
-								${usdEquivalent.toFixed(2)} USD
-							</p>
-						{:else}
-							<p>Obteniendo tasa de cambio...</p>
-						{/if}
-					</div>
 				</div>
 			</div>
 
-			<div class="flex gap-3 mt-3">
-				<label for="paypalEmail">{m.admin_wallet_withdrawals_modal_paypal_account()}</label>
-				{#if paypalAccount}
-					<h3>{paypalAccount}</h3>
+			<!-- Selector de cuenta destino -->
+			<div class="flex flex-col">
+				<label for="" class="mb-1">
+          Elige cuenta destino para el retiro
+        </label>
+				{#if bankAccounts.length > 0}
+					<select
+						bind:value={selectedAccountId}
+						class="w-full h-10 rounded-md dark:bg-[#202020] text-black dark:text-gray-200"
+						required
+					>
+						<option value="" disabled selected>Seleccione cuenta destino</option>
+						{#each bankAccounts as acct}
+							<option value={acct._id}>
+								{acct.bankType === 'NEQUI' ? 'Nequi' : 'Bancolombia'} —
+								{acct.accountType === 'AHORROS' ? 'Ahorros' : 'Corriente'}:
+								{acct.accountNumber}
+							</option>
+						{/each}
+					</select>
 				{:else}
-					<h3 class="text-orange-400">{m.admin_wallet_withdrawals_modal_add_paypal()}</h3>
+					<p class="text-sm text-red-500">
+            No tienes cuentas bancarias asociadas. Por favor agrega una cuenta primero.
+					</p>
 				{/if}
 			</div>
+
 			<div class="flex flex-row-reverse mt-3">
 				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black" type="submit"
 					>Retirar</Button
@@ -710,7 +717,7 @@
 			</div>
 		</form>
 	</Dialog.Content>
-</Dialog.Root> -->
+</Dialog.Root>
 
 <AlertDialog.Root bind:open={openDialogRemove}>
 	<AlertDialog.Trigger />
