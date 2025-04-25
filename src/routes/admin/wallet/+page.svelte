@@ -546,7 +546,7 @@
 							required
 						>
 							<option value="" disabled selected>Selecciona Bancolombia o Nequi</option>
-							<option value="BANCOLÓMBIA" class="dark:text-gray-200">Bancolombia</option>
+							<option value="BANCOLOMBIA" class="dark:text-gray-200">Bancolombia</option>
 							<option value="NEQUI" class="dark:text-gray-200">Nequi</option>
 						</select>
 					</div>
