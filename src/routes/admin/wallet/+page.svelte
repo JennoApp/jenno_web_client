@@ -33,7 +33,7 @@
 	let openDialogAddBankAccount = false;
 	// Si estamos editando, guardamos el objeto existente
 	let editingBankAccount: any = null;
-  let selectedAccountId: string = '';
+	let selectedAccountId: string = '';
 
 	// Campos del formulario
 	let bankType = '';
@@ -200,51 +200,49 @@
 		calculateUsdEquivalent();
 	}
 
-	// Manejar el envio de retiro
-	async function handleSubmit(account: any, amount: number, amountUsd: number) {
+	// Manejar el envío de retiro
+	async function handleSubmit(accountId: string, amount: number) {
 		try {
 			if (!data.sessionToken) {
-				toast.error('Token de sesion no encontrado');
+				toast.error('Token de sesión no encontrado');
 				return;
 			}
 
-			if (amount <= 0 || amountUsd <= 0) {
+			if (!accountId) {
+				toast.error('Cuenta destino no válida');
+				return;
+			}
+
+			if (amount <= 0) {
 				toast.error('El monto debe ser mayor a 0');
 				return;
 			}
 
-			// Formatear los montos segun requerimientos de Paypal
-			const formattedAmount = amount.toFixed(2);
-			const formattedAmountUsd = amountUsd.toFixed(2);
+			console.log('Datos de retiro:', { accountId, amount });
 
-			console.log('Datos enviados:', { account, formattedAmount, formattedAmountUsd });
-
-			const response = await fetch(`${serverUrl}/wallet/withdraw/${account}`, {
+			const response = await fetch(`${serverUrl}/wallet/withdraw/${accountId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${data.sessionToken}`
 				},
-				body: JSON.stringify({
-					amount: formattedAmount, //monto en COP
-					amountUsd: formattedAmountUsd // monto en dolares
-				})
+				body: JSON.stringify({ amount })
 			});
 
 			if (response.ok) {
-				toast.success('Retiro solicitado con exito');
+				toast.success('Retiro solicitado con éxito');
 				openDialogwithdraw = false;
-
-				// Recargar los datos de la pagina
 				await fetchWallet($page.data?.user?.walletId);
 			} else {
 				const errorMessage = await response.json();
 				console.error('Detalles del error:', errorMessage);
-				toast.error(`Error al solicitar retiro: ${errorMessage.message || 'Error desconocido'}`);
+				toast.error(
+					`Error al solicitar retiro: ${errorMessage.error || errorMessage.message || 'Error desconocido'}`
+				);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Error al procesar el retiro:', error);
-			toast.error(`Error en la conexión con el servidor: ${error || 'Error desconocido'}`);
+			toast.error(`Error en la conexión con el servidor: ${error?.message || 'Error desconocido'}`);
 		}
 	}
 
@@ -270,37 +268,12 @@
 		}
 	}
 
-	// Obtener detalles de pagos en Paypal
-	async function getWithdrawalsPaypalDetails(batchId: any) {
-		try {
-			const response = await fetch(
-				`${serverUrl}/wallet/getPaypalPayoutDetails/${batchId?.payoutBatchId}`
-			);
-			if (response.ok) {
-				const data = await response.json();
-				console.log({ data });
-				withdrawalsPaypalDetails = [...withdrawalsPaypalDetails, data];
-				return data;
-			} else {
-				console.error('Error en la solicitud: Paypal Details');
-			}
-		} catch (error) {
-			console.error('Error al solicitar informacion');
-		}
-	}
-
 	// Carga inicial de datos
 	onMount(async () => {
 		await fetchWallet($page.data?.user?.walletId);
 		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
 	});
-
-	$: if (withdrawals) {
-		withdrawals.map((batchId: any) => {
-			getWithdrawalsPaypalDetails(batchId);
-		});
-	}
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -685,9 +658,7 @@
 
 			<!-- Selector de cuenta destino -->
 			<div class="flex flex-col">
-				<label for="" class="mb-1">
-          Elige cuenta destino para el retiro
-        </label>
+				<label for="" class="mb-1"> Elige cuenta destino para el retiro </label>
 				{#if bankAccounts.length > 0}
 					<select
 						bind:value={selectedAccountId}
@@ -705,7 +676,7 @@
 					</select>
 				{:else}
 					<p class="text-sm text-red-500">
-            No tienes cuentas bancarias asociadas. Por favor agrega una cuenta primero.
+						No tienes cuentas bancarias asociadas. Por favor agrega una cuenta primero.
 					</p>
 				{/if}
 			</div>
