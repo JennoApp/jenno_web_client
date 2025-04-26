@@ -224,7 +224,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${data.sessionToken}`
+					Authorization: `Bearer ${$page.data?.sessionToken}`
 				},
 				body: JSON.stringify({ amount })
 			});
@@ -637,7 +637,7 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<form on:submit|preventDefault={() => {}}>
+		<form on:submit|preventDefault={() => handleSubmit(selectedAccountId, Number(withdrawalAmount))}>
 			<div class="flex w-full">
 				<label for="withdrawAmount"
 					>{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label
