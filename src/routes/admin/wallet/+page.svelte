@@ -13,11 +13,11 @@
 	import { format } from 'timeago.js';
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
-	import { goto } from '$app/navigation';
 	import Input from '$lib/components/ui/input/input.svelte';
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
+
 	let walletData: any;
 	let openDialogwithdraw = false;
 	let openDialogRemove = false;
@@ -71,7 +71,6 @@
 	/////////////////////////
 
 	let serverUrl: string;
-	$: sessionToken = $page.data.sessionToken;
 
 	// Obtener url del servidor
 	async function getServerUrl() {
@@ -200,27 +199,32 @@
 		calculateUsdEquivalent();
 	}
 
+	function parseCurrency(value: string): number {
+		const numeric = value.replace(/[^\d.-]/g, '');
+		return Number(numeric);
+	}
+
 	// Manejar el envío de retiro
-	async function handleSubmit(accountId: string, amount: number) {
+	async function handleSubmit() {
+		const amount = parseCurrency(withdrawalAmount);
+		if (!selectedAccountId) {
+			toast.error('Seleccione una cuenta destino');
+			return;
+		}
+		if (isNaN(amount) || amount <= 0) {
+			toast.error('El monto debe ser mayor a 0');
+			return;
+		}
+		const sessionToken = $page.data.sessionToken;
+		if (!sessionToken) {
+			toast.error('Token de sesión no encontrado');
+			return;
+		}
+
+		console.log('Datos de retiro:', { selectedAccountId, amount });
+
 		try {
-			if (!data.sessionToken) {
-				toast.error('Token de sesión no encontrado');
-				return;
-			}
-
-			if (!accountId) {
-				toast.error('Cuenta destino no válida');
-				return;
-			}
-
-			if (amount <= 0) {
-				toast.error('El monto debe ser mayor a 0');
-				return;
-			}
-
-			console.log('Datos de retiro:', { accountId, amount });
-
-			const response = await fetch(`${serverUrl}/wallet/withdraw/${accountId}`, {
+			const response = await fetch(`${serverUrl}/wallet/withdraw/${selectedAccountId}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -637,7 +641,9 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<form on:submit|preventDefault={() => handleSubmit(selectedAccountId, Number(withdrawalAmount))}>
+		<form
+			on:submit|preventDefault={handleSubmit}
+		>
 			<div class="flex w-full">
 				<label for="withdrawAmount"
 					>{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label
@@ -649,10 +655,11 @@
 						max={walletData?.availableBalance}
 						on:input={handleInput}
 						name="profile"
-						class=""
 						bind:value={withdrawalAmount}
 						placeholder="Ingrese el monto"
+						required
 					/>
+					<small>Disponible: {walletData.availableBalance}</small>
 				</div>
 			</div>
 
@@ -682,8 +689,10 @@
 			</div>
 
 			<div class="flex flex-row-reverse mt-3">
-				<Button class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black" type="submit"
-					>Retirar</Button
+				<Button
+					class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
+					type="submit"
+					disabled={!selectedAccountId || parseCurrency(withdrawalAmount) <= 0}>Retirar</Button
 				>
 			</div>
 		</form>
