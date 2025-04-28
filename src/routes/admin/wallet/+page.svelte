@@ -22,7 +22,7 @@
 	let openDialogwithdraw = false;
 	let openDialogRemove = false;
 	let withdrawalAmount = '';
-	let withdrawalAmountforExchange = 0;
+	let withdrawalAmountNumeric = 0;
 	let bankAccounts: any[] = [];
 	let exchangeRate = 0;
 	let usdEquivalent = 0;
@@ -166,37 +166,36 @@
 	}
 
 	// Calcular equivalente en USD
-	function calculateUsdEquivalent() {
-		if (exchangeRate && withdrawalAmount !== '') {
-			usdEquivalent = withdrawalAmountforExchange / exchangeRate;
-		} else {
-			usdEquivalent = 0;
-		}
-	}
+	// function calculateUsdEquivalent() {
+	// 	if (exchangeRate && withdrawalAmount !== '') {
+	// 		usdEquivalent = withdrawalAmountforExchange / exchangeRate;
+	// 	} else {
+	// 		usdEquivalent = 0;
+	// 	}
+	// }
 
-	// menejar el retiro
 	function handleInput(event: any) {
-		let rawValue = event.target.value.replace(/[^0-9]/g, '');
-		let processedValue = Number(rawValue);
+		let rawValue = event.target.value.replace(/\D/g, ''); // Solo números, quita letras, puntos, etc.
 
-		// valor minimo
-		if (processedValue < 1) {
-			processedValue = 0;
-		}
-		// valor maximo disponible
+		// Eliminar ceros innecesarios al inicio
+		rawValue = rawValue.replace(/^0+/, '');
+
+		// Si no hay nada después de limpiar, entonces es 0
+		let processedValue = rawValue ? Number(rawValue) : 0;
+
+		// Limitar a balance disponible
 		if (processedValue > walletData.availableBalance) {
 			processedValue = walletData.availableBalance;
 		}
 
-		if (processedValue) {
+		withdrawalAmountNumeric = processedValue;
+
+		// Formatear a COP dinámicamente
+		if (processedValue > 0) {
 			withdrawalAmount = formatCurrency(processedValue, 'COP');
-			withdrawalAmountforExchange = processedValue;
 		} else {
 			withdrawalAmount = '';
-			withdrawalAmountforExchange = 0;
 		}
-
-		calculateUsdEquivalent();
 	}
 
 	function parseCurrency(value: string): number {
@@ -206,7 +205,8 @@
 
 	// Manejar el envío de retiro
 	async function handleSubmit() {
-		const amount = parseCurrency(withdrawalAmount);
+		const amount = withdrawalAmountNumeric;
+
 		if (!selectedAccountId) {
 			toast.error('Seleccione una cuenta destino');
 			return;
@@ -641,9 +641,7 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<form
-			on:submit|preventDefault={handleSubmit}
-		>
+		<form on:submit|preventDefault={handleSubmit}>
 			<div class="flex w-full">
 				<label for="withdrawAmount"
 					>{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label
