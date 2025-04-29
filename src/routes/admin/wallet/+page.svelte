@@ -18,12 +18,11 @@
 	import { readable, writable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
 
-
 	// Datos iniciales y variables de estado
 	export let data: PageData;
 
-  // Store donde guardaremos el array de retiros
-  const withdrawals = writable([]);
+	// Store donde guardaremos el array de retiros
+	const withdrawals = writable([]);
 
 	let walletData: any;
 	let openDialogwithdraw = false;
@@ -256,48 +255,47 @@
 		}
 	}
 
-  /**
-   * Trae todos los retiros de una wallet (history), ya vienen ordenados desc
-   * por requestDate desde el backend.
-   */
-  async function fetchAllWithdrawals(walletId: string, page = 1, limit = 50) {
-    const token = $page.data.sessionToken;
-    if (!token) {
-      console.error('No session token available');
-      return [];
-    }
+	/**
+	 * Trae todos los retiros de una wallet (history), ya vienen ordenados desc
+	 * por requestDate desde el backend.
+	 */
+	async function fetchAllWithdrawals(walletId: string, page = 1, limit = 50) {
+		const token = $page.data.sessionToken;
+		if (!token) {
+			console.error('No session token available');
+			return [];
+		}
 
-    try {
-      const res = await fetch(
-        `${serverUrl}/wallet/getwithdrawals/${walletId}?page=${page}&limit=${limit}`,
-        {
-          method: 'GET',
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      if (!res.ok) {
-        console.error('Error fetching all withdrawals', await res.text());
-        return [];
-      }
-      const json = await res.json();
-      console.log('All withdrawals (with meta):', json);
-      console.log('Withdrawals array:', json.data);
-      return json.data ?? [];
-    } catch (err) {
-      console.error('Fetch error:', err);
-      return [];
-    }
-  }
+		try {
+			const res = await fetch(
+				`${serverUrl}/wallet/getwithdrawals/${walletId}?page=${page}&limit=${limit}`,
+				{
+					method: 'GET',
+					headers: { Authorization: `Bearer ${token}` }
+				}
+			);
+			if (!res.ok) {
+				console.error('Error fetching all withdrawals', await res.text());
+				return [];
+			}
+			const json = await res.json();
+			console.log('All withdrawals (with meta):', json);
+			console.log('Withdrawals array:', json.data);
+			return json.data ?? [];
+		} catch (err) {
+			console.error('Fetch error:', err);
+			return [];
+		}
+	}
 
 	// Carga inicial de datos
 	onMount(async () => {
 		await fetchWallet($page.data?.user?.walletId);
 		fetchExchangeRate();
 
-    // luego trae el historial completo de retiros
-    const list = await fetchAllWithdrawals($page.data?.user?.walletId, 1, 20);
-    withdrawals.set(list);
-
+		// luego trae el historial completo de retiros
+		const list = await fetchAllWithdrawals($page.data?.user?.walletId, 1, 20);
+		withdrawals.set(list);
 	});
 
 	/// Tabla de retiros ///
@@ -307,7 +305,10 @@
 	const columns = table.createColumns([
 		table.column({
 			header: 'Cuenta destino',
-			accessor: (row: any) => row.bankId
+			accessor: (row: any) => {
+				const account = walletData?.bankAccounts?.find((b: any) => b._id === row.bankId);
+				return account ? `${account.bankName} - ${account.accountNumber}` : 'Cuenta no encontrada';
+			}
 		}),
 		table.column({
 			header: 'Monto',
@@ -316,12 +317,22 @@
 
 		table.column({
 			header: 'Estado',
-			accessor: (row: any) => row.status
+			accessor: (row: any) => {
+				if (row.status === 'pending') {
+					return 'Pendiente';
+				} else if (row.status === 'completed') {
+					return 'Completado';
+				} else if (row.status === 'failed') {
+					return 'Fallido';
+				} else {
+					return 'Desconocido';
+				}
+			}
 		}),
-    table.column({
+		table.column({
 			header: 'Solicitado',
 			accessor: (row: any) => format(row.requestDate)
-		}),
+		})
 		// puedes añadir una columna de acciones si quieres aprobar/rechazar
 	]);
 
