@@ -15,11 +15,15 @@
 	import { enhance } from '$app/forms';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { createTable, Render, Subscribe } from 'svelte-headless-table';
-	import { readable } from 'svelte/store';
-  import * as Table from '$lib/components/ui/table';
+	import { readable, writable } from 'svelte/store';
+	import * as Table from '$lib/components/ui/table';
+
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
+
+  // Store donde guardaremos el array de retiros
+  const withdrawals = writable([]);
 
 	let walletData: any;
 	let openDialogwithdraw = false;
@@ -29,7 +33,6 @@
 	let bankAccounts: any[] = [];
 	let exchangeRate = 0;
 	let usdEquivalent = 0;
-	let withdrawals: any = [];
 	let withdrawalsPaypalDetails: any = [];
 
 	// Estado del diálogo
@@ -253,69 +256,85 @@
 		}
 	}
 
-	// Obtener retiros
-	async function getWithdrawals(walletId: string) {
-		try {
-			const response = await fetch(`${serverUrl}/wallet/getwithdrawals/${walletId}`);
+  /**
+   * Trae todos los retiros de una wallet (history), ya vienen ordenados desc
+   * por requestDate desde el backend.
+   */
+  async function fetchAllWithdrawals(walletId: string, page = 1, limit = 50) {
+    const token = $page.data.sessionToken;
+    if (!token) {
+      console.error('No session token available');
+      return [];
+    }
 
-			if (response.ok) {
-				const data = await response.json();
-				console.log({ Datos: data.withdrawals });
-
-				if (data) {
-					withdrawals = data.withdrawals;
-				} else {
-					console.error('La respuesta no contiene la propiedad withdrawals');
-				}
-			} else {
-				console.error('Error al obtener la billetera');
-			}
-		} catch (error) {
-			console.error('Error en la solicitud:', error);
-		}
-	}
+    try {
+      const res = await fetch(
+        `${serverUrl}/wallet/getwithdrawals/${walletId}?page=${page}&limit=${limit}`,
+        {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      if (!res.ok) {
+        console.error('Error fetching all withdrawals', await res.text());
+        return [];
+      }
+      const json = await res.json();
+      console.log('All withdrawals (with meta):', json);
+      console.log('Withdrawals array:', json.data);
+      return json.data ?? [];
+    } catch (err) {
+      console.error('Fetch error:', err);
+      return [];
+    }
+  }
 
 	// Carga inicial de datos
 	onMount(async () => {
 		await fetchWallet($page.data?.user?.walletId);
-		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
+
+    // luego trae el historial completo de retiros
+    const list = await fetchAllWithdrawals($page.data?.user?.walletId, 1, 20);
+    withdrawals.set(list);
+
 	});
 
 	/// Tabla de retiros ///
-	// crea la tabla sobre ese array
-	const table = createTable(readable(walletData?.withdrawals));
 
-	const columns = table.createColumns([
-		table.column({
-			header: 'Wallet ID',
-			accessor: (row: any) => row.walletId
-		}),
-		table.column({
-			header: 'Usuario',
-			accessor: (row: any) => row.userId
-		}),
-		table.column({
-			header: 'Cuenta destino',
-			accessor: (row: any) => row.withdrawal.bankId
-		}),
-		table.column({
-			header: 'Monto',
-			accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
-		}),
-		table.column({
-			header: 'Solicitado',
-			accessor: (row: any) => format(row.withdrawal.requestDate)
-		}),
-		table.column({
-			header: 'Estado',
-			accessor: (row: any) => row.withdrawal.status
-		})
-		// puedes añadir una columna de acciones si quieres aprobar/rechazar
-	]);
+	// const table = createTable(readable(walletData?.withdrawals));
 
-  const { headerRows, pageRows, tableAttrs, tableBodyAttrs } =
-    table.createViewModel(columns);
+	// const columns = table.createColumns([
+	// 	table.column({
+	// 		header: 'Wallet ID',
+	// 		accessor: (row: any) => row.walletId
+	// 	}),
+	// 	table.column({
+	// 		header: 'Usuario',
+	// 		accessor: (row: any) => row.userId
+	// 	}),
+	// 	table.column({
+	// 		header: 'Cuenta destino',
+	// 		accessor: (row: any) => row.withdrawal.bankId
+	// 	}),
+	// 	table.column({
+	// 		header: 'Monto',
+	// 		accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
+	// 	}),
+	// 	table.column({
+	// 		header: 'Solicitado',
+	// 		accessor: (row: any) => format(row.withdrawal.requestDate)
+	// 	}),
+	// 	table.column({
+	// 		header: 'Estado',
+	// 		accessor: (row: any) => row.withdrawal.status
+	// 	})
+	// 	// puedes añadir una columna de acciones si quieres aprobar/rechazar
+	// ]);
+
+	// const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = table.createViewModel(columns);
+
+	// console.log({ table });
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -480,57 +499,7 @@
 	</Card.Root>
 </div>
 
-{#if withdrawalsPaypalDetails && withdrawalsPaypalDetails.length > 0}
-	<div class="overflow-x-auto mx-10 my-5 border rounded-md shadow">
-		<table class="min-w-full table-auto divide-y divide-gray-200 dark:divide-[#303030]">
-			<!-- Cabecera de la tabla -->
-			<thead class="dark:bg-[#202020]">
-				<tr>
-					<th
-						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
-						>Payout ID</th
-					>
-					<th
-						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
-						>Monto USD</th
-					>
-					<th
-						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
-						>Estado</th
-					>
-					<th
-						class="px-6 py-3 text-left text-xs font-medium dark:text-gray-200 uppercase tracking-wider"
-						>Fecha</th
-					>
-				</tr>
-			</thead>
-
-			<!-- Cuerpo de la tabla -->
-			<tbody class="dark:bg-[#202020] divide-y divide-gray-200 dark:divide-[#303030]">
-				{#each withdrawalsPaypalDetails as detail}
-					<tr class="hover:bg-[#121212]">
-						<td class="px-6 py-4 whitespace-nowrap text-sm font-medium dark:text-gray-200"
-							>{detail.batch_header.payout_batch_id || 'No ID'}</td
-						>
-						<td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-200"
-							>{detail.batch_header.amount.value || 'No amount'} USD</td
-						>
-						<td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-200"
-							>{detail.batch_header.batch_status || 'No status'}</td
-						>
-						<td class="px-6 py-4 whitespace-nowrap text-sm dark:text-gray-200"
-							>{format(detail.batch_header.time_created) || 'No date'}</td
-						>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-{:else}
-	<p class="text-center text-gray-500">{m.admin_wallet_withdrawals_no_data()}</p>
-{/if}
-
-{#if walletData?.withdrawals.length > 0}
+<!-- {#if walletData?.withdrawals.length > 0}
 	<div class="mx-10 my-5">
 		<div class="rounded-md border">
 			<Table.Root {...$tableAttrs}>
@@ -569,7 +538,7 @@
 	</div>
 {:else}
 	<p class="text-center text-gray-500 mt-10">No hay retiros en proceso.</p>
-{/if}
+{/if} -->
 
 <!-- Dialog Add/Update Bank Account -->
 <Dialog.Root bind:open={openDialogAddBankAccount}>
