@@ -311,16 +311,16 @@
 		}),
 		table.column({
 			header: 'Monto',
-			accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
+			accessor: (row: any) => formatPrice(row.amount, 'es-CO', 'COP')
 		}),
 
 		table.column({
 			header: 'Estado',
-			accessor: (row: any) => row.withdrawal.status
+			accessor: (row: any) => row.status
 		}),
     table.column({
 			header: 'Solicitado',
-			accessor: (row: any) => format(row.withdrawal.requestDate)
+			accessor: (row: any) => format(row.requestDate)
 		}),
 		// puedes añadir una columna de acciones si quieres aprobar/rechazar
 	]);
