@@ -302,39 +302,39 @@
 
 	/// Tabla de retiros ///
 
-	// const table = createTable(readable(walletData?.withdrawals));
+	const table = createTable(withdrawals);
 
-	// const columns = table.createColumns([
-	// 	table.column({
-	// 		header: 'Wallet ID',
-	// 		accessor: (row: any) => row.walletId
-	// 	}),
-	// 	table.column({
-	// 		header: 'Usuario',
-	// 		accessor: (row: any) => row.userId
-	// 	}),
-	// 	table.column({
-	// 		header: 'Cuenta destino',
-	// 		accessor: (row: any) => row.withdrawal.bankId
-	// 	}),
-	// 	table.column({
-	// 		header: 'Monto',
-	// 		accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
-	// 	}),
-	// 	table.column({
-	// 		header: 'Solicitado',
-	// 		accessor: (row: any) => format(row.withdrawal.requestDate)
-	// 	}),
-	// 	table.column({
-	// 		header: 'Estado',
-	// 		accessor: (row: any) => row.withdrawal.status
-	// 	})
-	// 	// puedes añadir una columna de acciones si quieres aprobar/rechazar
-	// ]);
+	const columns = table.createColumns([
+		table.column({
+			header: 'Wallet ID',
+			accessor: (row: any) => row.walletId
+		}),
+		table.column({
+			header: 'Usuario',
+			accessor: (row: any) => row.userId
+		}),
+		table.column({
+			header: 'Cuenta destino',
+			accessor: (row: any) => row.withdrawal.bankId
+		}),
+		table.column({
+			header: 'Monto',
+			accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
+		}),
+		table.column({
+			header: 'Solicitado',
+			accessor: (row: any) => format(row.withdrawal.requestDate)
+		}),
+		table.column({
+			header: 'Estado',
+			accessor: (row: any) => row.withdrawal.status
+		})
+		// puedes añadir una columna de acciones si quieres aprobar/rechazar
+	]);
 
-	// const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = table.createViewModel(columns);
+	const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = table.createViewModel(columns);
 
-	// console.log({ table });
+	console.log({ table });
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -499,7 +499,7 @@
 	</Card.Root>
 </div>
 
-<!-- {#if walletData?.withdrawals.length > 0}
+{#if $withdrawals.length > 0}
 	<div class="mx-10 my-5">
 		<div class="rounded-md border">
 			<Table.Root {...$tableAttrs}>
@@ -538,7 +538,7 @@
 	</div>
 {:else}
 	<p class="text-center text-gray-500 mt-10">No hay retiros en proceso.</p>
-{/if} -->
+{/if}
 
 <!-- Dialog Add/Update Bank Account -->
 <Dialog.Root bind:open={openDialogAddBankAccount}>
