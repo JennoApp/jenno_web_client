@@ -307,7 +307,7 @@
 			header: 'Cuenta destino',
 			accessor: (row: any) => {
 				const account = walletData?.bankAccounts?.find((b: any) => b._id === row.bankId);
-				return account ? `${account.bankName} - ${account.accountNumber}` : 'Cuenta no encontrada';
+				return account ? `${account.bankType} - ${account.accountNumber}` : 'Cuenta no encontrada';
 			}
 		}),
 		table.column({
@@ -709,7 +709,7 @@
 						placeholder="Ingrese el monto"
 						required
 					/>
-					<small>Disponible: {walletData.availableBalance}</small>
+					<small>Disponible: {formatPrice(walletData.availableBalance, 'es-CO', 'COP')}</small>
 				</div>
 			</div>
 
