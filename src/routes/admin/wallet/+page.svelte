@@ -306,29 +306,22 @@
 
 	const columns = table.createColumns([
 		table.column({
-			header: 'Wallet ID',
-			accessor: (row: any) => row.walletId
-		}),
-		table.column({
-			header: 'Usuario',
-			accessor: (row: any) => row.userId
-		}),
-		table.column({
 			header: 'Cuenta destino',
-			accessor: (row: any) => row.withdrawal.bankId
+			accessor: (row: any) => row.bankId
 		}),
 		table.column({
 			header: 'Monto',
 			accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
 		}),
-		table.column({
-			header: 'Solicitado',
-			accessor: (row: any) => format(row.withdrawal.requestDate)
-		}),
+
 		table.column({
 			header: 'Estado',
 			accessor: (row: any) => row.withdrawal.status
-		})
+		}),
+    table.column({
+			header: 'Solicitado',
+			accessor: (row: any) => format(row.withdrawal.requestDate)
+		}),
 		// puedes añadir una columna de acciones si quieres aprobar/rechazar
 	]);
 
@@ -500,7 +493,7 @@
 </div>
 
 {#if $withdrawals.length > 0}
-	<div class="mx-10 my-5">
+	<div class="mx-10 my-5 mt-10">
 		<div class="rounded-md border">
 			<Table.Root {...$tableAttrs}>
 				<Table.Header>
