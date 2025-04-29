@@ -14,6 +14,9 @@
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import Input from '$lib/components/ui/input/input.svelte';
+	import { createTable, Render, Subscribe } from 'svelte-headless-table';
+	import { readable } from 'svelte/store';
+  import * as Table from '$lib/components/ui/table';
 
 	// Datos iniciales y variables de estado
 	export let data: PageData;
@@ -278,6 +281,41 @@
 		await getWithdrawals($page.data?.user?.walletId);
 		fetchExchangeRate();
 	});
+
+	/// Tabla de retiros ///
+	// crea la tabla sobre ese array
+	const table = createTable(readable(walletData?.withdrawals));
+
+	const columns = table.createColumns([
+		table.column({
+			header: 'Wallet ID',
+			accessor: (row: any) => row.walletId
+		}),
+		table.column({
+			header: 'Usuario',
+			accessor: (row: any) => row.userId
+		}),
+		table.column({
+			header: 'Cuenta destino',
+			accessor: (row: any) => row.withdrawal.bankId
+		}),
+		table.column({
+			header: 'Monto',
+			accessor: (row: any) => formatPrice(row.withdrawal.amount, 'es-CO', 'COP')
+		}),
+		table.column({
+			header: 'Solicitado',
+			accessor: (row: any) => format(row.withdrawal.requestDate)
+		}),
+		table.column({
+			header: 'Estado',
+			accessor: (row: any) => row.withdrawal.status
+		})
+		// puedes añadir una columna de acciones si quieres aprobar/rechazar
+	]);
+
+  const { headerRows, pageRows, tableAttrs, tableBodyAttrs } =
+    table.createViewModel(columns);
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -429,7 +467,7 @@
 	<!-- Card: Retiros Pendientes -->
 	<Card.Root>
 		<Card.Header class="flex flex-row items-center justify-between space-y-0 pb-2">
-			<Card.Title class="text-md font-medium">Retiros Pendientes</Card.Title>
+			<Card.Title class="text-md font-medium">Retiros en Proceso</Card.Title>
 			<iconify-icon icon="mdi:timer-sand" height="1.5rem" width="1.5rem"></iconify-icon>
 		</Card.Header>
 		<Card.Content>
@@ -490,6 +528,47 @@
 	</div>
 {:else}
 	<p class="text-center text-gray-500">{m.admin_wallet_withdrawals_no_data()}</p>
+{/if}
+
+{#if walletData?.withdrawals.length > 0}
+	<div class="mx-10 my-5">
+		<div class="rounded-md border">
+			<Table.Root {...$tableAttrs}>
+				<Table.Header>
+					{#each $headerRows as headerRow}
+						<Subscribe rowAttrs={headerRow.attrs()}>
+							<Table.Row>
+								{#each headerRow.cells as cell (cell.id)}
+									<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
+										<Table.Head {...attrs}>
+											<Render of={cell.render()} />
+										</Table.Head>
+									</Subscribe>
+								{/each}
+							</Table.Row>
+						</Subscribe>
+					{/each}
+				</Table.Header>
+				<Table.Body {...$tableBodyAttrs}>
+					{#each $pageRows as row (row.id)}
+						<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
+							<Table.Row {...rowAttrs}>
+								{#each row.cells as cell (cell.id)}
+									<Subscribe attrs={cell.attrs()} let:attrs>
+										<Table.Cell {...attrs}>
+											<Render of={cell.render()} />
+										</Table.Cell>
+									</Subscribe>
+								{/each}
+							</Table.Row>
+						</Subscribe>
+					{/each}
+				</Table.Body>
+			</Table.Root>
+		</div>
+	</div>
+{:else}
+	<p class="text-center text-gray-500 mt-10">No hay retiros en proceso.</p>
 {/if}
 
 <!-- Dialog Add/Update Bank Account -->
