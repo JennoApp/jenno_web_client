@@ -16,6 +16,8 @@
 	import { onMount } from 'svelte';
 	import { paymentMethod } from '$lib/stores/paymentMethod';
 
+  import MercadoPagoLoader from '$lib/components/MercadoPagoLoader.svelte';
+
 	let shippingData = $page.data?.user?.shippingInfo;
 	let openDialogPayment = false;
 
@@ -69,6 +71,7 @@
 		try {
 			// Construir items para la preferencia de Mercado Pago
 			const items = $cartItems.map((item) => ({
+        id: item._id,
 				title: item.productname,
 				description: item.description,
 				quantity: item.amount,
@@ -83,6 +86,7 @@
 
 			// Agregar un item adicional para el costo de la transferencia (comisión)
 			items.push({
+        id: 'commission',
 				title: 'Comisión de transferencia',
 				description: 'Costo de transferencia de pago con Mercado Pago',
 				quantity: 1,
@@ -123,6 +127,8 @@
 		}
 	}
 </script>
+
+<MercadoPagoLoader />
 
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
 	<div class="lg:w-3/5 p-3">
