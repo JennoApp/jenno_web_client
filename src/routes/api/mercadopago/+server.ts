@@ -24,12 +24,12 @@ export const POST: RequestHandler = async ({ request }) => {
       external_reference: externalReference,
       notification_url: 'https://www.jenno.com.co/api/webhook/mercadopago',
       items: body.items.map((item: any) => ({
-        id: item.productId,
+        id: item.id,
         title: item.title,
         description: item.description,
         quantity: item.quantity,
         currency_id: 'COP',
-        unit_price: item.price
+        unit_price: item.unit_price
       })),
       payer: {
         email: body.email,

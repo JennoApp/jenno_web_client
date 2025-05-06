@@ -121,7 +121,7 @@ export function computeCommission(paymentMethod: string, P_goal: number): number
 	switch (paymentMethod) {
 		case 'mercadopago':
       // 3,29% + $800,00 COP
-			config = { fixed: 800, percent: 0.0329 };
+			config = { fixed: 800, percent: 0.035 };
 			break;
 		case 'paypal':
       // 3.40% + $0.30 USD

@@ -102,7 +102,9 @@
 				},
 				body: JSON.stringify({
 					items,
-					email: $page.data.user.email
+					email: $page.data.user.email,
+          firstName: $page.data.user.username,
+          lastName: ''
 				})
 			});
 
