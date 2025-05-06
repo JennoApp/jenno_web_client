@@ -22,7 +22,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const preferenceBody = {
       external_reference: externalReference,
-      // notification_url: 'https://www.jenno.com.co/api/webhook/mercadopago',
       items: body.items.map((item: any) => ({
         id: item.id,
         title: item.title,
@@ -33,8 +32,6 @@ export const POST: RequestHandler = async ({ request }) => {
       })),
       payer: {
         email: body.email,
-        first_name: body.firstName,
-        last_name: body.lastName,
       },
       back_urls: {
         success: 'https://www.jenno.com.co/cart/success',

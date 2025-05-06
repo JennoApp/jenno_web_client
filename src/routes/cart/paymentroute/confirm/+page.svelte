@@ -66,6 +66,7 @@
 	}
 
 	$: console.log({ exchangeRate, T: total, usdEquivalent });
+  $: console.log({user: $page.data.user})
 
 	async function payWithMercadoPago() {
 		try {
@@ -103,8 +104,7 @@
 				body: JSON.stringify({
 					items,
 					email: $page.data.user.email,
-          firstName: $page.data.user.username,
-          lastName: ''
+          // firstName: $page.data.user.username,
 				})
 			});
 
