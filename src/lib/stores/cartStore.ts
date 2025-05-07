@@ -53,7 +53,7 @@ export function addToCart(product: Product, selectedOptions: SelectedOption[] = 
   })
 
   if (!found) {
-    const cartItem: CartItem = {...product, amount: quantity, selectedOptions}
+    const cartItem: CartItem = { ...product, amount: quantity, selectedOptions }
     items = [...items, cartItem]
   }
 
@@ -117,23 +117,22 @@ export const P_goal = derived([subtotal, totalEnvio], ([$subtotal, $totalEnvio])
 
 // Función para calcular la comisión según el método de pago
 export function computeCommission(paymentMethod: string, P_goal: number): number {
-	let config;
-	switch (paymentMethod) {
-		case 'mercadopago':
-      // 3,29% + $800,00 COP
-			config = { fixed: 800, percent: 0.035 };
-			break;
-		case 'paypal':
+  let config;
+  switch (paymentMethod) {
+    case 'mercadopago':
+      config = { fixed: 952, percent: 0.03915 };
+      break;
+    case 'paypal':
       // 3.40% + $0.30 USD
-			config = { fixed: 0.30, percent: 0.034 };
-			break;
-		default:
-			config = { fixed: 0, percent: 0 };
-			break;
-	}
-	// Fórmula para calcular la comisión: se asume que se quiere que el total recibido sea P_goal,
-	// y se aplica la comisión para saber cuánto se debe cobrar adicionalmente.
-	return (P_goal + config.fixed) / (1 - config.percent) - P_goal;
+      config = { fixed: 0.30, percent: 0.034 };
+      break;
+    default:
+      config = { fixed: 0, percent: 0 };
+      break;
+  }
+  // Fórmula para calcular la comisión: se asume que se quiere que el total recibido sea P_goal,
+  // y se aplica la comisión para saber cuánto se debe cobrar adicionalmente.
+  return (P_goal + config.fixed) / (1 - config.percent) - P_goal;
 }
 
 

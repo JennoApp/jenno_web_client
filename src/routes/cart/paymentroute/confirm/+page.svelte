@@ -80,8 +80,10 @@
 				unit_price: item.price
 			}));
 
+      const PGoalAdjusted = P_goal < 20000 ? (P_goal * 0.95) : P_goal;
+
 			// Calcular la comisión para Mercado Pago
-			const commission = computeCommission('mercadopago', P_goal);
+			const commission = computeCommission('mercadopago', PGoalAdjusted);
 
       const commissionRounded = Math.round(commission);
 
