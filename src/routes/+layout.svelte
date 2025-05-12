@@ -168,6 +168,7 @@
     if ($page.url.searchParams.get('mpreturn') === '1' || $page.url.searchParams.get('reload') === '1') {
       window.history.replaceState({}, '', '/')
       invalidateAll()
+      location.reload()
     }
   })
 </script>
