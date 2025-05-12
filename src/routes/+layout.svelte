@@ -163,8 +163,9 @@
 	// 	}
 	// });
 
+  // Handle URL parameters for redirection
   onMount(() => {
-    if ($page.url.searchParams.get('mpreturn') === '1') {
+    if ($page.url.searchParams.get('mpreturn') === '1' || $page.url.searchParams.get('reload') === '1') {
       window.history.replaceState({}, '', '/')
       invalidateAll()
     }
