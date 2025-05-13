@@ -5,8 +5,19 @@
 
 	onMount(() => {
 		if ($page.url.searchParams.get('fail') === '1') {
-			invalidateAll();
-			location.reload();
+			// Construir nueva URL sin el parámetro 'fail'
+			const cleanUrl =
+				$page.url.pathname +
+				'?' +
+				[...$page.url.searchParams.entries()]
+					.filter(([key]) => key !== 'fail')
+					.map(([key, val]) => `${key}=${val}`)
+					.join('&');
+
+			// Redirigir a la URL limpia sin parámetros y recargar
+			goto(cleanUrl || $page.url.pathname, { replaceState: true }).then(() => {
+				location.reload();
+			});
 		}
 	});
 </script>
