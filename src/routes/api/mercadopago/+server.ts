@@ -20,6 +20,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const externalReference = `order_${Date.now()}_${Math.floor(Math.random()*1000)}`;
 
+    const now = new Date()
+    const expirationDateFrom = now.toISOString()
+    const expirationDateTo = new Date(now.getTime() + 10 * 60 * 1000).toISOString() // 10 minutes from now
+
     const preferenceBody = {
       external_reference: externalReference,
       items: body.items.map((item: any) => ({
@@ -46,6 +50,9 @@ export const POST: RequestHandler = async ({ request }) => {
           }
         ]
       },
+      expires: true,
+      expiration_date_from: expirationDateFrom,
+      expiration_date_to: expirationDateTo,
     }
 
     const response = await preference.create({

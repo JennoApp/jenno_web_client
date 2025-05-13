@@ -70,6 +70,9 @@
 
 	async function payWithMercadoPago() {
 		try {
+      localStorage.removeItem('mercadopago_preference_id')
+      localStorage.removeItem('mp-preference-id')
+
 			// Construir items para la preferencia de Mercado Pago
 			const items = $cartItems.map((item) => ({
         id: item._id,
