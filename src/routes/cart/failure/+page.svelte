@@ -5,18 +5,20 @@
 
 
   onMount(async () => {
-		const url = $page.url;
-
-		if (url.searchParams.get('fail') === '1') {
+		if ($page.url.searchParams.get('fail') === '1') {
 			// Quitar 'fail' de la URL
-      url.searchParams.delete('fail')
-
+      $page.url.searchParams.delete('fail')
 
 			// Redirige sin 'fail' y recarga datos
 			await goto('/cart/failure', { replaceState: true });
 
 			// Recargar datos del servidor (sin refrescar toda la página)
 			await invalidateAll();
+
+      requestAnimationFrame(() => {
+        // Recargar la página
+        location.reload();
+      });
 		}
 	});
 </script>
