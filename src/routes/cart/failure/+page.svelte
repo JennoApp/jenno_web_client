@@ -3,29 +3,29 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
-  onMount(async () => {
-		const url = $page.url;
+  // onMount(async () => {
+	// 	const url = $page.url;
 
-		if (url.searchParams.get('fail') === '1') {
-			// 1. Crear nuevos parámetros sin el 'fail'
-			const cleanParams = new URLSearchParams(url.searchParams);
-			cleanParams.delete('fail');
+	// 	if (url.searchParams.get('fail') === '1') {
+	// 		// 1. Crear nuevos parámetros sin el 'fail'
+	// 		const cleanParams = new URLSearchParams(url.searchParams);
+	// 		cleanParams.delete('fail');
 
-			// 2. Construir la nueva URL limpia
-			const cleanUrl = url.pathname + (cleanParams.toString() ? `?${cleanParams}` : '');
+	// 		// 2. Construir la nueva URL limpia
+	// 		const cleanUrl = url.pathname + (cleanParams.toString() ? `?${cleanParams}` : '');
 
-			// 3. Redirigir sin el parámetro 'fail'
-			await goto(cleanUrl, { replaceState: true });
+	// 		// 3. Redirigir sin el parámetro 'fail'
+	// 		await goto(cleanUrl, { replaceState: true });
 
-			// 4. Invalidar datos (opcional si estás usando `load`)
-			await invalidateAll();
+	// 		// 4. Invalidar datos (opcional si estás usando `load`)
+	// 		await invalidateAll();
 
-			// 5. Recargar si necesitas una recarga completa
-			requestAnimationFrame(() => {
-				location.reload();
-			});
-		}
-	});
+	// 		// 5. Recargar si necesitas una recarga completa
+	// 		requestAnimationFrame(() => {
+	// 			location.reload();
+	// 		});
+	// 	}
+	// });
 </script>
 
 <div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
