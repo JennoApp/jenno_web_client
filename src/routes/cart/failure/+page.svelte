@@ -3,19 +3,22 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	onMount(() => {
-		if ($page.url.searchParams.get('fail') === '1') {
-			// Construir nueva URL sin el parámetro 'fail'
-			const cleanUrl =
-				$page.url.pathname +
-				'?' +
-				[...$page.url.searchParams.entries()]
-					.filter(([key]) => key !== 'fail')
-					.map(([key, val]) => `${key}=${val}`)
-					.join('&');
 
-			// Redirigir a la URL limpia sin parámetros y recargar
-			goto(cleanUrl || $page.url.pathname, { replaceState: true })
+  onMount(async () => {
+		const url = $page.url;
+
+		if (url.searchParams.get('fail') === '1') {
+			// Quitar 'fail' de la URL
+			const cleanParams = new URLSearchParams(url.searchParams);
+			cleanParams.delete('fail');
+
+			const cleanUrl = url.pathname + (cleanParams.toString() ? `?${cleanParams}` : '');
+
+			// Redirige sin 'fail' y recarga datos
+			await goto(cleanUrl, { replaceState: true });
+
+			// Recargar datos del servidor (sin refrescar toda la página)
+			await invalidateAll();
 		}
 	});
 </script>
