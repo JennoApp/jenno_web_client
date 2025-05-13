@@ -9,13 +9,11 @@
 
 		if (url.searchParams.get('fail') === '1') {
 			// Quitar 'fail' de la URL
-			const cleanParams = new URLSearchParams(url.searchParams);
-			cleanParams.delete('fail');
+      url.searchParams.delete('fail')
 
-			const cleanUrl = url.pathname + (cleanParams.toString() ? `?${cleanParams}` : '');
 
 			// Redirige sin 'fail' y recarga datos
-			await goto(cleanUrl, { replaceState: true });
+			await goto('/cart/failure', { replaceState: true });
 
 			// Recargar datos del servidor (sin refrescar toda la página)
 			await invalidateAll();
