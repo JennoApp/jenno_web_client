@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 
 	onMount(() => {
-		if ($page.url.searchParams.get('reload') === '1') {
+		if ($page.url.searchParams.get('fail') === '1') {
 			invalidateAll();
 			location.reload();
 		}
