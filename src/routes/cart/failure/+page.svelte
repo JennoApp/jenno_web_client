@@ -3,22 +3,27 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
 
-
   onMount(async () => {
-		if ($page.url.searchParams.get('fail') === '1') {
-			// Quitar 'fail' de la URL
-      $page.url.searchParams.delete('fail')
+		const url = $page.url;
 
-			// Redirige sin 'fail' y recarga datos
-			await goto('/cart/failure', { replaceState: true });
+		if (url.searchParams.get('fail') === '1') {
+			// 1. Crear nuevos parámetros sin el 'fail'
+			const cleanParams = new URLSearchParams(url.searchParams);
+			cleanParams.delete('fail');
 
-			// Recargar datos del servidor (sin refrescar toda la página)
+			// 2. Construir la nueva URL limpia
+			const cleanUrl = url.pathname + (cleanParams.toString() ? `?${cleanParams}` : '');
+
+			// 3. Redirigir sin el parámetro 'fail'
+			await goto(cleanUrl, { replaceState: true });
+
+			// 4. Invalidar datos (opcional si estás usando `load`)
 			await invalidateAll();
 
-      requestAnimationFrame(() => {
-        // Recargar la página
-        location.reload();
-      });
+			// 5. Recargar si necesitas una recarga completa
+			requestAnimationFrame(() => {
+				location.reload();
+			});
 		}
 	});
 </script>
