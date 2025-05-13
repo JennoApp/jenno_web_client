@@ -15,9 +15,7 @@
 					.join('&');
 
 			// Redirigir a la URL limpia sin parámetros y recargar
-			goto(cleanUrl || $page.url.pathname, { replaceState: true }).then(() => {
-				location.reload();
-			});
+			goto(cleanUrl || $page.url.pathname, { replaceState: true })
 		}
 	});
 </script>
