@@ -2,7 +2,7 @@
 	import '../app.css';
 	import 'iconify-icon';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import { Toaster } from 'svelte-sonner';
+	import { toast, Toaster } from 'svelte-sonner';
 	import { setupTheme } from '$lib/theme';
 	import {
 		addIpAddress,
@@ -169,6 +169,17 @@
       window.history.replaceState({}, '', '/')
       invalidateAll()
       location.reload()
+    } else if ($page.url.searchParams.get('failure') === '1') {
+      window.history.replaceState({}, '', '/')
+      invalidateAll()
+      location.reload()
+      toast.info('El pago no fue exitoso. Por favor, intenta nuevamente.', {
+        description: 'Si el problema persiste, contacta a soporte.',
+        action: {
+          label: 'Cerrar',
+          onClick: () => toast.dismiss()
+        }
+      })
     }
   })
 </script>

@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
       },
       back_urls: {
         success: 'https://www.jenno.com.co/cart/success',
-        failure: 'https://www.jenno.com.co/cart/failure?fail=1',
+        failure: 'https://www.jenno.com.co/cart/failure',
         pending: 'https://www.jenno.com.co/cart/pending'
       },
       auto_return: 'approved',
