@@ -34,23 +34,23 @@
 <div class="w-full h-80 mt-14">
 	<div class="flex gap-5 justify-center items-start h-full w-full">
 		<!-- Contenedor para Mercado Pago -->
-		<div class="flex flex-col items-center">
+		<div class="flex flex-col items-center text-center">
 			<button
-				class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030] {$paymentMethod ===
-				'mercadopago'
-					? 'border-2 border-[#202020] dark:border-gray-200'
-					: ''}"
+				class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030]
+    {$paymentMethod === 'mercadopago' ? 'border-2 border-[#202020] dark:border-gray-200' : ''}"
 				on:click={() => selectedMercadoPagoButton()}
 			>
-				<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem"></iconify-icon>
+				<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem" />
 			</button>
+
 			<h3 class="mt-2 text-lg font-medium text-gray-700 dark:text-gray-200">Mercado Pago</h3>
-			<ul class="mt-1 text-sm text-gray-600 dark:text-gray-400 text-center">
-				<li>Saldo Mercado Pago</li>
-				<li>Tarjeta Débito</li>
-				<li>Tarjeta Crédito</li>
-				<li class="mt-1 text-xs font-medium text-gray-500 dark:text-gray-300">
-					Comisión: 3,29% + COP $800
+
+			<ul class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+				<li>Tarjeta débito / crédito</li>
+				<li>Saldo en cuenta Mercado Pago</li>
+				<li>Nequi, Daviplata y bancos (vía PSE)</li>
+				<li class="mt-2 text-xs font-medium text-gray-500 dark:text-gray-300">
+					Comisión: 3.9% + COP $952 (incluye IVA)
 				</li>
 			</ul>
 		</div>
