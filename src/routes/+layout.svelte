@@ -163,25 +163,38 @@
 	// 	}
 	// });
 
-  // Handle URL parameters for redirection
-  onMount(() => {
-    if ($page.url.searchParams.get('mpreturn') === '1' || $page.url.searchParams.get('reload') === '1') {
-      window.history.replaceState({}, '', '/')
-      invalidateAll()
-      location.reload()
-    } else if ($page.url.searchParams.get('failure') === '1') {
-      window.history.replaceState({}, '', '/')
-      invalidateAll()
-      location.reload()
-      toast.info('El pago no fue exitoso. Por favor, intenta nuevamente.', {
-        description: 'Si el problema persiste, contacta a soporte.',
-        action: {
-          label: 'Cerrar',
-          onClick: () => toast.dismiss()
-        }
-      })
-    }
-  })
+	// Handle URL parameters for redirection
+	onMount(() => {
+		if (
+			$page.url.searchParams.get('mpreturn') === '1' ||
+			$page.url.searchParams.get('reload') === '1'
+		) {
+			window.history.replaceState({}, '', '/');
+			invalidateAll();
+			location.reload();
+		} else if ($page.url.searchParams.get('failure') === '1') {
+			localStorage.setItem('payment_failed', '1');
+
+			// Limpiar la URL y recargar la página
+			window.history.replaceState({}, '', '/');
+			invalidateAll();
+			location.reload();
+
+			const paymentFailed = localStorage.getItem('payment_failed');
+			if (paymentFailed) {
+				toast.error('El pago no fue exitoso. Por favor, intenta nuevamente.', {
+					description: 'Si el problema persiste, contacta a soporte.',
+					action: {
+						label: 'Cerrar',
+						onClick: () => toast.dismiss()
+					}
+				});
+			}
+
+			// Limpiar la señal para que no se repita en la siguiente carga
+			localStorage.removeItem('payment_failed');
+		}
+	});
 </script>
 
 <svelte:head>
@@ -207,20 +220,20 @@
 	</script>
 
 	<!-- Open graph (Facebook, WhatsApp)-->
-  <meta property="og:title" content="Jenno - Crea y comparte tu tienda online" />
-  <meta
+	<meta property="og:title" content="Jenno - Crea y comparte tu tienda online" />
+	<meta
 		property="og:description"
 		content="Crea tu propia tienda en línea con Jenno y compártela fácilmente en redes sociales. Vende tus productos de forma sencilla y segura."
 	/>
 	<meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Jenno" />
+	<meta property="og:site_name" content="Jenno" />
 	<meta property="og:url" content={$page.url.href} />
-  <meta property="og:image" content="https://www.jenno.com.co/oplogo.jpg" />
-  <meta property="og:image:width" content="1200" />
+	<meta property="og:image" content="https://www.jenno.com.co/oplogo.jpg" />
+	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Previsualización de una tienda en Jenno" />
+	<meta property="og:image:alt" content="Previsualización de una tienda en Jenno" />
 
-  <!-- Twitter Cards (Mejora la compatibilidad en Twitter) -->
+	<!-- Twitter Cards (Mejora la compatibilidad en Twitter) -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="Jenno - Crea y comparte tu tienda online" />
 	<meta
