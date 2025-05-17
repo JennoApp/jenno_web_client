@@ -112,7 +112,7 @@
 			<div class="flex items-center space-x-2">
 				{#if profileImg !== ''}
 					<img
-						class="h-8 w-8 object-cover rounded-full"
+						class="h-9 w-9 object-cover rounded-full"
 						src={profileImg}
 						alt="logo"
 						on:load={handleImageLoaded}
@@ -121,7 +121,7 @@
 					<div
 						class="h-9 w-9 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
 					>
-						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.2rem" width="1.2rem"
+						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.3rem" width="1.3rem"
 						></iconify-icon>
 					</div>
 				{/if}
