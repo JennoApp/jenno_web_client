@@ -20,7 +20,7 @@
 		toast.success('Usuario creado!');
 		goto('/', { replaceState: true }).then(() => {
             location.reload()
-        }
+        })
 	}
 
 	function togglePasswordVisibility() {
