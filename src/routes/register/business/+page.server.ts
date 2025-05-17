@@ -115,7 +115,7 @@ export const actions: Actions = {
         })
 
         const resultCreateUser = await responseCreateUser.json()
-        if (!resultCreateUser.ok) {
+        if (resultCreateUser.status === 401) {
           console.error("Error creando usuario business:", resultCreateUser)
           return {
             success: false,
@@ -133,7 +133,7 @@ export const actions: Actions = {
         })
 
         const resultLogin = await responseLoginUser.json()
-        if (!resultLogin.ok) {
+        if (resultLogin.status === 401) {
           console.log("Error logeando usuario business:", resultLogin)
           return {
             success: false
