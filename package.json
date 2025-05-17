@@ -45,6 +45,7 @@
     "@canutin/svelte-currency-input": "0.11.4",
     "@dimforge/rapier3d-compat": "0.13.0",
     "@paypal/paypal-js": "8.1.2",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@theatre/core": "0.7.1",
     "@theatre/studio": "0.7.1",
     "@threlte/core": "7.3.0",

@@ -105,28 +105,28 @@
 
 <a href={`/${userName}/${data._id}`}>
 	<div
-		class="flex flex-col justify-between h-[400px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
+		class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
 	>
 		<!-- Header -->
 		<div class="flex w-full h-12 px-4 items-center justify-between">
 			<div class="flex items-center space-x-2">
 				{#if profileImg !== ''}
 					<img
-						class="h-7 w-7 object-cover ml-4 rounded-full"
+						class="h-7 w-7 object-cover rounded-full"
 						src={profileImg}
 						alt="logo"
 						on:load={handleImageLoaded}
 					/>
 				{:else}
 					<div
-						class="h-9 w-9 ml-2 rounded-full bg-gray-300 dark:bg-[#303030] animate-pulse flex items-center justify-center"
+						class="h-9 w-9 ml-2 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
 					>
 						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.5rem" width="1.5rem"
 						></iconify-icon>
 					</div>
 				{/if}
-				<a href={`/${userName}`} class="truncate font-medium">
-					<h4 class="ml-2 font-medium">
+				<a href={`/${userName}`} class="truncate font-medium max-w-[150px]">
+					<h4>
 						{userName}
 					</h4>
 				</a>
@@ -147,11 +147,11 @@
 
 		<!-- Image -->
 		<div class="flex justify-center px-4">
-			<img class="h-52 w-full object-contain rounded-md" src={data.imgs[0]} alt="tiger" />
+			<img class="h-52 w-full object-contain rounded-md" src={data.imgs[0]} alt="producto" />
 		</div>
 
 		<!-- Social -->
-		<div class="flex items-center justify-between w-full h-8 mt-1 mx-3">
+		<div class="flex items-center justify-between w-full h-8 mt-1 px-4">
 			<div class="flex gap-2 items-center text-2xl text-center">
 				<div
 					class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg"
@@ -210,11 +210,11 @@
 		</div>
 
 		<!-- Info -->
-		<div class="px-4 pb-4 flex flex-col justify-end h-[70px] overflow-hidden">
-			<h3 class="text-xl font-semibold truncate">
+		<div class="px-4 py-3">
+			<h3 class="text-base font-semibold line-clamp-2 leading-tight">
         {data.productname}
       </h3>
-			<p class="text-xl font-bold mt-1">
+			<p class="text-lg font-bold mt-1">
         {formatPrice(data.price, 'es-CO', 'COP')}
       </p>
 		</div>
