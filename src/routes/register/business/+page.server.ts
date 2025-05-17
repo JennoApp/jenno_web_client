@@ -69,9 +69,21 @@ export const actions: Actions = {
     const formData = Object.fromEntries(await request.formData())
 
     try {
-      const { businessname, email, country, name, lastname, taxid, password, verified_password, currency } = registerBusinessSchema.parse(formData)
+      const {
+        businessname,
+        email,
+        country,
+        name,
+        lastname,
+        taxid,
+        password,
+        verified_password,
+        currency
+      } = registerBusinessSchema.parse(formData)
 
-      console.log({currency})
+      const displayname = businessname.trim()
+      const username = displayname.toLowerCase().replace(/\s+/g, '')
+
       if (verified_password !== password) {
         return {
           message: "Password and Confirm Password must match",
@@ -84,16 +96,26 @@ export const actions: Actions = {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username: businessname, email, country, name, lastname, taxid, password, accountType: 'business', currency })
+          body: JSON.stringify({
+            username,
+            displayname,
+            email,
+            country,
+            name,
+            lastname,
+            taxid,
+            password,
+            accountType: 'business',
+            currency
+          })
         })
 
-        const result = await responseCreateUser.json()
-        console.log({ result })
-
-        if (result.statusCode === 401) {
-          console.log("Credemciales inconrrectas")
+        const resultCreateUser = await responseCreateUser.json()
+        if (!resultCreateUser.ok) {
+          console.error("Error creando usuario business:", resultCreateUser)
           return {
-            success: false
+            success: false,
+            message: resultCreateUser.message || 'Error creando usuario business'
           }
         }
 
@@ -107,10 +129,8 @@ export const actions: Actions = {
         })
 
         const resultLogin = await responseLoginUser.json()
-        console.log({ resultLogin })
-
-        if (resultLogin.statusCode === 401) {
-          console.log("Credenciales incorrectas")
+        if (!resultLogin.ok) {
+          console.log("Error logeando usuario business:", resultLogin)
           return {
             success: false
           }
@@ -124,13 +144,10 @@ export const actions: Actions = {
           maxAge: 60 * 60 * 24 * 45 // aproximadamente mes y medio
         })
 
-        console.log({ businessname, email, name, lastname, taxid, password, verified_password })
         return {
           success: true
         }
       }
-
-
     } catch (err: any) {
       const { fieldErrors: errors } = err?.flatten()
       const { password, verified_password, ...rest } = formData

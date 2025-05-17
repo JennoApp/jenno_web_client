@@ -51,10 +51,15 @@ export const actions: Actions = {
 
     try {
       // Validar Formulario
-      const { username, email, country, password } = registerPersonalSchema.parse(formData)
+      const {
+        username: rawUsername,
+        email,
+        country,
+        password
+      } = registerPersonalSchema.parse(formData)
 
-      console.log({ username, email, country, password })
-
+      const displayname = rawUsername.trim()
+      const username = displayname.toLowerCase().replace(/\s+/g, '')
 
       // Crear Usuario Personal
       const responseCreateUser = await fetch(`${PRIVATE_SERVER_URL}/users`, {
@@ -62,17 +67,22 @@ export const actions: Actions = {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, email, country, password, accountType: 'personal' })
+        body: JSON.stringify({
+          username,
+          displayname,
+          email,
+          country,
+          password,
+          accountType: 'personal'
+        })
       })
 
-      const result = await responseCreateUser.json()
-      console.log({ result })
-
-      if (result.statusCode === 401) {
-        console.log("Credenciales incorrectas")
+      const resultCreateUser = await responseCreateUser.json()
+      if (!resultCreateUser.ok) {
+        console.error("Error creado usuario personal:", resultCreateUser)
         return {
-          message: 'Hubo un problema al crear la cuenta. Por favor, intente de nuevo.',
-          success: false
+          success: false,
+          message: resultCreateUser.message || 'Hubo un problema al crear la cuenta. Por favor, intente de nuevo.',
         }
       }
 
@@ -86,13 +96,11 @@ export const actions: Actions = {
       })
 
       const resultLogin = await responseLoginUser.json()
-      console.log({ resultLogin })
-
-      if (resultLogin.statusCode === 401) {
-        console.log("Credenciales incorrectas")
+      if (!resultLogin.ok) {
+        console.log("Error loageando usuario personal:", resultLogin)
         return {
-          message: 'El correo electrónico o la contraseña son incorrectos.',
-          success: false
+          success: false,
+          message: 'Error al iniciar sesion tras registro',
         }
       }
 
