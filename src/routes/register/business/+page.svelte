@@ -10,7 +10,7 @@
 
 	export let form: ActionData;
 
-	let selectedCountry: any = '';
+	let selectedCountry: any = 'Colombia';
 
 	$: console.log($location_data?.data[0]?.country_module?.currencies[0]?.code);
 

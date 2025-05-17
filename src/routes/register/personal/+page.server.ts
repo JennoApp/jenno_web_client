@@ -49,6 +49,10 @@ export const actions: Actions = {
   personal: async ({ request, cookies }) => {
     const formData = Object.fromEntries(await request.formData())
 
+    if (!formData.country || formData?.country.trim() === '') {
+      formData.country = 'Colombia';
+    }
+
     try {
       // Validar Formulario
       const {

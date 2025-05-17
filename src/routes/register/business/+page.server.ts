@@ -15,9 +15,9 @@ const registerBusinessSchema = z.object({
     .email({ message: 'Email nust be a valid email address' }),
   country: z
     .string()
-      .max(64, { message: 'El país debe tener menos de 64 caracteres' })
-      .optional()
-      .default('Colombia'),
+    .max(64, { message: 'El país debe tener menos de 64 caracteres' })
+    .optional()
+    .default('Colombia'),
   // Legal Information
   name: z
     .string({ required_error: 'Name is required' })
@@ -46,7 +46,7 @@ const registerBusinessSchema = z.object({
     .max(32, { message: 'Password must be less than 32 characters' })
     .trim(),
   currency: z
-    .string({ required_error: 'Currency code is required'})
+    .string({ required_error: 'Currency code is required' })
     .trim()
 }).superRefine(({ password, verified_password }, ctx) => {
   if (verified_password !== password) {
@@ -67,6 +67,10 @@ const registerBusinessSchema = z.object({
 export const actions: Actions = {
   business: async ({ request, cookies }) => {
     const formData = Object.fromEntries(await request.formData())
+
+    if (!formData.country || formData?.country.trim() === '') {
+      formData.country = 'Colombia';
+    }
 
     try {
       const {
