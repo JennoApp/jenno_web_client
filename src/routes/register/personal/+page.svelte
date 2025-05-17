@@ -8,7 +8,7 @@
   import * as m from '$paraglide/messages';
 
 	export let form: ActionData;
-  let selectedCountry: any = ''
+  let selectedCountry: any = 'Colombia'
 
 	$: if (form?.success) {
 		toast.success('Usuario creado!');
@@ -108,6 +108,7 @@
 		<div class="flex flex-col">
 			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.register_personal_country_label()}</label>
 			<Select.Root
+        selected={selectedCountry}
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
 				}}
