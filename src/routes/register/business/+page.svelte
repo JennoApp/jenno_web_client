@@ -19,7 +19,8 @@
 	$: if (form?.success) {
 		toast.success('Usuario creado!');
 		goto('/', { replaceState: true }).then(() => {
-      location.reload()
+            location.reload()
+        }
 	}
 
 	function togglePasswordVisibility() {
