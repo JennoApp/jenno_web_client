@@ -105,37 +105,34 @@
 
 <a href={`/${userName}/${data._id}`}>
 	<div
-		class="h-[400px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525]"
+		class="flex flex-col justify-between h-[400px] w-full rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
 	>
 		<!-- Header -->
-		<div class="flex w-full h-12 mt-1 items-center justify-between">
-			<div class="flex items-center">
+		<div class="flex w-full h-12 px-4 items-center justify-between">
+			<div class="flex items-center space-x-2">
 				{#if profileImg !== ''}
 					<img
-						class="h-7 w-7 object-cover ml-4 rounded-full {imageLoaded
-							? ''
-							: 'animate-pulse dark:bg-[#202020] bg-gray-300'}"
+						class="h-7 w-7 object-cover ml-4 rounded-full"
 						src={profileImg}
 						alt="logo"
 						on:load={handleImageLoaded}
 					/>
 				{:else}
 					<div
-						class="flex justify-center items-center h-9 w-9 ml-2 rounded-full bg-gray-300 dark:bg-[#303030] animate-pulse"
+						class="h-9 w-9 ml-2 rounded-full bg-gray-300 dark:bg-[#303030] animate-pulse flex items-center justify-center"
 					>
 						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.5rem" width="1.5rem"
 						></iconify-icon>
 					</div>
 				{/if}
-
-				{#if userName !== ''}
-					<a href={`/${userName}`}>
-						<h4 class="ml-2 font-medium {imageLoaded
-							? ''
-							: 'animate-pulse dark:bg-[#202020]'}">{userName}</h4>
-					</a>
-				{/if}
+				<a href={`/${userName}`} class="truncate font-medium">
+					<h4 class="ml-2 font-medium">
+						{userName}
+					</h4>
+				</a>
 			</div>
+
+			<!--  ####################### -->
 			<div class="hidden">
 				<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
 				<iconify-icon
@@ -145,11 +142,12 @@
 					width="1.5rem"
 				></iconify-icon>
 			</div>
+			<!-- ######################### -->
 		</div>
 
 		<!-- Image -->
-		<div class="flex justify-center">
-			<img class="w-11/12 h-52 object-contain rounded-md" src={data.imgs[0]} alt="tiger" />
+		<div class="flex justify-center px-4">
+			<img class="h-52 w-full object-contain rounded-md" src={data.imgs[0]} alt="tiger" />
 		</div>
 
 		<!-- Social -->
@@ -212,11 +210,13 @@
 		</div>
 
 		<!-- Info -->
-		<div class="w-full h-[70px] mx-3 mt-2">
-			<div>
-				<h3 class="m-1 text-xl">{data.productname}</h3>
-				<h2 class="m-1 mt-1 text-lg font-semibold">{formatPrice(data.price, 'es-CO', 'COP')}</h2>
-			</div>
+		<div class="px-4 pb-4 flex flex-col justify-end h-[70px] overflow-hidden">
+			<h3 class="text-xl font-semibold truncate">
+        {data.productname}
+      </h3>
+			<p class="text-xl font-bold mt-1">
+        {formatPrice(data.price, 'es-CO', 'COP')}
+      </p>
 		</div>
 	</div>
 </a>
