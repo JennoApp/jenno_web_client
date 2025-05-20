@@ -22,6 +22,8 @@ export const actions: Actions = {
     // Configurar la lista final de países
     const country = receivedCountries.length > 0 ? receivedCountries : ['Colombia'];
 
+    const additionalInfo = formData.get('additionalInfo') as string;
+
     // Extraer datos generales del producto
     const productData = {
       productname: formData.get('productname'),
@@ -42,7 +44,8 @@ export const actions: Actions = {
       visibility: formData.get('visibility') === 'true',
       country,
       options: [] as any[],
-      especifications: [] as any[]
+      especifications: [] as any[],
+      additionalInfo
     };
 
     // Extraer las opciones

@@ -15,10 +15,22 @@
 	import CurrencyInput from '@canutin/svelte-currency-input';
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
+	import { browser } from '$app/environment';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
 	let especificationsItems: any[] = [];
+
+	let QuillEditor: any;
+	if (browser) {
+		import('$lib/components/QuillEditor.svelte')
+			.then((mod) => {
+				QuillEditor = mod.default;
+			})
+			.catch((err) => {
+				console.error('Error loading QuillEditor:', err);
+			});
+	}
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -123,6 +135,9 @@
 	let visibility: boolean = true;
 	let isvisibilityInitialized = false;
 
+	let additionalInfo = product?.additionalInfo || '';
+  let editorRef: any;
+
 	$: console.log(product);
 	$: console.log($location_data);
 
@@ -166,7 +181,7 @@
 		isvisibilityInitialized = true;
 	}
 
-	$: console.log({ visibility });
+  $: console.log("AdditionalInfo:", { additionalInfo });
 </script>
 
 <div class="flex p-5">
@@ -189,7 +204,15 @@
 	</div>
 </div>
 
-<form method="POST" enctype="multipart/form-data" action="?/saveProduct" use:enhance>
+<!-- Este input se enviará con el contenido HTML -->
+<input type="hidden" name="additionalInfo" bind:value={additionalInfo} />
+
+<form method="POST" enctype="multipart/form-data" action="?/saveProduct" use:enhance
+  on:submit={() => {
+    additionalInfo = editorRef.getHTML() ?? '';
+    console.log('HTML:', additionalInfo);
+  }}
+>
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Product Id hidden -->
 		{#if product}
@@ -358,19 +381,37 @@
 					</Card.Content>
 				{/each}
 			</Card.Root>
+
+			{#if QuillEditor}
+				<Card.Root class="h-80">
+					<Card.Header>
+						<Card.Title>Información Adicional</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						{#if product?._id}
+							<QuillEditor
+                bind:this={editorRef}
+								value={additionalInfo}
+								onChange={(html) => (additionalInfo = html)}
+								productId={product._id}
+							/>
+						{:else}
+							<QuillEditor value={additionalInfo} onChange={(html) => (additionalInfo = html)} />
+						{/if}
+					</Card.Content>
+				</Card.Root>
+			{/if}
 		</div>
 
 		<!-- Columna 2 -->
 		<div class="w-full">
 			<Card.Root class="mb-4">
 				<!-- Descripción informativa para la carga de imágenes -->
-				<div
-					class="bg-blue-200 border border-blue-300 text-blue-800 p-2 rounded-md"
-				>
+				<div class="bg-blue-200 border border-blue-300 text-blue-800 p-2 rounded-md">
 					<p>
 						<strong>Nota:</strong> Se pueden cargar máximo 5 imágenes. La carga se realiza de forma
 						aleatoria por defecto. Si deseas elegir el orden en el que se mostrarán, nombra tus
-						archivos usando el formato <em>{"{nombre}"}-{"{numero}"}"</em>
+						archivos usando el formato <em>{'{nombre}'}-{'{numero}'}"</em>
 						(ejemplo: <em>producto-1, producto-2, producto-3</em>, etc.).
 					</p>
 				</div>
