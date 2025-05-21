@@ -382,7 +382,8 @@
 				{/each}
 			</Card.Root>
 
-				<Card.Root class="h-auto">
+      {#if QuillEditor}
+        <Card.Root class="h-auto">
 					<Card.Header>
 						<Card.Title>Información Adicional</Card.Title>
 					</Card.Header>
@@ -399,6 +400,7 @@
 						{/if}
 					</Card.Content>
 				</Card.Root>
+      {/if}
 		</div>
 
 		<!-- Columna 2 -->
