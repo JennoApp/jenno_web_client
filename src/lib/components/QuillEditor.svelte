@@ -9,12 +9,12 @@
 	let quill: any;
 
 	const toolbarOptions = [
-		[{ size: ['large', false, 'small'] }],
+		// [{ size: ['large', false, 'small'] }],
 		['bold', 'italic', 'underline', 'strike'],
-		[{ list: 'ordered' }, { list: 'bullet' }],
+		// [{ list: 'ordered' }, { list: 'bullet' }],
 		['image'],
-		[{ align: [] }],
-		['clean']
+		// [{ align: [] }],
+		// ['clean']
 	];
 
 	function imageHandler() {
