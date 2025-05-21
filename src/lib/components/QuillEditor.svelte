@@ -18,8 +18,6 @@
 	];
 
 	function imageHandler() {
-		if (!editorDiv) return;
-
 		const input = document.createElement('input');
 		input.setAttribute('type', 'file');
 		input.setAttribute('accept', 'image/*');
