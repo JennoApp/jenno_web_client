@@ -396,7 +396,7 @@
 							bind:this={editorRef}
 							value={additionalInfo}
 							onChange={(html) => (additionalInfo = html)}
-							productId={product._id}
+							productId={product?._id ?? ''}
 						/>
 					</Card.Content>
 				</Card.Root>
