@@ -9,15 +9,17 @@
 	let quill: any;
 
 	const toolbarOptions = [
-		// [{ size: ['large', false, 'small'] }],
+		[{ size: ['large', false, 'small'] }],
 		['bold', 'italic', 'underline', 'strike'],
-		// [{ list: 'ordered' }, { list: 'bullet' }],
+		[{ list: 'ordered' }, { list: 'bullet' }],
 		['image'],
-		// [{ align: [] }],
-		// ['clean']
+		[{ align: [] }],
+		['clean']
 	];
 
 	function imageHandler() {
+		if (!editorDiv) return;
+
 		const input = document.createElement('input');
 		input.setAttribute('type', 'file');
 		input.setAttribute('accept', 'image/*');
@@ -27,11 +29,17 @@
 			const file = input.files?.[0];
 			if (!file) return;
 
+			// Elegir endpoint según tengamos o no productId
+			const isDraft = !productId;
+			const endpoint = isDraft
+				? '/api/upload-additional-info-draft'
+				: `/api/uploadAdditionalInfoImage?productId=${productId}`;
+
 			const formData = new FormData();
 			formData.append('file', file);
 
 			try {
-				const response = await fetch(`/api/uploadAdditionalInfoImage?productId=${productId}`, {
+				const response = await fetch(endpoint, {
 					method: 'POST',
 					body: formData
 				});
@@ -39,7 +47,7 @@
 				if (!response.ok) throw new Error('Error al subir imagen');
 
 				const data = await response.json();
-				const url = Array.isArray(data.urls) ? data.urls[0] : data.url;
+				const url = data.url ?? (Array.isArray(data.urls) && data.urls[0]);
 				if (!url) throw new Error('La respuesta no incluye ninguna URL');
 
 				const range = quill.getSelection(true);
@@ -53,6 +61,10 @@
 
 	onMount(async () => {
 		await import('quill/dist/quill.snow.css');
+		await import('quill/modules/toolbar');
+		await import('quill/formats/align');
+		await import('quill/formats/size');
+
 		const Quill = (await import('quill')).default;
 
 		quill = new Quill(editorDiv, {

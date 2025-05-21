@@ -136,7 +136,7 @@
 	let isvisibilityInitialized = false;
 
 	let additionalInfo = product?.additionalInfo || '';
-  let editorRef: any;
+	let editorRef: any;
 
 	$: console.log(product);
 	$: console.log($location_data);
@@ -181,7 +181,7 @@
 		isvisibilityInitialized = true;
 	}
 
-  $: console.log("AdditionalInfo:", { additionalInfo });
+	$: console.log('AdditionalInfo:', { additionalInfo });
 </script>
 
 <div class="flex p-5">
@@ -207,11 +207,15 @@
 <!-- Este input se enviará con el contenido HTML -->
 <input type="hidden" name="additionalInfo" bind:value={additionalInfo} />
 
-<form method="POST" enctype="multipart/form-data" action="?/saveProduct" use:enhance
-  on:submit={() => {
-    additionalInfo = editorRef.getHTML() ?? '';
-    console.log('HTML:', additionalInfo);
-  }}
+<form
+	method="POST"
+	enctype="multipart/form-data"
+	action="?/saveProduct"
+	use:enhance
+	on:submit={() => {
+		additionalInfo = editorRef.getHTML() ?? '';
+		console.log('HTML:', additionalInfo);
+	}}
 >
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Product Id hidden -->
@@ -382,25 +386,21 @@
 				{/each}
 			</Card.Root>
 
-      {#if QuillEditor}
-        <Card.Root class="h-auto">
+			{#if QuillEditor}
+				<Card.Root class="h-auto">
 					<Card.Header>
 						<Card.Title>Información Adicional</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						{#if product?._id}
-							<QuillEditor
-                bind:this={editorRef}
-								value={additionalInfo}
-								onChange={(html) => (additionalInfo = html)}
-								productId={product._id}
-							/>
-						{:else}
-							<QuillEditor value={additionalInfo} onChange={(html) => (additionalInfo = html)} />
-						{/if}
+						<QuillEditor
+							bind:this={editorRef}
+							value={additionalInfo}
+							onChange={(html) => (additionalInfo = html)}
+							productId={product._id}
+						/>
 					</Card.Content>
 				</Card.Root>
-      {/if}
+			{/if}
 		</div>
 
 		<!-- Columna 2 -->
