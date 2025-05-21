@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-  export let productId: string;
+	export let productId: string;
 	export let value = '';
 	export let onChange = (html: string) => {};
 
@@ -36,15 +36,15 @@
 					body: formData
 				});
 
-        if (!response.ok) throw new Error('Error al subir imagen');
+				if (!response.ok) throw new Error('Error al subir imagen');
 
 				const data = await response.json();
+				const url = Array.isArray(data.urls) ? data.urls[0] : data.url;
+				if (!url) throw new Error('La respuesta no incluye ninguna URL');
 
-				if (data.url) {
-					const range = quill.getSelection(true);
-          quill.insertEmbed(range.index, 'image', data.url);
-          quill.setSelection(range.index + 1);
-				}
+				const range = quill.getSelection(true);
+				quill.insertEmbed(range.index, 'image', url);
+				quill.setSelection(range.index + 1);
 			} catch (err) {
 				console.error('Error al subir imagen:', err);
 			}
@@ -53,16 +53,16 @@
 
 	onMount(async () => {
 		await import('quill/dist/quill.snow.css');
-		const Quill = (await import('quill')).default
+		const Quill = (await import('quill')).default;
 
 		quill = new Quill(editorDiv, {
 			theme: 'snow',
 			modules: {
 				toolbar: {
 					container: toolbarOptions,
-          handlers: {
-            image: imageHandler
-          }
+					handlers: {
+						image: imageHandler
+					}
 				}
 			}
 		});
