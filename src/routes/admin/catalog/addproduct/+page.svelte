@@ -394,7 +394,7 @@
 					<Card.Content>
 						<QuillEditor
 							bind:this={editorRef}
-							value={additionalInfo}
+							value={$additionalInfo}
 							onChange={(html) => additionalInfo.set(html)}
 							productId={product?._id ?? ''}
 						/>
