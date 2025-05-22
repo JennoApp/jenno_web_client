@@ -185,7 +185,7 @@
 		isvisibilityInitialized = true;
 	}
 
-	$: console.log('AdditionalInfo:', { additionalInfo });
+	$: console.log('AdditionalInfo:', { $additionalInfo });
 </script>
 
 <div class="flex p-5">
