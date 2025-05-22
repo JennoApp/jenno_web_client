@@ -16,7 +16,7 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import { browser } from '$app/environment';
-  import { additionalInfo } from '$lib/stores/additionalInfo';
+	import { additionalInfo } from '$lib/stores/additionalInfo';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -160,9 +160,9 @@
 		}
 	});
 
-  onMount(() => {
-    additionalInfo.set(product?.additionalInfo || '');
-  })
+	onMount(() => {
+		additionalInfo.set(product?.additionalInfo || '');
+	});
 
 	$: if (product && product.options) {
 		optionsItems = product.options.map((option: any) => ({
@@ -186,6 +186,37 @@
 	}
 
 	$: console.log('AdditionalInfo:', { $additionalInfo });
+
+  // La función de submit manual
+  async function handleSubmit(event: SubmitEvent) {
+    event.preventDefault();
+    const form = event.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+
+    // 1) Extraemos el HTML de Quill
+    const html = editorRef?.getHTML() ?? '';
+    formData.set('additionalInfo', html);
+
+    // 2) Ahora lo enviamos manualmente
+    const response = await fetch(form.action, {
+      method: form.method,
+      headers: {
+        // IMPORTANTE: no pongas Content-Type aquí, fetch lo detecta
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      console.error('Error al guardar el producto', await response.text());
+      return;
+    }
+
+    // 3) Limpieza (opcional)
+    additionalInfo.set('');
+    const result = await response.json();
+    console.log('Producto guardado:', result);
+    // aquí podrías redirigir o mostrar mensaje de éxito
+  }
 </script>
 
 <div class="flex p-5">
@@ -211,12 +242,7 @@
 <!-- Este input se enviará con el contenido HTML -->
 <input type="hidden" name="additionalInfo" bind:value={$additionalInfo} />
 
-<form
-	method="POST"
-	enctype="multipart/form-data"
-	action="?/saveProduct"
-	use:enhance
->
+<form method="POST" enctype="multipart/form-data" action="?/saveProduct" on:submit|preventDefault={handleSubmit}
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Product Id hidden -->
 		{#if product}
