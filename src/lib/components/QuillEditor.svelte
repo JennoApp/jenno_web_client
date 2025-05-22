@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+  import { additionalInfo } from '$lib/stores/additionalInfo';
 
 	export let productId: string;
 	export let value = '';
@@ -82,6 +83,7 @@
 		quill.on('text-change', () => {
 			const html = quill.root.innerHTML;
 			onChange(html);
+      additionalInfo.set(html);
 		});
 	});
 

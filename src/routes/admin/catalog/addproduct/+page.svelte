@@ -16,6 +16,7 @@
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import { browser } from '$app/environment';
+  import { additionalInfo } from '$lib/stores/additionalInfo';
 
 	export let form: ActionData;
 	let optionsItems: any[] = [];
@@ -135,7 +136,6 @@
 	let visibility: boolean = true;
 	let isvisibilityInitialized = false;
 
-	let additionalInfo = product?.additionalInfo || '';
 	let editorRef: any;
 
 	$: console.log(product);
@@ -159,6 +159,10 @@
 			}
 		}
 	});
+
+  onMount(() => {
+    additionalInfo.set(product?.additionalInfo || '');
+  })
 
 	$: if (product && product.options) {
 		optionsItems = product.options.map((option: any) => ({
@@ -205,17 +209,13 @@
 </div>
 
 <!-- Este input se enviará con el contenido HTML -->
-<input type="hidden" name="additionalInfo" bind:value={additionalInfo} />
+<input type="hidden" name="additionalInfo" bind:value={$additionalInfo} />
 
 <form
 	method="POST"
 	enctype="multipart/form-data"
 	action="?/saveProduct"
 	use:enhance
-	on:submit={() => {
-		additionalInfo = editorRef.getHTML() ?? '';
-		console.log('HTML:', additionalInfo);
-	}}
 >
 	<div class="flex flex-row gap-4 p-5">
 		<!-- Product Id hidden -->
@@ -395,7 +395,7 @@
 						<QuillEditor
 							bind:this={editorRef}
 							value={additionalInfo}
-							onChange={(html) => (additionalInfo = html)}
+							onChange={(html) => additionalInfo.set(html)}
 							productId={product?._id ?? ''}
 						/>
 					</Card.Content>
