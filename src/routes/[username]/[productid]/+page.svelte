@@ -375,11 +375,11 @@
 						bind:value={quantity}
 						min="1"
 						class="mx-2 text-xl font-semibold text-center w-16 bg-transparent outline-none appearance-none"
-            on:blur={(e) => {
-              if (e?.target?.value < 1) {
-                quantity = 1;
-              }
-            }}
+						on:blur={(e) => {
+							if (e?.target?.value < 1) {
+								quantity = 1;
+							}
+						}}
 					/>
 					<!-- <span class="mx-2 text-xl font-semibold">{quantity}</span> -->
 					<button
@@ -425,6 +425,18 @@
 				</Table.Row>
 			</Table.Body>
 		</Table.Root>
+	</div>
+{/if}
+
+{#if product.additionalInfo}
+	<div class="flex flex-col m-10 mt-14">
+		<h2 class="text-xl font-bold mb-6">Informacion Adicional</h2>
+
+		<div
+			class="prose max-w-none dark:prose-invert prose-img:rounded-lg prose-img:max-w-[400px] prose-img:mx-auto prose-img:my-4"
+		>
+			{@html product.additionalInfo}
+		</div>
 	</div>
 {/if}
 
