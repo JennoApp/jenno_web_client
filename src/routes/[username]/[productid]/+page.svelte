@@ -327,10 +327,9 @@
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
 
 		<!-- Product Description -->
-		<ScrollArea class="h-auto max-h-[200px] w-full mt-1 rounded-md border p-4 text-left border-none" orientation="vertical">
+		<div class="h-auto max-h-[200px] w-full mt-1 rounded-md p-4 overflow-y-auto">
 			<p>{product.description}</p>
-		</ScrollArea>
-
+		</div>
 
 		<!-- Product Options -->
 		{#if product?.options}
@@ -431,21 +430,20 @@
 
 <!-- Informacion Adicional -->
 {#if product.additionalInfo}
-  <div class="flex flex-col m-10 mt-14">
-    <h2 class="text-xl font-bold mb-6">Información Adicional</h2>
+	<div class="flex flex-col m-10 mt-14">
+		<h2 class="text-xl font-bold mb-6">Información Adicional</h2>
 
-    <div
-      class="prose prose-lg max-w-none dark:prose-invert space-y-4
+		<div
+			class="prose prose-lg max-w-none dark:prose-invert space-y-4
              prose-p:leading-relaxed prose-p:mb-4
              prose-ul:list-disc prose-ul:pl-6
              prose-ol:list-disc prose-ol:pl-6
              prose-li:mb-2 prose-img:rounded-lg prose-img:max-w-[400px] prose-img:mx-auto prose-img:my-4"
-    >
-      {@html product.additionalInfo}
-    </div>
-  </div>
+		>
+			{@html product.additionalInfo}
+		</div>
+	</div>
 {/if}
-
 
 <div class="flex flex-col m-10 mt-10">
 	<h2 class="text-xl font-bold">{m.product_page_more_products()}</h2>
