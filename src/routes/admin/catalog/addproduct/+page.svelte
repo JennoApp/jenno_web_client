@@ -216,14 +216,12 @@
 		const result = await response.json();
 		console.log('Producto guardado:', result);
 
-    if (response.status === 201) {
-			if (result.product?.productId) {
-				toast.success('Producto creado!');
-			} else {
-				toast.success('Producto actualizado!');
-			}
-			goto('/admin/catalog');
+		if (result.product?.productId) {
+			toast.success('Producto creado!');
+		} else {
+			toast.success('Producto actualizado!');
 		}
+		goto('/admin/catalog');
 	}
 </script>
 
