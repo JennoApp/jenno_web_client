@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-  import { additionalInfo } from '$lib/stores/additionalInfo';
+	import { additionalInfo } from '$lib/stores/additionalInfo';
 
 	export let productId: string;
 	export let value = '';
@@ -83,9 +83,15 @@
 		quill.on('text-change', () => {
 			const html = quill.root.innerHTML;
 			onChange(html);
-      additionalInfo.set(html);
+			additionalInfo.set(html);
 		});
 	});
+
+	$: if (quill && value) {
+		if (quill.root.innerHTML !== value) {
+			quill.root.innerHTML = value;
+		}
+	}
 
 	export function getHTML() {
 		return quill?.root.innerHTML ?? '';
