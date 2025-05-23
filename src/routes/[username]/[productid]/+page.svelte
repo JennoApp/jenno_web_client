@@ -327,9 +327,9 @@
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
 
 		<!-- Product Description -->
-		<div class="h-auto max-h-48 w-full mt-1 overflow-hidden relative text-left">
+		<ScrollArea class="h-[200px] w-full mt-1 rounded-md border p-4 text-left">
 			<p>{product.description}</p>
-		</div>
+		</ScrollArea>
 
 		<!-- Product Options -->
 		{#if product?.options}
@@ -428,19 +428,25 @@
 	</div>
 {/if}
 
+<!-- Informacion Adicional -->
 {#if product.additionalInfo}
-	<div class="flex flex-col m-10 mt-14">
-		<h2 class="text-xl font-bold mb-6">Informacion Adicional</h2>
+  <div class="flex flex-col m-10 mt-14">
+    <h2 class="text-xl font-bold mb-6">Información Adicional</h2>
 
-		<div
-			class="prose max-w-none dark:prose-invert prose-img:rounded-lg prose-img:max-w-[400px] prose-img:mx-auto prose-img:my-4"
-		>
-			{@html product.additionalInfo}
-		</div>
-	</div>
+    <div
+      class="prose prose-lg max-w-none dark:prose-invert space-y-4
+             prose-p:leading-relaxed prose-p:mb-4
+             prose-ul:list-disc prose-ul:pl-6
+             prose-ol:list-decimal prose-ol:pl-6 prose-li:mb-2
+             prose-img:rounded-lg prose-img:max-w-[400px] prose-img:mx-auto prose-img:my-4"
+    >
+      {@html product.additionalInfo}
+    </div>
+  </div>
 {/if}
 
-<div class="flex flex-col m-10 mt-14">
+
+<div class="flex flex-col m-10 mt-10">
 	<h2 class="text-xl font-bold">{m.product_page_more_products()}</h2>
 </div>
 

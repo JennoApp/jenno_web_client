@@ -21,6 +21,7 @@
     "@sveltejs/adapter-vercel": "5.7.2",
     "@sveltejs/kit": "2.21.1",
     "@sveltejs/vite-plugin-svelte": "3.1.2",
+    "@tailwindcss/typography": "^0.5.16",
     "@types/d3-scale": "4.0.9",
     "@types/jsonwebtoken": "9.0.9",
     "@types/mercadopago": "1.5.11",

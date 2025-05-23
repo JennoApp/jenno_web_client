@@ -6,6 +6,7 @@ const config = {
 	content: ["./src/**/*.{html,js,svelte,ts}"],
   plugins: [
     require("@tailwindcss/line-clamp"),
+    require("@tailwindcss/typography"),
   ],
   safelist: ["dark"],
 	theme: {
