@@ -458,8 +458,8 @@
 		<h2 class="text-xl font-bold mb-6">Información Adicional</h2>
 
 		<div
-			class="prose prose-lg max-w-none dark:prose-invert space-y-4
-             prose-p:leading-relaxed prose-p:mb-4
+			class="prose prose-base max-w-none dark:prose-invert space-y-2
+             prose-p:leading-relaxed prose-p:mb-2
              prose-ul:list-disc prose-ul:pl-6
              prose-ol:list-disc prose-ol:pl-6
              prose-li:mb-2 prose-img:rounded-lg prose-img:max-w-[400px] prose-img:mx-auto prose-img:my-4"
