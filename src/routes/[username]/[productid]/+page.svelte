@@ -357,7 +357,7 @@
 		<!-- Seleccionar Cantidad del Producto -->
 		<div class="flex flex-col gap-3">
 			<!-- Advertencia de stock bajo -->
-			{#if product.quantity <= 50}
+			{#if product.quantity <= 10}
 				<span class="mt-1 text-sm text-red-600 dark:text-red-400">
 					* Sólo quedan {product.quantity} unidades
 				</span>
