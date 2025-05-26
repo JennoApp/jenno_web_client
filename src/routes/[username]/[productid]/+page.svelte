@@ -354,18 +354,23 @@
 			{/each}
 		{/if}
 
+		<!-- Advertencia de stock bajo -->
+		{#if product.quantity <= 50}
+			<span class="mt-1 text-sm text-red-600 dark:text-red-400">
+				Sólo quedan {product.quantity} unidades
+			</span>
+		{/if}
+
+		<!-- Seleccionar Cantidad del Producto -->
 		<div class="flex flex-col gap-3">
 			<div class="flex mt-5 gap-3">
 				<div
 					class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md"
 				>
 					<button
-						on:click|preventDefault={() => {
-							if (quantity > 1) {
-								quantity--;
-							}
-						}}
-						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+						on:click|preventDefault={() => (quantity = Math.max(1, quantity - 1))}
+						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary disabled:opacity-50"
+						disabled={quantity <= 1}
 					>
 						<!-- Minus Icon -->
 						<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -374,17 +379,25 @@
 						type="number"
 						bind:value={quantity}
 						min="1"
+						max={product.quantity}
 						class="mx-2 text-xl font-semibold text-center w-16 bg-transparent outline-none appearance-none"
 						on:blur={(e) => {
-							if (e?.target?.value < 1) {
-								quantity = 1;
+							let v = parseInt(e?.target?.value);
+							if (isNaN(v) || v < 1) {
+								v = 1;
+							} else if (v > product.quantity) {
+								v = product.quantity;
 							}
+							quantity = v;
 						}}
 					/>
 					<!-- <span class="mx-2 text-xl font-semibold">{quantity}</span> -->
 					<button
-						on:click|preventDefault={() => quantity++}
-						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+						on:click|preventDefault={() => {
+							quantity = Math.min(product.quantity, quantity + 1);
+						}}
+						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary disabled:opacity-50"
+						disabled={quantity >= product.quantity}
 					>
 						<!-- Plus Icon -->
 						<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -405,6 +418,7 @@
 	</div>
 </div>
 
+<!-- Especificaciones del producto -->
 {#if product.especifications.length !== 0}
 	<div class="flex flex-col m-10 mt-14">
 		<h2 class="text-xl font-bold">{m.product_page_specifications()}</h2>
