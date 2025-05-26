@@ -354,16 +354,15 @@
 			{/each}
 		{/if}
 
-		<!-- Advertencia de stock bajo -->
-		{#if product.quantity <= 50}
-			<span class="mt-1 text-sm text-red-600 dark:text-red-400">
-				Sólo quedan {product.quantity} unidades
-			</span>
-		{/if}
-
 		<!-- Seleccionar Cantidad del Producto -->
 		<div class="flex flex-col gap-3">
-			<div class="flex mt-5 gap-3">
+			<!-- Advertencia de stock bajo -->
+			{#if product.quantity <= 50}
+				<span class="mt-1 text-sm text-red-600 dark:text-red-400">
+					Sólo quedan {product.quantity} unidades
+				</span>
+			{/if}
+			<div class="flex mt-2 gap-3">
 				<div
 					class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md"
 				>
