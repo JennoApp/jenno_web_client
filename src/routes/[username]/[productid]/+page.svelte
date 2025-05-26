@@ -334,7 +334,7 @@
 		{:else if product.status === 'on_sale'}
 			<Label text="En oferta" color="bg-green-600" />
 		{:else if product.quantity <= 50}
-			<Label text="Últimas unidades" color="bg-yellow-500" />
+			<Label text="Últimas unidades" color="bg-yellow-600" />
 		{/if}
 
 		<!-- Product Description -->
