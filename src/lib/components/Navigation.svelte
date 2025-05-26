@@ -620,7 +620,9 @@
 														<button
 															on:click|preventDefault={() =>
 																addToCart(cartItem, cartItem.selectedOptions)}
-															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+															disabled={cartItem.amount >= cartItem.quantity}
+															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary
+               {cartItem.amount >= cartItem.quantity ? 'opacity-50 cursor-not-allowed' : ''}"
 														>
 															<!-- Plus Icon -->
 															<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"

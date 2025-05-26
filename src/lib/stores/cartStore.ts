@@ -8,6 +8,7 @@ interface Product {
   description: string;
   imgs: [string];
   price: number;
+  quantity: number;
   shippingfee: number
   user: string,
   options: []
@@ -46,6 +47,11 @@ export function addToCart(product: Product, selectedOptions: SelectedOption[] = 
 
   items = items.map((item) => {
     if (item._id === product._id && JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)) {
+      const newAmount = Math.min(item.amount + quantity, product.quantity)
+      if (newAmount === item.amount) {
+        console.warn('Ya alcanzaste el stock máximo')
+      }
+
       item.amount += quantity
       found = true
     }
@@ -53,7 +59,16 @@ export function addToCart(product: Product, selectedOptions: SelectedOption[] = 
   })
 
   if (!found) {
-    const cartItem: CartItem = { ...product, amount: quantity, selectedOptions }
+    // Si ya pedían más de lo que hay, lo limitado a product.quantity
+    const qty = Math.min(quantity, product.quantity)
+    if (qty < quantity) {
+      console.warn(`Solo quedan ${product.quantity} unidades disponibles`)
+    }
+    const cartItem: CartItem = {
+      ...product,
+      amount: qty,
+      selectedOptions
+    }
     items = [...items, cartItem]
   }
 
