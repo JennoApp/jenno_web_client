@@ -15,8 +15,8 @@
 		price: number;
 		user: string;
 		reviews: [];
-    status: string;
-    quantity: number;
+		status: string;
+		quantity: number;
 	}
 
 	import { addToCart } from '$lib/stores/cartStore';
@@ -201,14 +201,13 @@
 				</button>
 			</div>
 
-			<div class="save hidden">
-				<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
-				<iconify-icon
-					class="px-1 mr-4"
-					icon="material-symbols:bookmark-outline"
-					height="1.5rem"
-					width="1.5rem"
-				></iconify-icon>
+			<div>
+				<!-- Etiqueta condicional -->
+				{#if data.status === 'sold_out'}
+					<Label text="Agotado" color="bg-red-600" />
+				{:else if data.quantity <= 50}
+					<Label text="Últimas unidades" color="bg-yellow-600" />
+				{/if}
 			</div>
 		</div>
 
@@ -217,13 +216,6 @@
 			<h3 class="text-base font-semibold line-clamp-2 leading-tight">
 				{data.productname}
 			</h3>
-
-			<!-- Etiqueta condicional -->
-			{#if data.status === 'sold_out'}
-				<Label text="Agotado" color="bg-red-600" />
-			{:else if data.quantity <= 50}
-				<Label text="Últimas unidades" color="bg-yellow-600" />
-			{/if}
 
 			<p class="text-lg font-bold mt-1">
 				{formatPrice(data.price, 'es-CO', 'COP')}
