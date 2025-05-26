@@ -5,6 +5,6 @@
 </script>
 
 
-<span class={`inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded-md ${color}`}>
+<span class={`self-start inline-flex w-auto items-center px-3 py-1 text-sm font-medium text-white rounded-md ${color}`}>
   {text}
 </span>
