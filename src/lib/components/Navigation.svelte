@@ -311,6 +311,15 @@
 	function handleImageError() {
 		failedToLoad = true;
 	}
+
+  // Función para verificar catidad maxima de un producto en el carrito
+  // globalmente
+  function isMaxed(productId: string, maxQuantity: number): boolean {
+    const total = get(cartItems)
+      .filter((i) => i._id === productId)
+      .reduce((sum, i) => sum + i.amount, 0)
+    return total >= maxQuantity
+  }
 </script>
 
 {#if !paths.includes($page.url.pathname)}
@@ -620,9 +629,9 @@
 														<button
 															on:click|preventDefault={() =>
 																addToCart(cartItem, cartItem.selectedOptions)}
-															disabled={cartItem.amount >= cartItem.quantity}
+															disabled={isMaxed(cartItem._id, cartItem.quantity)}
 															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary
-               {cartItem.amount >= cartItem.quantity ? 'opacity-50 cursor-not-allowed' : ''}"
+               {isMaxed(cartItem._id, cartItem.quantity) ? 'opacity-50 cursor-not-allowed' : ''}"
 														>
 															<!-- Plus Icon -->
 															<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"

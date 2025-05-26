@@ -43,36 +43,49 @@ export function addToCart(product: Product, selectedOptions: SelectedOption[] = 
   }
 
   let items = get(cartItems)
+
+  const totalGlobal = items
+    .filter(i => i._id === product._id)
+    .reduce((sum, i) => sum + i.amount, 0)
+
+  if (totalGlobal >= product.quantity) {
+    console.warn(`Ya alcanzaste el stock máximo de ${product.quantity}`)
+    return
+  }
+
+  const remaining = product.quantity - totalGlobal
+
   let found = false
-
-  items = items.map((item) => {
-    if (item._id === product._id && JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)) {
-      const newAmount = Math.min(item.amount + quantity, product.quantity)
-      if (newAmount === item.amount) {
-        console.warn('Ya alcanzaste el stock máximo')
-      }
-
-      item.amount += quantity
+  const updated = items.map(i => {
+    if (
+      i._id === product._id &&
+      JSON.stringify(i.selectedOptions) === JSON.stringify(selectedOptions)
+    ) {
       found = true
+      // sólo sumamos hasta remaining, no más
+      const addable = Math.min(quantity, remaining)
+      if (addable <= 0) {
+        console.warn('No queda stock disponible para esta variante')
+      }
+      i.amount += addable
     }
-    return item
+    return i
   })
 
   if (!found) {
-    // Si ya pedían más de lo que hay, lo limitado a product.quantity
-    const qty = Math.min(quantity, product.quantity)
-    if (qty < quantity) {
-      console.warn(`Solo quedan ${product.quantity} unidades disponibles`)
+    const qty = Math.min(quantity, remaining)
+    if (qty <= 0) {
+      console.warn('No queda stock disponible para este producto')
     }
     const cartItem: CartItem = {
       ...product,
       amount: qty,
       selectedOptions
     }
-    items = [...items, cartItem]
+    updated.push(cartItem)
   }
 
-  cartItems.set(items)
+  cartItems.set(updated)
 }
 
 export function decrementCartItem(id: string, selectedOptions: SelectedOption[]) {
