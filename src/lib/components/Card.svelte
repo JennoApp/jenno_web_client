@@ -205,7 +205,7 @@
 				<!-- Etiqueta condicional -->
 				{#if data.status === 'sold_out'}
 					<Label text="Agotado" color="bg-red-600" />
-				{:else if data.quantity <= 50}
+				{:else if data.quantity <= 10}
 					<Label text="Últimas unidades" color="bg-yellow-600" />
 				{/if}
 			</div>

@@ -333,7 +333,7 @@
 			<Label text="Agotado" color="bg-red-600" />
 		{:else if product.status === 'on_sale'}
 			<Label text="En oferta" color="bg-green-600" />
-		{:else if product.quantity <= 50}
+		{:else if product.quantity <= 10}
 			<Label text="Últimas unidades" color="bg-yellow-600" />
 		{/if}
 
