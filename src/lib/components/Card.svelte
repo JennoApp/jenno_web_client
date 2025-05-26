@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { getStartColor } from '$lib/utils/getstartcolor';
+	import Label from '$lib/components/Label.svelte';
 
 	interface CardData {
 		_id: string;
@@ -14,6 +15,8 @@
 		price: number;
 		user: string;
 		reviews: [];
+    status: string;
+    quantity: number;
 	}
 
 	import { addToCart } from '$lib/stores/cartStore';
@@ -212,11 +215,19 @@
 		<!-- Info -->
 		<div class="px-4 py-3">
 			<h3 class="text-base font-semibold line-clamp-2 leading-tight">
-        {data.productname}
-      </h3>
+				{data.productname}
+			</h3>
+
+			<!-- Etiqueta condicional -->
+			{#if data.status === 'sold_out'}
+				<Label text="Agotado" color="bg-red-600" />
+			{:else if data.quantity <= 50}
+				<Label text="Últimas unidades" color="bg-yellow-600" />
+			{/if}
+
 			<p class="text-lg font-bold mt-1">
-        {formatPrice(data.price, 'es-CO', 'COP')}
-      </p>
+				{formatPrice(data.price, 'es-CO', 'COP')}
+			</p>
 		</div>
 	</div>
 </a>
