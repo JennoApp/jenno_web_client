@@ -38,6 +38,7 @@
 	import { page } from '$app/stores';
 	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
+	import Label from '$lib/components/Label.svelte';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
@@ -324,7 +325,17 @@
 			</a>
 		</div>
 
+    <!-- Precio del Producto -->
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
+
+    <!-- Etiqueta condicional -->
+		{#if product.status === 'sold_out'}
+			<Label text="Agotado" color="bg-red-600" />
+		{:else if product.status === 'on_sale'}
+			<Label text="En oferta" color="bg-green-600" />
+		{:else if product.quantity <= 50}
+			<Label text="Últimas unidades" color="bg-yellow-500" />
+		{/if}
 
 		<!-- Product Description -->
 		<div class="h-auto max-h-[200px] w-full mt-1 rounded-md p-4 overflow-y-auto">
