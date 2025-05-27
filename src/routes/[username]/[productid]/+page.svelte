@@ -46,6 +46,7 @@
 	$: product = data.product;
 
 	$: console.log({ product: data.product });
+  $: console.log({ userInfo });
 
 	// Obtener url del servidor
 	let serverUrl: string;
