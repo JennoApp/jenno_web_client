@@ -107,6 +107,12 @@
 			return;
 		}
 
+		// Verificar si el producto está agotado
+		if (product.status === 'sold_out') {
+			toast.error('Este producto está agotado y no se puede agregar al carrito.');
+			return;
+		}
+
 		if (product.options.length > 0 && selectedOptions.length === 0) {
 			toast.error('Selecciona una opcion antes de agregar al carrito.');
 			return;
@@ -118,6 +124,12 @@
 		// Verificar si el usuario está en sesión
 		if (!userInfo || !userInfo._id) {
 			toast.error('Debes iniciar sesión para agregar al carrito.');
+			return;
+		}
+
+		// Verificar si el producto está agotado
+		if (product.status === 'sold_out') {
+			toast.error('Este producto está agotado y no se puede agregar al carrito.');
 			return;
 		}
 
@@ -325,10 +337,10 @@
 			</a>
 		</div>
 
-    <!-- Precio del Producto -->
+		<!-- Precio del Producto -->
 		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
 
-    <!-- Etiqueta condicional -->
+		<!-- Etiqueta condicional -->
 		{#if product.status === 'sold_out'}
 			<Label text="Agotado" color="bg-red-600" />
 		{:else if product.status === 'on_sale'}
