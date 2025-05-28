@@ -325,7 +325,7 @@
 {#if !paths.includes($page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
-		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-7">
+		<div class="flex items-center justify-between bg-[var(--page-bg)] dark:bg-[var(--page-bg)] h-14 px-4 md:px-7">
 			<!-- Left -->
 			<div class="flex items-center">
 				<div class="hidden md:block lg:block">

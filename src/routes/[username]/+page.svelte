@@ -12,6 +12,7 @@
 	import { getThemeConfig } from '$lib/utils/themes';
 	import type { ThemeConfig } from '$lib/utils/themes';
 	import type Theme from 'quill/core/theme';
+	import { applyTheme } from '$lib/stores/customThemesStore';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
@@ -198,6 +199,10 @@
 	// $: userTheme = data.userData?.theme || 'default';
 	$: userTheme = 'ocean_blue';
 	$: themeConfig = getThemeConfig(userTheme);
+
+  $: if ($page.data.userData?.theme) {
+    applyTheme('ocean_blue');
+  }
 </script>
 
 <svelte:head>
