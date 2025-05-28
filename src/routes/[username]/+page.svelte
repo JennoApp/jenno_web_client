@@ -196,7 +196,7 @@
 
 	// Obtener la configuración del tema
 	// $: userTheme = data.userData?.theme || 'default';
-  $: userTheme = 'ocean_blue'
+	$: userTheme = 'ocean_blue';
 	$: themeConfig = getThemeConfig(userTheme);
 </script>
 
@@ -364,32 +364,35 @@
 		{:catch error}
 			<p class="text-red-500">{error.message}</p>
 		{/await}
-	</div>
 
-	<!-- Lista de productos -->
-	<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
-		{#each $productsStore as productData}
-			<Card data={productData} />
-		{/each}
-	</div>
-
-	<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
-	{#if $metaStore?.hasNextPage}
-		<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
-			<svg
-				class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-			>
-				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-				></circle>
-				<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-				></path>
-			</svg>
-			<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
+		<!-- Lista de productos -->
+		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
+			{#each $productsStore as productData}
+				<Card data={productData} />
+			{/each}
 		</div>
-	{/if}
+
+		<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
+		{#if $metaStore?.hasNextPage}
+			<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
+				<svg
+					class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+				>
+					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+					></circle>
+					<path
+						class="opacity-75"
+						fill="currentColor"
+						d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+					></path>
+				</svg>
+				<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
+			</div>
+		{/if}
+	</div>
 
 	<!-- Error al encontrar la informacion del usuario -->
 {:else if data?.userData?.error}
