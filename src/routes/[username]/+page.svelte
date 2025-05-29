@@ -200,9 +200,9 @@
 	$: userTheme = 'ocean_blue';
 	$: themeConfig = getThemeConfig(userTheme);
 
-  $: if ($page.data.userData?.theme) {
-    applyTheme('ocean_blue');
-  }
+	$: if ($page.data.userData?.theme) {
+		applyTheme('ocean_blue');
+	}
 </script>
 
 <svelte:head>
@@ -254,151 +254,127 @@
 </svelte:head>
 
 {#if userData}
-	<div
-		class="min-h-screen bg-[var(--page-bg)]"
-		style="
-    --store-bg: {themeConfig.background};
-    --button-bg: {themeConfig.buttonBg};
-    --button-text: {themeConfig.buttonText};
-    background-image: var(--store-bg);
-    background-blend-mode: overlay;
-  "
-	>
-		{#await userData}
-			<p>Waiting...</p>
-		{:then user}
-			<!-- user Information -->
-			<div class="flex flex-col md:flex-row gap-3 mt-5 w-full">
-				<div class="flex justify-center md:w-3/12">
-					{#if user?.profileImg}
-						<img
-							class="w-32 h-32 object-cover rounded-full"
-							src={user?.profileImg}
-							alt={user?.username}
-							height={400}
-							width={400}
-						/>
-					{:else}
-						<div class="flex justify-center items-center h-32 w-32 bg-[#202020] rounded-full">
-							<iconify-icon
-								icon="bxs:store"
-								height="3.5rem"
-								width="3.5rem"
-								class="text-[#707070]"
-							/>
-						</div>
-					{/if}
-				</div>
-
-				<div class="mx-5 md:w-5/12">
-					<div class="flex flex-col gap-3 items-center md:items-start">
-						<h2 class="text-2xl font-medium text-center md:text-left">{user?.displayname}</h2>
-						<p class="flex flex-wrap text-center md:text-left">
-							{user?.bio !== undefined ? user?.bio : ''}
-						</p>
+	{#await userData}
+		<p>Waiting...</p>
+	{:then user}
+		<!-- user Information -->
+		<div class="flex flex-col md:flex-row gap-3 mt-5 w-full">
+			<div class="flex justify-center md:w-3/12">
+				{#if user?.profileImg}
+					<img
+						class="w-32 h-32 object-cover rounded-full"
+						src={user?.profileImg}
+						alt={user?.username}
+						height={400}
+						width={400}
+					/>
+				{:else}
+					<div class="flex justify-center items-center h-32 w-32 bg-[#202020] rounded-full">
+						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="text-[#707070]" />
 					</div>
-				</div>
+				{/if}
+			</div>
 
-				<div class="flex flex-col items-center gap-5 md:w-4/12">
-					<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
-					{#if user?._id === data?.user?._id}
-						<!-- Botón de Compartir Tienda para el dueño -->
-						<button
-							class="w-[80%] mx-auto flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
-							on:click|preventDefault={() => {
-								const tienda = user?.username;
-								const store_link = `https://www.jenno.com.co/${tienda}`;
-								navigator.clipboard
-									.writeText(store_link)
-									.then(() => {
-										toast.success('Enlace copiado al portapapeles');
-									})
-									.catch((err) => {
-										toast.error('Error al copiar el enlace. Inténtalo nuevamente');
-									});
-							}}
+			<div class="mx-5 md:w-5/12">
+				<div class="flex flex-col gap-3 items-center md:items-start">
+					<h2 class="text-2xl font-medium text-center md:text-left">{user?.displayname}</h2>
+					<p class="flex flex-wrap text-center md:text-left">
+						{user?.bio !== undefined ? user?.bio : ''}
+					</p>
+				</div>
+			</div>
+
+			<div class="flex flex-col items-center gap-5 md:w-4/12">
+				<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
+				{#if user?._id === data?.user?._id}
+					<!-- Botón de Compartir Tienda para el dueño -->
+					<button
+						class="w-[80%] mx-auto flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
+						on:click|preventDefault={() => {
+							const tienda = user?.username;
+							const store_link = `https://www.jenno.com.co/${tienda}`;
+							navigator.clipboard
+								.writeText(store_link)
+								.then(() => {
+									toast.success('Enlace copiado al portapapeles');
+								})
+								.catch((err) => {
+									toast.error('Error al copiar el enlace. Inténtalo nuevamente');
+								});
+						}}
+					>
+						<span class="text-black dark:text-gray-200">Compartir Tienda</span>
+					</button>
+				{:else}
+					<div class="flex items-center gap-5 ml-10">
+						<div class="hidden">
+							{#if isFollowing}
+								<Button
+									class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+								>
+									<span class="text-black dark:text-gray-200">Siguiendo</span>
+								</Button>
+							{:else}
+								<Button
+									on:click={() => handleFollow(user?._id)}
+									class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+								>
+									<span class="text-black dark:text-gray-200">Seguir</span>
+								</Button>
+							{/if}
+						</div>
+
+						<Button
+							class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
+							on:click={createConversation}
 						>
-							<span class="text-black dark:text-gray-200">Compartir Tienda</span>
-						</button>
-					{:else}
-						<div class="flex items-center gap-5 ml-10">
-							<div class="hidden">
-								{#if isFollowing}
-									<Button
-										class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-									>
-										<span class="text-black dark:text-gray-200">Siguiendo</span>
-									</Button>
-								{:else}
-									<Button
-										on:click={() => handleFollow(user?._id)}
-										class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-									>
-										<span class="text-black dark:text-gray-200">Seguir</span>
-									</Button>
-								{/if}
-							</div>
+							<span class="text-black dark:text-gray-200">Enviar Mensaje</span>
+						</Button>
+					</div>
+				{/if}
 
-							<Button
-								class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-								on:click={createConversation}
-							>
-								<span class="text-black dark:text-gray-200">Enviar Mensaje</span>
-							</Button>
+				<div class="hidden">
+					<div class="flex gap-10">
+						<div class="text-center">
+							<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
+							<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
 						</div>
-					{/if}
-
-					<div class="hidden">
-						<div class="flex gap-10">
-							<div class="text-center">
-								<span class="text-lg font-semibold dark:text-gray-200"
-									>{user?.followers.length}</span
-								>
-								<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
-							</div>
-							<div class="text-center">
-								<span class="text-lg font-semibold dark:text-gray-200"
-									>{user?.following.length}</span
-								>
-								<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
-							</div>
+						<div class="text-center">
+							<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
+							<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
 						</div>
 					</div>
 				</div>
 			</div>
-		{:catch error}
-			<p class="text-red-500">{error.message}</p>
-		{/await}
-
-		<!-- Lista de productos -->
-		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
-			{#each $productsStore as productData}
-				<Card data={productData} />
-			{/each}
 		</div>
+	{:catch error}
+		<p class="text-red-500">{error.message}</p>
+	{/await}
 
-		<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
-		{#if $metaStore?.hasNextPage}
-			<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
-				<svg
-					class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 24 24"
-				>
-					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
-					></circle>
-					<path
-						class="opacity-75"
-						fill="currentColor"
-						d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-					></path>
-				</svg>
-				<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
-			</div>
-		{/if}
+	<!-- Lista de productos -->
+	<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
+		{#each $productsStore as productData}
+			<Card data={productData} />
+		{/each}
 	</div>
 
+	<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
+	{#if $metaStore?.hasNextPage}
+		<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
+			<svg
+				class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+			>
+				<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+				></circle>
+				<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+				></path>
+			</svg>
+			<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
+		</div>
+	{/if}
 	<!-- Error al encontrar la informacion del usuario -->
 {:else if data?.userData?.error}
 	<h1>{data?.userData?.error}</h1>

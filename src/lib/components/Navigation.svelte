@@ -31,7 +31,6 @@
 		unreadNotificationsCount,
 		markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
-  import { themeConfig } from '$lib/stores/customThemesStore'
 
 	const { socket }: { socket: any } = getContext('socket');
 	$: console.log({ socket });
@@ -326,7 +325,7 @@
 {#if !paths.includes($page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
-		<div class="flex items-center justify-between h-14 px-4 md:px-7" style="background: { $themeConfig.background }; color: { $themeConfig.accentColor }">
+		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-7">
 			<!-- Left -->
 			<div class="flex items-center">
 				<div class="hidden md:block lg:block">
