@@ -106,7 +106,7 @@
 	}
 </script>
 
-{#if data && data._id}
+{#if data && data._id && userName}
 	<a href={`/${userName}/${data._id}`}>
 		<div
 			class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
