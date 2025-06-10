@@ -106,123 +106,164 @@
 	}
 </script>
 
-<a href={`/${userName}/${data._id}`}>
+{#if data && data._id}
+	<a href={`/${userName}/${data._id}`}>
+		<div
+			class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
+		>
+			<!-- Header -->
+			<div class="flex w-full h-12 px-4 items-center justify-between">
+				<div class="flex items-center space-x-2">
+					{#if profileImg !== ''}
+						<img
+							class="h-8 w-8 object-cover rounded-full"
+							src={profileImg}
+							alt="logo"
+							on:load={handleImageLoaded}
+						/>
+					{:else}
+						<div
+							class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
+						>
+							<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.3rem" width="1.3rem"
+							></iconify-icon>
+						</div>
+					{/if}
+					<a href={`/${userName}`} class="truncate font-medium max-w-[200px]">
+						<h4>
+							{userName}
+						</h4>
+					</a>
+				</div>
+
+				<!--  ####################### -->
+				<div class="hidden">
+					<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
+					<iconify-icon
+						class="mr-1 cursor-pointer"
+						icon="mdi:dots-vertical"
+						height="1.5rem"
+						width="1.5rem"
+					></iconify-icon>
+				</div>
+				<!-- ######################### -->
+			</div>
+
+			<!-- Image -->
+			<div class="flex justify-center px-4">
+				<img class="h-52 w-full object-contain rounded-md" src={data.imgs[0]} alt="producto" />
+			</div>
+
+			<!-- Social -->
+			<div class="flex items-center justify-between w-full h-8 mt-1 px-4">
+				<div class="flex gap-2 items-center text-2xl text-center">
+					<div
+						class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg"
+					>
+						<iconify-icon
+							class={getStartColor(totalStars)}
+							icon="mdi:star"
+							height="1.5rem"
+							width="1.5rem"
+						></iconify-icon>
+						{#if totalStars !== 0}
+							<span class="text-sm font-medium">{totalStars}</span>
+						{/if}
+					</div>
+					<button
+						class="flex items-center"
+						on:click|preventDefault={() => handleOpenDialgoReview()}
+					>
+						<iconify-icon
+							class="text-[#707070] dark:text-white"
+							icon="material-symbols-light:reviews"
+							height="1.5rem"
+							width="1.5rem"
+						></iconify-icon>
+					</button>
+
+					<button
+						class="flex items-center"
+						on:click|preventDefault={() => {
+							const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
+							navigator.clipboard
+								.writeText(product_link)
+								.then(() => {
+									toast.success('Enlace copiado al portapapeles');
+								})
+								.catch((err) => {
+									toast.error('Error al copiar el enlace. Intentelo nuevamente');
+								});
+						}}
+					>
+						<iconify-icon
+							class="text-[#707070] dark:text-white"
+							icon="bitcoin-icons:share-filled"
+							height="1.5rem"
+							width="1.5rem"
+						></iconify-icon>
+					</button>
+				</div>
+
+				<div>
+					<!-- Etiqueta condicional -->
+					{#if data.status === 'sold_out'}
+						<Label text="Agotado" color="bg-red-600" />
+					{:else if data.quantity <= 10}
+						<Label text="Últimas unidades" color="bg-yellow-600" />
+					{/if}
+				</div>
+			</div>
+
+			<!-- Info -->
+			<div class="px-4 py-3">
+				<h3 class="text-base font-semibold line-clamp-2 leading-tight">
+					{data.productname}
+				</h3>
+
+				<p class="text-lg font-bold mt-1">
+					{formatPrice(data.price, 'es-CO', 'COP')}
+				</p>
+			</div>
+		</div>
+	</a>
+{:else}
 	<div
-		class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
+		class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-gray-100 dark:bg-[#1e1e1e] shadow-lg shadow-gray-300 dark:shadow-none overflow-hidden animate-pulse"
 	>
 		<!-- Header -->
 		<div class="flex w-full h-12 px-4 items-center justify-between">
 			<div class="flex items-center space-x-2">
-				{#if profileImg !== ''}
-					<img
-						class="h-8 w-8 object-cover rounded-full"
-						src={profileImg}
-						alt="logo"
-						on:load={handleImageLoaded}
-					/>
-				{:else}
-					<div
-						class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
-					>
-						<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.3rem" width="1.3rem"
-						></iconify-icon>
-					</div>
-				{/if}
-				<a href={`/${userName}`} class="truncate font-medium max-w-[200px]">
-					<h4>
-						{userName}
-					</h4>
-				</a>
+				<div class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030]"></div>
+				<div class="h-4 w-32 bg-gray-300 dark:bg-[#303030] rounded"></div>
 			</div>
-
-			<!--  ####################### -->
-			<div class="hidden">
-				<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
-				<iconify-icon
-					class="mr-1 cursor-pointer"
-					icon="mdi:dots-vertical"
-					height="1.5rem"
-					width="1.5rem"
-				></iconify-icon>
-			</div>
-			<!-- ######################### -->
+			<div class="h-5 w-5 bg-gray-300 dark:bg-[#303030] rounded-full hidden"></div>
 		</div>
 
 		<!-- Image -->
 		<div class="flex justify-center px-4">
-			<img class="h-52 w-full object-contain rounded-md" src={data.imgs[0]} alt="producto" />
+			<div class="h-52 w-full rounded-md bg-gray-300 dark:bg-[#303030]"></div>
 		</div>
 
 		<!-- Social -->
 		<div class="flex items-center justify-between w-full h-8 mt-1 px-4">
 			<div class="flex gap-2 items-center text-2xl text-center">
 				<div
-					class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg"
-				>
-					<iconify-icon
-						class={getStartColor(totalStars)}
-						icon="mdi:star"
-						height="1.5rem"
-						width="1.5rem"
-					></iconify-icon>
-					{#if totalStars !== 0}
-						<span class="text-sm font-medium">{totalStars}</span>
-					{/if}
-				</div>
-				<button class="flex items-center" on:click|preventDefault={() => handleOpenDialgoReview()}>
-					<iconify-icon
-						class="text-[#707070] dark:text-white"
-						icon="material-symbols-light:reviews"
-						height="1.5rem"
-						width="1.5rem"
-					></iconify-icon>
-				</button>
-
-				<button
-					class="flex items-center"
-					on:click|preventDefault={() => {
-						const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
-						navigator.clipboard
-							.writeText(product_link)
-							.then(() => {
-								toast.success('Enlace copiado al portapapeles');
-							})
-							.catch((err) => {
-								toast.error('Error al copiar el enlace. Intentelo nuevamente');
-							});
-					}}
-				>
-					<iconify-icon
-						class="text-[#707070] dark:text-white"
-						icon="bitcoin-icons:share-filled"
-						height="1.5rem"
-						width="1.5rem"
-					></iconify-icon>
-				</button>
+					class="flex gap-1 items-center justify-center bg-gray-300 dark:bg-[#303030] px-2 py-1 rounded-lg w-16 h-6"
+				></div>
+				<div class="w-6 h-6 rounded bg-gray-300 dark:bg-[#303030]"></div>
+				<div class="w-6 h-6 rounded bg-gray-300 dark:bg-[#303030]"></div>
 			</div>
-
-			<div>
-				<!-- Etiqueta condicional -->
-				{#if data.status === 'sold_out'}
-					<Label text="Agotado" color="bg-red-600" />
-				{:else if data.quantity <= 10}
-					<Label text="Últimas unidades" color="bg-yellow-600" />
-				{/if}
-			</div>
+			<div class="w-24 h-6 rounded bg-gray-300 dark:bg-[#303030]"></div>
 		</div>
 
 		<!-- Info -->
-		<div class="px-4 py-3">
-			<h3 class="text-base font-semibold line-clamp-2 leading-tight">
-				{data.productname}
-			</h3>
-
-			<p class="text-lg font-bold mt-1">
-				{formatPrice(data.price, 'es-CO', 'COP')}
-			</p>
+		<div class="px-4 py-3 space-y-2">
+			<div class="h-4 w-full rounded bg-gray-300 dark:bg-[#303030]"></div>
+			<div class="h-4 w-1/2 rounded bg-gray-300 dark:bg-[#303030]"></div>
 		</div>
 	</div>
-</a>
+{/if}
 
 <!-- Dialog Reviews -->
 {#if openDialogreview}
