@@ -46,7 +46,7 @@
 	$: product = data.product;
 
 	$: console.log({ product: data.product });
-  $: console.log({ userInfo });
+	$: console.log({ userInfo });
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -316,26 +316,36 @@
 				</div>
 			</div>
 
-			<a href={`/${userName}`}>
+			{#if userName}
+				<a href={`/${userName}`}>
+					<div
+						class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
+					>
+						{#if profileImg}
+							<img
+								class="w-14 h-14 object-cover rounded-full"
+								src={profileImg}
+								alt={product?.username}
+								height={20}
+								width={20}
+							/>
+						{:else}
+							<div class="flex justify-center items-center h-14 w-14 bg-[#151515] rounded-full">
+								<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" />
+							</div>
+						{/if}
+						<h2 class="text-lg font-semibold">{userName}</h2>
+					</div>
+				</a>
+			{:else}
+				<!-- Skeleton loader -->
 				<div
-					class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
+					class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md animate-pulse dark:bg-[#202020]"
 				>
-					{#if profileImg}
-						<img
-							class="w-14 h-14 object-cover rounded-full"
-							src={profileImg}
-							alt={product?.username}
-							height={20}
-							width={20}
-						/>
-					{:else}
-						<div class="flex justify-center items-center h-14 w-14 bg-[#151515] rounded-full">
-							<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" />
-						</div>
-					{/if}
-					<h2 class="text-lg font-semibold">{userName}</h2>
+					<div class="h-14 w-14 rounded-full bg-[#2a2a2a]"></div>
+					<div class="h-4 w-24 rounded bg-[#2a2a2a]"></div>
 				</div>
-			</a>
+			{/if}
 		</div>
 
 		<!-- Precio del Producto -->
