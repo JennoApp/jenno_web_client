@@ -254,3 +254,4 @@
 		<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
 	</div>
 {/if}
+

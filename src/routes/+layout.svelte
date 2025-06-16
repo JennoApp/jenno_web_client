@@ -246,5 +246,33 @@
 
 <Toaster richColors theme="dark" duration={3000} />
 <Navigation>
-	<slot />
+	{#if $location_data?.data[0]?.country !== 'Colombia'}
+		<!-- Pantalla de advertencia por región no soportada -->
+		<div class="flex flex-col items-center justify-center h-full w-full text-center px-4">
+			<iconify-icon
+				icon="material-symbols:location-off"
+				height="5rem"
+				width="5rem"
+				class="text-[#707070] mb-4"
+			/>
+
+			<h1 class="text-xl font-semibold text-[#707070] mb-2">Servicio no disponible en tu región</h1>
+			<p class="text-lg text-[#707070] mb-4">
+				Actualmente, solo operamos en Colombia. Si estás interesado en nuestros servicios en tu
+				país, contáctanos en <span class="text-blue-500">jenno.app@gmail.com</span>
+			</p>
+
+			<!-- Versión en inglés -->
+			<h2 class="text-xl font-semibold text-[#707070] mb-2">
+				Service not available in your region
+			</h2>
+			<p class="text-lg text-[#707070]">
+				We currently operate only in Colombia. If you're interested in our services in your country,
+				please contact us at <span class="text-blue-500">jenno.app@gmail.com</span>
+			</p>
+		</div>
+	{:else}
+		<!-- Contenido categorias y productos -->
+		<slot />
+	{/if}
 </Navigation>
