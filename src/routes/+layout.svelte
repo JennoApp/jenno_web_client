@@ -249,7 +249,9 @@
 	{#if $location_data?.data[0]?.country}
 		{#if $location_data.data[0].country !== 'Colombia'}
 			<!-- Pantalla de advertencia por región no soportada -->
-			<div class="flex flex-col items-center justify-center h-full w-full text-center px-4">
+			<div
+				class="fixed inset-0 flex flex-col items-center justify-center text-center px-4 bg-white dark:bg-[#121212] z-50"
+			>
 				<iconify-icon
 					icon="material-symbols:location-off"
 					height="5rem"
@@ -262,7 +264,8 @@
 				</h1>
 				<p class="text-lg text-[#707070] mb-4">
 					Actualmente, solo operamos en Colombia. Si estás interesado en nuestros servicios en tu
-					país, contáctanos en <span class="text-blue-500">jenno.app@gmail.com</span>
+					país, contáctanos en
+					<span class="text-blue-500">jenno.app@gmail.com</span>
 				</p>
 
 				<h2 class="text-xl font-semibold text-[#707070] mb-2">
@@ -270,7 +273,8 @@
 				</h2>
 				<p class="text-lg text-[#707070]">
 					We currently operate only in Colombia. If you're interested in our services in your
-					country, please contact us at <span class="text-blue-500">jenno.app@gmail.com</span>
+					country, please contact us at
+					<span class="text-blue-500">jenno.app@gmail.com</span>
 				</p>
 			</div>
 		{:else}
