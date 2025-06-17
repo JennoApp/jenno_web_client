@@ -227,7 +227,7 @@
 
 					<DropdownMenu.Content
             side="right"
-            sideOffset={4}
+            sideOffset={1}
 						class="z-50 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
 					>
 						<DropdownMenu.Item href="/admin/marketing/integrations">
