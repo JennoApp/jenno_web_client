@@ -231,7 +231,6 @@
 				<DropdownMenu.Root>
 					<DropdownMenu.Trigger asChild>
 						{#if closeMenu}
-							<!-- Solo ícono + Tooltip cuando está colapsado -->
 							<Tooltip.Root>
 								<Tooltip.Trigger asChild>
 									<button
@@ -258,7 +257,6 @@
 								</Tooltip.Content>
 							</Tooltip.Root>
 						{:else}
-							<!-- Menú expandido con texto -->
 							<button
 								class={`group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
 							>
@@ -277,18 +275,17 @@
 						{/if}
 					</DropdownMenu.Trigger>
 
-					{#if !closeMenu}
-						<DropdownMenu.Content
-							class="z-50 mt-2 ml-2 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
-						>
-							<DropdownMenu.Item href="/admin/marketing/integrations">
-								Integraciones
-							</DropdownMenu.Item>
-							<DropdownMenu.Item href="/admin/marketing/campaigns">Campañas</DropdownMenu.Item>
-							<DropdownMenu.Item href="/admin/marketing/audiences">Audiencia</DropdownMenu.Item>
-							<DropdownMenu.Item href="/admin/marketing/analytics">Análisis</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					{/if}
+					<!-- Mostrar siempre, la librería lo controla -->
+					<DropdownMenu.Content
+						class="z-50 mt-2 ml-2 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
+					>
+						<DropdownMenu.Item href="/admin/marketing/integrations">
+							Integraciones
+						</DropdownMenu.Item>
+						<DropdownMenu.Item href="/admin/marketing/campaigns">Campañas</DropdownMenu.Item>
+						<DropdownMenu.Item href="/admin/marketing/audiences">Audiencia</DropdownMenu.Item>
+						<DropdownMenu.Item href="/admin/marketing/analytics">Análisis</DropdownMenu.Item>
+					</DropdownMenu.Content>
 				</DropdownMenu.Root>
 			</ul>
 		</div>
