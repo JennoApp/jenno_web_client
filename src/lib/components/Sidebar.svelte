@@ -229,35 +229,22 @@
 				</Tooltip.Root> -->
 
 				<DropdownMenu.Root>
-					<DropdownMenu.Trigger asChild>
+					<DropdownMenu.Trigger>
 						{#if closeMenu}
-							<Tooltip.Root>
-								<Tooltip.Trigger asChild>
-									<button
-										class={`group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
-									>
-										<iconify-icon
-											icon="nimbus:marketing"
-											height="1.3rem"
-											width="1.3rem"
-											class="text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]"
-										/>
-									</button>
-								</Tooltip.Trigger>
-								<Tooltip.Content>
-									<div class="flex gap-2 mt-1">
-										<iconify-icon
-											icon="material-symbols:warning"
-											height="1.3rem"
-											width="1.3rem"
-											class="text-yellow-300 text-xl group-hover:text-[#fff]"
-										/>
-										<h3>{m.sidebar_admin_marketing()}</h3>
-									</div>
-								</Tooltip.Content>
-							</Tooltip.Root>
+							<!-- Solo ícono cuando el menú está colapsado -->
+							<div
+								class={`group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
+							>
+								<iconify-icon
+									icon="nimbus:marketing"
+									height="1.3rem"
+									width="1.3rem"
+									class="text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]"
+								/>
+							</div>
 						{:else}
-							<button
+							<!-- Menú expandido con texto -->
+							<div
 								class={`group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
 							>
 								<iconify-icon
@@ -271,11 +258,10 @@
 								>
 									{m.sidebar_admin_marketing()}
 								</span>
-							</button>
+							</div>
 						{/if}
 					</DropdownMenu.Trigger>
 
-					<!-- Mostrar siempre, la librería lo controla -->
 					<DropdownMenu.Content
 						class="z-50 mt-2 ml-2 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
 					>
