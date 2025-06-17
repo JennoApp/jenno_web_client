@@ -1,32 +1,32 @@
 <script lang="ts">
-	import { page } from '$app/stores'
-	import * as Tooltip from '$lib/components/ui/tooltip'
-  import * as m from '$paraglide/messages'
+	import { page } from '$app/stores';
+	import * as Tooltip from '$lib/components/ui/tooltip';
+	import * as m from '$paraglide/messages';
 	import { languageTag } from '$paraglide/runtime';
 	import { toast } from 'svelte-sonner';
+  import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
-	export let closeMenu = true
+	export let closeMenu = true;
 
 	let currentPath = '/';
-	$: currentPath = $page.url.pathname.split('/').filter(Boolean).pop() || '/'
+	$: currentPath = $page.url.pathname.split('/').filter(Boolean).pop() || '/';
 
 	function setBgColor(path: string, currentPath: string): string {
-		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : ''
+		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : '';
 	}
 
-	$: pathName = $page.url.pathname
+	$: pathName = $page.url.pathname;
 
 	const paths = [
 		'/admin/dashboard',
-    '/admin/wallet',
+		'/admin/wallet',
 		'/admin/sales',
-    '/admin/sales/history',
+		'/admin/sales/history',
 		'/admin/catalog',
 		'/admin/catalog/addproduct',
 		'/admin/customers',
 		'/admin/marketing'
-	]
-
+	];
 </script>
 
 {#if paths.includes(pathName)}
@@ -69,7 +69,7 @@
 					{/if}
 				</Tooltip.Root>
 
-        <Tooltip.Root>
+				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
 							href="/admin/wallet"
@@ -88,7 +88,8 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>Wallet</span>
+									: 'hidden'}>Wallet</span
+							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
@@ -117,7 +118,8 @@
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>{m.sidebar_admin_sales()}</span>
+									: 'hidden'}>{m.sidebar_admin_sales()}</span
+							>
 						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
@@ -187,11 +189,11 @@
 					{/if}
 				</Tooltip.Root> -->
 
-				<Tooltip.Root>
+				<!-- <Tooltip.Root>
 					<Tooltip.Trigger class="disabled:opacity-75">
 						<a
 							href="/admin/marketing"
-              on:click={() => toast.warning("Esta pagina esta en construcción")}
+							on:click={() => toast.warning('Esta pagina esta en construcción')}
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`
 								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
@@ -213,15 +215,77 @@
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-
 							<div class="flex gap-2 mt-1">
 								<iconify-icon
 									icon="material-symbols:warning"
 									height="1.3rem"
 									width="1.3rem"
-									class='text-yellow-300 text-xl group-hover:text-[#fff]'
+									class="text-yellow-300 text-xl group-hover:text-[#fff]"
 								/>
-                <h3>{m.sidebar_admin_marketing()}</h3>
+								<h3>{m.sidebar_admin_marketing()}</h3>
+							</div>
+						</Tooltip.Content>
+					{/if}
+				</Tooltip.Root> -->
+
+				<Tooltip.Root>
+					<Tooltip.Trigger class="disabled:opacity-75">
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger asChild>
+								<button
+									class={!closeMenu
+										? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`
+										: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
+								>
+									<iconify-icon
+										icon="nimbus:marketing"
+										height="1.3rem"
+										width="1.3rem"
+										class={!closeMenu
+											? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
+											: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
+									/>
+									<span
+										class={!closeMenu
+											? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
+											: 'hidden'}>{m.sidebar_admin_marketing()}</span
+									>
+								</button>
+							</DropdownMenu.Trigger>
+
+							<!-- Cuando el menú está expandido -->
+							{#if !closeMenu}
+								<DropdownMenu.Content
+									class="z-50 mt-2 ml-2 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
+								>
+									<DropdownMenu.Item href="/admin/marketing/integrations">
+                    Integraciones
+									</DropdownMenu.Item>
+									<DropdownMenu.Item href="/admin/marketing/campaigns">
+                    Campañas
+									</DropdownMenu.Item>
+									<DropdownMenu.Item href="/admin/marketing/audiences">
+                    Audiencia
+									</DropdownMenu.Item>
+									<DropdownMenu.Item href="/admin/marketing/analytics">
+                    Analisis
+									</DropdownMenu.Item>
+								</DropdownMenu.Content>
+							{/if}
+						</DropdownMenu.Root>
+					</Tooltip.Trigger>
+
+					<!-- Cuando el menú está colapsado -->
+					{#if closeMenu}
+						<Tooltip.Content>
+							<div class="flex gap-2 mt-1">
+								<iconify-icon
+									icon="material-symbols:warning"
+									height="1.3rem"
+									width="1.3rem"
+									class="text-yellow-300 text-xl group-hover:text-[#fff]"
+								/>
+								<h3>{m.sidebar_admin_marketing()}</h3>
 							</div>
 						</Tooltip.Content>
 					{/if}
@@ -242,7 +306,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
-              href="/"
+							href="/"
 							class={!closeMenu
 								? `group text h-10 w-44 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`
 								: `group text h-10 w-12 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('/', currentPath)}`}
@@ -260,7 +324,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_home()}</span
 							>
-                </a>
+						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
@@ -302,7 +366,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
-              href="/following"
+							href="/following"
 							class={!closeMenu
 								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`
 								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('following', currentPath)}`}
@@ -320,7 +384,7 @@
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'hidden'}>{m.sidebar_following()}</span
 							>
-                </a>
+						</a>
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
