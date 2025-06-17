@@ -25,7 +25,9 @@
 		'/admin/catalog',
 		'/admin/catalog/addproduct',
 		'/admin/customers',
-		'/admin/marketing'
+		'/admin/marketing',
+    '/admin/marketing/integrations',
+    '/admin/marketing/campaigns',
 	];
 </script>
 
@@ -185,45 +187,6 @@
 					{#if closeMenu}
 						<Tooltip.Content>
 							<h3>{m.sidebar_admin_customers()}</h3>
-						</Tooltip.Content>
-					{/if}
-				</Tooltip.Root> -->
-
-				<!-- <Tooltip.Root>
-					<Tooltip.Trigger class="disabled:opacity-75">
-						<a
-							href="/admin/marketing"
-							on:click={() => toast.warning('Esta pagina esta en construcción')}
-							class={!closeMenu
-								? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`
-								: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
-						>
-							<iconify-icon
-								icon="nimbus:marketing"
-								height="1.3rem"
-								width="1.3rem"
-								class={!closeMenu
-									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
-							<span
-								class={!closeMenu
-									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-									: 'hidden'}>{m.sidebar_admin_marketing()}</span
-							>
-						</a>
-					</Tooltip.Trigger>
-					{#if closeMenu}
-						<Tooltip.Content>
-							<div class="flex gap-2 mt-1">
-								<iconify-icon
-									icon="material-symbols:warning"
-									height="1.3rem"
-									width="1.3rem"
-									class="text-yellow-300 text-xl group-hover:text-[#fff]"
-								/>
-								<h3>{m.sidebar_admin_marketing()}</h3>
-							</div>
 						</Tooltip.Content>
 					{/if}
 				</Tooltip.Root> -->
