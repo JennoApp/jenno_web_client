@@ -4,7 +4,7 @@
 	import * as m from '$paraglide/messages';
 	import { languageTag } from '$paraglide/runtime';
 	import { toast } from 'svelte-sonner';
-  import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
 	export let closeMenu = true;
 
@@ -228,68 +228,68 @@
 					{/if}
 				</Tooltip.Root> -->
 
-				<Tooltip.Root>
-					<Tooltip.Trigger class="disabled:opacity-75">
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger asChild>
-								<button
-									class={!closeMenu
-										? `group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`
-										: `group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
-								>
-									<iconify-icon
-										icon="nimbus:marketing"
-										height="1.3rem"
-										width="1.3rem"
-										class={!closeMenu
-											? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
-											: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-									/>
-									<span
-										class={!closeMenu
-											? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
-											: 'hidden'}>{m.sidebar_admin_marketing()}</span
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger asChild>
+						{#if closeMenu}
+							<!-- Solo ícono + Tooltip cuando está colapsado -->
+							<Tooltip.Root>
+								<Tooltip.Trigger asChild>
+									<button
+										class={`group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
 									>
-								</button>
-							</DropdownMenu.Trigger>
-
-							<!-- Cuando el menú está expandido -->
-							{#if !closeMenu}
-								<DropdownMenu.Content
-									class="z-50 mt-2 ml-2 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
-								>
-									<DropdownMenu.Item href="/admin/marketing/integrations">
-                    Integraciones
-									</DropdownMenu.Item>
-									<DropdownMenu.Item href="/admin/marketing/campaigns">
-                    Campañas
-									</DropdownMenu.Item>
-									<DropdownMenu.Item href="/admin/marketing/audiences">
-                    Audiencia
-									</DropdownMenu.Item>
-									<DropdownMenu.Item href="/admin/marketing/analytics">
-                    Analisis
-									</DropdownMenu.Item>
-								</DropdownMenu.Content>
-							{/if}
-						</DropdownMenu.Root>
-					</Tooltip.Trigger>
-
-					<!-- Cuando el menú está colapsado -->
-					{#if closeMenu}
-						<Tooltip.Content>
-							<div class="flex gap-2 mt-1">
+										<iconify-icon
+											icon="nimbus:marketing"
+											height="1.3rem"
+											width="1.3rem"
+											class="text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]"
+										/>
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content>
+									<div class="flex gap-2 mt-1">
+										<iconify-icon
+											icon="material-symbols:warning"
+											height="1.3rem"
+											width="1.3rem"
+											class="text-yellow-300 text-xl group-hover:text-[#fff]"
+										/>
+										<h3>{m.sidebar_admin_marketing()}</h3>
+									</div>
+								</Tooltip.Content>
+							</Tooltip.Root>
+						{:else}
+							<!-- Menú expandido con texto -->
+							<button
+								class={`group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
+							>
 								<iconify-icon
-									icon="material-symbols:warning"
+									icon="nimbus:marketing"
 									height="1.3rem"
 									width="1.3rem"
-									class="text-yellow-300 text-xl group-hover:text-[#fff]"
+									class="text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]"
 								/>
-								<h3>{m.sidebar_admin_marketing()}</h3>
-							</div>
-						</Tooltip.Content>
+								<span
+									class="text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]"
+								>
+									{m.sidebar_admin_marketing()}
+								</span>
+							</button>
+						{/if}
+					</DropdownMenu.Trigger>
+
+					{#if !closeMenu}
+						<DropdownMenu.Content
+							class="z-50 mt-2 ml-2 bg-white dark:bg-[#202020] rounded-lg shadow-lg py-2 px-2 w-56"
+						>
+							<DropdownMenu.Item href="/admin/marketing/integrations">
+								Integraciones
+							</DropdownMenu.Item>
+							<DropdownMenu.Item href="/admin/marketing/campaigns">Campañas</DropdownMenu.Item>
+							<DropdownMenu.Item href="/admin/marketing/audiences">Audiencia</DropdownMenu.Item>
+							<DropdownMenu.Item href="/admin/marketing/analytics">Análisis</DropdownMenu.Item>
+						</DropdownMenu.Content>
 					{/if}
-				</Tooltip.Root>
+				</DropdownMenu.Root>
 			</ul>
 		</div>
 	</nav>
