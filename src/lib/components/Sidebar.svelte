@@ -3,6 +3,7 @@
 	import * as Tooltip from '$lib/components/ui/tooltip'
   import * as m from '$paraglide/messages'
 	import { languageTag } from '$paraglide/runtime';
+	import { toast } from 'svelte-sonner';
 
 	export let closeMenu = true
 
@@ -156,7 +157,7 @@
 					{/if}
 				</Tooltip.Root>
 
-				<Tooltip.Root>
+				<!-- <Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
 							href="/admin/customers"
@@ -184,9 +185,9 @@
 							<h3>{m.sidebar_admin_customers()}</h3>
 						</Tooltip.Content>
 					{/if}
-				</Tooltip.Root>
+				</Tooltip.Root> -->
 
-				<!-- <Tooltip.Root>
+				<Tooltip.Root>
 					<Tooltip.Trigger class="disabled:opacity-75">
 						<a
 							href="/admin/marketing"
@@ -212,7 +213,7 @@
 					</Tooltip.Trigger>
 					{#if closeMenu}
 						<Tooltip.Content>
-							
+
 							<div class="flex gap-2 mt-1">
 								<iconify-icon
 									icon="material-symbols:warning"
@@ -224,7 +225,7 @@
 							</div>
 						</Tooltip.Content>
 					{/if}
-				</Tooltip.Root> -->
+				</Tooltip.Root>
 			</ul>
 		</div>
 	</nav>
