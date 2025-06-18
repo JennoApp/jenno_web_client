@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-  import { page } from '$app/stores';
+	import { page } from '$app/stores';
 
 	let connected = false;
 	let loading = true;
@@ -26,11 +26,11 @@
 
 	async function connectWithGoogle() {
 		try {
-			const res = await fetch(`/api/marketing/googleauthurl?storeId=${$page.data.user._id}`);
+			const res = await fetch('/api/marketing/googleauthurl');
 			const data = await res.json();
 
 			if (data.url) {
-				window.location.href = data.url
+				window.location.href = data.url;
 			} else {
 				error = 'No se pudo obtener la URL de autenticación.';
 			}
@@ -39,7 +39,6 @@
 		}
 	}
 </script>
-
 
 <template>
 	{#if loading}
