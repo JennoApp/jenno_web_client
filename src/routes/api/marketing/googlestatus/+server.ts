@@ -4,6 +4,8 @@ import { PRIVATE_SERVER_URL } from '$env/static/private';
 export const GET: RequestHandler = async ({ cookies }) => {
   const token = cookies.get('session');
 
+  console.log('PRIVATE_SERVER_URL:', PRIVATE_SERVER_URL);
+
   if (!token) {
     return new Response(JSON.stringify({ error: 'Token no proporcionado en cookies' }), {
       status: 401,
