@@ -46,22 +46,33 @@
 	}
 </script>
 
-{#if loading}
-	<p class="text-sm text-gray-600 dark:text-gray-300">Cargando...</p>
-{:else if error}
-	<p class="text-red-500 text-sm">Error: {error}</p>
-{:else if connected}
-	<div class="p-4 bg-green-100 text-green-800 rounded-lg dark:bg-green-900 dark:text-green-200">
-		✅ Tu tienda está conectada a Google Ads.
+<div class="flex justify-center mt-6">
+	<div class="w-full max-w-md">
+		{#if loading}
+			<p class="text-sm text-gray-600 dark:text-gray-300 text-center">Cargando...</p>
+		{:else if error}
+			<p class="text-red-500 text-sm text-center">Error: {error}</p>
+		{:else if connected}
+			<div
+				class="p-4 bg-green-100 text-green-800 rounded-xl dark:bg-green-900 dark:text-green-200 shadow-md text-center"
+			>
+				✅ Tu tienda está conectada a Google Ads.
+			</div>
+		{:else}
+			<div
+				class="p-4 bg-yellow-100 text-yellow-800 rounded-xl dark:bg-yellow-900 dark:text-yellow-200 shadow-md text-center"
+			>
+				⚠️ Tu tienda aún no está conectada a Google Ads.
+			</div>
+			<div class="flex justify-center mt-4">
+				<button
+					on:click={connectWithGoogle}
+					class="px-5 py-2 rounded-full text-white font-medium shadow transition duration-300 ease-in-out
+						bg-[#4285F4] hover:bg-[#3367D6]"
+				>
+					🔗 Conectar con Google
+				</button>
+			</div>
+		{/if}
 	</div>
-{:else}
-	<div class="p-4 bg-yellow-100 text-yellow-800 rounded-lg dark:bg-yellow-900 dark:text-yellow-200">
-		⚠️ Tu tienda aún no está conectada a Google Ads.
-	</div>
-	<button
-		on:click={connectWithGoogle}
-		class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-	>
-		Conectar con Google
-	</button>
-{/if}
+</div>
