@@ -46,25 +46,27 @@
 	}
 </script>
 
-<div class="flex justify-center mt-6">
+<div class="mt-6">
+	<!-- Sección Google -->
+	<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Google</h2>
 	<div class="w-full max-w-md">
 		{#if loading}
-			<p class="text-sm text-gray-600 dark:text-gray-300 text-center">Cargando...</p>
+			<p class="text-sm text-gray-600 dark:text-gray-300">Cargando...</p>
 		{:else if error}
-			<p class="text-red-500 text-sm text-center">Error: {error}</p>
+			<p class="text-red-500 text-sm">Error: {error}</p>
 		{:else if connected}
 			<div
-				class="p-4 bg-green-100 text-green-800 rounded-xl dark:bg-green-900 dark:text-green-200 shadow-md text-center"
+				class="p-4 bg-green-100 text-green-800 rounded-xl dark:bg-green-900 dark:text-green-200 shadow-md"
 			>
 				✅ Tu tienda está conectada a Google Ads.
 			</div>
 		{:else}
 			<div
-				class="p-4 bg-yellow-100 text-yellow-800 rounded-xl dark:bg-yellow-900 dark:text-yellow-200 shadow-md text-center"
+				class="p-4 bg-yellow-100 text-yellow-800 rounded-xl dark:bg-yellow-900 dark:text-yellow-200 shadow-md"
 			>
 				⚠️ Tu tienda aún no está conectada a Google Ads.
 			</div>
-			<div class="flex justify-center mt-4">
+			<div class="mt-4">
 				<button
 					on:click={connectWithGoogle}
 					class="px-5 py-2 rounded-full text-white font-medium shadow transition duration-300 ease-in-out
@@ -74,5 +76,18 @@
 				</button>
 			</div>
 		{/if}
+	</div>
+
+	<!-- Espacio entre secciones -->
+	<hr class="my-8 border-gray-300 dark:border-gray-700" />
+
+	<!-- Sección Meta -->
+	<h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Meta</h2>
+	<div class="w-full max-w-md">
+		<div
+			class="p-4 bg-gray-100 text-gray-700 rounded-xl dark:bg-gray-800 dark:text-gray-300 shadow-md"
+		>
+			⏳ Integración con Meta (Facebook/Instagram) en desarrollo.
+		</div>
 	</div>
 </div>
