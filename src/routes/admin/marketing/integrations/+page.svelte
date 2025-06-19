@@ -16,7 +16,14 @@
 			if (!res.ok) throw new Error('No se pudo verificar el estado.');
 
 			const data = await res.json();
-			connected = data.googleConnected
+			console.log('🧪 Datos recibidos:', data);
+
+			if (typeof data.googleConnected !== 'boolean') {
+				error = 'Respuesta inesperada del servidor.';
+			} else {
+				connected = data.googleConnected;
+			}
+
 		} catch (err) {
 			error = err.message;
 		} finally {
