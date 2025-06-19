@@ -16,7 +16,7 @@
 			if (!res.ok) throw new Error('No se pudo verificar el estado.');
 
 			const data = await res.json();
-			connected = data.connected;
+			connected = data.googleConnected
 		} catch (err) {
 			error = err.message;
 		} finally {
