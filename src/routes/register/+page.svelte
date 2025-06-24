@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { toast } from 'svelte-sonner';
 	let googleLoaded = false;
 
 	// 1) Carga la librería de Google Identity
@@ -32,20 +33,21 @@
 	async function handleCredentialResponse(response: any) {
 		const idToken = response.credential;
 		try {
-			const res = await fetch('/api/users/google-login', {
+			const res = await fetch('/api/auth/google/login', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ idToken })
 			});
+
 			if (!res.ok) throw new Error('Login fallido');
 			const { access_token } = await res.json();
-			// Guarda tu JWT (ej: en localStorage o cookie)
+
 			localStorage.setItem('jwt', access_token);
-			// Redirige al usuario ya logueado
+
 			goto('/dashboard');
 		} catch (err) {
 			console.error(err);
-			alert('Error al ingresar con Google');
+			toast.error('Error al ingresar con Google');
 		}
 	}
 </script>
