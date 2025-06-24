@@ -92,91 +92,82 @@
 	<meta name="description" content="Inicia sesión en Jenno" />
 </svelte:head>
 
-<div class="relative flex flex-col lg:flex-row h-screen">
-	<!-- Divider desktop -->
-	<div class="hidden lg:block absolute inset-y-1/6 left-1/2 w-px bg-border"></div>
+<div class="flex flex-col items-center justify-center h-screen w-full px-4">
+	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-8">{m.login_title()}</h1>
 
-	<!-- Left: Form clásico -->
-	<div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-4">
-		<h1 class="text-3xl font-semibold dark:text-gray-200 mb-8">{m.login_title()}</h1>
-
-		<form method="POST" action="?/login" class="w-full max-w-md space-y-4" use:enhance>
-			<div>
-				<label for="email" class="block mb-1 dark:text-gray-200">{m.login_email_label()}</label>
-				<input
-					id="email"
-					name="email"
-					type="email"
-					required
-					class="w-full h-10 px-3 border rounded-md text-black"
-				/>
-			</div>
-			<div>
-				<label for="password" class="block mb-1 dark:text-gray-200"
-					>{m.login_password_label()}</label
-				>
-				<div class="relative">
-					<input
-						id="password"
-						name="password"
-						type="password"
-						required
-						class="w-full h-10 px-3 border rounded-md pr-10 text-black"
-					/>
-					<button
-						type="button"
-						class="absolute inset-y-0 right-2 flex items-center"
-						on:click={togglePassword}
-					>
-						<span id="eyeIcon">👁️</span>
-					</button>
-				</div>
-			</div>
-			<button
-				type="submit"
-				class="w-full h-10 bg-gray-200 dark:bg-[#202020] dark:text-gray-200 rounded-md hover:bg-gray-300 transition"
+	<!-- Formulario clásico -->
+	<form method="POST" action="?/login" class="w-full max-w-md space-y-4" use:enhance>
+		<div>
+			<label for="email" class="block mb-1 text-base dark:text-gray-200"
+				>{m.login_email_label()}</label
 			>
-				{m.login_button_title()}
-			</button>
-			<div class="text-right">
+			<input
+				type="email"
+				name="email"
+				required
+				class="w-full h-10 px-3 border rounded-md text-black"
+			/>
+		</div>
+
+		<div>
+			<label for="password" class="block mb-1 text-base dark:text-gray-200"
+				>{m.login_password_label()}</label
+			>
+			<div class="relative">
+				<input
+					id="password"
+					name="password"
+					type="password"
+					required
+					class="w-full h-10 px-3 border rounded-md pr-10 text-black"
+				/>
+				<button
+					type="button"
+					class="absolute inset-y-0 right-2 flex items-center"
+					on:click={togglePasswordVisibility}
+				>
+					<span id="eyeIcon">👁️</span>
+				</button>
+			</div>
+			<div class="text-right mt-1">
 				<a href="/forgotpassword" class="text-sm text-gray-400 hover:underline">
 					{m.login_password_forget()}
 				</a>
 			</div>
-		</form>
-
-		<Separator class="w-full max-w-md my-6" />
-
-		<div class="w-full max-w-md">
-			<div id="google-btn"></div>
 		</div>
 
-		<p class="mt-4 text-sm dark:text-gray-200">
-			¿No tienes cuenta?&nbsp;
-			<a href="/register" class="text-primary hover:underline">{m.login_goto_register()}</a>
-		</p>
+		<button
+			type="submit"
+			class="w-full h-10 bg-gray-200 dark:bg-[#202020] dark:text-gray-200 rounded-md hover:bg-gray-300"
+		>
+			{m.login_button_title()}
+		</button>
+	</form>
+
+	<!-- Separador “o” -->
+	<div class="flex items-center w-10/12 my-4">
+		<div class="flex-grow h-px bg-gray-400"></div>
+		<span class="px-3 text-gray-500 dark:text-gray-400">O inicia sesión con Google</span>
+		<div class="flex-grow h-px bg-gray-400"></div>
 	</div>
 
-	<!-- Right: Login con Google Info -->
-	<div
-		class="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 bg-gray-50 dark:bg-[#161616]"
-	>
-		<h2 class="text-2xl font-semibold mb-6 dark:text-gray-200">O inicia sesión con Google</h2>
-		<p class="max-w-sm text-center text-gray-600 dark:text-gray-400 mb-8">
-			Haz clic en el botón de Google para ingresar sin contraseña y de forma segura.
+
+  <!-- Botón Google -->
+		<div id="google-btn" class="w-10/12 flex justify-center mb-6"></div>
+		<p class="text-sm text-gray-600 dark:text-gray-400 mb-8 text-center">
+      * Si te registraste con Google, ingresa de nuevo con Google (sin contraseña).
 		</p>
-		<img src="/assets/google-login-illustration.svg" alt="Google login" class="w-64 opacity-80" />
-	</div>
+
+	<p class="mt-4 text-sm dark:text-gray-200">
+		¿No tienes cuenta?&nbsp;
+		<a href="/register" class="text-blue-600 hover:underline">
+			{m.login_goto_register()}
+		</a>
+	</p>
+
+	<p class="mt-6 text-xs dark:text-gray-400">
+		<a href="/terms" class="hover:underline hover:text-primary">
+			{m.login_termsandservice()}
+		</a>
+	</p>
 </div>
-
-<style>
-	/* Altura panel responsivo */
-	.w-full {
-		width: 100%;
-	}
-	@media (min-width: 1024px) {
-		.w-full {
-			width: 50%;
-		}
-	}
-</style>
