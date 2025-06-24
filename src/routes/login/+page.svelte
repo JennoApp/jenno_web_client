@@ -96,7 +96,7 @@
 	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-8">{m.login_title()}</h1>
 
 	<!-- Formulario clásico -->
-	<form method="POST" action="?/login" class="w-full max-w-md space-y-4 mx-auto" use:enhance>
+	<form method="POST" action="?/login" class="w-full max-w-md space-y-4" use:enhance>
 		<div>
 			<label for="email" class="block mb-1 text-base dark:text-gray-200"
 				>{m.login_email_label()}</label
@@ -145,7 +145,7 @@
 	</form>
 
 	<!-- Separador “o” -->
-	<div class="flex items-center w-full my-4">
+	<div class="flex items-center w-1/2 my-4">
 		<div class="flex-grow h-px bg-gray-400"></div>
 		<span class="px-3 text-gray-500 dark:text-gray-400">O inicia sesión con Google</span>
 		<div class="flex-grow h-px bg-gray-400"></div>
