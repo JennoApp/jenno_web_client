@@ -3,110 +3,158 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
+	import { browser } from '$app/environment';
 	import * as m from '$paraglide/messages';
+	import { onMount } from 'svelte';
+
+	let googleLoaded = false;
+	let serverUrl = '';
+
+	// 1) Obtiene la URL de tu backend (igual que en el registro)
+	async function getServerUrl() {
+		try {
+			const res = await fetch('/api/server');
+			const json = await res.json();
+			serverUrl = json.server_url;
+		} catch (err) {
+			console.error('No pude obtener server_url', err);
+		}
+	}
+
+	// 2) Monta el botón de Google
+	import.meta.env;
+	async function setupGoogleButton() {
+		if (!browser) return;
+
+		await getServerUrl();
+		const script = document.createElement('script');
+		script.src = 'https://accounts.google.com/gsi/client';
+		script.async = true;
+		script.defer = true;
+		script.onload = () => {
+			googleLoaded = true;
+			// @ts-ignore
+			window.google?.accounts.id.initialize({
+				client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+				callback: handleCredentialResponse
+			});
+			// @ts-ignore
+			window.google?.accounts.id.renderButton(document.getElementById('google-btn'), {
+				theme: 'outline',
+				size: 'large'
+			});
+		};
+		document.head.appendChild(script);
+	}
+
+	onMount(setupGoogleButton);
+
+	// 3) Cuando Google devuelve el id_token
+	async function handleCredentialResponse(response: any) {
+		try {
+			const res = await fetch('/api/auth/google/login', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ idToken: response.credential })
+			});
+			const json = await res.json();
+			if (!res.ok) {
+				throw new Error(json.message || 'Login fallido');
+			}
+			toast.success('Login exitoso! Redirigiendo...');
+			goto('/', { replaceState: true }).then(() => location.reload());
+		} catch (err: any) {
+			console.error('Error al ingresar con Google:', err);
+			toast.error(err.message || 'Error al ingresar con Google');
+		}
+	}
 
 	export let form;
 	$: if (form?.redirect) {
-    toast.success('Login exitoso! Redirigiendo...')
-		goto('/', { replaceState: true }).then(() => {
-      location.reload()
-    })
+		toast.success('Login exitoso! Redirigiendo...');
+		goto('/', { replaceState: true }).then(() => location.reload());
 	}
-
 	$: if (form?.success === false && form?.errorMessage) {
-		toast.error('Credenciales Incorrectas o Usuario no registrado: ' + form.errorMessage);
+		toast.error('Credenciales incorrectas: ' + form.errorMessage);
 	}
 
-  function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('password') as HTMLInputElement
-    const eyeIcon = document.getElementById('eyeIcon')
-
-    if (passwordInput?.type === 'password') {
-      passwordInput.type = 'text'
-      if (eyeIcon !== null) {
-        eyeIcon.textContent = '🙈' // Cambia el icono a un "ojo cerrado" cuando la contraseña está visible
-      }
-
-    } else {
-      passwordInput.type = 'password'
-      if (eyeIcon !== null) {
-        eyeIcon.textContent = '👁️' // Cambia el icono a un "ojo abierto" cuando la contraseña está oculta
-      }
-    }
-  }
+	function togglePasswordVisibility() {
+		const pw = document.getElementById('password') as HTMLInputElement;
+		const eye = document.getElementById('eyeIcon');
+		if (!pw) return;
+		pw.type = pw.type === 'password' ? 'text' : 'password';
+		if (eye) eye.textContent = pw.type === 'password' ? '👁️' : '🙈';
+	}
 </script>
 
 <svelte:head>
 	<title>Login</title>
-	<meta name="description" content="login in app" />
+	<meta name="description" content="Inicia sesión en Jenno" />
 </svelte:head>
 
-<div class="flex flex-col items-center justify-center h-screen w-full">
-	<!-- Header -->
-	<h1 class="text-3xl font-semibold dark:text-gray-200 tracking-tight mb-10">{m.login_title()}</h1>
+<div class="flex flex-col items-center justify-center h-screen w-full px-4">
+	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-8">{m.login_title()}</h1>
 
-	<!-- Form -->
-	<form method="POST" action="?/login" class="flex-col gap-2 min-w-xs w-96 mx-auto" use:enhance>
-		<!-- Email Input -->
-		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium"
-				>{m.login_email_label()}</label
-			>
+	<!-- Formulario clásico -->
+	<form method="POST" action="?/login" class="w-full max-w-md space-y-4" use:enhance>
+		<div>
+			<label for="email" class="block mb-1 text-base dark:text-gray-200">{m.login_email_label()}</label>
 			<input
 				type="email"
 				name="email"
-				class="h-8 border rounded-md text-black font-semibold px-2"
+				required
+				class="w-full h-10 px-3 border rounded-md text-black"
 			/>
 		</div>
 
-		<!-- Password Input -->
-		<div class="flex flex-col">
-			<label for="password" class="text-base dark:text-gray-200 font-medium"
-				>{m.login_password_label()}</label
-			>
+		<div>
+			<label for="password" class="block mb-1 text-base dark:text-gray-200">{m.login_password_label()}</label>
 			<div class="relative">
-				<!-- Input de contraseña -->
 				<input
-					type="password"
 					id="password"
 					name="password"
-					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10"
+					type="password"
+					required
+					class="w-full h-10 px-3 border rounded-md pr-10 text-black"
 				/>
-
-				<!-- Icono de ojo -->
 				<button
 					type="button"
-					class="absolute right-2 top-1/2 transform -translate-y-1/2"
-					on:click={() => togglePasswordVisibility()}
+					class="absolute inset-y-0 right-2 flex items-center"
+					on:click={togglePasswordVisibility}
 				>
 					<span id="eyeIcon">👁️</span>
 				</button>
 			</div>
-
-			<!-- Forgot Password Link -->
-			<div class="flex justify-end mt-1">
-				<a href="/forgotpassword" class="text-sm text-gray-400 hover:underline"
-					>{m.login_password_forget()}</a
-				>
+			<div class="text-right mt-1">
+				<a href="/forgotpassword" class="text-sm text-gray-400 hover:underline">
+					{m.login_password_forget()}
+				</a>
 			</div>
 		</div>
 
-		<!-- Login Submit -->
 		<button
-			class="h-10 w-full mt-4 border bg-gray-200 dark:border-[#222222] dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
-			>{m.login_button_title()}</button
+			type="submit"
+			class="w-full h-10 bg-gray-200 dark:bg-[#202020] dark:text-gray-200 rounded-md hover:bg-gray-300"
 		>
+			{m.login_button_title()}
+		</button>
 	</form>
 
-	<Separator class="w-96 mt-5" />
+	<Separator class="w-full max-w-md my-6" />
 
-	<!-- Sign Up Link -->
-	<p class="px-8 mt-3 text-center text-sm dark:text-gray-200 text-muted-foreground">
-		<a href="/register" class="text-gray-400 hover:underline">{m.login_goto_register()}</a>
+	<!-- Botón de Google -->
+	<div class="w-full max-w-md flex justify-center">
+		<div id="google-btn"></div>
+	</div>
+
+	<p class="mt-4 text-sm dark:text-gray-200">
+		¿No tienes cuenta?&nbsp;
+		<a href="/register" class="text-blue-600 hover:underline">
+			{m.login_goto_register()}
+		</a>
 	</p>
 
-	<!-- Terms & Services Info -->
-	<p class="px-8 mt-6 text-center text-sm dark:text-gray-200 text-muted-foreground">
+	<p class="mt-6 text-xs dark:text-gray-400">
 		<a href="/terms" class="hover:underline hover:text-primary">
 			{m.login_termsandservice()}
 		</a>

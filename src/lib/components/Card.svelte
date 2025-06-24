@@ -56,7 +56,6 @@
 			const response = await fetch(`${serverUrl}/users/getprofileimg/${data?.user}`);
 
 			const userData = await response.json();
-			console.log({ userData });
 
 			profileImg = userData?.profileImg;
 		} catch (error: any) {
@@ -77,7 +76,6 @@
 	};
 
 	$: totalStars = calculateStars(data?.reviews || []);
-	$: console.log({ data: data?.reviews });
 
 	async function getUserName(id: string) {
 		try {

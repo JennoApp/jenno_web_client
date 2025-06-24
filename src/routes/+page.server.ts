@@ -26,7 +26,6 @@ export const load: PageServerLoad = async ({ fetch, url }) => {
   }
 
   const { data, meta } = await response.json()
-  console.log({productsData: data})
 
   return {
     products: data,

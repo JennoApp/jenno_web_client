@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ locals, getClientAddress, depends
 
   try {
     requestIp = getClientAddress()
-    console.log('Ip Address form client request: ', requestIp)
+    // console.log('Ip Address form client request: ', requestIp)
   } catch (error) {
     console.log('Error reading Ip')
   }

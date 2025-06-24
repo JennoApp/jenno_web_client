@@ -43,7 +43,7 @@
 			});
 
 			socket.on('connect', () => {
-				console.log('Conectado con ID de sesión:', socket!.id);
+				// console.log('Conectado con ID de sesión:', socket!.id);
 
 				// Agregar usuario al backend
 				if (userId) {
@@ -59,7 +59,7 @@
 				console.error('Error de conexión:', error.message);
 			});
 
-			console.log('Socket inicializado');
+			// console.log('Socket inicializado');
 			socket.connect();
 
 			socketContext.socket = socket;

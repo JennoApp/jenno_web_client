@@ -100,7 +100,6 @@
 		const loadingObserver = new IntersectionObserver(async (entries) => {
 			const element = entries[0];
 			if (element.isIntersecting) {
-				console.log('Cargando nuevos productos...');
 				await loadingProducts();
 			}
 		});
@@ -119,7 +118,6 @@
 			const response = await fetch(`${serverUrl}/products/categories/random?limit=${10}`);
 			if (response.ok) {
 				const data = await response.json();
-				console.log(data);
 				randomCategories = data;
 			} else {
 				console.error('Error al cargar aleatoriamente las categorias');
