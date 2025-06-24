@@ -53,7 +53,7 @@
   async function handleCredentialResponse(response: any) {
     const idToken = response.credential;
     try {
-      const res = await fetch(`${serverUrl}/users/google/login`, {
+      const res = await fetch(`/api/auth/google/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken })
@@ -64,8 +64,6 @@
         throw new Error(data.message || 'Login fallido');
       }
 
-      // Guardamos el JWT y redirigimos
-      localStorage.setItem('jwt', data.access_token);
       goto('/', { replaceState: true }).then(() => {
         location.reload();
       });
