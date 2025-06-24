@@ -66,7 +66,9 @@
 
       // Guardamos el JWT y redirigimos
       localStorage.setItem('jwt', data.access_token);
-      goto('/dashboard');
+      goto('/', { replaceState: true }).then(() => {
+        location.reload();
+      });
     } catch (err: any) {
       console.error('Error de login Google:', err);
       toast.error(err.message || 'Error al ingresar con Google');
