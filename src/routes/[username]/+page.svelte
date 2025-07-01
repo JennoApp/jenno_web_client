@@ -404,7 +404,7 @@
 		<button
 			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
     ${
-			selectedCategory === ''
+			$selectedCategoryStore === ''
 				? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 				: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 		}`}
@@ -414,11 +414,11 @@
 		</button>
 
 		<!-- Categorías de la tienda -->
-		{#each storeCategories as category}
+		{#each $storeCategories as category}
 			<button
 				class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
       ${
-				selectedCategory === category
+				$selectedCategoryStore === category
 					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 			}`}
