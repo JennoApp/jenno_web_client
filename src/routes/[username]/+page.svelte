@@ -66,7 +66,7 @@
 			const { data, meta } = await response.json();
 			productsStore.set(data);
 			metaStore.set(meta);
-      pageload = 1;
+			pageload = 1;
 		} catch (error) {
 			console.log('Error al cargar los productos del usuario: ', error);
 		}
@@ -175,7 +175,7 @@
 		const limit = 20;
 		const nextPage = $metaStore?.nextPage || pageload + 1;
 
-    const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
+		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
 
 		try {
 			const response = await fetch(
@@ -186,7 +186,7 @@
 			// Agrega los nuevos productos a la store
 			productsStore.update((products) => [...products, ...result.data]);
 			metaStore.set(result.meta);
-      pageload = nextPage;
+			pageload = nextPage;
 		} catch (error) {
 			console.log('Error al cargar más productos:', error);
 		}
@@ -199,6 +199,32 @@
 	$: storeCategories = shuffleArray(
 		Array.from(new Set($productsStore.map((product: any) => product.category).filter(Boolean)))
 	).slice(0, 10);
+
+	async function handleCategoryClick(category: string) {
+		await getServerUrl();
+
+		const userId = data.userData._id;
+		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const limit = 20;
+		const page = 1;
+		const categoryQuery = category ? `&category=${category}` : '';
+
+		const endpoint = `${serverUrl}/products/user/${userId}?page=${page}&limit=${limit}&country=${country}${categoryQuery}`;
+
+		try {
+			const response = await fetch(endpoint);
+			if (!response.ok) {
+				console.error('Error al obtener productos del usuario:', response.statusText);
+			} else {
+				const { data, meta } = await response.json();
+				productsStore.set(data);
+				metaStore.set(meta);
+				pageload = 1;
+			}
+		} catch (error) {
+			console.error('Error en la petición al cargar productos del usuario:', error);
+		}
+	}
 
 	// --- SCROLL INFINITO CON INTERSECTION OBSERVER ---
 	let loadingRef: HTMLElement | undefined;
@@ -381,7 +407,7 @@
 				? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 				: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 		}`}
-			on:click={() => (selectedCategory = '')}
+			on:click={() => handleCategoryClick('')}
 		>
 			Todos
 		</button>
@@ -395,7 +421,7 @@
 					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 			}`}
-				on:click={() => (selectedCategory = category)}
+				on:click={() => handleCategoryClick(category)}
 			>
 				{category}
 			</button>
