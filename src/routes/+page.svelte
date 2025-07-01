@@ -108,7 +108,7 @@
 
 	/////////
 	let randomCategories: string[] = [];
-	let selectedCategory: string | null = $page.url.searchParams.get('category');
+	let selectedCategory: string | null = $page.url.searchParams.get('category') || ''
 
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
@@ -208,8 +208,12 @@
 >
 	<!-- Boton de Todos -->
 	<button
-		class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-		class:selected={!selectedCategory}
+		class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10 transition-colors
+      ${
+				selectedCategory === ''
+					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
+					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
+			}`}
 		on:click={() => handleCategoryClick('')}
 	>
 		Todos
@@ -218,8 +222,12 @@
 	<!-- Categorias Aleatorias -->
 	{#each randomCategories as item}
 		<button
-			class="bg-gray-200 hover:bg-gray-300 dark:bg-[#202020] dark:text-gray-200 text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10"
-			class:selected={selectedCategory === item}
+			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10 transition-colors
+        ${
+					selectedCategory === item
+						? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
+						: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
+				}`}
 			on:click={() => handleCategoryClick(item)}>{item}</button
 		>
 	{/each}
@@ -252,4 +260,3 @@
 		<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
 	</div>
 {/if}
-
