@@ -191,10 +191,10 @@
 					{/if}
 				</Tooltip.Root> -->
 
-				<DropdownMenu.Root>
+				<!-- <DropdownMenu.Root>
 					<DropdownMenu.Trigger>
 						{#if closeMenu}
-							<!-- Solo ícono cuando el menú está colapsado -->
+							<!- Solo ícono cuando el menú está colapsado
 							<div
 								class={`group text h-10 w-12 mt-2 px-4 list-none flex items-center justify-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
 							>
@@ -206,7 +206,7 @@
 								/>
 							</div>
 						{:else}
-							<!-- Menú expandido con texto -->
+							<!- Menú expandido con texto
 							<div
 								class={`group text h-10 w-44 mt-2 px-4 list-none flex items-center rounded-xl hover:bg-txt ${setBgColor('marketing', currentPath)}`}
 							>
@@ -237,7 +237,7 @@
 						<DropdownMenu.Item href="/admin/marketing/audiences">Audiencia</DropdownMenu.Item>
 						<DropdownMenu.Item href="/admin/marketing/analytics">Análisis</DropdownMenu.Item>
 					</DropdownMenu.Content>
-				</DropdownMenu.Root>
+				</DropdownMenu.Root> -->
 			</ul>
 		</div>
 	</nav>

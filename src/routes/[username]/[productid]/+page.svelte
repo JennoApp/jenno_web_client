@@ -39,6 +39,7 @@
 	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
 	import Label from '$lib/components/Label.svelte';
+  import StarRating from '$lib/components/StarRating.svelte';
 
 	export let data: PageServerData;
 	let userInfo: any = $page.data.user;
@@ -295,14 +296,9 @@
 
 				<div class="flex gap-5 items-center mt-1">
 					<div
-						class="flex gap-1 items-center justify-center w-16 h-8 bg-gray-200 dark:bg-[#303030] px-1 mt-1 rounded-lg"
+						class="flex gap-2 items-center"
 					>
-						<iconify-icon
-							class={getStartColor(totalStars)}
-							icon="mdi:star"
-							height="1.5rem"
-							width="1.5rem"
-						></iconify-icon>
+						<StarRating rating={totalStars} />
 						{#if totalStars !== 0}
 							<span class="text-base font-semibold">{totalStars}</span>
 						{/if}

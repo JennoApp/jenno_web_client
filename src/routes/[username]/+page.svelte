@@ -21,6 +21,7 @@
 	let metaStore = writable<any>();
 	let pageload = 1;
 	let initialLoading = true;
+	let selectedCategory: string = '';
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -45,21 +46,27 @@
 	$: console.log({ isFollowing });
 
 	// Cargar productos del Usuario
-	async function loadProducts(userId: any, country?: string) {
+	async function loadInitialProducts(userId: any, country?: string) {
 		await getServerUrl();
 		const limit: number = 20;
-
 		const resolvedCountry = country ?? 'Colombia';
+
+		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
+
 		try {
 			const response = await fetch(
 				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
 			);
+
+			if (!response.ok) {
+				console.error('Error al cargar productos:', response.statusText);
+				return;
+			}
+
 			const { data, meta } = await response.json();
-
-			// products = data;
-
 			productsStore.set(data);
 			metaStore.set(meta);
+      pageload = 1;
 		} catch (error) {
 			console.log('Error al cargar los productos del usuario: ', error);
 		}
@@ -74,9 +81,9 @@
 		metaStore.set({});
 	} else {
 		if ($location_data) {
-			loadProducts(data.userData._id, $location_data.data[0].country);
+			loadInitialProducts(data.userData._id, $location_data.data[0].country);
 		} else {
-			loadProducts(data.userData._id);
+			loadInitialProducts(data.userData._id);
 		}
 	}
 
@@ -153,10 +160,10 @@
 
 	onMount(async () => {
 		if ($location_data) {
-			loadProducts(data.userData._id, $location_data.data[0].country);
+			loadInitialProducts(data.userData._id, $location_data.data[0].country);
 			initialLoading = false;
 		} else {
-			loadProducts(data.userData._id);
+			loadInitialProducts(data.userData._id);
 			initialLoading = false;
 		}
 	});
@@ -166,21 +173,32 @@
 
 		const country = $page.url.searchParams.get('country') || 'Colombia';
 		const limit = 20;
-		const nextPage = pageload + 1;
+		const nextPage = $metaStore?.nextPage || pageload + 1;
+
+    const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
 
 		try {
 			const response = await fetch(
-				`${serverUrl}/products/user/${data.userData._id}?page=${nextPage}&limit=${limit}&country=${country}`
+				`${serverUrl}/products/user/${data.userData._id}?page=${nextPage}&limit=${limit}&country=${country}${categoryQuery}`
 			);
 			const result = await response.json();
+
 			// Agrega los nuevos productos a la store
 			productsStore.update((products) => [...products, ...result.data]);
-			pageload = nextPage;
 			metaStore.set(result.meta);
+      pageload = nextPage;
 		} catch (error) {
 			console.log('Error al cargar más productos:', error);
 		}
 	}
+
+	function shuffleArray(array: string[]) {
+		return array.sort(() => Math.random() - 0.5);
+	}
+
+	$: storeCategories = shuffleArray(
+		Array.from(new Set($productsStore.map((product: any) => product.category).filter(Boolean)))
+	).slice(0, 10);
 
 	// --- SCROLL INFINITO CON INTERSECTION OBSERVER ---
 	let loadingRef: HTMLElement | undefined;
@@ -351,7 +369,40 @@
 		<p class="text-red-500">{error.message}</p>
 	{/await}
 
-	{#if $productsStore.length === 0}
+	<!-- Barra de categorías por tienda -->
+	<div
+		class="flex items-center bg-[#f7f7f7] dark:bg-[#121212] gap-3 w-full h-12 my-1 z-20 mt-7 m-5"
+	>
+		<!-- Botón "Todos" -->
+		<button
+			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
+    ${
+			selectedCategory === ''
+				? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
+				: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
+		}`}
+			on:click={() => (selectedCategory = '')}
+		>
+			Todos
+		</button>
+
+		<!-- Categorías de la tienda -->
+		{#each storeCategories as category}
+			<button
+				class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
+      ${
+				selectedCategory === category
+					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
+					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
+			}`}
+				on:click={() => (selectedCategory = category)}
+			>
+				{category}
+			</button>
+		{/each}
+	</div>
+
+	{#if initialLoading}
 		<!-- Loader mientras se cargan los productos -->
 		<div class="flex justify-center items-center py-10" bind:this={loadingRef}>
 			<svg
@@ -369,9 +420,25 @@
 			</svg>
 			<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
 		</div>
+	{:else if $productsStore.length === 0}
+		<!-- No hay productos disponibles para el cliente -->
+		<div class="flex flex-col items-center justify-center mt-40 w-full">
+			<iconify-icon
+				icon="tabler:package-off"
+				height="5rem"
+				width="5rem"
+				class="text-[#707070] mb-4"
+			/>
+			<h1 class="text-xl font-semibold text-[#707070] mb-2">
+				Esta tienda aún no tiene productos disponibles
+			</h1>
+			<p class="text-lg text-[#707070] text-center">
+				El vendedor aún no ha agregado productos. ¡Vuelve pronto para descubrir nuevas ofertas!
+			</p>
+		</div>
 	{:else}
 		<!-- Lista de productos -->
-		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-10 m-5 gap-5 grid-flow-row">
+		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-5 gap-5 grid-flow-row">
 			{#each $productsStore as productData}
 				<Card data={productData} />
 			{/each}
