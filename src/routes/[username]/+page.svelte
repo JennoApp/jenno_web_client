@@ -21,7 +21,8 @@
 	let metaStore = writable<any>();
 	let pageload = 1;
 	let initialLoading = true;
-	let selectedCategory: string = '';
+	let selectedCategoryStore = writable<string>('');
+	let storeCategories = writable<string[]>([]);
 
 	// Obtener url del servidor
 	let serverUrl: string;
@@ -38,12 +39,13 @@
 
 	$: dataStatus = data.status;
 	$: userData = data.userData;
-	$: console.log($location_data);
-	$: console.log({ userD: $page.data.user });
-
 	$: isFollowing = userData.followers?.includes($page.data?.user?._id);
 
-	$: console.log({ isFollowing });
+	function extractUniqueCategories(products: any[]) {
+		return Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
+			.sort(() => Math.random() - 0.5) // shuffle
+			.slice(0, 10);
+	}
 
 	// Cargar productos del Usuario
 	async function loadInitialProducts(userId: any, country?: string) {
@@ -51,11 +53,11 @@
 		const limit: number = 20;
 		const resolvedCountry = country ?? 'Colombia';
 
-		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
+		const categoryQuery = $selectedCategoryStore ? `&category=${$selectedCategoryStore}` : '';
 
 		try {
 			const response = await fetch(
-				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}`
+				`${serverUrl}/products/user/${userId}?page=${1}&limit=${limit}&country=${resolvedCountry}${categoryQuery}`
 			);
 
 			if (!response.ok) {
@@ -67,6 +69,12 @@
 			productsStore.set(data);
 			metaStore.set(meta);
 			pageload = 1;
+
+			// Solo actualiza storeCategories si la categoría es '' (todos)
+			if ($selectedCategoryStore === '') {
+				const categories = extractUniqueCategories(data);
+				storeCategories.set(categories);
+			}
 		} catch (error) {
 			console.log('Error al cargar los productos del usuario: ', error);
 		}
@@ -86,10 +94,6 @@
 			loadInitialProducts(data.userData._id);
 		}
 	}
-
-	$: console.log({ userData });
-
-	$: console.log({ datasession: data.session });
 
 	const handleFollow = async (customerId: string) => {
 		await getServerUrl();
@@ -175,7 +179,7 @@
 		const limit = 20;
 		const nextPage = $metaStore?.nextPage || pageload + 1;
 
-		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
+    const categoryQuery = $selectedCategoryStore ? `&category=${$selectedCategoryStore}` : '';
 
 		try {
 			const response = await fetch(
@@ -192,16 +196,13 @@
 		}
 	}
 
-	function shuffleArray(array: string[]) {
-		return array.sort(() => Math.random() - 0.5);
-	}
-
-	$: storeCategories = shuffleArray(
-		Array.from(new Set($productsStore.map((product: any) => product.category).filter(Boolean)))
-	).slice(0, 10);
 
 	async function handleCategoryClick(category: string) {
 		await getServerUrl();
+
+		if ($selectedCategoryStore === category) return;
+
+		selectedCategoryStore.set(category);
 
 		const userId = data.userData._id;
 		const country = $page.url.searchParams.get('country') || 'Colombia';
