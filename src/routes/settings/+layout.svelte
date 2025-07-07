@@ -2,23 +2,39 @@
 	import { page } from '$app/stores';
 	import { cn } from '$lib/utils';
 	import { goto } from '$app/navigation';
-  import * as m from '$paraglide/messages'
+	import * as m from '$paraglide/messages';
 
-	$: url = $page.url.pathname
-	const SettingsNavItems = [
+	$: user = $page.data.user;
+	$: url = $page.url.pathname;
+
+	$: console.log({ user: user });
+
+	$: SettingsNavItems = [
 		{
 			title: `${m.settings_menu_profile()}`,
 			href: '/settings/profile'
 		},
-		{
-			title: `${m.settings_menu_shipping()}`,
-			href: '/settings/shipping'
-		},
+		...(user?.accountType === 'personal'
+			? [
+					{
+						title: `${m.settings_menu_shipping()}`,
+						href: '/settings/shipping'
+					}
+				]
+			: []),
+		...(user?.accountType === 'business'
+			? [
+					{
+						title: `Configuracion de envios `,
+						href: '/settings/business'
+					}
+				]
+			: []),
 		{
 			title: `${m.settings_menu_appearance()}`,
 			href: '/settings/appearance'
 		}
-	]
+	];
 
 	///
 	let isSmallView = false;
