@@ -11,65 +11,65 @@
 	let userInfo = $page.data.user;
 	$: console.log({ userInfo });
 
-   // Obtener url del servidor
-  let serverUrl: string
-  async function getServerUrl() {
-    try {
-      const response = await fetch(`/api/server`)
-      const data = await response.json()
+	// Obtener url del servidor
+	let serverUrl: string;
+	async function getServerUrl() {
+		try {
+			const response = await fetch(`/api/server`);
+			const data = await response.json();
 
-      serverUrl = data.server_url
-    } catch (error) {
-      console.error('Error al solicitar Paypal Id')
-    }
-  }
+			serverUrl = data.server_url;
+		} catch (error) {
+			console.error('Error al solicitar Paypal Id');
+		}
+	}
 
-  $: getServerUrl()
+	$: getServerUrl();
 
 	export let id: string;
-  $: console.log({ id })
+	$: console.log({ id });
 
-	let openDialog = false;
+	// Estado para los diálogos
+	let openReview = false;
+	let openReturn = false;
+	let openExchange = false;
+
 	let rating = 0;
 	let reviewText = '';
-
-	function handleDialogOpen() {
-		openDialog = true;
-	}
 
 	function handleRating(index: number) {
 		rating = index;
 	}
 
-  async function getProductFromOrder(orderId: string) {
-    try {
-      const response = await fetch(`${serverUrl}/orders/${orderId}`)
-      if (response.ok) {
-        const orderData = await response.json()
-        return orderData.product._id
-      } else {
-        console.error('Error al obtener la orden')
-        toast.error('No se pudo obtener la orden. Intentalo Nuevamente')
-        return null
-      }
-    } catch (error) {
-      console.error('Error al obtener la order:', error)
-      toast.error('Ocurrio un error al obtener la orden. Intentalo nuevamente')
-      return null
-    }
-  }
+	async function getProductFromOrder(orderId: string) {
+		try {
+			const response = await fetch(`${serverUrl}/orders/${orderId}`);
+			if (response.ok) {
+				const orderData = await response.json();
+				return orderData.product._id;
+			} else {
+				console.error('Error al obtener la orden');
+				toast.error('No se pudo obtener la orden. Intentalo Nuevamente');
+				return null;
+			}
+		} catch (error) {
+			console.error('Error al obtener la order:', error);
+			toast.error('Ocurrio un error al obtener la orden. Intentalo nuevamente');
+			return null;
+		}
+	}
 
 	async function sendReview(orderId: string) {
-    if (!userInfo || !userInfo._id || !orderId) {
+		if (!userInfo || !userInfo._id || !orderId) {
 			console.error('Falta información del usuario o del producto');
 			toast.error('No se pudo enviar la reseña. Falta información del usuario o del producto.');
 			return;
 		}
 
-    const productId = await getProductFromOrder(orderId)
-    if (!productId) {
-      return
-    }
+		const productId = await getProductFromOrder(orderId);
+		if (!productId) {
+			return;
+		}
 
 		try {
 			const response = await fetch(`${serverUrl}/products/review/${productId}`, {
@@ -89,17 +89,42 @@
 			if (response.ok) {
 				rating = 0;
 				reviewText = '';
-        openDialog = false
+				openReview = false;
 
 				toast.success('Reseña enviada con exito!');
 			} else {
-        const errorData = await response.json();
+				const errorData = await response.json();
 				console.error('Error en la respuesta del servidor:', errorData);
 				toast.error('No se pudo enviar la reseña. Inténtalo nuevamente.');
-      }
+			}
 		} catch (error) {
 			console.log('Error al enviar la reseña:', error);
-      toast.error('Ocurrió un error al enviar la reseña. Inténtalo nuevamente.');
+			toast.error('Ocurrió un error al enviar la reseña. Inténtalo nuevamente.');
+		}
+	}
+
+	// --- Devolución / Cambio ---
+	let returnReason = '';
+	let exchangeProductId = '';
+
+	async function requestReturn(type: 'refund' | 'exchange') {
+		if (!returnReason.trim()) return toast.error('Escribe una razón');
+
+		const body: any = { type, reason: returnReason };
+
+    if (type === 'exchange') body.exchangeProductId = exchangeProductId;
+
+    const res = await fetch(`${serverUrl}/orders/return-request/${id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(body)
+		});
+
+		if (res.ok) {
+			toast.success(type === 'refund' ? 'Devolución solicitada' : 'Cambio solicitado');
+			openReturn = openExchange = false;
+		} else {
+			toast.error('Error al solicitar');
 		}
 	}
 </script>
@@ -112,28 +137,56 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content>
 		<DropdownMenu.Group>
-			<DropdownMenu.Label>Actions</DropdownMenu.Label>
-			<DropdownMenu.Item
-				on:click={() => {
-					handleDialogOpen();
-				}}
-			>
+			<DropdownMenu.Label>Acciones</DropdownMenu.Label>
+
+			<!-- Review -->
+			<DropdownMenu.Item on:click={() => (openReview = true)}>
 				<iconify-icon
 					icon="ic:round-reviews"
 					height="1.1rem"
 					width="1.1rem"
 					class="text-gray-200 flex justify-center items-center"
 				/>
-				<span class="ml-3">calificar y reseñar</span>
+				<span class="ml-2">Calificar y reseñar</span>
+			</DropdownMenu.Item>
+
+			<!-- Solicitar devolución -->
+			<DropdownMenu.Item
+				on:click={() => {
+					openReturn = true;
+					returnReason = '';
+				}}
+			>
+				<iconify-icon
+					icon="mdi:package-down"
+					height="1.1rem"
+					width="1.1rem"
+					class="text-gray-200 flex justify-center items-center"
+				/>
+				<span class="ml-2">Solicitar devolución</span>
+			</DropdownMenu.Item>
+
+			<!-- Solicitar cambio -->
+			<DropdownMenu.Item
+				on:click={() => {
+					openExchange = true;
+					returnReason = '';
+					exchangeProductId = '';
+				}}
+			>
+				<iconify-icon
+					icon="mdi:swap-horizontal"
+					height="1.1rem"
+					width="1.1rem"
+					class="text-gray-200 flex justify-center items-center"
+				/>
+				<span class="ml-2">Solicitar cambio</span>
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
-		<!-- <DropdownMenu.Separator />
-		<DropdownMenu.Item>View customer</DropdownMenu.Item>
-		<DropdownMenu.Item>View payment details</DropdownMenu.Item> -->
 	</DropdownMenu.Content>
 </DropdownMenu.Root>
 
-<Dialog.Root bind:open={openDialog}>
+<Dialog.Root bind:open={openReview}>
 	<Dialog.Trigger />
 	<Dialog.Content>
 		<Dialog.Header>
@@ -173,6 +226,38 @@
 					class="bg-gray-200 text-black dark:bg-[#202020] dark:text-gray-200">Enviar Reseña</Button
 				>
 			</div>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Diálogo de devolución -->
+<Dialog.Root bind:open={openReturn}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Solicitar devolución</Dialog.Title>
+		</Dialog.Header>
+		<Textarea bind:value={returnReason} placeholder="Razón de la devolución" />
+		<div class="flex justify-end mt-4">
+			<Button on:click={() => requestReturn('refund')}>Enviar solicitud</Button>
+		</div>
+	</Dialog.Content>
+</Dialog.Root>
+
+<!-- Diálogo de cambio -->
+<Dialog.Root bind:open={openExchange}>
+	<Dialog.Content>
+		<Dialog.Header>
+			<Dialog.Title>Solicitar cambio</Dialog.Title>
+		</Dialog.Header>
+		<Textarea bind:value={returnReason} placeholder="Razón del cambio" />
+		<input
+			type="text"
+			placeholder="ID del nuevo producto"
+			bind:value={exchangeProductId}
+			class="border p-2 rounded w-full mt-2"
+		/>
+		<div class="flex justify-end mt-4">
+			<Button on:click={() => requestReturn('exchange')}>Enviar solicitud</Button>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

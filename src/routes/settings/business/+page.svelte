@@ -10,41 +10,45 @@
 
 	export let data: PageData;
 	export let form: ActionData;
-	let selected: any[] = [];
+	// let selected: any[] = [];
+  // let initialized = false;
 
-	$: console.log({ 'selected Carriers': selected });
+	// $: console.log({ 'selected Carriers': selected });
 
-	const addCarrier = (index: string) => {
-		console.log('Valor recibido:', index);
-		const i = parseInt(index);
-		const carrier = data.availableCarriers[i];
-		if (!carrier) return;
+	// const addCarrier = (index: string) => {
+	// 	console.log('Valor recibido:', index);
+	// 	const i = parseInt(index);
+	// 	const carrier = data.availableCarriers[i];
+	// 	if (!carrier) return;
 
-		console.log('Transportadora seleccionada:', carrier);
+	// 	console.log('Transportadora seleccionada:', carrier);
 
-		if (selected.find((c) => c.name === carrier.name)) return;
-		if (selected.length >= 3) {
-			toast.error('Solo puedes seleccionar hasta 3 transportadoras');
-			return;
-		}
-		selected = [...selected, carrier];
-	};
+	// 	if (selected.find((c) => c.name === carrier.name)) return;
+	// 	if (selected.length >= 3) {
+	// 		toast.error('Solo puedes seleccionar hasta 3 transportadoras');
+	// 		return;
+	// 	}
+	// 	selected = [...selected, carrier];
+	// };
 
-	const removeCarrier = (carrierName: string) => {
-		selected = selected.filter((c) => c.name !== carrierName);
-	};
+	// const removeCarrier = (carrierName: string) => {
+	// 	selected = selected.filter((c) => c.name !== carrierName);
+	// };
 
 	let user = $page.data.user;
 
-	$: if (
-		selected.length === 0 &&
-		user?.carriersAllowed?.length > 0 &&
-		data?.availableCarriers?.length > 0
-	) {
-		selected = user.carriersAllowed
-			.map((savedCarrier) => data.availableCarriers.find((c) => c.name === savedCarrier.name))
-			.filter(Boolean); // Por si hay alguna no encontrada
-	}
+
+	// $: if (
+	// 	!initialized &&
+	// 	user?.carriersAllowed?.length > 0 &&
+	// 	data?.availableCarriers?.length > 0
+	// ) {
+	// 	selected = user.carriersAllowed
+	// 		.map((savedCarrier: any) => data.availableCarriers.find((c: any) => c.name === savedCarrier.name))
+	// 		.filter(Boolean); // Por si hay alguna no encontrada
+
+  //   initialized = true;
+	// }
 
 	// Mostrar toast en éxito
 	$: if (form) {
@@ -162,17 +166,17 @@
 				<span class="text-sm text-red-500">{form.errors.address[0]}</span>
 			{/if}
 		</div>
-
-		<!-- Transportadoras permitidas -->
+<!--
+		<!- Transportadoras permitidas ->
 		<div class="flex flex-col">
 			<label class="font-medium dark:text-gray-200 mb-2">Transportadoras aceptadas:</label>
 
-			<!-- Info adicional -->
+			<!- Info adicional ->
 			<p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
 				Puedes seleccionar hasta <strong>3 transportadoras</strong>.
 			</p>
 
-			<!-- Selector -->
+			<!- Selector ->
 			<Select.Root onSelectedChange={(v) => addCarrier(v.value)}>
 				<Select.Trigger class="w-full">
 					<Select.Value placeholder="Selecciona una transportadora..." />
@@ -186,7 +190,7 @@
 				</Select.Content>
 			</Select.Root>
 
-			<!-- Lista de seleccionados -->
+			<!- Lista de seleccionados ->
 			<div class="mt-4 flex flex-wrap gap-2">
 				{#each selected as carrier (carrier.name)}
 					<Badge
@@ -210,7 +214,7 @@
 			{/if}
 		</div>
 
-		<input type="hidden" name="carriersAllowed" value={JSON.stringify(selected)} />
+		<input type="hidden" name="carriersAllowed" value={JSON.stringify(selected)} /> -->
 
 		<button
 			type="submit"

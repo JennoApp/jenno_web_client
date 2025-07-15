@@ -11,7 +11,7 @@ const businessShippingSchema = z.object({
   city: z.string().min(1, 'Ciudad requerida').max(64),
   postalCode: z.string().min(1, 'Código postal requerido').max(64),
   address: z.string().min(1, 'Dirección requerida').max(128),
-  carriersAllowed: z.string()
+  // carriersAllowed: z.string()
 })
 
 export const actions: Actions = {
@@ -22,26 +22,26 @@ export const actions: Actions = {
       const parsed = businessShippingSchema.parse(formData)
 
       // Transformar JSON a array de objetos
-      let carriersAllowed;
-      try {
-        carriersAllowed = JSON.parse(parsed.carriersAllowed);
-        if (!Array.isArray(carriersAllowed)) {
-          throw new Error('Formato inválido en carriersAllowed');
-        }
-      } catch (e) {
-        return {
-          success: false,
-          errors: {
-            carriersAllowed: ['Error al interpretar la lista de transportadoras seleccionadas']
-          }
-        };
-      }
+      // let carriersAllowed;
+      // try {
+      //   carriersAllowed = JSON.parse(parsed.carriersAllowed);
+      //   if (!Array.isArray(carriersAllowed)) {
+      //     throw new Error('Formato inválido en carriersAllowed');
+      //   }
+      // } catch (e) {
+      //   return {
+      //     success: false,
+      //     errors: {
+      //       carriersAllowed: ['Error al interpretar la lista de transportadoras seleccionadas']
+      //     }
+      //   };
+      // }
 
       const { contactName, phoneNumber, country, state, city, postalCode, address } = parsed
 
       const body = {
         pickupAddress: { contactName, phoneNumber, country, state, city, postalCode, address },
-        carriersAllowed
+        // carriersAllowed
       }
 
       const res = await fetch(`${PRIVATE_SERVER_URL}/users/shipping-settings/${locals.user._id}`, {
