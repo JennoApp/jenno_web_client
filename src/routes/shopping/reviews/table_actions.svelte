@@ -105,26 +105,31 @@
 
 	// --- Devolución / Cambio ---
 	let returnReason = '';
-	let exchangeProductId = '';
 
 	async function requestReturn(type: 'refund' | 'exchange') {
-		if (!returnReason.trim()) return toast.error('Escribe una razón');
+		if (!returnReason.trim()) {
+			toast.error('Escribe una razón');
+			return;
+		}
 
-		const body: any = { type, reason: returnReason };
+		const payload = {
+			type,
+			reason: returnReason
+			// No se incluye exchangeProductId porque no es necesario
+		};
 
-    if (type === 'exchange') body.exchangeProductId = exchangeProductId;
-
-    const res = await fetch(`${serverUrl}/orders/return-request/${id}`, {
+		const res = await fetch(`${serverUrl}/orders/return-request/${id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(body)
+			body: JSON.stringify(payload)
 		});
 
 		if (res.ok) {
 			toast.success(type === 'refund' ? 'Devolución solicitada' : 'Cambio solicitado');
-			openReturn = openExchange = false;
+			openReturn = false;
+			openExchange = false;
 		} else {
-			toast.error('Error al solicitar');
+			toast.error('Error al solicitar el cambio');
 		}
 	}
 </script>
@@ -249,15 +254,16 @@
 		<Dialog.Header>
 			<Dialog.Title>Solicitar cambio</Dialog.Title>
 		</Dialog.Header>
-		<Textarea bind:value={returnReason} placeholder="Razón del cambio" />
-		<input
-			type="text"
-			placeholder="ID del nuevo producto"
-			bind:value={exchangeProductId}
-			class="border p-2 rounded w-full mt-2"
-		/>
-		<div class="flex justify-end mt-4">
-			<Button on:click={() => requestReturn('exchange')}>Enviar solicitud</Button>
+
+		<div class="space-y-4">
+			<Textarea
+				bind:value={returnReason}
+				placeholder="Describe la razón del cambio. Ej: Talla incorrecta, color diferente, defecto, etc."
+			/>
+
+			<div class="flex justify-end mt-4">
+				<Button on:click={() => requestReturn('exchange')}>Enviar solicitud</Button>
+			</div>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>
