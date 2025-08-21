@@ -417,7 +417,7 @@
 						class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:text-white hover:bg-red-600 dark:hover:bg-red-600"
 						on:click|preventDefault={() => removeOptionItem(i)}
 					>
-						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
+						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" ></iconify-icon>
 					</button>
 				</Card.Content>
 			{/each}
@@ -605,7 +605,7 @@
 						class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-600 dark:hover:bg-red-600"
 						on:click|preventDefault={() => removeEspecificationItem(i)}
 					>
-						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" />
+						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" ></iconify-icon>
 					</button>
 				</Card.Content>
 			{/each}

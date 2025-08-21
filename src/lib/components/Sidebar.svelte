@@ -56,7 +56,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -86,7 +86,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -116,7 +116,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -146,7 +146,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -266,7 +266,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
@@ -326,7 +326,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'

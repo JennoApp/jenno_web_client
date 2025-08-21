@@ -141,7 +141,7 @@
 		height="5rem"
 		width="5rem"
 		class="text-green-500 mb-4"
-	/>
+	></iconify-icon>
 
 	<h1 class="text-2xl font-semibold text-gray-200 mb-2">Pago Exitoso</h1>
 

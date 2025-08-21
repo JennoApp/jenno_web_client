@@ -61,7 +61,7 @@
 
 {#if $cartItems.length === 0}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="mdi:cart" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="mdi:cart" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.cart_nocart_title()}</h1>
 		<p class="text-lg text-[#707070]">

@@ -134,7 +134,7 @@
 				<li class="dark:text-white">Llega a más clientes.</li>
 			</ul>
 			<div class="flex gap-3 border border-gray-400 dark:border-[#161616] mt-4 p-3 rounded-md">
-				<iconify-icon icon="ic:round-warning" class="text-yellow-500" />
+				<iconify-icon icon="ic:round-warning" class="text-yellow-500" ></iconify-icon>
 				<p class="dark:text-white text-sm">
 					Se requiere información legal de la empresa para completar el registro.
 				</p>

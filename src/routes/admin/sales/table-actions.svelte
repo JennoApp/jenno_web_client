@@ -61,7 +61,7 @@
 							height="1.1rem"
 							width="1.1rem"
 							class="text-gray-200 flex justify-center items-center"
-						/>
+						></iconify-icon>
 						<span class="ml-3">Enviando</span>
 					</DropdownMenu.Item>
 					<!-- <DropdownMenu.Separator />

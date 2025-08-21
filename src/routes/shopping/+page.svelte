@@ -75,7 +75,7 @@
 				height="1.1rem"
 				width="1.1rem"
 				class="dark:text-gray-200 flex justify-center items-center"
-			/>
+			></iconify-icon>
 			<span class="ml-3">Valoración y Reseñas</span></Button
 		>
 		<Button
@@ -89,7 +89,7 @@
 				height="1.1rem"
 				width="1.1rem"
 				class="dark:text-gray-200 flex justify-center items-center"
-			/>
+			></iconify-icon>
 			<span class="ml-3">Historial</span></Button
 		>
 	</div>
@@ -203,7 +203,7 @@
 			height="5rem"
 			width="5rem"
 			class="text-[#707070] mb-4"
-		/>
+		></iconify-icon>
 		<p class="text-lg text-[#707070] mb-2">{m.shopping_noshopping_title()}</p>
 		<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
 	</div>

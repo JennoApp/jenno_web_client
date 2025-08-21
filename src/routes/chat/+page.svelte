@@ -454,7 +454,7 @@
 {:else}
 	<!-- Mostrar mensaje cuando no hay conversaciones -->
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="mdi:conversation" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="mdi:conversation" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 		<p class="text-lg text-[#707070] mb-2">Aún no tienes ninguna conversación</p>
 		<p class="text-lg text-[#707070]">
 			Puedes comenzar una conversación explorando las tiendas o conectándote con otros usuarios.

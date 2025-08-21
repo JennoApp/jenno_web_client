@@ -400,7 +400,7 @@
 				<div class="flex flex-row-reverse h-10 w-full">
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger class="m-2">
-							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem" />
+							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem" ></iconify-icon>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content>
 							<DropdownMenu.Group>
@@ -411,7 +411,7 @@
 										height="1.1rem"
 										width="1.1rem"
 										class="text-gray-200"
-									/>
+									></iconify-icon>
 									<span class="ml-3">Actualizar</span>
 								</DropdownMenu.Item>
 
@@ -424,7 +424,7 @@
 										height="1.1rem"
 										width="1.1rem"
 										class="text-gray-200"
-									/>
+									></iconify-icon>
 									<span class="ml-3">Eliminar</span>
 								</DropdownMenu.Item>
 							</DropdownMenu.Group>
@@ -434,10 +434,10 @@
 
 				<div class="flex flex-col items-center justify-center flex-1 gap-2">
 					{#if account.bankType === 'NEQUI'}
-						<iconify-icon icon="arcticons:nequi-colombia" height="5rem" width="5rem" />
+						<iconify-icon icon="arcticons:nequi-colombia" height="5rem" width="5rem" ></iconify-icon>
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 					{:else}
-						<iconify-icon icon="arcticons:bancolombia" height="5rem" width="5rem" />
+						<iconify-icon icon="arcticons:bancolombia" height="5rem" width="5rem" ></iconify-icon>
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 						<div class="text-sm text-gray-600 dark:text-gray-400">{account.accountType}</div>
 					{/if}
@@ -453,7 +453,7 @@
 					openDialogAddBankAccount = true;
 				}}
 			>
-				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem" />
+				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem" ></iconify-icon>
 			</button>
 		{/if}
 	</div>

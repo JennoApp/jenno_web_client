@@ -23,13 +23,13 @@
       height="1.5rem"
       width="1.5rem"
       class="text-gray-200 bg-[#202020] rounded-full hover:bg-[#252525]"
-    />
+    ></iconify-icon>
   {:else if iconType === 'product'}
     <iconify-icon
       icon="mdi:package-variant-closed"
       height="1.5rem"
       width="1.5rem"
       class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
-    />
+    ></iconify-icon>
   {/if}
 </div>

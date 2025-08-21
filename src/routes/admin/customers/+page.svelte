@@ -50,7 +50,7 @@
 		}),
 		table.column({
 			header: `Account Type`,
-			accessor: (row) => row.accountType,	
+			accessor: (row) => row.accountType,
 		})
 	]);
 
@@ -137,7 +137,7 @@
 	{/if}
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="f7:person-3-fill" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="f7:person-3-fill" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_customers_nocustomers_title()}</h1>
 		<p class="text-lg text-[#707070]">{m.admin_customers_nocustomers_p()}</p>

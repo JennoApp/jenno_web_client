@@ -146,7 +146,7 @@
 					height="1.1rem"
 					width="1.1rem"
 					class="text-gray-200 flex justify-center items-center"
-				/>
+				></iconify-icon>
 				<span class="ml-2">Calificar y reseñar</span>
 			</DropdownMenu.Item>
 
@@ -162,7 +162,7 @@
 					height="1.1rem"
 					width="1.1rem"
 					class="text-gray-200 flex justify-center items-center"
-				/>
+				></iconify-icon>
 				<span class="ml-2">Solicitar devolución</span>
 			</DropdownMenu.Item>
 
@@ -179,7 +179,7 @@
 					height="1.1rem"
 					width="1.1rem"
 					class="text-gray-200 flex justify-center items-center"
-				/>
+				></iconify-icon>
 				<span class="ml-2">Solicitar cambio</span>
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
@@ -197,7 +197,8 @@
 				<h2>Puntuacion:</h2>
 				<div class="flex gap-1 items-center">
 					{#each Array(5).fill(0) as _, index}
-						<button on:click|preventDefault={() => handleRating(index + 1)}>
+						<button on:click|preventDefault={() => handleRating(index + 1)}
+              aria-label="Calificar con {index + 1} estrellas">
 							<iconify-icon
 								icon="mdi:star"
 								height="1.5rem"
@@ -205,7 +206,7 @@
 								class="w-8 h-8 cursor-pointer transition-colors duration-200 {rating >= index + 1
 									? 'text-yellow-400'
 									: 'text-gray-400'}"
-							/>
+							></iconify-icon>
 						</button>
 					{/each}
 				</div>

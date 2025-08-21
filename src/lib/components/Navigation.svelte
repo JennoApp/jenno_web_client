@@ -332,6 +332,7 @@
 					<button
 						class="flex justify-center items-center text-gray-500 dark:text-white text-xl mr-6"
 						on:click={handleIsClose}
+            aria-label="Toggle Sidebar"
 					>
 						<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
 					</button>
@@ -420,7 +421,8 @@
 						<Dialog.Trigger>
 							<button
 								class="flex justify-center items-center h-9 w-9 bg-gray-200 dark:bg-[#202020] rounded-full dark:text-gray-200 text-xl"
-							>
+                aria-label="Open Search Dialog"
+                >
 								<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
 								></iconify-icon>
 							</button>
@@ -483,7 +485,7 @@
 										height="1.3rem"
 										width="1.3rem"
 										class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
-									/>
+									></iconify-icon>
 
 									{#if $unreadNotificationsCount !== 0}
 										<span
@@ -535,7 +537,7 @@
 									height="1.3rem"
 									width="1.3rem"
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
-								/>
+								></iconify-icon>
 
 								{#if $unreadConversationsCount !== 0}
 									<span
@@ -554,7 +556,7 @@
 									height="1.3rem"
 									width="1.3rem"
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
-								/>
+								></iconify-icon>
 
 								{#if $cartItems.length !== 0}
 									<span
@@ -595,7 +597,7 @@
 														height="2rem"
 														width="2rem"
 														class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
-													/>
+													></iconify-icon>
 												{/if}
 												<div class="flex">
 													<div class="flex flex-col items-start">
@@ -674,7 +676,7 @@
 										height="1.5rem"
 										width="1.5rem"
 										class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
-									/>
+									></iconify-icon>
 								{/if}
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content>
@@ -695,7 +697,7 @@
 											height="1.5rem"
 											width="1.5rem"
 											class="flex justify-center items-center text-gray-200 h-14 w-14 ml-1 bg-background rounded-full"
-										/>
+										></iconify-icon>
 									{/if}
 									<div class="flex flex-col justify-center ml-2">
 										<h2 class="text-base dark:text-gray-200 font-semibold">{userInfo?.username}</h2>

@@ -327,7 +327,7 @@
 							/>
 						{:else}
 							<div class="flex justify-center items-center h-14 w-14 bg-[#151515] rounded-full">
-								<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" />
+								<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" ></iconify-icon>
 							</div>
 						{/if}
 						<h2 class="text-lg font-semibold">{userName}</h2>
@@ -524,7 +524,7 @@
 											height="1.5rem"
 											width="1.5rem"
 											class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
-										/>
+										></iconify-icon>
 									{/if}
 									<h3 class="text-base font-semibold">{review.userName}</h3>
 								</div>
@@ -536,7 +536,7 @@
 											height="1.5rem"
 											width="1.5rem"
 											class="flex justify-center items-center h-9 w-9 {getStartColor(review.stars)}"
-										/>
+										></iconify-icon>
 									{/each}
 								</div>
 							</div>

@@ -151,7 +151,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
-		<iconify-icon icon="solar:box-bold" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="solar:box-bold" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_catalog_nocatalog_title()}</h1>
 		<p class="text-lg text-[#707070]">
 			{m.admin_catalog_nocatalog_p()}

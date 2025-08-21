@@ -81,7 +81,7 @@
 			height="1.5rem"
 			width="1.5rem"
 			class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#181818] rounded-full mr-5"
-		/>
+		></iconify-icon>
 	{/if}
 	<div class="flex flex-col">
 		<span class="font-medium">{user?.username}</span>

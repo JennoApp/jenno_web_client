@@ -188,7 +188,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="ic:round-reviews" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="ic:round-reviews" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 		<p class="text-lg font-semibold text-[#707070] mb-2">No tienes Reseñas pendientes</p>
 		<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
 	</div>

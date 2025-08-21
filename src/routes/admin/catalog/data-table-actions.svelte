@@ -92,7 +92,7 @@
 					height="1.1rem"
 					width="1.1rem"
 					class="dark:text-gray-200 flex justify-center items-center"
-				/>
+				></iconify-icon>
 				<span class="ml-3">Actualizar</span>
 			</DropdownMenu.Item>
 			<DropdownMenu.Item
@@ -106,7 +106,7 @@
 					height="1.1rem"
 					width="1.1rem"
 					class="dark:text-gray-200 flex justify-center items-center"
-				/>
+				></iconify-icon>
 				<span class="ml-3">Eliminar</span>
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>

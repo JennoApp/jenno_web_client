@@ -9,7 +9,7 @@
   export let serverUrl: string | undefined
 
 	let friendImg: string;
-  
+
 	const getFriendImg = async (id: string) => {
 		if (!serverUrl) {
 			console.error('Error: serverUrl no está definido.');
@@ -63,7 +63,7 @@
 					height="1.3rem"
 					width="1.3rem"
 					class="dark:text-gray-200 flex justify-center items-center h-9 w-9 mr-3 bg-gray-200 dark:bg-[#202020] rounded-full"
-				/>
+				></iconify-icon>
 			{/if}
 			<p class={'p-2 rounded-3xl bg-gray-200 dark:bg-[#202020] max-w-72'}>{message.text}</p>
 		</div>
@@ -82,7 +82,7 @@
 					height="1.3rem"
 					width="1.3rem"
 					class="dark:text-gray-200 flex justify-center items-center h-9 w-9 mr-3 bg-gray-200 dark:bg-[#202020] rounded-full"
-				/>
+				></iconify-icon>
 			{/if}
 			<p class={'p-2 rounded-3xl bg-gray-200 dark:bg-[#202020] max-w-72'}>{message.text}</p>
 		</div>

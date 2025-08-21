@@ -68,8 +68,8 @@ const localization: Handle = async ({ event, resolve }) => {
     }
   }
 
-  console.log('headers:', event.request.headers.get('accept-language'))
-  console.log('user preferred but available locale: ', locale)
+  // console.log('headers:', event.request.headers.get('accept-language'))
+  // console.log('user preferred but available locale: ', locale)
 
   // set locale in locals
   event.locals.locale = locale

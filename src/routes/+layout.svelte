@@ -10,21 +10,26 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { io, type Socket } from 'socket.io-client';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
 
 	const SOCKET_CONTEXT = 'socket';
 
-	// Crear e inicializar el contexto dentro del ciclo de vida del componente
-	let socket: Socket | null = null;
+	let { data, children } = $props();
 
-	const socketContext = {
+	// Crear e inicializar el contexto dentro del ciclo de vida del componente
+	let socket = $state<Socket | null>(null);
+	let locationAccessKey = $state<string>('');
+	let storedIp = $state<string | null>(null);
+	let storedLocationData = $state<any>(null);
+
+	const socketContext = $state({
 		socket: null as Socket | null
-	};
+	});
 
 	setContext(SOCKET_CONTEXT, socketContext);
 
@@ -68,16 +73,6 @@
 		}
 	}
 
-	onMount(async () => {
-		await initializeSocket($page.data?.user?._id);
-
-		injectAnalytics();
-	});
-
-	// Establecer el contexto del socket
-	// setContext(SOCKET_CONTEXT, socket);
-
-	let locationAccessKey: string;
 	async function getLocationAccessKey() {
 		try {
 			const response = await fetch(`/api/location`);
@@ -88,39 +83,6 @@
 			console.error('Error al solicitar el location access key');
 		}
 	}
-
-	$: {
-		setupTheme();
-	}
-
-	export let data;
-
-	$: setLanguageTag(data.locale);
-
-	// current language
-	// $: console.log(data.serverLang);
-
-	let storedIp: string | null = null;
-	let storedLocationData: any | null = null;
-
-	// Recuperar los datos del store
-	$: {
-		ip_address.subscribe((value) => {
-			storedIp = value;
-		});
-
-		location_data.subscribe((value) => {
-			storedLocationData = value;
-		});
-	}
-
-	// const storedIp = $ip_address
-	// let storedLocationData = $location_data
-
-	// $: {
-	// 	addIpAddress(data.clientAddress as string);
-	// 	// addLocationData(data.locationData as Object);
-	// }
 
 	const getLocationData = async (ip: string, access_key: string) => {
 		try {
@@ -139,14 +101,47 @@
 		}
 	};
 
-	onMount(async () => {
+
+	$effect(() => {
+		setupTheme();
+	});
+
+	$effect(() => {
+    setLanguageTag(data.locale);
+  })
+
+
+	// Recuperar los datos del store
+	$effect(() => {
+		const unsubscribeIp = ip_address.subscribe((value) => {
+			storedIp = value;
+		});
+
+		const unsubscribeLocation = location_data.subscribe((value) => {
+			storedLocationData = value;
+		});
+
+    return () => {
+      unsubscribeIp();
+      unsubscribeLocation();
+    }
+	})
+
+  $effect(() => {
+		initializeSocket(page.data?.user?._id);
+		injectAnalytics();
+	});
+
+
+	$effect(() => {
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
 
-			await getLocationAccessKey();
-			if (locationAccessKey) {
-				await getLocationData(data.clientAddress as string, locationAccessKey);
-			}
+			getLocationAccessKey().then(() => {
+        if (locationAccessKey) {
+				  getLocationData(data.clientAddress as string, locationAccessKey);
+			  }
+      })
 		} else {
 			console.log('Using stored location data', storedLocationData);
 		}
@@ -154,25 +149,17 @@
 		invalidateAll();
 	});
 
-	// onMount(() => {
-	// 	if ($location_data) {
-	// 		if ($location_data.data[0].country_module.flag === 'co') {
-	// 			setLanguageTag('es');
-	// 			goto('/es');
-	// 		}
-	// 	}
-	// });
 
 	// Handle URL parameters for redirection
-	onMount(() => {
+	$effect(() => {
 		if (
-			$page.url.searchParams.get('mpreturn') === '1' ||
-			$page.url.searchParams.get('reload') === '1'
+			page.url.searchParams.get('mpreturn') === '1' ||
+			page.url.searchParams.get('reload') === '1'
 		) {
 			window.history.replaceState({}, '', '/');
 			invalidateAll();
 			location.reload();
-		} else if ($page.url.searchParams.get('failure') === '1') {
+		} else if (page.url.searchParams.get('failure') === '1') {
 			localStorage.setItem('payment_failed', '1');
 
 			// Limpiar la URL y recargar la página
@@ -227,7 +214,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="Jenno" />
-	<meta property="og:url" content={$page.url.href} />
+	<meta property="og:url" content={page.url.href} />
 	<meta property="og:image" content="https://www.jenno.com.co/oplogo.jpg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
@@ -257,7 +244,7 @@
 					height="5rem"
 					width="5rem"
 					class="text-[#707070] mb-4"
-				/>
+				></iconify-icon>
 
 				<h1 class="text-xl font-semibold text-[#707070] mb-2">
 					Servicio no disponible en tu región
@@ -279,7 +266,7 @@
 			</div>
 		{:else}
 			<!-- Contenido si la región es Colombia -->
-			<slot />
+			{@render children()}
 		{/if}
 	{/if}
 </Navigation>

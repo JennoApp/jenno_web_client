@@ -185,7 +185,7 @@
 			height="5rem"
 			width="5rem"
 			class="text-[#707070] mb-4"
-		/>
+		></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">No hay productos en el historial</h1>
 		<p class="text-lg text-[#707070]">¡Explora y encuentra productos que te interesen!</p>

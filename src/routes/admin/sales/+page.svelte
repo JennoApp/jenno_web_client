@@ -76,7 +76,7 @@
 			height="1.1rem"
 			width="1.1rem"
 			class="text-black dark:text-gray-200 flex justify-center items-center"
-		/>
+		></iconify-icon>
 		<span class="ml-3">Historial</span></Button
 	>
 </div>
@@ -206,7 +206,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center h-full w-full">
-		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
 		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>
