@@ -127,11 +127,11 @@
 							></iconify-icon>
 						</div>
 					{/if}
-					<a href={`/${userName}`} class="truncate font-medium max-w-[200px]">
+					<button on:click|preventDefault={() => goto(`/${userName}`)} class="truncate font-medium max-w-[200px]">
 						<h4>
 							{userName}
 						</h4>
-					</a>
+					</button>
 				</div>
 
 				<!--  ####################### -->

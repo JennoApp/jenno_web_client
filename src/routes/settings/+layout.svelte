@@ -1,15 +1,18 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { cn } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import * as m from '$paraglide/messages';
 
-	$: user = $page.data.user;
-	$: url = $page.url.pathname;
 
-	$: console.log({ user: user });
+  let isSmallView = $state(false);
 
-	$: SettingsNavItems = [
+	let user = $derived(page.data.user)
+	let url = $derived(page.url.pathname)
+
+	$inspect(user)
+
+	let SettingsNavItems = [
 		{
 			title: `${m.settings_menu_profile()}`,
 			href: '/settings/profile'
@@ -35,9 +38,6 @@
 			href: '/settings/appearance'
 		}
 	];
-
-	///
-	let isSmallView = false;
 </script>
 
 <div class="flex w-full p-5">

@@ -288,7 +288,7 @@
 					/>
 				{:else}
 					<div class="flex justify-center items-center h-32 w-32 bg-[#202020] rounded-full">
-						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="text-[#707070]" />
+						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="text-[#707070]"> </iconify-icon>
 					</div>
 				{/if}
 			</div>
@@ -428,7 +428,7 @@
 				height="5rem"
 				width="5rem"
 				class="text-[#707070] mb-4"
-			/>
+			></iconify-icon>
 			<h1 class="text-xl font-semibold text-[#707070] mb-2">
 				Esta tienda aún no tiene productos disponibles
 			</h1>
