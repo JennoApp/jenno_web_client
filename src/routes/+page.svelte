@@ -1,26 +1,25 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
 	import Card from '$lib/components/Card.svelte';
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { removeTotal } from '$lib/stores/cartStore';
 	import { toast } from 'svelte-sonner';
-	import { writable } from 'svelte/store';
 
-	export let data: PageServerData;
 
-	let productsStore = writable<any>([]);
-	let metaStore = writable<any>();
-	let categoryStore = writable<string>('');
+	let { data }: { data: PageServerData } = $props();
 
-	productsStore.set(data.products);
-	metaStore.set(data.meta);
 
-	// let products: any[] = data.products;
-	let pageload = 1;
+	let products = $state<any[]>(data.products);
+	let meta = $state<any>(data.meta);
+	let category = $state<string>('');
+	let pageload = $state(1);
+	let serverUrl = $state<string>('');
+	let randomCategories = $state<string[]>([]);
+	let selectedCategory = $state<string | null>(page.url.searchParams.get('category') || '');
+	let loadingRef = $state<HTMLElement>();
+
 
 	// Obtener url del servidor
-	let serverUrl: string;
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -32,22 +31,21 @@
 		}
 	}
 
-	////////
 
 	const loadingProducts = async () => {
 		await getServerUrl();
 
-		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const country = page.url.searchParams.get('country') || 'Colombia';
 		const limit = 20;
 		const nextPage = pageload + 1;
 		let endpoint = '';
 
 		// Si no hay categoría seleccionada, carga todos los productos
-		if ($categoryStore === '') {
+		if (category === '') {
 			endpoint = `${serverUrl}/products?page=${nextPage}&limit=${limit}&country=${country}&category=`;
 		} else {
 			// Si hay categoría seleccionada, se usa el endpoint correspondiente
-			endpoint = `https://jenno-backend.vercel.app/products/category/${$categoryStore}?page=${nextPage}&limit=${limit}&country=${country}`;
+			endpoint = `https://jenno-backend.vercel.app/products/category/${category}?page=${nextPage}&limit=${limit}&country=${country}`;
 		}
 
 		try {
@@ -58,8 +56,8 @@
 			}
 			const newData = await response.json();
 
-			productsStore.update((products) => [...products, ...newData.data]);
-			metaStore.set(newData.meta);
+			products = [...products, ...newData.data];
+			meta = newData.meta;
 			pageload = nextPage;
 
 			return newData;
@@ -68,13 +66,15 @@
 		}
 	};
 
+
 	async function loadInitialProducts() {
 		await getServerUrl();
 		// Obtenemos el país desde la URL o usamos 'Colombia' por defecto
-		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const country = page.url.searchParams.get('country') || 'Colombia';
 		const limit = 20;
+
 		// La categoría en este caso es '' (Todos)
-		const category = '';
+		const categoryParam = '';
 		const endpoint = `${serverUrl}/products?page=1&limit=${limit}&country=${country}&category=${category}`;
 
 		try {
@@ -83,32 +83,18 @@
 				console.error('Error al cargar productos:', response.statusText);
 				return;
 			}
-			const { data, meta } = await response.json();
+			const { data: responseData, meta: responseMeta } = await response.json();
+
 			// Actualizamos los stores con los nuevos datos
-			productsStore.set(data);
-			metaStore.set(meta);
-			categoryStore.set(category);
+			products = responseData;
+			meta = responseMeta;
+			category = categoryParam;
 			pageload = 1;
 		} catch (error) {
 			console.error('Error al cargar productos:', error);
 		}
 	}
 
-	// Observer para el scroll infinito
-	let loadingRef: HTMLElement | undefined;
-	$: if (loadingRef) {
-		const loadingObserver = new IntersectionObserver(async (entries) => {
-			const element = entries[0];
-			if (element.isIntersecting) {
-				await loadingProducts();
-			}
-		});
-		loadingObserver.observe(loadingRef);
-	}
-
-	/////////
-	let randomCategories: string[] = [];
-	let selectedCategory: string | null = $page.url.searchParams.get('category') || ''
 
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
@@ -117,8 +103,8 @@
 
 			const response = await fetch(`${serverUrl}/products/categories/random?limit=${10}`);
 			if (response.ok) {
-				const data = await response.json();
-				randomCategories = data;
+				const responseData = await response.json();
+				randomCategories = responseData;
 			} else {
 				console.error('Error al cargar aleatoriamente las categorias');
 			}
@@ -127,25 +113,27 @@
 		}
 	}
 
-	// Funcion para manejar el click en una categoria
-	async function handleCategoryClick(category: string) {
-		selectedCategory = category;
-		categoryStore.set(category);
 
-		if (category === '') {
+	// Funcion para manejar el click en una categoria
+	async function handleCategoryClick(categoryParam: string) {
+		selectedCategory = categoryParam;
+		category = categoryParam;
+
+		if (categoryParam === '') {
 			await loadInitialProducts();
 		} else {
 			try {
 				const response = await fetch(
-					`https://jenno-backend.vercel.app/products/category/${category}?page=1&limit=20&country=Colombia`
+					`https://jenno-backend.vercel.app/products/category/${categoryParam}?page=1&limit=20&country=Colombia`
 				);
+
 				if (!response.ok) {
 					console.error('Error al obtener productos:', response.statusText);
 				} else {
-					const { data, meta } = await response.json();
+					const { data: responseData, meta: responseMeta } = await response.json();
 					// Se asume que la respuesta trae la lista de productos en la propiedad "products"
-					productsStore.set(data);
-					metaStore.set(meta);
+					products = responseData;
+					meta = responseMeta;
 					pageload = 1;
 				}
 			} catch (error) {
@@ -154,12 +142,33 @@
 		}
 	}
 
-	onMount(() => {
+
+	// Observer para el scroll infinito
+	$effect(() => {
+		if (loadingRef) {
+			const loadingObserver = new IntersectionObserver(async (entries) => {
+				const element = entries[0];
+				if (element.isIntersecting) {
+					await loadingProducts();
+				}
+			});
+			loadingObserver.observe(loadingRef);
+
+      // Limpiar el observer al desmontar el componente
+      return () => {
+        loadingObserver.disconnect()
+      }
+		}
+	});
+
+
+	$effect(() => {
 		getRandomCategories();
 	});
 
-	onMount(() => {
-		const urlParams = $page.url.searchParams;
+
+	$effect(() => {
+		const urlParams = page.url.searchParams;
 		if (urlParams.get('mpreturn') === '1') {
 			// Limpia la URL y fuerza recarga
 			window.history.replaceState({}, '', '/');
@@ -167,8 +176,10 @@
 		}
 	});
 
-	onMount(() => {
-		const params = $page.url.searchParams;
+
+  // Effect para manejar parámetros URL - ordersCreated
+	$effect(() => {
+		const params = page.url.searchParams;
 		const ordersCreated = params.get('ordersCreated');
 
 		if (ordersCreated === '1') {
@@ -186,21 +197,13 @@
 			location.reload();
 		}, 100);
 	});
-
-	// $: if ($page.url.searchParams.get('ordersCreated') === '1') {
-	// 	removeTotal();
-
-	// 	toast.success('¡Ordenes creadas exitosamente!');
-
-	// 	window.history.replaceState({}, '', '/');
-	// 	location.reload();
-	// }
 </script>
+
 
 <svelte:head>
 	<title>Jenno</title>
-	<!-- <meta name="description" content="ShopIn es la mejor red social de comercio electrónico donde puedes comprar y vender productos de manera fácil y segura."> -->
 </svelte:head>
+
 
 <!-- Barra de categorias -->
 <div
@@ -214,7 +217,7 @@
 					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 			}`}
-		on:click={() => handleCategoryClick('')}
+		onclick={() => handleCategoryClick('')}
 	>
 		Todos
 	</button>
@@ -228,7 +231,7 @@
 						? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 						: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 				}`}
-			on:click={() => handleCategoryClick(item)}>{item}</button
+			onclick={() => handleCategoryClick(item)}>{item}</button
 		>
 	{/each}
 </div>
@@ -236,7 +239,7 @@
 <div
 	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
 >
-	{#each $productsStore as productData}
+	{#each products as productData}
 		<Card data={productData} />
 	{/each}
 </div>
@@ -244,7 +247,7 @@
 <br />
 
 <!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
-{#if $metaStore?.hasNextPage}
+{#if meta?.hasNextPage}
 	<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
 		<svg
 			class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"
@@ -261,13 +264,9 @@
 	</div>
 {/if}
 
-
-
-
 <style lang="postcss">
-  @reference "tailwindcss"
+	@reference "tailwindcss"
 
   :global(html) {
-
-  }
+	}
 </style>

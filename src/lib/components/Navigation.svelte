@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto, invalidateAll } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as HoverCard from '$lib/components/ui/hover-card';
@@ -32,8 +32,11 @@
 		markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
 
+
+  let { children } = $props()
+
 	const { socket }: { socket: any } = getContext('socket');
-	$: console.log({ socket });
+	$inspect('socket', socket);
 
 	const rutasExcluidas = [
 		'',
@@ -52,15 +55,15 @@
 		'es'
 	];
 
-	let searchInputValue = '';
-	let isActiveSearchInput = false;
+	let searchInputValue = $state('');
+	let isActiveSearchInput = $state(false);
 
 	function activeSearchInput() {
 		isActiveSearchInput = !isActiveSearchInput;
 	}
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('');
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -87,7 +90,7 @@
 	const handleSearch = async () => {
 		if (searchInputValue.trim() !== '') {
 			try {
-				const username = $page.url.pathname.split('/')[1];
+				const username = page.url.pathname.split('/')[1];
 
 				if (!rutasExcluidas.includes(username)) {
 					const userId = await getUserId(username);
@@ -128,7 +131,7 @@
 	};
 
 	/// Total reactivo basado en svelte/store
-	let total = getTotal();
+	let total = $state(getTotal());
 
 	const unsubscribe = cartItems.subscribe(() => {
 		total = getTotal();
@@ -149,20 +152,20 @@
 	];
 
 	//verifica si la sesion de usuario esta activa
-	let userInfo: any = $page.data.user;
+	let userInfo: any = $derived(page.data.user);
 
-	$: sessionExpired = $page.data.sessionExpired;
-	$: console.log({ sessionExpired });
+	let sessionExpired = $derived(page.data.sessionExpired);
+	$inspect('sessionExpired', sessionExpired);
 
 	// Estado de sidebar, por defecto es true,
 	// y funcion que actualiza este estado
-	let isClose = true; // actualizar!! a svelte 5
+	let isClose = $state(true);
 	function handleIsClose() {
 		isClose = !isClose;
 	}
 
-	$: console.log($page.url.pathname);
-	$: console.log($page.data.user);
+	$inspect('pathname:', page.url.pathname);
+	$inspect('user:', page.data.user);
 
 	// logout function
 	const logout = async () => {
@@ -179,7 +182,7 @@
 
 			// Redirige a la pagina principal si la ruta actual es "restringida"
 			const restrictedPaths = ['/admin', '/settings', '/personal', '/cart', '/chat', '/shopping'];
-			const currentPath = $page.url.pathname;
+			const currentPath = page.url.pathname;
 
 			if (restrictedPaths.some((path) => currentPath.startsWith(path))) {
 				setTimeout(() => {
@@ -196,7 +199,7 @@
 	};
 
 	const autocompleteOptions = ['Opción 1', 'Opción 2', 'Opción 3'];
-	let selectedIndex = -1;
+	let selectedIndex = $state(-1);
 	function selectOption(option: any) {
 		alert(option);
 	}
@@ -206,14 +209,14 @@
 	}
 
 	//////
-	let isSearchOpen = false;
+	let isSearchOpen = $state(false);
 
 	const openSearh = () => {
 		isSearchOpen = !isSearchOpen;
 		alert(`search open: ${isSearchOpen}`);
 	};
 
-	let dialogOpen = false;
+	let dialogOpen = $state(false);
 
 	// Obtener el numero de conversaciones no leidas
 	async function getUnreadConversations(userId: string) {
@@ -242,17 +245,19 @@
 		}
 	}
 
-	$: if ($page.data.user) {
-		getConversationAndNotificationData($page.data.user._id);
-	}
+	$effect(() => {
+		if (page.data.user) {
+			getConversationAndNotificationData(page.data.user._id);
+		}
+	});
 
-	let currentPage = 1;
+	let currentPage = $state(1);
 
 	// Funcion para cargar mas notificaciones
 	function loadMoreNotifications() {
 		if (currentPage < $totalPages) {
 			currentPage++;
-			fetchNotifications(serverUrl, $page.data.user._id, currentPage);
+			fetchNotifications(serverUrl, page.data.user._id, currentPage);
 		}
 	}
 
@@ -262,7 +267,7 @@
 
 		try {
 			const response = await fetch(
-				`${serverUrl}/users/notifications/markasread/${$page.data.user._id}`,
+				`${serverUrl}/users/notifications/markasread/${page.data.user._id}`,
 				{
 					method: 'POST'
 				}
@@ -294,35 +299,36 @@
 		}
 	});
 
-	let isDarkMode = false;
-
+	let isDarkMode = $state(false);
 	// Actualizar isDarkMode solo en el cliente
-	$: if (typeof window !== 'undefined') {
-		if ($theme === 'system') {
-			isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-		} else {
-			isDarkMode = $theme === 'dark';
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			if ($theme === 'system') {
+				isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			} else {
+				isDarkMode = $theme === 'dark';
+			}
 		}
-	}
+	});
 
 	// Estado para saber si la imagen no se pudo cargar
-	let failedToLoad = false;
+	let failedToLoad = $state(false);
 
 	function handleImageError() {
 		failedToLoad = true;
 	}
 
-  // Función para verificar catidad maxima de un producto en el carrito
-  // globalmente
-  function isMaxed(productId: string, maxQuantity: number): boolean {
-    const total = get(cartItems)
-      .filter((i) => i._id === productId)
-      .reduce((sum, i) => sum + i.amount, 0)
-    return total >= maxQuantity
-  }
+	// Función para verificar catidad maxima de un producto en el carrito
+	// globalmente
+	function isMaxed(productId: string, maxQuantity: number): boolean {
+		const total = get(cartItems)
+			.filter((i) => i._id === productId)
+			.reduce((sum, i) => sum + i.amount, 0);
+		return total >= maxQuantity;
+	}
 </script>
 
-{#if !paths.includes($page.url.pathname)}
+{#if !paths.includes(page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
 		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-7">
@@ -331,14 +337,22 @@
 				<div class="hidden md:block lg:block">
 					<button
 						class="flex justify-center items-center text-gray-500 dark:text-white text-xl mr-6"
-						on:click={handleIsClose}
-            aria-label="Toggle Sidebar"
+						onclick={(e) => {
+							e.preventDefault();
+							handleIsClose();
+						}}
+						aria-label="Toggle Sidebar"
 					>
 						<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
 					</button>
 				</div>
 
-				<button on:click|preventDefault={() => goto('/')}>
+				<button
+					onclick={(e) => {
+						e.preventDefault();
+						goto('/');
+					}}
+				>
 					<div class="relative flex gap-1">
 						<div class="flex">
 							<!-- Logo  -->
@@ -370,18 +384,24 @@
 			<!-- Center (hidden in small screens) -->
 			<div class="hidden md:block">
 				<div class="flex w-full max-w-sm md:max-w-md lg:max-w-xl h-10 relative cursor-pointer">
-					<form on:submit|preventDefault={handleSearch} class="flex md:w-[600px] h-10">
-						{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
+					<form
+						onsubmit={(e) => {
+							e.preventDefault();
+							handleSearch();
+						}}
+						class="flex md:w-[600px] h-10"
+					>
+						{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1])}
 							<div
 								class="flex items-center rounded-l-2xl h-10 px-2 dark:text-white font-medium bg-gray-200 dark:bg-[#202020] cursor-default"
 							>
-								{$page.url.pathname.split('/')[1]}
+								{page.url.pathname.split('/')[1]}
 							</div>
 						{/if}
 						<input
 							id="searchInput"
 							class="flex-grow h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
-								$page.url.pathname.split('/')[1]
+								page.url.pathname.split('/')[1]
 							)
 								? ''
 								: 'border-r-0 rounded-l-2xl'}"
@@ -399,8 +419,13 @@
 						</div>
 					</form>
 
-					{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
-						<button on:click={() => handleGlobalSearch()}>
+					{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
+						<button
+							onclick={(e) => {
+								e.preventDefault();
+								handleGlobalSearch();
+							}}
+						>
 							<div
 								class="absolute top-10 left-0 mt-2 w-full bg-white dark:bg-[#202020] shadow-lg rounded-md p-2"
 							>
@@ -421,25 +446,31 @@
 						<Dialog.Trigger>
 							<button
 								class="flex justify-center items-center h-9 w-9 bg-gray-200 dark:bg-[#202020] rounded-full dark:text-gray-200 text-xl"
-                aria-label="Open Search Dialog"
-                >
+								aria-label="Open Search Dialog"
+							>
 								<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
 								></iconify-icon>
 							</button>
 						</Dialog.Trigger>
 						<Dialog.Content class="top-10 w-full m-0 px-0 py-1">
-							<form on:submit|preventDefault={handleSearch} class="flex w-full">
-								{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1])}
+							<form
+								onsubmit={(e) => {
+									e.preventDefault();
+									handleSearch();
+								}}
+								class="flex w-full"
+							>
+								{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1])}
 									<div
 										class="flex items-center rounded-l-2xl h-10 px-2 dark:text-white font-medium bg-gray-200 dark:bg-[#202020] cursor-default"
 									>
-										{$page.url.pathname.split('/')[1]}
+										{page.url.pathname.split('/')[1]}
 									</div>
 								{/if}
 								<input
 									id="searchInput"
 									class="flex-grow h-10 text-base dark:text-gray-200 px-2 bg-gray-100 dark:bg-[#121212] outline-none border border-gray-200 dark:border-[#222222] {!rutasExcluidas.includes(
-										$page.url.pathname.split('/')[1]
+										page.url.pathname.split('/')[1]
 									)
 										? ''
 										: 'border-r-0 rounded-l-2xl'}"
@@ -460,8 +491,13 @@
 								</div>
 							</form>
 
-							{#if !rutasExcluidas.includes($page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
-								<button on:click={() => handleGlobalSearch()}>
+							{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
+								<button
+									onclick={(e) => {
+										e.preventDefault();
+										handleGlobalSearch();
+									}}
+								>
 									<div
 										class="absolute top-10 left-0 mt-2 w-full bg-white dark:bg-[#202020] shadow-lg rounded-md p-2"
 									>
@@ -479,7 +515,12 @@
 					<div class="flex items-center gap-3">
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger class="relative">
-								<button on:click|preventDefault={() => markNotifications()}>
+								<button
+									onclick={(e) => {
+										e.preventDefault();
+										markNotifications();
+									}}
+								>
 									<iconify-icon
 										icon="mdi:bell"
 										height="1.3rem"
@@ -521,7 +562,10 @@
 									{#if currentPage < $totalPages}
 										<button
 											class="text-blue-400 hover:text-blue-300 font-medium text-sm hover:underline transition"
-											on:click={loadMoreNotifications}
+											onclick={(e) => {
+												e.preventDefault();
+												loadMoreNotifications();
+											}}
 										>
 											Cargar más
 										</button>
@@ -589,7 +633,10 @@
 														class="w-12 h-12 object-cover rounded-sm mr-2"
 														src={`${cartItem.imgs[0]}`}
 														alt={`${cartItem.productname}`}
-														on:error={handleImageError}
+														onerror={(e) => {
+															e.preventDefault();
+															handleImageError();
+														}}
 													/>
 												{:else}
 													<iconify-icon
@@ -617,8 +664,10 @@
 
 													<div class="flex w-full justify-center items-center mt-2">
 														<button
-															on:click|preventDefault={() =>
-																decrementCartItem(cartItem._id, cartItem.selectedOptions)}
+															onclick={(e) => {
+																e.preventDefault();
+																decrementCartItem(cartItem._id, cartItem.selectedOptions);
+															}}
 															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 														>
 															<!-- Minus Icon -->
@@ -629,8 +678,10 @@
 															>{cartItem.amount}</span
 														>
 														<button
-															on:click|preventDefault={() =>
-																addToCart(cartItem, cartItem.selectedOptions)}
+															onclick={(e) => {
+																e.preventDefault();
+																addToCart(cartItem, cartItem.selectedOptions);
+															}}
 															disabled={isMaxed(cartItem._id, cartItem.quantity)}
 															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary
                {isMaxed(cartItem._id, cartItem.quantity) ? 'opacity-50 cursor-not-allowed' : ''}"
@@ -642,8 +693,10 @@
 													</div>
 												</div>
 												<button
-													on:click|preventDefault={() =>
-														removeFromCart(cartItem._id, cartItem.selectedOptions)}
+													onclick={(e) => {
+														e.preventDefault();
+														removeFromCart(cartItem._id, cartItem.selectedOptions);
+													}}
 													class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 												>
 													<!-- Close Icon -->
@@ -745,13 +798,19 @@
 					<div class="flex justify-center items-center space-x-2">
 						<button
 							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
-							on:click={() => goto('/login')}
+							onclick={(e) => {
+								e.preventDefault();
+								goto('/login');
+							}}
 						>
 							{m.navbar_button_login()}
 						</button>
 						<button
 							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
-							on:click={() => goto('/register')}
+							onclick={(e) => {
+								e.preventDefault();
+								goto('/register');
+							}}
 						>
 							{m.navbar_button_register()}
 						</button>
@@ -771,7 +830,7 @@
 				? 'relative top-0 md:left-20 w-full md:w-[calc(100%-208px)] px-3'
 				: 'relative top-0 md:left-7 w-full md:w-[calc(100%-80px)] px-3'}
 		>
-			<slot />
+			{@render children()}
 		</main>
 
 		<!-- {#if isActiveSearchInput}
@@ -781,5 +840,5 @@
 		{/if} -->
 	</div>
 {:else}
-	<slot />
+	{@render children()}
 {/if}
