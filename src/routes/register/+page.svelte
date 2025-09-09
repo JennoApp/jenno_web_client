@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { browser } from '$app/environment';
   import { toast } from 'svelte-sonner';
+	import { onMount } from 'svelte';
 
-  let googleLoaded = false;
-  let serverUrl = '';
+  let googleLoaded = $state(false)
+  let serverUrl = $state('')
 
   // 1) Carga la librería de Google Identity
   onMount(async () => {
@@ -35,6 +35,8 @@
     };
     document.head.appendChild(script);
   });
+
+  $inspect(getServerUrl())
 
   // Helper para obtener la URL del servidor desde tu endpoint /api/server
   async function getServerUrl() {
@@ -87,7 +89,10 @@
 		<button
 			class="bg-gray-200 dark:bg-[#252525] hover:bg-gray-300 dark:hover:bg-[#272727]
              h-16 w-10/12 rounded-md mb-4 text-lg font-medium transition"
-			on:click={() => goto('/register/personal')}
+			onclick={(e) => {
+        e.preventDefault();
+        goto('/register/personal')
+        }}
 		>
 			Registro con Email
 		</button>
@@ -122,7 +127,10 @@
 		<button
 			class="bg-gray-200 dark:bg-[#252525] hover:bg-gray-300 dark:hover:bg-[#272727]
              h-16 w-10/12 rounded-md mb-4 text-lg font-medium transition"
-			on:click={() => goto('/register/business')}
+			onclick={(e) => {
+        e.preventDefault();
+        goto('/register/business')
+      }}
 		>
 			Registro con Email
 		</button>

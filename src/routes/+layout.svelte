@@ -10,7 +10,7 @@
 		ip_address,
 		location_data
 	} from '$lib/stores/ipaddressStore';
-	import { setContext } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import { setLanguageTag } from '$paraglide/runtime';
 	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
@@ -102,15 +102,6 @@
 	};
 
 
-	$effect(() => {
-		setupTheme();
-	});
-
-	$effect(() => {
-    setLanguageTag(data.locale);
-  })
-
-
 	// Recuperar los datos del store
 	$effect(() => {
 		const unsubscribeIp = ip_address.subscribe((value) => {
@@ -121,34 +112,34 @@
 			storedLocationData = value;
 		});
 
-    return () => {
-      unsubscribeIp();
-      unsubscribeLocation();
-    }
-	})
-
-  $effect(() => {
-		initializeSocket(page.data?.user?._id);
-		injectAnalytics();
+		return () => {
+			unsubscribeIp();
+			unsubscribeLocation();
+		};
 	});
 
+	onMount(() => {
+		setupTheme();
+    setLanguageTag(data.locale);
+		injectAnalytics();
+		initializeSocket(page.data?.user?._id);
+	});
 
-	$effect(() => {
+	onMount(() => {
 		if (!storedLocationData || storedIp !== data.clientAddress) {
 			addIpAddress(data.clientAddress as string);
 
 			getLocationAccessKey().then(() => {
-        if (locationAccessKey) {
-				  getLocationData(data.clientAddress as string, locationAccessKey);
-			  }
-      })
+				if (locationAccessKey) {
+					getLocationData(data.clientAddress as string, locationAccessKey);
+				}
+			});
 		} else {
-			console.log('Using stored location data', storedLocationData);
+			console.log('Using stored location data', $state.snapshot(storedLocationData));
 		}
 
 		invalidateAll();
 	});
-
 
 	// Handle URL parameters for redirection
 	$effect(() => {
