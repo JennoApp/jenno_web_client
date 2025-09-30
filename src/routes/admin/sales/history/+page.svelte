@@ -2,7 +2,7 @@
 	import type { PageServerData } from './$types';
 	import { goto } from '$app/navigation';
 	import Image from '$lib/components/Image.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import { writable } from 'svelte/store';
 	import { format } from 'timeago.js';
 	import * as m from '$paraglide/messages';
@@ -11,15 +11,15 @@
 	import CustomerCell from '$lib/components/Customer_cell.svelte';
 	import ShippingInFoDialog from '$lib/components/ShippingInFoDialog.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let data: PageServerData;
+	let { data }: { data: PageServerData } = $props();
 
-	let salesOrdersStore = writable(data.salesList || []);
-	let metaStore = writable(data.meta || {});
+	let salesOrdersStore = $state(data.salesList || []);
+	let metaStore = $state(data.meta || {});
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('');
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -31,12 +31,14 @@
 		}
 	}
 
-	async function loadHistorySales(page: number, limit: number = 10) {
+	async function loadHistorySales(pageNumber: number, limit: number = 10) {
 		try {
-			await getServerUrl();
+			if (!serverUrl) {
+				await getServerUrl();
+			}
 
 			const response = await fetch(
-				`${serverUrl}/users/orderscompleted/${$page.data.user._id}?page=${page}&limit=${limit}`
+				`${serverUrl}/users/orderscompleted/${page.data.user._id}?page=${pageNumber}&limit=${limit}`
 			);
 			const result = await response.json();
 
@@ -48,8 +50,8 @@
 			);
 
 			// devuelve { data: [], meta: {} }
-			salesOrdersStore.set(products);
-			metaStore.set(result.meta);
+			salesOrdersStore = products;
+			metaStore = result.meta;
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
@@ -60,13 +62,17 @@
 		loadHistorySales(newPage, 10);
 	}
 
-	$: console.log({ salesOrdersData: $salesOrdersStore });
+	$inspect({ salesOrdersData: salesOrdersStore });
 </script>
 
 <div class="flex p-5">
 	<button
 		class="flex justify-center items-center h-10 w-10 dark:bg-[#202020] rounded-sm hover:dark:bg-[#252525]"
-		on:click={() => goto('/admin/sales')}
+		onclick={(e) => {
+			e.preventDefault();
+			goto('/admin/sales');
+		}}
+    aria-label="Volver a Ventas"
 	>
 		<iconify-icon
 			icon="material-symbols:chevron-left-rounded"
@@ -83,7 +89,7 @@
 	</div>
 </div>
 
-{#if Array.isArray($salesOrdersStore) && $salesOrdersStore.length > 0}
+{#if Array.isArray(salesOrdersStore) && salesOrdersStore.length > 0}
 	<div class="overflow-x-auto w-full p-4">
 		<table class="w-full border-collapse text-left text-sm">
 			<thead>
@@ -102,12 +108,12 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
-				{#each $salesOrdersStore as order}
+				{#each salesOrdersStore as order}
 					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							{#if Array.isArray(order?.product?.imgs) && order?.product?.imgs.length > 0}
-                <Image url={order?.product?.imgs[0]} iconType={"product"} />
+								<Image url={order?.product?.imgs[0]} iconType={'product'} />
 							{:else}
 								<span class="text-gray-500 dark:text-gray-400">Sin imágenes</span>
 							{/if}
@@ -167,7 +173,7 @@
 	<div class="flex justify-between mt-2 m-5">
 		<div class="">
 			<h3 class="text-sm dark:text-[#707070]">
-				Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
+				Items: {metaStore.itemCount} | Página: {metaStore.page} de {metaStore.pageCount}
 			</h3>
 		</div>
 
@@ -176,8 +182,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasPreviousPage}
-				on:click={() => changePage(Number($metaStore.page) - 1)}
+				disabled={!metaStore.hasPreviousPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) - 1)
+        }}
 			>
 				Anterior
 			</Button>
@@ -185,8 +194,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasNextPage}
-				on:click={() => changePage(Number($metaStore.page) + 1)}
+				disabled={!metaStore.hasNextPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number($metaStore.page) + 1)
+        }}
 			>
 				Siguiente
 			</Button>
@@ -194,7 +206,8 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
+		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4"
+		></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
 		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>

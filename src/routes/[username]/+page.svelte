@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import Card from '$lib/components/Card.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import type { PageServerData } from './$types';
 	import { toast } from 'svelte-sonner';
 	import { location_data } from '$lib/stores/ipaddressStore';

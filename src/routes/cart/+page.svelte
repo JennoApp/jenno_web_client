@@ -7,26 +7,27 @@
 		getTotal,
 		subtotal as sub
 	} from '$lib/stores/cartStore';
-	import { onDestroy } from 'svelte';
 	import * as Table from '$lib/components/ui/table';
 	import { Separator } from '$lib/components/ui/separator';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 
 	/// Total reactivo basado en svelte/store
-	let total = getTotal();
+	let total = $state(getTotal());
 
-	const unsubscribe = cartItems.subscribe(() => {
-		total = getTotal();
+	$effect(() => {
+		const unsubscribe = cartItems.subscribe(() => {
+			total = getTotal();
+		});
+
+	return () => {
+			unsubscribe();
+		}
 	});
 
-	onDestroy(() => {
-		unsubscribe();
-	});
-	///
 
 	const calculateTotalShippingFee = (cartitems: any[]) => {
 		const items = cartitems.length !== 0 ? cartitems : [];
@@ -41,27 +42,28 @@
 
 	//////
 	// calcular el subtotal de los productos en el carrito
-	const subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
+	const subtotal = $derived($cartItems.reduce((acc, product) => acc + product.price * product.amount, 0))
 
 	// Calcular el costo total de envío
-	const totalEnvio = $cartItems.reduce(
+	const totalEnvio = $derived($cartItems.reduce(
 		(acc, product) => acc + product.shippingfee * product.amount,
 		0
-	);
+	))
 
 	// Calcular la comision del 3%
-	const P_goal = subtotal + totalEnvio;
+	const P_goal = $derived(subtotal + totalEnvio)
 	const F_fixed = 0;
 	const F_percent = 0.03;
 
-	const P_charge = (P_goal + F_fixed) / (1 - F_percent);
+	const P_charge = $derived((P_goal + F_fixed) / (1 - F_percent))
 
 	// const transferStripe = P_charge - P_goal
 </script>
 
 {#if $cartItems.length === 0}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="mdi:cart" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
+		<iconify-icon icon="mdi:cart" height="5rem" width="5rem" class="text-[#707070] mb-4"
+		></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.cart_nocart_title()}</h1>
 		<p class="text-lg text-[#707070]">
@@ -102,8 +104,10 @@
 
 							<div class="flex justify-center items-center mt-2 mr-14">
 								<button
-									on:click|preventDefault={() =>
-										decrementCartItem(cartItem._id, cartItem.selectedOptions)}
+	                onclick={(e) => {
+                    e.preventDefault();
+										decrementCartItem(cartItem._id, cartItem.selectedOptions)
+                  }}
 									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 								>
 									<!-- Minus Icon -->
@@ -111,7 +115,10 @@
 								</button>
 								<span class="mx-2">{cartItem.amount}</span>
 								<button
-									on:click|preventDefault={() => addToCart(cartItem, cartItem.selectedOptions)}
+									onclick={(e) => {
+                    e.preventDefault();
+                    addToCart(cartItem, cartItem.selectedOptions)
+                  }}
 									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
 								>
 									<!-- Plus Icon -->
@@ -120,7 +127,10 @@
 							</div>
 						</div>
 						<button
-							on:click|preventDefault={() => removeFromCart(cartItem._id, cartItem.selectedOptions)}
+							onclick={(e) => {
+                e.preventDefault();
+                removeFromCart(cartItem._id, cartItem.selectedOptions)
+              }}
 							class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 						>
 							<!-- Close Icon -->
@@ -221,7 +231,10 @@
 
 			<button
 				class="bg-gray-300 hover:bg-gray-400 dark:bg-[#303030] border-none rounded w-full h-12 font-medium dark:text-white text-base cursor-pointer hover:dark:bg-[#353535]"
-				on:click={() => goto('/cart/paymentroute/shipping')}
+				onclick={(e) => {
+          e.preventDefault();
+          goto('/cart/paymentroute/shipping')
+        }}
 			>
 				{m.cart_summary_button()}
 			</button>

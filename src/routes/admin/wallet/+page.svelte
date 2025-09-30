@@ -5,8 +5,8 @@
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 	import * as m from '$paraglide/messages';
-	import { Button } from '$lib/components/ui/button';
-	import { page } from '$app/stores';
+	import { Button } from '$lib/components/ui/button/index';
+	import { page } from '$app/state';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
@@ -14,59 +14,240 @@
 	import type { PageData } from './$types';
 	import { enhance } from '$app/forms';
 	import Input from '$lib/components/ui/input/input.svelte';
-	import { createTable, Render, Subscribe } from 'svelte-headless-table';
-	import { readable, writable } from 'svelte/store';
 	import * as Table from '$lib/components/ui/table';
+  import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+
+  import  {
+    type ColumnDef,
+    type ColumnFiltersState,
+    type PaginationState,
+    type SortingState,
+    type VisibilityState,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel
+  } from '@tanstack/table-core'
+  import { createRawSnippet } from 'svelte'
+  import {
+    FlexRender,
+    createSvelteTable,
+    renderSnippet
+  } from '$lib/components/ui/data-table/index'
+
 
 	// Datos iniciales y variables de estado
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
 	// Store donde guardaremos el array de retiros
-	const withdrawals = writable([]);
-
-	let walletData: any;
-	let openDialogwithdraw = false;
-	let openDialogRemove = false;
-	let withdrawalAmount = '';
-	let withdrawalAmountNumeric = 0;
-	let bankAccounts: any[] = [];
-	let exchangeRate = 0;
-	let usdEquivalent = 0;
-	let withdrawalsPaypalDetails: any = [];
+	let withdrawals = $state([]);
+	let walletData = $state<any>(undefined);
+	let openDialogwithdraw = $state<boolean>(false);
+	let openDialogRemove = $state<boolean>(false);
+	let withdrawalAmount = $state<string>('');
+	let withdrawalAmountNumeric = $state<number>(0);
+	let bankAccounts = $state<any[]>([]);
+	let exchangeRate = $state<number>(0);
+	let usdEquivalent = $state<number>(0);
+	let withdrawalsPaypalDetails = $state<any[]>([]);
 
 	// Estado del diálogo
-	let openDialogAddBankAccount = false;
+	let openDialogAddBankAccount = $state<boolean>(false);
 	// Si estamos editando, guardamos el objeto existente
-	let editingBankAccount: any = null;
-	let selectedAccountId: string = '';
+	let editingBankAccount = $state<any>(null);
+	let selectedAccountId = $state<string>('');
 
 	// Campos del formulario
-	let bankType = '';
-	let accountType = '';
-	let accountNumber = '';
-	let name = '';
-	let legalIdType = '';
-	let legalId = '';
+	let bankType = $state<string>('');
+	let accountType = $state<string>('');
+	let accountNumber = $state<string>('');
+	let name = $state<string>('');
+	let legalIdType = $state<string>('');
+	let legalId = $state<string>('');
 
 	// Flag para evitar múltiples inicializaciones
-	let isFirstOpen = true;
+	let isFirstOpen = $state<boolean>(true);
+
+  ////////// Tabla de retiros //////////
+  // Estados de la tabla TanStack
+	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+	let sorting = $state<SortingState>([]);
+	let columnFilters = $state<ColumnFiltersState>([]);
+	let columnVisibility = $state<VisibilityState>({});
+
+	// Tipo para los retiros
+	type Withdrawal = {
+		_id: string;
+		bankId: string;
+		amount: number;
+		status: 'pending' | 'completed' | 'failed';
+		requestDate: string;
+	};
+
+
+  // Definición de columnas para la tabla de retiros
+	const columns: ColumnDef<Withdrawal>[] = [
+		{
+			accessorKey: 'bankId',
+			header: 'Cuenta destino',
+			cell: ({ row }) => {
+				const bankIdSnippet = createRawSnippet<[string]>((getBankId) => {
+					const bankId = getBankId();
+					const account = walletData?.bankAccounts?.find((b: any) => b._id === bankId);
+					const displayText = account
+						? `${account.bankType} - ${account.accountNumber}`
+						: 'Cuenta no encontrada';
+					return {
+						render: () => `<div class="font-medium">${displayText}</div>`
+					};
+				});
+				return renderSnippet(bankIdSnippet, row.getValue('bankId'));
+			}
+		},
+		{
+			accessorKey: 'amount',
+			header: () => {
+				const amountHeaderSnippet = createRawSnippet(() => {
+					return {
+						render: () => `<div class="text-right">Monto</div>`
+					};
+				});
+				return renderSnippet(amountHeaderSnippet, '');
+			},
+			cell: ({ row }) => {
+				const amountSnippet = createRawSnippet<[string]>((getAmount) => {
+					const amount = Number(getAmount());
+					const formatted = formatPrice(amount, 'es-CO', 'COP');
+					return {
+						render: () => `<div class="text-right font-medium">${formatted}</div>`
+					};
+				});
+				return renderSnippet(amountSnippet, row.getValue('amount'));
+			}
+		},
+		{
+			accessorKey: 'status',
+			header: 'Estado',
+			cell: ({ row }) => {
+				const statusSnippet = createRawSnippet<[string]>((getStatus) => {
+					const status = getStatus();
+					let displayStatus = 'Desconocido';
+					let statusClass = 'bg-gray-100 text-gray-800';
+
+					switch (status) {
+						case 'pending':
+							displayStatus = 'Pendiente';
+							statusClass = 'bg-yellow-100 text-yellow-800';
+							break;
+						case 'completed':
+							displayStatus = 'Completado';
+							statusClass = 'bg-green-100 text-green-800';
+							break;
+						case 'failed':
+							displayStatus = 'Fallido';
+							statusClass = 'bg-red-100 text-red-800';
+							break;
+					}
+
+					return {
+						render: () => `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}">${displayStatus}</span>`
+					};
+				});
+				return renderSnippet(statusSnippet, row.getValue('status'));
+			}
+		},
+		{
+			accessorKey: 'requestDate',
+			header: 'Solicitado',
+			cell: ({ row }) => {
+				const dateSnippet = createRawSnippet<[string]>((getDate) => {
+					const dateValue = getDate();
+					const formatted = format(dateValue);
+					return {
+						render: () => `<div class="text-sm text-muted-foreground">${formatted}</div>`
+					};
+				});
+				return renderSnippet(dateSnippet, row.getValue('requestDate'));
+			}
+		}
+	];
+
+  // Crear la tabla con TanStack Table
+	const table = createSvelteTable({
+		get data() {
+			return withdrawals;
+		},
+		columns,
+		state: {
+			get pagination() {
+				return pagination;
+			},
+			get sorting() {
+				return sorting;
+			},
+			get columnVisibility() {
+				return columnVisibility;
+			},
+			get columnFilters() {
+				return columnFilters;
+			}
+		},
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onPaginationChange: (updater) => {
+			if (typeof updater === 'function') {
+				pagination = updater(pagination);
+			} else {
+				pagination = updater;
+			}
+		},
+		onSortingChange: (updater) => {
+			if (typeof updater === 'function') {
+				sorting = updater(sorting);
+			} else {
+				sorting = updater;
+			}
+		},
+		onColumnFiltersChange: (updater) => {
+			if (typeof updater === 'function') {
+				columnFilters = updater(columnFilters);
+			} else {
+				columnFilters = updater;
+			}
+		},
+		onColumnVisibilityChange: (updater) => {
+			if (typeof updater === 'function') {
+				columnVisibility = updater(columnVisibility);
+			} else {
+				columnVisibility = updater;
+			}
+		}
+	});
+
+  /////////////////////////
 
 	// Solo inicializar una vez cuando se abre el diálogo
-	$: if (openDialogAddBankAccount && isFirstOpen && editingBankAccount) {
-		bankType = editingBankAccount.bankType;
-		accountType = editingBankAccount.accountType;
-		accountNumber = editingBankAccount.accountNumber;
-		name = editingBankAccount.name;
-		legalIdType = editingBankAccount.legalIdType;
-		legalId = editingBankAccount.legalId;
-		isFirstOpen = false; // ya cargado
-	}
+	$effect(() => {
+		if (openDialogAddBankAccount && isFirstOpen && editingBankAccount) {
+			bankType = editingBankAccount.bankType;
+			accountType = editingBankAccount.accountType;
+			accountNumber = editingBankAccount.accountNumber;
+			name = editingBankAccount.name;
+			legalIdType = editingBankAccount.legalIdType;
+			legalId = editingBankAccount.legalId;
+			isFirstOpen = false; // ya cargado
+		}
+	});
 
 	// Reset cuando se cierra el modal
-	$: if (!openDialogAddBankAccount) {
-		isFirstOpen = true; // permite una nueva carga la próxima vez
-		// Opcional: puedes limpiar los campos si es para "crear nueva cuenta"
-	}
+	$effect(() => {
+		if (!openDialogAddBankAccount) {
+			isFirstOpen = true; // permite una nueva carga la próxima vez
+			// Opcional: puedes limpiar los campos si es para "crear nueva cuenta"
+		}
+	});
 
 	function editBankAccount(account: any) {
 		editingBankAccount = account;
@@ -74,9 +255,7 @@
 	}
 
 	/////////////////////////
-
-	let serverUrl: string;
-
+	let serverUrl = $state<string>('');
 	// Obtener url del servidor
 	async function getServerUrl() {
 		try {
@@ -133,14 +312,14 @@
 			const res = await fetch(`${serverUrl}/wallet/bankAccounts/delete/${accountId}`, {
 				method: 'DELETE',
 				headers: {
-					Authorization: `Bearer ${$page.data.sessionToken}`
+					Authorization: `Bearer ${page.data.sessionToken}`
 				}
 			});
 			if (!res.ok) throw new Error(res.statusText);
 			toast.success('Cuenta bancaria eliminada con éxito');
 
 			// Recargar los datos de la pagina
-			await fetchWallet($page.data?.user?.walletId);
+			await fetchWallet(page.data?.user?.walletId);
 		} catch (err) {
 			console.error(err);
 			toast.error('Error al eliminar la cuenta bancaria');
@@ -220,7 +399,7 @@
 			toast.error('El monto debe ser mayor a 0');
 			return;
 		}
-		const sessionToken = $page.data.sessionToken;
+		const sessionToken = page.data.sessionToken;
 		if (!sessionToken) {
 			toast.error('Token de sesión no encontrado');
 			return;
@@ -233,7 +412,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${$page.data?.sessionToken}`
+					Authorization: `Bearer ${page.data?.sessionToken}`
 				},
 				body: JSON.stringify({ amount })
 			});
@@ -241,7 +420,7 @@
 			if (response.ok) {
 				toast.success('Retiro solicitado con éxito');
 				openDialogwithdraw = false;
-				await fetchWallet($page.data?.user?.walletId);
+				await fetchWallet(page.data?.user?.walletId);
 			} else {
 				const errorMessage = await response.json();
 				console.error('Detalles del error:', errorMessage);
@@ -259,8 +438,8 @@
 	 * Trae todos los retiros de una wallet (history), ya vienen ordenados desc
 	 * por requestDate desde el backend.
 	 */
-	async function fetchAllWithdrawals(walletId: string, page = 1, limit = 50) {
-		const token = $page.data.sessionToken;
+	async function fetchAllWithdrawals(walletId: string, currentPage = 1, limit = 50) {
+		const token = page?.data.sessionToken;
 		if (!token) {
 			console.error('No session token available');
 			return [];
@@ -268,7 +447,7 @@
 
 		try {
 			const res = await fetch(
-				`${serverUrl}/wallet/getwithdrawals/${walletId}?page=${page}&limit=${limit}`,
+				`${serverUrl}/wallet/getwithdrawals/${walletId}?page=${currentPage}&limit=${limit}`,
 				{
 					method: 'GET',
 					headers: { Authorization: `Bearer ${token}` }
@@ -290,55 +469,16 @@
 
 	// Carga inicial de datos
 	onMount(async () => {
-		await fetchWallet($page.data?.user?.walletId);
+		await fetchWallet(page.data?.user?.walletId);
 		fetchExchangeRate();
 
 		// luego trae el historial completo de retiros
-		const list = await fetchAllWithdrawals($page.data?.user?.walletId, 1, 20);
-		withdrawals.set(list);
+		const list = await fetchAllWithdrawals(page.data?.user?.walletId, 1, 20);
+		withdrawals = list
 	});
 
-	/// Tabla de retiros ///
 
-	const table = createTable(withdrawals);
-
-	const columns = table.createColumns([
-		table.column({
-			header: 'Cuenta destino',
-			accessor: (row: any) => {
-				const account = walletData?.bankAccounts?.find((b: any) => b._id === row.bankId);
-				return account ? `${account.bankType} - ${account.accountNumber}` : 'Cuenta no encontrada';
-			}
-		}),
-		table.column({
-			header: 'Monto',
-			accessor: (row: any) => formatPrice(row.amount, 'es-CO', 'COP')
-		}),
-
-		table.column({
-			header: 'Estado',
-			accessor: (row: any) => {
-				if (row.status === 'pending') {
-					return 'Pendiente';
-				} else if (row.status === 'completed') {
-					return 'Completado';
-				} else if (row.status === 'failed') {
-					return 'Fallido';
-				} else {
-					return 'Desconocido';
-				}
-			}
-		}),
-		table.column({
-			header: 'Solicitado',
-			accessor: (row: any) => format(row.requestDate)
-		})
-		// puedes añadir una columna de acciones si quieres aprobar/rechazar
-	]);
-
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs } = table.createViewModel(columns);
-
-	console.log({ table });
+	$inspect({ table });
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-4 flex-shrink">
@@ -400,7 +540,7 @@
 				<div class="flex flex-row-reverse h-10 w-full">
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger class="m-2">
-							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem" ></iconify-icon>
+							<iconify-icon icon="charm:menu-kebab" height="1.5rem" width="1.5rem"></iconify-icon>
 						</DropdownMenu.Trigger>
 						<DropdownMenu.Content>
 							<DropdownMenu.Group>
@@ -434,10 +574,10 @@
 
 				<div class="flex flex-col items-center justify-center flex-1 gap-2">
 					{#if account.bankType === 'NEQUI'}
-						<iconify-icon icon="arcticons:nequi-colombia" height="5rem" width="5rem" ></iconify-icon>
+						<iconify-icon icon="arcticons:nequi-colombia" height="5rem" width="5rem"></iconify-icon>
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 					{:else}
-						<iconify-icon icon="arcticons:bancolombia" height="5rem" width="5rem" ></iconify-icon>
+						<iconify-icon icon="arcticons:bancolombia" height="5rem" width="5rem"></iconify-icon>
 						<div class="text-lg font-semibold">{account.accountNumber}</div>
 						<div class="text-sm text-gray-600 dark:text-gray-400">{account.accountType}</div>
 					{/if}
@@ -448,12 +588,14 @@
 		{#if bankAccounts.length < 2}
 			<button
 				class="flex items-center justify-center bg-gray-200 dark:bg-[#202020] h-48 w-96 rounded-md dark:text-white"
-				on:click={() => {
+				onclick={(e) => {
+          e.preventDefault();
 					editingBankAccount = null;
 					openDialogAddBankAccount = true;
 				}}
+        aria-label="Agregar nueva cuenta bancaria"
 			>
-				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem" ></iconify-icon>
+				<iconify-icon icon="ph:plus-bold" height="2rem" width="2rem"></iconify-icon>
 			</button>
 		{/if}
 	</div>
@@ -464,7 +606,8 @@
 		<h2 class="my-5 text-xl font-semibold">{m.admin_wallet_withdrawals_title()}</h2>
 		<Button
 			class="bg-gray-200 hover:bg-gray-300 text-black dark:text-black"
-			on:click={() => {
+			onclick={(e: any) => {
+        e.preventDefault();
 				openDialogwithdraw = true;
 			}}>Retirar</Button
 		>
@@ -503,46 +646,112 @@
 	</Card.Root>
 </div>
 
-{#if $withdrawals.length > 0}
+{#if withdrawals.length > 0}
 	<div class="mx-10 my-5 mt-10">
-		<div class="rounded-md border">
-			<Table.Root {...$tableAttrs}>
-				<Table.Header>
-					{#each $headerRows as headerRow}
-						<Subscribe rowAttrs={headerRow.attrs()}>
+		<div class="w-full">
+			<div class="flex items-center py-4">
+				<Input
+					placeholder="Filtrar por estado..."
+					value={(table.getColumn('status')?.getFilterValue() as string) ?? ''}
+					oninput={(e) => table.getColumn('status')?.setFilterValue(e.currentTarget.value)}
+					onchange={(e) => {
+						table.getColumn('status')?.setFilterValue(e.currentTarget.value);
+					}}
+					class="max-w-sm"
+				/>
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button {...props} variant="outline" class="ml-auto">
+								Columnas <ChevronDownIcon class="ml-2 size-4" />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						{#each table
+							.getAllColumns()
+							.filter((col) => col.getCanHide()) as column (column)}
+							<DropdownMenu.CheckboxItem
+								class="capitalize"
+								bind:checked={
+									() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)
+								}
+							>
+								{column.id}
+							</DropdownMenu.CheckboxItem>
+						{/each}
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</div>
+			<div class="rounded-md border">
+				<Table.Root>
+					<Table.Header>
+						{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 							<Table.Row>
-								{#each headerRow.cells as cell (cell.id)}
-									<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()}>
-										<Table.Head {...attrs}>
-											<Render of={cell.render()} />
-										</Table.Head>
-									</Subscribe>
+								{#each headerGroup.headers as header (header.id)}
+									<Table.Head>
+										{#if !header.isPlaceholder}
+											<FlexRender
+												content={header.column.columnDef.header}
+												context={header.getContext()}
+											/>
+										{/if}
+									</Table.Head>
 								{/each}
 							</Table.Row>
-						</Subscribe>
-					{/each}
-				</Table.Header>
-				<Table.Body {...$tableBodyAttrs}>
-					{#each $pageRows as row (row.id)}
-						<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
-							<Table.Row {...rowAttrs}>
-								{#each row.cells as cell (cell.id)}
-									<Subscribe attrs={cell.attrs()} let:attrs>
-										<Table.Cell {...attrs}>
-											<Render of={cell.render()} />
-										</Table.Cell>
-									</Subscribe>
+						{/each}
+					</Table.Header>
+					<Table.Body>
+						{#each table.getRowModel().rows as row (row.id)}
+							<Table.Row>
+								{#each row.getVisibleCells() as cell (cell.id)}
+									<Table.Cell>
+										<FlexRender
+											content={cell.column.columnDef.cell}
+											context={cell.getContext()}
+										/>
+									</Table.Cell>
 								{/each}
 							</Table.Row>
-						</Subscribe>
-					{/each}
-				</Table.Body>
-			</Table.Root>
+						{:else}
+							<Table.Row>
+								<Table.Cell colspan={columns.length} class="h-24 text-center">
+									No hay retiros registrados.
+								</Table.Cell>
+							</Table.Row>
+						{/each}
+					</Table.Body>
+				</Table.Root>
+			</div>
+			<div class="flex items-center justify-end space-x-2 pt-4">
+				<div class="text-muted-foreground flex-1 text-sm">
+					{table.getFilteredRowModel().rows.length} retiro(s) en total.
+				</div>
+				<div class="space-x-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onclick={() => table.previousPage()}
+						disabled={!table.getCanPreviousPage()}
+					>
+						Anterior
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onclick={() => table.nextPage()}
+						disabled={!table.getCanNextPage()}
+					>
+						Siguiente
+					</Button>
+				</div>
+			</div>
 		</div>
 	</div>
 {:else}
 	<p class="text-center text-gray-500 mt-10">No hay retiros en proceso.</p>
 {/if}
+
 
 <!-- Dialog Add/Update Bank Account -->
 <Dialog.Root bind:open={openDialogAddBankAccount}>
@@ -558,7 +767,7 @@
 					action="?/saveBankAccount"
 					use:enhance={() => {
 						return async () => {
-							await fetchWallet($page.data?.user?.walletId); // Recargar datos
+							await fetchWallet(page.data?.user?.walletId); // Recargar datos
 							openDialogAddBankAccount = false;
 							toast.success(
 								editingBankAccount ? 'Cuenta actualizada con éxito' : 'Cuenta agregada con éxito'
@@ -693,7 +902,10 @@
 			</Dialog.Description>
 		</Dialog.Header>
 
-		<form on:submit|preventDefault={handleSubmit}>
+		<form onsubmit={(e) => {
+      e.preventDefault();
+      handleSubmit()
+    }}>
 			<div class="flex w-full">
 				<label for="withdrawAmount"
 					>{m.admin_wallet_withdrawals_modal_amount_withdraw_label()}</label

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import { Input } from '$lib/components/ui/input';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';

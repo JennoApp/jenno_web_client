@@ -28,7 +28,7 @@
 		}
 	}
 
-	$: console.log($paymentMethod);
+	$inspect($paymentMethod);
 </script>
 
 <div class="w-full h-80 mt-14">
@@ -38,7 +38,10 @@
 			<button
 				class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030]
     {$paymentMethod === 'mercadopago' ? 'border-2 border-[#202020] dark:border-gray-200' : ''}"
-				on:click={() => selectedMercadoPagoButton()}
+				onclick={(e) => {
+          e.preventDefault();
+          selectedMercadoPagoButton()
+        }}
         aria-label="Seleccionar Mercado Pago como método de pago"
 			>
 				<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem" ></iconify-icon>
@@ -61,7 +64,8 @@
 			<div class="flex flex-col items-center">
 				<button
 					class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed"
-					on:click={() => {
+					onclick={(e) => {
+            e.preventDefault();
 						toast.warning('Nequi estará disponible próximamente.');
 					}}
 				>
@@ -80,7 +84,10 @@
 					'nequi'
 						? 'border-2 border-[#202020] dark:border-gray-200'
 						: ''}"
-					on:click={() => selectedNequiButton()}
+					onclick={(e) => {
+            e.preventDefault();
+            selectedNequiButton()
+          }}
 				>
 					<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-24 h-24" />
 				</button>
@@ -107,7 +114,10 @@
 					'paypal'
 						? 'border-2 border-[#202020] dark:border-gray-200'
 						: ''}"
-					on:click={() => selectedPaypalButton()}
+					onclick={(e) => {
+            e.preventDefault();
+            selectedPaypalButton()
+          }}
           aria-label="Seleccionar PayPal como método de pago"
 				>
 					<iconify-icon icon="logos:paypal" height="5rem" width="5rem"></iconify-icon>
@@ -132,7 +142,10 @@
 			''
 				? 'disabled:bg-black'
 				: ''}"
-			on:click={() => paymentSubmit()}
+			onclick={(e) => {
+        e.preventDefault();
+        paymentSubmit()
+      }}
 		>
 			Continuar
 		</button>

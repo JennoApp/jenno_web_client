@@ -1,22 +1,21 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button/index';
 	import { format } from 'timeago.js';
 	import * as m from '$paraglide/messages';
 	import Status from '$lib/components/Status.svelte';
 	import Options from '$lib/components/Options.svelte';
 	import { goto } from '$app/navigation';
 	import { formatPrice } from '$lib/utils/formatprice';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let data: PageServerData;
+	let { data }: { data: PageServerData } = $props();
 
-	let shoppingOrdersStore = writable(data.shoppingOrders || []);
-	let metaStore = writable(data.meta || {});
+	let shoppingOrdersStore = $state(data.shoppingOrders || []);
+	let metaStore = $state(data.meta || {});
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('');
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -28,12 +27,15 @@
 		}
 	}
 
-	async function loadShoppingOrders(page: number, limit: number = 10) {
+	async function loadShoppingOrders(pageNumber: number, limit: number = 10) {
 		try {
-			await getServerUrl();
+      if (!serverUrl) {
+        await getServerUrl();
+      }
 
+      // Fetch a la API para obtener las órdenes de compra del usuario
 			const response = await fetch(
-				`${serverUrl}/users/shopping/${$page.data.user._id}?page=${page}&limit=${limit}`
+				`${serverUrl}/users/shopping/${page.data.user._id}?page=${pageNumber}&limit=${limit}`
 			);
 			const result = await response.json();
 
@@ -45,8 +47,8 @@
 			);
 
 			// devuelve { data: [], meta: {} }
-			shoppingOrdersStore.set(products);
-			metaStore.set(result.meta);
+			shoppingOrdersStore = products;
+			metaStore = result.meta;
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
@@ -57,7 +59,7 @@
 		loadShoppingOrders(newPage, 10);
 	}
 
-	$: console.log({ shoppingOrdersData: $shoppingOrdersStore });
+	$inspect({ shoppingOrdersData: shoppingOrdersStore });
 </script>
 
 <div class="flex max-w-full h-20 px-5 m-5 py-6 flex-shrink justify-between">
@@ -66,7 +68,8 @@
 	<div class="flex gap-3">
 		<Button
 			class="text-black bg-gray-200 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-gray-300 dark:text-gray-200"
-			on:click={() => {
+			onclick={(e: any) => {
+        e.preventDefault();
 				goto('/shopping/reviews');
 			}}
 		>
@@ -80,7 +83,8 @@
 		>
 		<Button
 			class="text-black bg-gray-200 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-gray-300 dark:text-gray-200"
-			on:click={() => {
+			onclick={(e: any) => {
+        e.preventDefault();
 				goto('/shopping/history');
 			}}
 		>
@@ -95,7 +99,7 @@
 	</div>
 </div>
 
-{#if Array.isArray($shoppingOrdersStore) && $shoppingOrdersStore.length > 0}
+{#if Array.isArray(shoppingOrdersStore) && shoppingOrdersStore.length > 0}
 	<div class="overflow-x-auto w-full p-4">
 		<table class="w-full border-collapse text-left text-sm">
 			<thead>
@@ -112,7 +116,7 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
-				{#each $shoppingOrdersStore as order}
+				{#each shoppingOrdersStore as order}
 					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
@@ -171,7 +175,7 @@
 	<div class="flex justify-between mt-2 m-5">
 		<div class="">
 			<h3 class="text-sm dark:text-[#707070]">
-        Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
+        Items: {metaStore.itemCount} | Página: {metaStore.page} de {metaStore.pageCount}
 			</h3>
 		</div>
 
@@ -180,8 +184,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasPreviousPage}
-				on:click={() => changePage(Number($metaStore.page) - 1)}
+				disabled={!metaStore.hasPreviousPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) - 1)
+        }}
 			>
 				Anterior
 			</Button>
@@ -189,8 +196,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasNextPage}
-				on:click={() => changePage(Number($metaStore.page) + 1)}
+				disabled={!metaStore.hasNextPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) + 1)
+        }}
 			>
 				Siguiente
 			</Button>

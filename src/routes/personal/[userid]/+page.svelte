@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import { page } from '$app/stores';
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';

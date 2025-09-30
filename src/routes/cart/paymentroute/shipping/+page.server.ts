@@ -1,6 +1,7 @@
 import type { Actions } from './$types.js'
-import { z } from 'zod'
+import { z, ZodError } from 'zod'
 import { PRIVATE_SERVER_URL } from '$env/static/private'
+import { errors } from '@playwright/test'
 
 const shippingSchema = z.object({
   completeName: z
@@ -52,28 +53,31 @@ export const actions: Actions = {
     try {
       const { completeName, document, address, country, state, city, postalCode, phoneNumber } = shippingSchema.parse(formData)
 
-      console.log({ completeName, document, address, country, state, city, postalCode, phoneNumber })
+      console.log("Formulario recibido", { completeName, document, address, country, state, city, postalCode, phoneNumber })
+
 
       // Obtener la información actual del usuario
       const currentShippingInfo = locals?.user?.shippingInfo
-      console.log({ currentShippingInfo })
 
       // Si la información no ha cambiado, evitar la llamada al servidor
-      if (
-        completeName === currentShippingInfo.completeName &&
-        document === currentShippingInfo.document &&
-        address === currentShippingInfo.address &&
-        country === currentShippingInfo.country &&
-        state === currentShippingInfo.state &&
-        city === currentShippingInfo.city &&
-        postalCode === currentShippingInfo.postalCode &&
-        phoneNumber === currentShippingInfo.phoneNumber
-      ) {
-        console.log("No se detectaron cambios en la información de envío")
-        return {
-          success: true
+      if (currentShippingInfo) {
+        if (
+          completeName === currentShippingInfo.completeName &&
+          document === currentShippingInfo.document &&
+          address === currentShippingInfo.address &&
+          country === currentShippingInfo.country &&
+          state === currentShippingInfo.state &&
+          city === currentShippingInfo.city &&
+          postalCode === currentShippingInfo.postalCode &&
+          phoneNumber === currentShippingInfo.phoneNumber
+        ) {
+          console.log("No se detectaron cambios en la información de envío")
+          return {
+            success: true
+          }
         }
       }
+
 
       // Si hay cambios, hacer la actualización
       const responseUpdateShippinginfo = await fetch(`${PRIVATE_SERVER_URL}/users/shipping/${locals?.user?._id}`, {
@@ -99,14 +103,20 @@ export const actions: Actions = {
       }
 
     } catch (err: any) {
-      const { fieldErrors: errors } = err?.flatten()
+      if (err instanceof ZodError) {
+        const { fieldErrors: errors } = err?.flatten()
 
+        return {
+          errors,
+          success: false
+        }
+      }
+
+      console.error("Error inesperado al procesar el formulario de envío:", err)
       return {
-        errors,
-        success: false
+        success: false,
+        errors: { _form: ["Unexpected server error"] }
       }
     }
-
-
   }
 }

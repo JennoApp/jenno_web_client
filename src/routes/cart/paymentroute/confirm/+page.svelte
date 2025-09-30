@@ -7,7 +7,7 @@
 		subtotal as sub
 		// totalEnvio,
 	} from '$lib/stores/cartStore';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Separator } from '$lib/components/ui/separator';
 	import { toast } from 'svelte-sonner';
 	import { formatPrice } from '$lib/utils/formatprice';
@@ -16,27 +16,29 @@
 	import { onMount } from 'svelte';
 	import { paymentMethod } from '$lib/stores/paymentMethod';
 
-  import MercadoPagoLoader from '$lib/components/MercadoPagoLoader.svelte';
+	import MercadoPagoLoader from '$lib/components/MercadoPagoLoader.svelte';
 
-	let shippingData = $page.data?.user?.shippingInfo;
-	let openDialogPayment = false;
+	let shippingData = page.data?.user?.shippingInfo;
+	let openDialogPayment = $state(false);
 
 	// Estado del carrito y calculos
-	$: subtotal = $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0);
-	$: totalEnvio = $cartItems.reduce(
-		(acc, product) => acc + product.shippingfee * product.amount,
-		0
+	let subtotal = $derived(
+		$cartItems.reduce((acc, product) => acc + product.price * product.amount, 0)
 	);
-	$: P_goal = subtotal + totalEnvio;
+	let totalEnvio = $derived(
+		$cartItems.reduce((acc, product) => acc + product.shippingfee * product.amount, 0)
+	);
+	let P_goal = $derived(subtotal + totalEnvio);
 
-	$: transferAmount = computeCommission($paymentMethod, P_goal);
+	let transferAmount = $derived(computeCommission($paymentMethod, P_goal));
 
 	// total a pagar segun metodo de pago seleccionado
-	$: total = computeTotal($paymentMethod, P_goal);
+	let total = $derived(computeTotal($paymentMethod, P_goal));
 
 	// Conversion a USD (solo para PayPal)
-	let exchangeRate = 0;
-	let usdEquivalent: number = 0;
+	let exchangeRate = $state(0);
+	let usdEquivalent = $state<number>(0);
+
 	onMount(() => {
 		if ($paymentMethod === 'paypal') {
 			fetchExchangeRate();
@@ -55,27 +57,29 @@
 		}
 	}
 
-	$: if (exchangeRate && total) {
-		if ($paymentMethod === 'paypal') {
-			usdEquivalent = parseFloat(((total + 0.3) / exchangeRate).toFixed(2));
+	$effect(() => {
+		if (exchangeRate && total) {
+			if ($paymentMethod === 'paypal') {
+				usdEquivalent = parseFloat(((total + 0.3) / exchangeRate).toFixed(2));
+			} else {
+				usdEquivalent = parseFloat((total / exchangeRate).toFixed(2));
+			}
 		} else {
-			usdEquivalent = parseFloat((total / exchangeRate).toFixed(2));
+			usdEquivalent = 0;
 		}
-	} else {
-		usdEquivalent = 0;
-	}
+	});
 
-	$: console.log({ exchangeRate, T: total, usdEquivalent });
-  $: console.log({user: $page.data.user})
+	$inspect({ exchangeRate, T: total, usdEquivalent });
+	$inspect({ user: page.data.user });
 
 	async function payWithMercadoPago() {
 		try {
-      localStorage.removeItem('mercadopago_preference_id')
-      localStorage.removeItem('mp-preference-id')
+			localStorage.removeItem('mercadopago_preference_id');
+			localStorage.removeItem('mp-preference-id');
 
 			// Construir items para la preferencia de Mercado Pago
 			const items = $cartItems.map((item) => ({
-        id: item._id,
+				id: item._id,
 				title: item.productname,
 				description: item.description,
 				quantity: item.amount,
@@ -83,16 +87,16 @@
 				unit_price: item.price
 			}));
 
-      const PGoalAdjusted = P_goal < 20000 ? (P_goal * 0.95) : P_goal;
+			const PGoalAdjusted = P_goal < 20000 ? P_goal * 0.95 : P_goal;
 
 			// Calcular la comisión para Mercado Pago
 			const commission = computeCommission('mercadopago', PGoalAdjusted);
 
-      const commissionRounded = Math.round(commission);
+			const commissionRounded = Math.round(commission);
 
 			// Agregar un item adicional para el costo de la transferencia (comisión)
 			items.push({
-        id: 'commission',
+				id: 'commission',
 				title: 'Comisión de transferencia',
 				description: 'Costo de transferencia de pago con Mercado Pago',
 				quantity: 1,
@@ -108,8 +112,8 @@
 				},
 				body: JSON.stringify({
 					items,
-					email: $page.data.user.email,
-          // firstName: $page.data.user.username,
+					email: page.data.user.email
+					// firstName: $page.data.user.username,
 				})
 			});
 
@@ -120,7 +124,7 @@
 				toast.error('No se pudo iniciar el pago con Mercado Pago');
 			}
 		} catch (error) {
-			console.error('Error al pagar con Mercado Pago:', error);
+			console.error('Error al pagar con Mercado Pago:', JSON.stringify(error));
 			toast.error('Error al iniciar pago con Mercado Pago');
 		}
 	}
@@ -140,34 +144,38 @@
 <div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
 	<div class="lg:w-3/5 p-3">
 		{#each $cartItems as cartItem}
-			<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
-				<div
-					class="flex gap-3 items-center rounded-lg mb-3 p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
-				>
-					<img
-						class="w-12 h-12 object-cover rounded-sm mr-2"
-						src={`${cartItem.imgs[0]}`}
-						alt={cartItem.productname}
-					/>
-					<div class="flex w-full mx-7 justify-between">
-						<div class="flex gap-5 items-center">
-							<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-							<!-- Mostrar selectedOptions solo si existen -->
-							{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
-								<div class="flex gap-3">
-									<h3>{cartItem.selectedOptions[0].name}:</h3>
-									<p>{cartItem.selectedOptions[0].value}</p>
+			{#if cartItem?.username && cartItem?._id}
+				<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
+					<div
+						class="flex gap-3 items-center rounded-lg mb-3 p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
+					>
+						<img
+							class="w-12 h-12 object-cover rounded-sm mr-2"
+							src={`${cartItem.imgs[0]}`}
+							alt={cartItem.productname}
+						/>
+						<div class="flex w-full mx-7 justify-between">
+							<div class="flex gap-5 items-center">
+								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
+								<!-- Mostrar selectedOptions solo si existen -->
+								{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
+									<div class="flex gap-3">
+										<h3>{cartItem.selectedOptions[0].name}:</h3>
+										<p>{cartItem.selectedOptions[0].value}</p>
+									</div>
+								{/if}
+								<p class="text-base dark:text-white">
+									{formatPrice(cartItem.price, 'es-Co', 'COP')}
+								</p>
+								<div class="flex gap-1">
+									<h3>Cantidad:</h3>
+									<span class="mx-2">{cartItem.amount}</span>
 								</div>
-							{/if}
-							<p class="text-base dark:text-white">{formatPrice(cartItem.price, 'es-Co', 'COP')}</p>
-							<div class="flex gap-1">
-								<h3>Cantidad:</h3>
-								<span class="mx-2">{cartItem.amount}</span>
 							</div>
 						</div>
 					</div>
-				</div>
-			</a>
+				</a>
+			{/if}
 		{/each}
 	</div>
 
@@ -232,7 +240,10 @@
 		<!-- Shipping Submit -->
 		<button
 			class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
-			on:click|preventDefault={() => handlePaymentButton()}
+			onclick={(e) => {
+				e.preventDefault();
+				handlePaymentButton();
+			}}
 		>
 			Pagar
 		</button>

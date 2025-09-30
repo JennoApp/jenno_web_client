@@ -1,23 +1,23 @@
 <script lang="ts">
-	import { cn } from "$lib/utils";
+	import { cn, type WithElementRef } from "$lib/utils.js";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	type $$Props = HTMLAttributes<HTMLTableRowElement> & {
-		"data-state"?: unknown;
-	};
-
-	let className: $$Props["class"] = undefined;
-	export { className as class };
+	let {
+		ref = $bindable(null),
+		class: className,
+		children,
+		...restProps
+	}: WithElementRef<HTMLAttributes<HTMLTableRowElement>> = $props();
 </script>
 
 <tr
+	bind:this={ref}
+	data-slot="table-row"
 	class={cn(
-		"border-b border-gray-300 dark:border-[#303030] transition-colors hover:bg-gray-200 dark:hover:bg-[#252525] data-[state=selected]:bg-muted",
+		"hover:[&,&>svelte-css-wrapper]:[&>th,td]:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
 		className
 	)}
-	{...$$restProps}
-	on:click
-	on:keydown
+	{...restProps}
 >
-	<slot />
+	{@render children?.()}
 </tr>

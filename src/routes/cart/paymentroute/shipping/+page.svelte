@@ -3,20 +3,22 @@
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
 	import type { ActionData } from './$types';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import * as m from '$paraglide/messages';
 
-	export let form: ActionData;
-	$: userData = $page.data.user;
+	let { form }: { form: ActionData } = $props()
+	let userData = $derived(page.data.user)
 
-	$: if (userData) {
+	$effect(() => {
+    if (userData) {
 		console.log(userData.shippingInfo);
-	}
+	}})
 
-	$: if (form?.success) {
+	$effect(() => {
+    if (form?.success) {
 		toast.success('Informacion guardada!!');
 		goto('/cart/paymentroute/payment');
-	}
+	}})
 </script>
 
 {#if userData}
