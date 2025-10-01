@@ -1,8 +1,7 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
 	import Image from '$lib/components/Image.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import { writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button/index';
 	import { format } from 'timeago.js';
 	import * as m from '$paraglide/messages';
 	import TableActions from './table_actions.svelte';
@@ -10,15 +9,15 @@
 	import Options from '$lib/components/Options.svelte';
 	import { goto } from '$app/navigation';
 	import { formatPrice } from '$lib/utils/formatprice';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let data: PageServerData;
+	let { data }: { data: PageServerData } = $props();
 
-	let shoppingWithoutReviewsStore = writable(data.shoppingWithoutReviews || []);
-	let metaStore = writable(data.meta || {});
+	let shoppingWithoutReviewsStore = $state(data.shoppingWithoutReviews || []);
+	let metaStore = $state(data.meta || {});
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('');
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -30,12 +29,14 @@
 		}
 	}
 
-	async function loadSales(page: number, limit: number = 10) {
+	async function loadSales(pageNumber: number, limit: number = 10) {
 		try {
-			await getServerUrl();
+      if (!serverUrl) {
+        await getServerUrl();
+      }
 
 			const response = await fetch(
-				`${serverUrl}/users/shoppingwithoutreviews/${$page.data.user._id}?page=${page}&limit=${limit}`
+				`${serverUrl}/users/shoppingwithoutreviews/${page.data.user._id}?page=${pageNumber}&limit=${limit}`
 			);
 			const result = await response.json();
 
@@ -47,8 +48,8 @@
 			);
 
 			// devuelve { data: [], meta: {} }
-			shoppingWithoutReviewsStore.set(shoppingList);
-			metaStore.set(result.meta);
+			shoppingWithoutReviewsStore = shoppingList
+			metaStore = result.meta
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
@@ -59,13 +60,17 @@
 		loadSales(newPage, 10);
 	}
 
-	$: console.log({ shoppingData: $shoppingWithoutReviewsStore });
+	$inspect({ shoppingData: shoppingWithoutReviewsStore });
 </script>
 
 <div class="flex p-5">
 	<button
 		class="flex justify-center items-center h-10 w-10 dark:bg-[#202020] rounded-sm hover:dark:bg-[#252525]"
-		on:click|preventDefault={() => goto('/shopping')}
+		onclick={(e) => {
+      e.preventDefault()
+      goto('/shopping')
+    }}
+    aria-label="Volver a Compras"
 	>
 		<iconify-icon
 			icon="material-symbols:chevron-left-rounded"
@@ -82,7 +87,7 @@
 	</div>
 </div>
 
-{#if Array.isArray($shoppingWithoutReviewsStore) && $shoppingWithoutReviewsStore.length > 0}
+{#if Array.isArray(shoppingWithoutReviewsStore) && shoppingWithoutReviewsStore.length > 0}
 	<div class="overflow-x-auto w-full p-4">
 		<table class="w-full border-collapse text-left text-sm">
 			<thead>
@@ -100,7 +105,7 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
-				{#each $shoppingWithoutReviewsStore as order}
+				{#each shoppingWithoutReviewsStore as order}
 					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
@@ -161,7 +166,7 @@
 	<div class="flex justify-between mt-2 m-5">
 		<div class="">
 			<h3 class="text-sm dark:text-[#707070]">
-				Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
+				Items: {metaStore.itemCount} | Página: {metaStore.page} de {metaStore.pageCount}
 			</h3>
 		</div>
 
@@ -170,8 +175,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasPreviousPage}
-				on:click={() => changePage(Number($metaStore.page) - 1)}
+				disabled={!metaStore.hasPreviousPage}
+				onclick={(e: any) => {
+          e.preventDefault()
+          changePage(Number(metaStore.page) - 1)
+        }}
 			>
 				Anterior
 			</Button>
@@ -179,8 +187,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasNextPage}
-				on:click={() => changePage(Number($metaStore.page) + 1)}
+				disabled={!metaStore.hasNextPage}
+				onclick={(e: any) => {
+          e.preventDefault()
+          changePage(Number(metaStore.page) + 1)
+        }}
 			>
 				Siguiente
 			</Button>
@@ -188,7 +199,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
-		<iconify-icon icon="ic:round-reviews" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="ic:round-reviews" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 		<p class="text-lg font-semibold text-[#707070] mb-2">No tienes Reseñas pendientes</p>
 		<p class="text-lg text-[#707070]">{m.shopping_noshopping_p()}</p>
 	</div>

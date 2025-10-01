@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import { Input } from '$lib/components/ui/input';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
@@ -53,7 +53,7 @@
 					<div
 						class="flex justify-center items-center h-24 w-24 ml-5 bg-gray-200 dark:bg-[#202020] rounded-full"
 					>
-						<iconify-icon icon="mdi:user" height="3rem" width="3rem" class="text-[#707070]" />
+						<iconify-icon icon="mdi:user" height="3rem" width="3rem" class="text-[#707070]" ></iconify-icon>
 					</div>
 				{/if}
 			</div>

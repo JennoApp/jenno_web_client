@@ -25,7 +25,7 @@
 			height="5rem"
 			width="5rem"
 			class="text-[#707070] mb-4"
-		/>
+		></iconify-icon>
 		<p class="text-lg text-[#707070] mb-2">No sigues ninguna tienda aún</p>
 		<p class="text-lg text-[#707070]">
 			Inicia sesión o explora las tiendas para encontrar productos interesantes.

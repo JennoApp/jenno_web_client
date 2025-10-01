@@ -2,7 +2,6 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import Label from '$lib/components/Label.svelte';
@@ -23,14 +22,16 @@
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { toast } from 'svelte-sonner';
 
-	export let data: CardData;
+	let { data }: { data: CardData } = $props();
 
-	let profileImg = '';
-	let openDialogreview = false;
-	let userName = '';
+	let profileImg = $state('');
+	let openDialogreview = $state(false);
+	let userName = $state('');
+	let serverUrl = $state<string>('');
+	let imageLoaded = $state<boolean>(false);
+	let totalStars = $state<number>(0);
 
 	// Obtener url del servidor
-	let serverUrl: string;
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -42,7 +43,31 @@
 		}
 	}
 
-	onMount(async () => {
+	const calculateStars = (reviews: any[]) => {
+		if (!Array.isArray(reviews) || reviews.length === 0) {
+			return 0;
+		}
+
+		const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0);
+
+		return total / reviews.length;
+	};
+
+	async function getUserName(id: string) {
+		try {
+			await getServerUrl();
+			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
+
+			if (response.ok) {
+				const data = await response.json();
+				userName = data.username;
+			}
+		} catch (error) {
+			console.error('Error al cargar el nombre del usuario');
+		}
+	}
+
+	async function loadProfileImg() {
 		await getServerUrl();
 
 		if (!data || !data?.user) {
@@ -61,47 +86,27 @@
 		} catch (error: any) {
 			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
 		}
-	});
-
-	let rating: number = 3.5;
-
-	const calculateStars = (reviews: any[]) => {
-		if (!Array.isArray(reviews) || reviews.length === 0) {
-			return 0;
-		}
-
-		const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0);
-
-		return total / reviews.length;
-	};
-
-	$: totalStars = calculateStars(data?.reviews || []);
-
-	async function getUserName(id: string) {
-		try {
-			await getServerUrl();
-			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
-
-			if (response.ok) {
-				const data = await response.json();
-				userName = data.username;
-			}
-		} catch (error) {
-			console.error('Error al cargar el nombre del usuario');
-		}
 	}
-
-	$: getUserName(data.user);
 
 	function handleOpenDialgoReview() {
 		openDialogreview = true;
 	}
 
-	let imageLoaded = false;
-
 	function handleImageLoaded() {
 		imageLoaded = true;
 	}
+
+	$effect(() => {
+		loadProfileImg();
+	});
+
+	$effect(() => {
+		getUserName(data.user);
+	});
+
+	$effect(() => {
+		totalStars = calculateStars(data?.reviews || []);
+	});
 </script>
 
 {#if data && data._id && userName}
@@ -117,7 +122,7 @@
 							class="h-8 w-8 object-cover rounded-full"
 							src={profileImg}
 							alt="logo"
-							on:load={handleImageLoaded}
+							onload={handleImageLoaded}
 						/>
 					{:else}
 						<div
@@ -127,11 +132,17 @@
 							></iconify-icon>
 						</div>
 					{/if}
-					<a href={`/${userName}`} class="truncate font-medium max-w-[200px]">
+					<button
+						onclick={(e) => {
+							e.preventDefault();
+							goto(`/${userName}`);
+						}}
+						class="truncate font-medium max-w-[200px]"
+					>
 						<h4>
 							{userName}
 						</h4>
-					</a>
+					</button>
 				</div>
 
 				<!--  ####################### -->
@@ -170,7 +181,11 @@
 					</div>
 					<button
 						class="flex items-center"
-						on:click|preventDefault={() => handleOpenDialgoReview()}
+						onclick={(e) => {
+              e.preventDefault()
+              handleOpenDialgoReview()
+              }}
+						aria-label="Ver reseñas del producto"
 					>
 						<iconify-icon
 							class="text-[#707070] dark:text-white"
@@ -182,7 +197,8 @@
 
 					<button
 						class="flex items-center"
-						on:click|preventDefault={() => {
+						onclick={(e) => {
+              e.preventDefault()
 							const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
 							navigator.clipboard
 								.writeText(product_link)
@@ -193,6 +209,7 @@
 									toast.error('Error al copiar el enlace. Intentelo nuevamente');
 								});
 						}}
+						aria-label="Compartir producto"
 					>
 						<iconify-icon
 							class="text-[#707070] dark:text-white"
@@ -294,7 +311,7 @@
 												height="1.5rem"
 												width="1.5rem"
 												class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
-											/>
+											></iconify-icon>
 										{/if}
 										<h3 class="text-base font-semibold">{review.userName}</h3>
 									</div>
@@ -308,7 +325,7 @@
 												class="flex justify-center items-center h-9 w-9 {getStartColor(
 													review.stars
 												)}"
-											/>
+											></iconify-icon>
 										{/each}
 									</div>
 								</div>

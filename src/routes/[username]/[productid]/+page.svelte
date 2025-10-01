@@ -20,37 +20,53 @@
 		price: number;
 		category: string;
 		user: string;
+		status?: string;
+		quantity?: number;
+		additionalInfo?: string;
+		reviews?: any[];
+		shippingfee?: number;
 	}
 
 	import * as Dialog from '$lib/components/ui/dialog';
 	import type { PageServerData } from './$types';
 	import * as Carousel from '$lib/components/ui/carousel/index';
 	import { type CarouselAPI } from '$lib/components/ui/carousel/context';
-	import { addToCart, decrementCartItem, getTotal, cartItems } from '$lib/stores/cartStore';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { addToCart, cartItems } from '$lib/stores/cartStore';
+	import { goto } from '$app/navigation';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import RandomProducts from '$lib/components/Randomuserproducts.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import * as m from '$paraglide/messages';
 	import { toast } from 'svelte-sonner';
 	import Label from '$lib/components/Label.svelte';
-  import StarRating from '$lib/components/StarRating.svelte';
+	import StarRating from '$lib/components/StarRating.svelte';
 
-	export let data: PageServerData;
-	let userInfo: any = $page.data.user;
-	// let product: CardData
-	$: product = data.product;
+	let { data: propData } = $props();
+  let data: PageServerData = $state(propData);
 
-	$: console.log({ product: data.product });
-	$: console.log({ userInfo });
+
+	let userInfo: any = page.data.user;
+	let product = $derived<any>(data.product);
+
+	let serverUrl = $state<string>('');
+	let api = $state<CarouselAPI>();
+	let indexCarousel = $state<number>(0);
+	let profileImg = $state<string>('');
+	let openDialogreview = $state<boolean>(false);
+	let quantity = $state(1);
+	let selectedOptions = $state<any[]>([]);
+	let userName = $state<string>('');
+
+	// Función para sincronizar carousel
+	function syncCarousel(index: number) {
+		indexCarousel = index;
+	}
 
 	// Obtener url del servidor
-	let serverUrl: string;
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -62,46 +78,70 @@
 		}
 	}
 
-	/// Sync Corousels index
-	let api: CarouselAPI;
-	let indexCarousel = 0;
-	function syncCarousel(index: number) {
-		indexCarousel = index;
+	// get username
+	async function getUserName(id: string) {
+		try {
+			await getServerUrl();
+			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
+
+			if (response.ok) {
+				const data = await response.json();
+				userName = data.username;
+			}
+		} catch (error) {
+			console.error('Error al cargar el nombre del usuario');
+		}
 	}
 
-	let profileImg = '';
-	let openDialogreview = false;
+	$inspect('product', product);
+	$inspect('userInfo', userInfo);
+	$inspect('pathname', page.url.pathname);
+	$inspect(`/${product.username}/${product._id}`);
+	$inspect('cartItems', $cartItems);
+	$inspect('selectedOptions', selectedOptions);
 
-	onMount(async () => {
-		await getServerUrl();
-		if (!product || !product?.user) {
-			console.error(
-				'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
-			);
-			return;
+	// calcular la calificacion
+	const calculateStars = (reviews: any[]) => {
+		if (!Array.isArray(reviews) || reviews.length === 0) {
+			return 0;
 		}
 
-		try {
-			const response = await fetch(`${serverUrl}/users/getprofileimg/${product?.user}`);
+		const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0);
 
-			const userData = await response.json();
-			console.log({ userData });
+		return total / reviews.length;
+	};
 
-			profileImg = userData?.profileImg;
-		} catch (error: any) {
-			console.error(`Error al obtener la imagen de perfil: ${error.message}`);
+	let totalStars = $derived(calculateStars(product.reviews || []));
+	$inspect('totalStars', totalStars);
+
+	$effect(() => {
+		if (product?.user) {
+			getUserName(product.user);
 		}
 	});
 
-	$: console.log($page.url.pathname);
-	$: console.log(`/${product.username}/${product._id}`);
+	$effect(() => {
+		getServerUrl().then(() => {
+			if (!product || !product?.user) {
+				console.error(
+					'No se ha proporcionado el objeto de datos necesario para obtener la imagen de perfil'
+				);
+				return;
+			}
+
+			fetch(`${serverUrl}/users/getprofileimg/${product?.user}`)
+				.then((response) => response.json())
+				.then((userData) => {
+					console.log({ userData });
+					profileImg = userData?.profileImg;
+				})
+				.catch((error: any) => {
+					console.error(`Error al obtener la imagen de perfil: ${error.message}`);
+				});
+		});
+	});
 
 	// product
-	let rating = 4.3;
-	let quantity: number = 1;
-	let selectedOptions: any[] = [];
-	let userName = '';
-
 	function handleAddToCart() {
 		// Verificar si el usuario está en sesión
 		if (!userInfo || !userInfo._id) {
@@ -156,44 +196,9 @@
 		}
 	}
 
-	$: console.log($cartItems);
-	$: console.log(selectedOptions);
-
 	function handleOpenDialgoReview() {
 		openDialogreview = true;
 	}
-
-	// calcular la calificacion
-
-	const calculateStars = (reviews: any[]) => {
-		if (!Array.isArray(reviews) || reviews.length === 0) {
-			return 0;
-		}
-
-		const total = reviews.reduce((accum, review) => accum + (review.stars || 0), 0);
-
-		return total / reviews.length;
-	};
-
-	$: totalStars = calculateStars(product.reviews || []);
-	$: console.log({ totalStars });
-
-	// get username
-	async function getUserName(id: string) {
-		try {
-			await getServerUrl();
-			const response = await fetch(`${serverUrl}/users/getusername/${id}`);
-
-			if (response.ok) {
-				const data = await response.json();
-				userName = data.username;
-			}
-		} catch (error) {
-			console.error('Error al cargar el nombre del usuario');
-		}
-	}
-
-	$: getUserName(product.user);
 </script>
 
 <svelte:head>
@@ -212,7 +217,7 @@
 			'Encuentra los mejores productos en Jenno. Compra fácil y seguro.'}
 	/>
 	<meta property="og:type" content="product" />
-	<meta property="og:url" content={$page.url.href} />
+	<meta property="og:url" content={page.url.href} />
 	<meta property="og:image" content={data.product?.imgs[0]} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
@@ -269,7 +274,13 @@
 					{#each product.imgs as image, i (i)}
 						<Carousel.Item class="basis-1/3">
 							<div class="flex justify-center">
-								<button class="pl-1 w-11/12 h-24" on:click|preventDefault={() => syncCarousel(i)}>
+								<button
+									class="pl-1 w-11/12 h-24"
+									onclick={(e) => {
+										e.preventDefault();
+										syncCarousel(i);
+									}}
+								>
 									<img
 										class="w-full h-24 object-cover rounded-md {i !== indexCarousel
 											? 'grayscale'
@@ -295,16 +306,19 @@
 				</h2>
 
 				<div class="flex gap-5 items-center mt-1">
-					<div
-						class="flex gap-2 items-center"
-					>
+					<div class="flex gap-2 items-center">
 						<StarRating rating={totalStars} />
 						{#if totalStars !== 0}
 							<span class="text-base font-semibold">{totalStars}</span>
 						{/if}
 					</div>
 
-					<button on:click|preventDefault={() => handleOpenDialgoReview()}>
+					<button
+						onclick={(e) => {
+							e.preventDefault();
+							handleOpenDialgoReview();
+						}}
+					>
 						<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">
 							{m.product_page_reviews()}
 						</h3>
@@ -313,7 +327,12 @@
 			</div>
 
 			{#if userName}
-				<a href={`/${userName}`}>
+				<button
+					onclick={(e) => {
+
+						goto(`/${userName}`);
+					}}
+				>
 					<div
 						class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
 					>
@@ -327,12 +346,13 @@
 							/>
 						{:else}
 							<div class="flex justify-center items-center h-14 w-14 bg-[#151515] rounded-full">
-								<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]" />
+								<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]"
+								></iconify-icon>
 							</div>
 						{/if}
 						<h2 class="text-lg font-semibold">{userName}</h2>
 					</div>
-				</a>
+				</button>
 			{:else}
 				<!-- Skeleton loader -->
 				<div
@@ -397,7 +417,10 @@
 					class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md"
 				>
 					<button
-						on:click|preventDefault={() => (quantity = Math.max(1, quantity - 1))}
+						onclick={(e) => {
+							e.preventDefault();
+							quantity = Math.max(1, quantity - 1);
+						}}
 						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary disabled:opacity-50"
 						disabled={quantity <= 1}
 					>
@@ -410,7 +433,7 @@
 						min="1"
 						max={product.quantity}
 						class="mx-2 text-xl font-semibold text-center w-16 bg-transparent outline-none appearance-none"
-						on:blur={(e) => {
+						onblur={(e) => {
 							let v = parseInt(e?.target?.value);
 							if (isNaN(v) || v < 1) {
 								v = 1;
@@ -422,7 +445,8 @@
 					/>
 					<!-- <span class="mx-2 text-xl font-semibold">{quantity}</span> -->
 					<button
-						on:click|preventDefault={() => {
+						onclick={(e) => {
+							e.preventDefault();
 							quantity = Math.min(product.quantity, quantity + 1);
 						}}
 						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary disabled:opacity-50"
@@ -433,13 +457,19 @@
 					</button>
 				</div>
 				<button
-					on:click|preventDefault={() => handleAddToCart()}
+					onclick={(e) => {
+						e.preventDefault();
+						handleAddToCart();
+					}}
 					class="dark:bg-[#202020] border-none rounded w-3/5 h-12 bg-gray-200 dark:text-gray-200 text-black text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#252525]"
 					>{m.card_button_addtocart()}</button
 				>
 			</div>
 			<button
-				on:click={() => handleBuyNow()}
+				onclick={(e) => {
+					e.preventDefault();
+					handleBuyNow();
+				}}
 				class="bg-gray-200 dark:bg-gray-200 border-none rounded w-full h-12 text-[#202020] text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#202020] dark:hover:text-white"
 				>{m.card_button_buynow()}</button
 			>
@@ -524,7 +554,7 @@
 											height="1.5rem"
 											width="1.5rem"
 											class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full"
-										/>
+										></iconify-icon>
 									{/if}
 									<h3 class="text-base font-semibold">{review.userName}</h3>
 								</div>
@@ -536,7 +566,7 @@
 											height="1.5rem"
 											width="1.5rem"
 											class="flex justify-center items-center h-9 w-9 {getStartColor(review.stars)}"
-										/>
+										></iconify-icon>
 									{/each}
 								</div>
 							</div>

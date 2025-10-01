@@ -1,20 +1,20 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import Bar from '$lib/components/Bar.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import type { PageServerData } from './$types';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 
-	export let data: PageServerData;
+	let { data }: { data: PageServerData } = $props();
 
 	// variables de estado
-	let serverUrl: string;
-	let walletData: any;
-	let totalRevenue = 0;
-	let numberOfSales = 0;
+	let serverUrl = $state<string>('');
+	let walletData = $state<any>(undefined);
+	let totalRevenue = $state<number>(0);
+	let numberOfSales = $state<number>(0);
 
 	// Obtener url del servidor
 	async function getServerUrl() {
@@ -51,7 +51,7 @@
 		}
 
 		const data = await response.json();
-		totalRevenue = data.totalRevenue
+		totalRevenue = data.totalRevenue;
 	};
 
 	// Obtener el número de ventas del usuario
@@ -79,7 +79,7 @@
 
 			// Asigna los datos a numberOfSales
 			const data = await response.json();
-			numberOfSales = data.numberOfSales
+			numberOfSales = data.numberOfSales;
 		} catch (error) {
 			console.error('Error al obtener el número de ventas:', error);
 		}
@@ -117,16 +117,17 @@
 	}
 
 	// Datos dependiente del usuario
-	$: if ($page.data.user) {
-		getTotalRevenue($page.data.user._id);
-		getNumberOfSales($page.data.user._id);
-		fetchWallet($page.data.user.walletId);
-	}
+	$effect(() => {
+		if (page.data.user) {
+			getTotalRevenue(page.data.user._id);
+			getNumberOfSales(page.data.user._id);
+			fetchWallet(page.data.user.walletId);
+		}
+	});
 
 	// Depuracion
-	$: console.log($page.data.user);
-	$: console.log({ data });
-	$: console.log($page.data.user);
+	$inspect(page.data.user);
+	$inspect(data);
 </script>
 
 <div class="grid gap-4 m-5 md:grid-cols-2 lg:grid-cols-3">
@@ -137,10 +138,10 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="text-2xl font-bold">
-        {walletData !== undefined
+				{walletData !== undefined
 					? formatPrice(walletData?.totalEarned, 'es-CO', 'COP')
 					: 'Cargando...'}
-      </div>
+			</div>
 			<!-- <p class="text-xs text-muted-foreground">+20.1% from last month</p> -->
 		</Card.Content>
 	</Card.Root>
@@ -152,7 +153,7 @@
 		</Card.Header>
 		<Card.Content>
 			<div class="text-2xl font-bold">
-				{$page.data.user !== undefined ? $page.data.user.followers.length : ''}
+				{page.data.user !== undefined ? page.data.user.followers.length : ''}
 			</div>
 			<!-- <p class="text-xs text-muted-foreground">+180.1% from last month</p> -->
 		</Card.Content>
@@ -207,6 +208,17 @@
 								</div>
 							</div>
 						{/each}
+					{:else}
+						<div class="w-full h-full mt-14">
+							<div class="flex flex-col items-center justify-center h-full w-full">
+								<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4"
+								></iconify-icon>
+
+								<h1 class="text-xl font-semibold text-[#707070] mb-2">
+									{m.admin_sales_nosales_title()}
+								</h1>
+							</div>
+						</div>
 					{/if}
 				</div>
 			</ScrollArea>

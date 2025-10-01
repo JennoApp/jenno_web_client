@@ -1,15 +1,17 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { cn } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import * as m from '$paraglide/messages';
 
-	$: user = $page.data.user;
-	$: url = $page.url.pathname;
+	let { children } = $props();
 
-	$: console.log({ user: user });
+	let isSmallView = $state(false);
 
-	$: SettingsNavItems = [
+	let user = $derived(page.data.user);
+	let url = $derived(page.url.pathname);
+
+	let SettingsNavItems = $derived.by(() => [
 		{
 			title: `${m.settings_menu_profile()}`,
 			href: '/settings/profile'
@@ -34,10 +36,7 @@
 			title: `${m.settings_menu_appearance()}`,
 			href: '/settings/appearance'
 		}
-	];
-
-	///
-	let isSmallView = false;
+	])
 </script>
 
 <div class="flex w-full p-5">
@@ -46,7 +45,8 @@
 		<nav class={`flex flex-col  space-y-2 `}>
 			{#each SettingsNavItems as item}
 				<button
-					on:click|preventDefault={() => {
+					onclick={(e) => {
+						e.preventDefault();
 						goto(item.href);
 						isSmallView = !isSmallView;
 					}}
@@ -62,13 +62,14 @@
 	</div>
 	<div class={`px-5 md:w-5/6 ${isSmallView ? 'w-full' : 'hidden md:block'}`}>
 		<button
-			on:click={() => {
+			onclick={(e) => {
+				e.preventDefault();
 				isSmallView = !isSmallView;
 			}}
 		>
 			<!-- Close Icon -->
 			<iconify-icon icon="ion:arrow-back" height="1.5rem" width="1.5rem"></iconify-icon>
 		</button>
-		<slot />
+		{@render children()}
 	</div>
 </div>

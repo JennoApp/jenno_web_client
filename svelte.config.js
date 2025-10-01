@@ -6,7 +6,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
   preprocess: vitePreprocess(),
 
-  kit: { 
+  kit: {
     adapter: adapter(),
     alias: {
       $paraglide: "./src/paraglide",

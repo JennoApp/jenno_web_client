@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import { page } from '$app/stores';
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
@@ -73,7 +73,7 @@
 					/>
 				{:else}
 					<div class="flex justify-center items-center h-32 w-32 bg-[#202020] rounded-full">
-						<iconify-icon icon="mdi:user" height="3.5rem" width="3.5rem" class="text-[#707070]" />
+						<iconify-icon icon="mdi:user" height="3.5rem" width="3.5rem" class="text-[#707070]" ></iconify-icon>
 					</div>
 				{/if}
 			</div>

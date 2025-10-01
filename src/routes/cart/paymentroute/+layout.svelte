@@ -1,9 +1,11 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Progress } from '$lib/components/ui/progress';
 	import * as m from '$paraglide/messages';
 
-	$: pathnameRoute = $page.url.pathname;
+  let { children } = $props()
+
+	let pathnameRoute = $derived(page.url.pathname)
 </script>
 
 <div class="flex flex-col justify-center items-center">
@@ -51,4 +53,4 @@
 	</div>
 </div>
 
-<slot />
+{@render children()}

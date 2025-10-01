@@ -8,7 +8,7 @@
 		height="7rem"
 		width="7rem"
 		class="text-[#707070] mb-4"
-	/>
+	></iconify-icon>
 	<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_marketing_nomarketing_title()}</h1>
 	<p class="text-lg text-[#707070]">{m.admin_marketing_nomarketing_p()}</p>
 </div>

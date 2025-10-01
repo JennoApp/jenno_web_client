@@ -12,7 +12,7 @@
       const response = await fetch(`/api/server`)
       const data = await response.json()
 
-      serverUrl = data.server_url 
+      serverUrl = data.server_url
     } catch (error) {
       console.error('Error al solicitar Paypal Id')
     }
@@ -45,7 +45,7 @@
 			height="5rem"
 			width="5rem"
 			class="text-[#707070] mb-4"
-		/>
+		></iconify-icon>
 		<p class="text-lg text-[#707070] mb-2">No hay productos que coincidan con tu búsqueda: "{$search}"</p>
 		<p class="text-lg text-[#707070]">
 			Intenta con otros términos o categorías para encontrar lo que buscas.

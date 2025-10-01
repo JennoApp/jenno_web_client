@@ -1,31 +1,34 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import Card from '$lib/components/Card.svelte';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/components/ui/button/index';
 	import type { PageServerData } from './$types';
 	import { toast } from 'svelte-sonner';
 	import { location_data } from '$lib/stores/ipaddressStore';
 	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { writable } from 'svelte/store';
 	import { getThemeConfig } from '$lib/utils/themes';
 	import type { ThemeConfig } from '$lib/utils/themes';
 	import type Theme from 'quill/core/theme';
 	import { applyTheme } from '$lib/stores/customThemesStore';
 
-	export let data: PageServerData;
-	let userInfo: any = $page.data.user;
+	let { data }: { data: PageServerData } = $props();
 
-	let productsStore = writable<any>([]);
-	let metaStore = writable<any>();
-	let pageload = 1;
-	let initialLoading = true;
-	let selectedCategoryStore = writable<string>('');
-	let storeCategories = writable<string[]>([]);
+	let userInfo = $derived(page.data.user);
+
+	let productsStore = $state<any>([]);
+	let metaStore = $state<any>();
+	let pageload = $state(1);
+	let initialLoading = $state(true);
+	let selectedCategory = $state<string>('');
+	let serverUrl = $state<string>('');
+
+	let dataStatus = $derived(data.status);
+	let userData = $derived(data.userData);
+	let isFollowing = $derived(userData.followers?.includes(page.data?.user?._id));
 
 	// Obtener url del servidor
-	let serverUrl: string;
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -37,23 +40,13 @@
 		}
 	}
 
-	$: dataStatus = data.status;
-	$: userData = data.userData;
-	$: isFollowing = userData.followers?.includes($page.data?.user?._id);
-
-	function extractUniqueCategories(products: any[]) {
-		return Array.from(new Set(products.map((p) => p.category).filter(Boolean)))
-			.sort(() => Math.random() - 0.5) // shuffle
-			.slice(0, 10);
-	}
-
 	// Cargar productos del Usuario
 	async function loadInitialProducts(userId: any, country?: string) {
 		await getServerUrl();
 		const limit: number = 20;
 		const resolvedCountry = country ?? 'Colombia';
 
-		const categoryQuery = $selectedCategoryStore ? `&category=${$selectedCategoryStore}` : '';
+		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
 
 		try {
 			const response = await fetch(
@@ -66,38 +59,33 @@
 			}
 
 			const { data, meta } = await response.json();
-			productsStore.set(data);
-			metaStore.set(meta);
+			productsStore = data;
+			metaStore = meta;
 			pageload = 1;
-
-			// Solo actualiza storeCategories si la categoría es '' (todos)
-			if ($selectedCategoryStore === '') {
-				const categories = extractUniqueCategories(data);
-				storeCategories.set(categories);
-			}
 		} catch (error) {
 			console.log('Error al cargar los productos del usuario: ', error);
 		}
 	}
 
 	// Carga los datos si el resutaldo del data.Status es diferente a 500
-	$: if (dataStatus === 500) {
-		console.log('usuario no existe');
-		// products = []; // vacia la lista de productos cuando el usuario no existe
+	$effect(() => {
+		if (dataStatus === 500) {
+			console.error('usuario no existe');
 
-		productsStore.set([]);
-		metaStore.set({});
-	} else {
-		if ($location_data) {
-			loadInitialProducts(data.userData._id, $location_data.data[0].country);
+			productsStore = [];
+			metaStore = [];
 		} else {
-			loadInitialProducts(data.userData._id);
+			if ($location_data) {
+				loadInitialProducts(data.userData._id, $location_data.data[0].country);
+			} else {
+				loadInitialProducts(data.userData._id);
+			}
 		}
-	}
+	});
 
 	const handleFollow = async (customerId: string) => {
 		await getServerUrl();
-		if ($page.data.isSession) {
+		if (page.data.isSession) {
 			try {
 				const followingResponse = await fetch(`${serverUrl}/users/following/${customerId}`, {
 					method: 'POST',
@@ -135,7 +123,7 @@
 		}
 
 		const conversationData = {
-			members: [$page.data.user?._id, userData._id]
+			members: [page.data.user?._id, userData._id]
 		};
 
 		try {
@@ -162,7 +150,7 @@
 		}
 	};
 
-	onMount(async () => {
+	$effect(() => {
 		if ($location_data) {
 			loadInitialProducts(data.userData._id, $location_data.data[0].country);
 			initialLoading = false;
@@ -175,11 +163,11 @@
 	async function loadingProducts() {
 		await getServerUrl();
 
-		const country = $page.url.searchParams.get('country') || 'Colombia';
+		const country = page.url.searchParams.get('country') || 'Colombia';
 		const limit = 20;
-		const nextPage = $metaStore?.nextPage || pageload + 1;
+		const nextPage = metaStore?.nextPage || pageload + 1;
 
-    const categoryQuery = $selectedCategoryStore ? `&category=${$selectedCategoryStore}` : '';
+		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
 
 		try {
 			const response = await fetch(
@@ -188,8 +176,8 @@
 			const result = await response.json();
 
 			// Agrega los nuevos productos a la store
-			productsStore.update((products) => [...products, ...result.data]);
-			metaStore.set(result.meta);
+			productsStore = [...productsStore, ...result.data];
+			metaStore = result.meta;
 			pageload = nextPage;
 		} catch (error) {
 			console.log('Error al cargar más productos:', error);
@@ -197,57 +185,47 @@
 	}
 
 
-	async function handleCategoryClick(category: string) {
-		await getServerUrl();
-
-		if ($selectedCategoryStore === category) return;
-
-		selectedCategoryStore.set(category);
-
-		const userId = data.userData._id;
-		const country = $page.url.searchParams.get('country') || 'Colombia';
-		const limit = 20;
-		const page = 1;
-		const categoryQuery = category ? `&category=${category}` : '';
-
-		const endpoint = `${serverUrl}/products/user/${userId}?page=${page}&limit=${limit}&country=${country}${categoryQuery}`;
-
-		try {
-			const response = await fetch(endpoint);
-			if (!response.ok) {
-				console.error('Error al obtener productos del usuario:', response.statusText);
-			} else {
-				const { data, meta } = await response.json();
-				productsStore.set(data);
-				metaStore.set(meta);
-				pageload = 1;
-			}
-		} catch (error) {
-			console.error('Error en la petición al cargar productos del usuario:', error);
-		}
+	// Shuffle function for categories
+	function shuffleArray<T>(array: T[]): T[] {
+		return array.sort(() => Math.random() - 0.5);
 	}
+
+	let storeCategories = $derived(
+		shuffleArray(
+			Array.from(new Set(productsStore.map((product: any) => product.category).filter(Boolean)))
+		).slice(0, 10)
+	);
 
 	// --- SCROLL INFINITO CON INTERSECTION OBSERVER ---
-	let loadingRef: HTMLElement | undefined;
-	$: if (loadingRef) {
-		const loadingObserver = new IntersectionObserver(async (entries) => {
-			const element = entries[0];
-			if (element.isIntersecting) {
-				console.log('Cargando nuevos productos...');
-				await loadingProducts();
-			}
-		});
-		loadingObserver.observe(loadingRef);
-	}
+	let loadingRef = $state<HTMLElement | undefined>();
+
+	$effect(() => {
+		if (loadingRef) {
+			const loadingObserver = new IntersectionObserver(async (entries) => {
+				const element = entries[0];
+				if (element.isIntersecting) {
+					console.log('Cargando nuevos productos...');
+					await loadingProducts();
+				}
+			});
+			loadingObserver.observe(loadingRef);
+
+			return () => {
+				loadingObserver.disconnect();
+			};
+		}
+	});
 
 	// Obtener la configuración del tema
 	// $: userTheme = data.userData?.theme || 'default';
-	$: userTheme = 'ocean_blue';
-	$: themeConfig = getThemeConfig(userTheme);
+	let userTheme = $derived(data.userData?.theme || 'ocean_blue');
+	let themeConfig = $derived(getThemeConfig(userTheme));
 
-	$: if ($page.data.userData?.theme) {
-		applyTheme('ocean_blue');
-	}
+	$effect(() => {
+		if (page.data.userData?.theme) {
+			applyTheme('ocean_blue');
+		}
+	});
 </script>
 
 <svelte:head>
@@ -267,7 +245,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<!-- Usamos la URL actual; por ejemplo, si usas $page.url.href, asegúrate de importarlo -->
-	<meta property="og:url" content={$page.url.href} />
+	<meta property="og:url" content={page.url.href} />
 	<!-- La imagen destacada: si el usuario tiene profileImg, la usamos; de lo contrario, una imagen por defecto -->
 	<meta
 		property="og:image"
@@ -315,7 +293,8 @@
 					/>
 				{:else}
 					<div class="flex justify-center items-center h-32 w-32 bg-[#202020] rounded-full">
-						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="text-[#707070]" />
+						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="text-[#707070]">
+						</iconify-icon>
 					</div>
 				{/if}
 			</div>
@@ -335,7 +314,8 @@
 					<!-- Botón de Compartir Tienda para el dueño -->
 					<button
 						class="w-[80%] mx-auto flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
-						on:click|preventDefault={() => {
+						onclick={(e) => {
+							e.preventDefault();
 							const tienda = user?.username;
 							const store_link = `https://www.jenno.com.co/${tienda}`;
 							navigator.clipboard
@@ -402,27 +382,33 @@
 	>
 		<!-- Botón "Todos" -->
 		<button
-			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
+		class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
     ${
-			$selectedCategoryStore === ''
+			selectedCategory === ''
 				? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 				: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 		}`}
-			on:click={() => handleCategoryClick('')}
+			onclick={(e) => {
+				e.preventDefault();
+				selectedCategory = '';
+			}}
 		>
 			Todos
 		</button>
 
 		<!-- Categorías de la tienda -->
-		{#each $storeCategories as category}
+		{#each storeCategories as category}
 			<button
-				class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
+			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
       ${
-				$selectedCategoryStore === category
+				selectedCategory === category
 					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 			}`}
-				on:click={() => handleCategoryClick(category)}
+				onclick={(e) => {
+					e.preventDefault();
+					selectedCategory = category;
+				}}
 			>
 				{category}
 			</button>
@@ -447,15 +433,11 @@
 			</svg>
 			<span class="ml-2 text-gray-500 dark:text-gray-300 text-sm">Cargando productos...</span>
 		</div>
-	{:else if $productsStore.length === 0}
+	{:else if productsStore.length === 0}
 		<!-- No hay productos disponibles para el cliente -->
 		<div class="flex flex-col items-center justify-center mt-40 w-full">
-			<iconify-icon
-				icon="tabler:package-off"
-				height="5rem"
-				width="5rem"
-				class="text-[#707070] mb-4"
-			/>
+			<iconify-icon icon="tabler:package-off" height="5rem" width="5rem" class="text-[#707070] mb-4"
+			></iconify-icon>
 			<h1 class="text-xl font-semibold text-[#707070] mb-2">
 				Esta tienda aún no tiene productos disponibles
 			</h1>
@@ -466,14 +448,14 @@
 	{:else}
 		<!-- Lista de productos -->
 		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-5 gap-5 grid-flow-row">
-			{#each $productsStore as productData}
+			{#each productsStore as productData}
 				<Card data={productData} />
 			{/each}
 		</div>
 	{/if}
 
 	<!-- Div para el observer del scroll infinito (se muestra si hay siguiente página) -->
-	{#if $metaStore?.hasNextPage}
+	{#if metaStore?.hasNextPage}
 		<div class="flex justify-center items-center py-4" bind:this={loadingRef}>
 			<svg
 				class="animate-spin h-8 w-8 text-gray-500 dark:text-gray-300"

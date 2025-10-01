@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button/index';
 	import { format } from 'timeago.js';
 	import * as m from '$paraglide/messages';
 	import Status from '$lib/components/Status.svelte';
@@ -11,21 +10,21 @@
 	import TableActions from './table-actions.svelte';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let data: PageServerData;
+	let { data }: { data: PageServerData } = $props();
 
-	let salesOrdersStore = writable(data.salesList || []);
-	let metaStore = writable(data.meta || {});
+	let salesOrdersStore = $state(data.salesList || []);
+	let metaStore = $state(data.meta || {});
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('');
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
-			const data = await response.json();
+			const responseData = await response.json();
 
-			serverUrl = data.server_url;
+			serverUrl = responseData.server_url;
 		} catch (error) {
 			console.error('Error al obtener la url del servidor: ', error);
 		}
@@ -33,10 +32,12 @@
 
 	async function loadSales(page: number, limit: number = 10) {
 		try {
-			await getServerUrl();
+			if (!serverUrl) {
+			  await getServerUrl();
+			}
 
 			const response = await fetch(
-				`${serverUrl}/users/orders/${$page.data.user._id}?page=${page}&limit=${limit}`
+				`${serverUrl}/users/orders/${page?.data.user._id}?page=${page}&limit=${limit}`
 			);
 			const result = await response.json();
 
@@ -48,8 +49,8 @@
 			);
 
 			// devuelve { data: [], meta: {} }
-			salesOrdersStore.set(products);
-			metaStore.set(result.meta);
+			salesOrdersStore = products;
+			metaStore = result.meta;
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
@@ -60,14 +61,15 @@
 		loadSales(newPage, 10);
 	}
 
-	$: console.log({ salesOrdersData: $salesOrdersStore });
+	$inspect({ salesOrdersData: salesOrdersStore });
 </script>
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
 	<h2 class="text-xl font-semibold text-black dark:text-gray-200">Ventas</h2>
 	<Button
 		class="bg-gray-200 dark:bg-[#252525] dark:hover:bg-[#353535] hover:bg-gray-300 text-black dark:text-gray-200"
-		on:click={() => {
+		onclick={(e: any) => {
+      e.preventDefault();
 			goto('/admin/sales/history');
 		}}
 	>
@@ -76,12 +78,12 @@
 			height="1.1rem"
 			width="1.1rem"
 			class="text-black dark:text-gray-200 flex justify-center items-center"
-		/>
+		></iconify-icon>
 		<span class="ml-3">Historial</span></Button
 	>
 </div>
 
-{#if Array.isArray($salesOrdersStore) && $salesOrdersStore.length > 0}
+{#if Array.isArray(salesOrdersStore) && salesOrdersStore.length > 0}
 	<div class="overflow-x-auto w-full p-4">
 		<table class="w-full border-collapse text-left text-sm">
 			<thead>
@@ -101,7 +103,7 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
-				{#each $salesOrdersStore as order}
+				{#each salesOrdersStore as order}
 					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
@@ -146,12 +148,12 @@
 							<Options options={order?.product?.selectedOptions[0]} />
 						</td>
 
-            <!-- Informacion de envio -->
+						<!-- Informacion de envio -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							<ShippingInFoDialog shippingInfo={order} />
 						</td>
 
-            <!-- Comprador -->
+						<!-- Comprador -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							<CustomerCell data={order} />
 						</td>
@@ -166,7 +168,7 @@
 							{format(order?.updatedAt)}
 						</td>
 
-            <!-- Acciones -->
+						<!-- Acciones -->
 						<td class="py-2 px-4 dark:text-gray-200">
 							<TableActions id={order?._id} />
 						</td>
@@ -179,7 +181,7 @@
 	<div class="flex justify-between mt-2 m-5">
 		<div class="">
 			<h3 class="text-sm dark:text-[#707070]">
-				Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
+				Items: {metaStore.itemCount} | Página: {metaStore.page} de {metaStore.pageCount}
 			</h3>
 		</div>
 
@@ -188,8 +190,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasPreviousPage}
-				on:click={() => changePage(Number($metaStore.page) - 1)}
+				disabled={!metaStore.hasPreviousPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) - 1)
+        }}
 			>
 				Anterior
 			</Button>
@@ -197,8 +202,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasNextPage}
-				on:click={() => changePage(Number($metaStore.page) + 1)}
+				disabled={!metaStore.hasNextPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) + 1)
+        }}
 			>
 				Siguiente
 			</Button>
@@ -206,7 +214,8 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center h-full w-full">
-		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="mdi:cash" height="5rem" width="5rem" class="text-[#707070] mb-4"
+		></iconify-icon>
 
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_sales_nosales_title()}</h1>
 		<p class="text-lg text-[#707070]">{m.admin_sales_nosales_p()}</p>

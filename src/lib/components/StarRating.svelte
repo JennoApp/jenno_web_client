@@ -27,12 +27,12 @@
 <div class="flex gap-1 items-center">
   {#each stars as _, i}
     <div class="star-container">
-      <iconify-icon icon="mdi:star" width="1.5rem" height="1.5rem" />
+      <iconify-icon icon="mdi:star" width="1.5rem" height="1.5rem" ></iconify-icon>
       <div
         class="star-full"
         style="width: {Math.min(Math.max(rating - i, 0), 1) * 100}%"
       >
-        <iconify-icon icon="mdi:star" width="1.5rem" height="1.5rem" />
+        <iconify-icon icon="mdi:star" width="1.5rem" height="1.5rem" ></iconify-icon>
       </div>
     </div>
   {/each}

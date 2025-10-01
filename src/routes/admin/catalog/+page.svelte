@@ -1,20 +1,19 @@
 <script lang="ts">
 	import type { PageServerData } from './$types';
-	import { Button } from '$lib/components/ui/button';
-	import { writable } from 'svelte/store';
+	import { Button } from '$lib/components/ui/button/index';
 	import DataTableActions from './data-table-actions.svelte';
 	import * as m from '$paraglide/messages';
 	import { goto } from '$app/navigation';
 	import StatusVisibility from '$lib/components/StatusVisibility.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
-	export let data: PageServerData;
+	let { data }: { data: PageServerData } = $props();
 
-	let productsStore = writable(data.products || []);
-	let metaStore = writable(data.meta || {});
+	let productsStore = $state(data.products || []);
+	let metaStore = $state(data.meta || {});
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('')
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -26,18 +25,21 @@
 		}
 	}
 
-	async function loadProducts(page: number, limit: number = 10) {
+	async function loadProducts(pageNumber: number, limit: number = 10) {
 		try {
-			await getServerUrl();
+      if (!serverUrl) {
+        await getServerUrl();
+      }
 
+      // Llama a la API para obtener los productos del usuario
 			const response = await fetch(
-				`${serverUrl}/products/admin/user/${$page.data.user._id}?page=${page}&limit=${limit}&country=Colombia`
+				`${serverUrl}/products/admin/user/${page?.data.user._id}?page=${pageNumber}&limit=${limit}&country=Colombia`
 			);
 			const result = await response.json();
 
 			// devuelve { data: [], meta: {} }
-			productsStore.set(result.data);
-			metaStore.set(result.meta);
+			productsStore = result.data
+			metaStore = result.meta
 		} catch (error) {
 			console.error('Error al cargar los productos del usuario: ', error);
 		}
@@ -48,7 +50,7 @@
 		loadProducts(newPage, 10);
 	}
 
-	$: console.log({ productsData: $productsStore });
+	$inspect({ productsData: productsStore });
 </script>
 
 <div class="flex justify-between max-w-full h-20 px-5 m-5 py-6 flex-shrink">
@@ -56,11 +58,14 @@
 
 	<Button
 		class="bg-gray-200 dark:bg-[#202020] text-black dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
-		on:click={() => goto('/admin/catalog/addproduct')}>{m.admin_catalog_button()}</Button
+		onclick={(e: any) => {
+      e.preventDefault();
+      goto('/admin/catalog/addproduct')
+    }}>{m.admin_catalog_button()}</Button
 	>
 </div>
 
-{#if Array.isArray($productsStore) && $productsStore.length > 0}
+{#if Array.isArray(productsStore) && productsStore.length > 0}
 	<div class="overflow-x-auto w-full p-4">
 		<table class="w-full border-collapse text-left text-sm">
 			<thead>
@@ -75,7 +80,7 @@
 				</tr>
 			</thead>
 			<tbody class="divide-y divide-gray-200 dark:divide-[#252525]">
-				{#each $productsStore as product}
+				{#each productsStore as product}
 					<tr class="hover:bg-gray-50 dark:hover:bg-[#2c2c2c]">
 						<!-- Imágenes (mostrar la primera o un recuento) -->
 						<td class="py-2 px-4 dark:text-gray-200">
@@ -124,7 +129,7 @@
 	<div class="flex justify-between mt-2 m-5">
 		<div class="">
 			<h3 class="text-sm dark:text-[#707070]">
-        Items: {$metaStore.itemCount} | Página: {$metaStore.page} de {$metaStore.pageCount}
+        Items: {metaStore.itemCount} | Página: {metaStore.page} de {metaStore.pageCount}
 			</h3>
 		</div>
 
@@ -133,8 +138,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasPreviousPage}
-				on:click={() => changePage(Number($metaStore.page) - 1)}
+				disabled={!metaStore.hasPreviousPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) - 1)
+        }}
 			>
 				Anterior
 			</Button>
@@ -142,8 +150,11 @@
 				class="border-gray-400 dark:border-[#252525] dark:hover:bg-[#252525]"
 				variant="outline"
 				size="sm"
-				disabled={!$metaStore.hasNextPage}
-				on:click={() => changePage(Number($metaStore.page) + 1)}
+				disabled={!metaStore.hasNextPage}
+				onclick={(e: any) => {
+          e.preventDefault();
+          changePage(Number(metaStore.page) + 1)
+        }}
 			>
 				Siguiente
 			</Button>
@@ -151,7 +162,7 @@
 	</div>
 {:else}
 	<div class="flex flex-col items-center justify-center mt-40 w-full">
-		<iconify-icon icon="solar:box-bold" height="5rem" width="5rem" class="text-[#707070] mb-4" />
+		<iconify-icon icon="solar:box-bold" height="5rem" width="5rem" class="text-[#707070] mb-4" ></iconify-icon>
 		<h1 class="text-xl font-semibold text-[#707070] mb-2">{m.admin_catalog_nocatalog_title()}</h1>
 		<p class="text-lg text-[#707070]">
 			{m.admin_catalog_nocatalog_p()}

@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as m from '$paraglide/messages';
 	import { languageTag } from '$paraglide/runtime';
 	import { toast } from 'svelte-sonner';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
-	export let closeMenu = true;
 
-	let currentPath = '/';
-	$: currentPath = $page.url.pathname.split('/').filter(Boolean).pop() || '/';
+  let { closeMenu = true } = $props()
+
+  let currentPath = $derived(page.url.pathname.split('/').filter(Boolean).pop() || '/')
 
 	function setBgColor(path: string, currentPath: string): string {
 		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : '';
 	}
 
-	$: pathName = $page.url.pathname;
+	let pathName = $derived(page.url.pathname)
 
 	const paths = [
 		'/admin/dashboard',
@@ -56,7 +56,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -86,7 +86,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -116,7 +116,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -146,7 +146,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
@@ -266,7 +266,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black  dark:group-hover:text-[#fff]'
@@ -326,7 +326,7 @@
 								class={!closeMenu
 									? 'text-[#707070] text-xl ml-[2px] group-hover:text-black dark:group-hover:text-[#fff]'
 									: 'text-[#707070] text-xl group-hover:text-black dark:group-hover:text-[#fff]'}
-							/>
+							></iconify-icon>
 							<span
 								class={!closeMenu
 									? 'text-[#707070] text-base ml-3 group-hover:text-black dark:group-hover:text-[#fff]'
