@@ -74,7 +74,7 @@
 			<input
 				type="text"
 				name="businessname"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.businessname
+				class="h-8 dark:bg-gray-50 rounded-md text-black font-semibold px-2 {form?.errors?.businessname
 					? 'border border-red-500'
 					: ''}"
 				value={form?.data?.businessname ?? ''}
@@ -87,14 +87,14 @@
 		</div>
 
 		<!-- Email Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="email" class="text-base dark:text-gray-200 font-medium"
 				>{m.register_business_email_label()}</label
 			>
 			<input
 				type="email"
 				name="email"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+				class="h-8 dark:bg-gray-50 rounded-md text-black font-semibold px-2 {form?.errors?.email
 					? 'border border-red-500'
 					: ''} "
 				value={form?.data?.email ?? ''}
@@ -107,11 +107,11 @@
 		</div>
 
 		<!-- Country Input -->
-		<div class="flex flex-col">
-			<label for="email" class="text-base dark:text-gray-200 font-medium"
+		<div class="flex flex-col mt-2">
+			<label for="country" class="text-base dark:text-gray-200 font-medium"
 				>{m.register_business_country_label()}</label
 			>
-			<Select.Root
+			<!-- <Select.Root
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
 				}}
@@ -124,8 +124,13 @@
 						<Select.Item value={`${country}`}>{country}</Select.Item>
 					{/each}
 				</Select.Content>
-			</Select.Root>
-			<input hidden name="country" bind:value={selectedCountry} />
+			</Select.Root> -->
+			<input hidden name="country" value={
+        // selectedCountry
+        "Colombia"
+      } />
+
+      <h3>* Solo Accesible para Colombia</h3>
 
 			<label for="country">
 				{#if form?.errors?.country}
@@ -135,8 +140,8 @@
 		</div>
 
 		<!-- Legal information -->
-		<h2 class="font-semibold text-lg mt-1">{m.register_business_legal_title()}</h2>
-		<div class="border border-white my-1 p-2 rounded-md">
+		<h2 class="font-semibold text-lg mt-2">{m.register_business_legal_title()}</h2>
+		<div class=" my-1">
 			<div class="flex">
 				<!-- Name Input -->
 				<div class="flex flex-col w-1/2">
@@ -146,7 +151,7 @@
 					<input
 						type="text"
 						name="name"
-						class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+						class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold mr-2 px-2 {form?.errors?.email
 							? 'border border-red-500'
 							: ''} "
 						value={form?.data?.name ?? ''}
@@ -166,7 +171,7 @@
 					<input
 						type="text"
 						name="lastname"
-						class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+						class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
 							? 'border border-red-500'
 							: ''} "
 						value={form?.data?.lastname ?? ''}
@@ -181,7 +186,7 @@
 
 			<!---------------------------------------------->
 			<!-- Tax Id Input -->
-			<div class="flex">
+			<div class="flex mt-2">
 				<div class="flex flex-col w-full">
 					<label for="taxid" class="text-base dark:text-gray-200 font-medium"
 						>{m.register_business_legal_taxid_label()}</label
@@ -189,7 +194,7 @@
 					<input
 						type="string"
 						name="taxid"
-						class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.taxid
+						class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.taxid
 							? 'border border-red-500'
 							: ''} "
 						value={form?.data?.taxid ?? ''}
@@ -204,7 +209,7 @@
 		</div>
 
 		<!-- Password Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="password" class="text-base dark:text-gray-200 font-medium"
 				>{m.register_business_password_label()}</label
 			>
@@ -214,7 +219,7 @@
 					type="password"
 					id="password"
 					name="password"
-					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form
+					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form
 						?.errors?.password
 						? 'border border-red-500'
 						: ''}"
@@ -237,7 +242,7 @@
 		</div>
 
 		<!-- verified Password Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="verified_password" class="text-base dark:text-gray-200 font-medium"
 				>{m.register_business_password_confirm()}</label
 			>
@@ -247,7 +252,7 @@
 					type="password"
 					id="confirm-password"
 					name="verified_password"
-					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form
+					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form
 						?.errors?.password
 						? 'border border-red-500'
 						: ''}"

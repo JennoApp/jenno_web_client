@@ -95,7 +95,7 @@
 <div class="flex flex-col items-center justify-center h-screen w-full px-4">
 	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-8">{m.login_title()}</h1>
 
-	<!-- Formulario clásico -->
+	<!-- Formulario  Email -->
 	<form method="POST" action="?/login" class="w-full max-w-md space-y-4" use:enhance>
 		<div>
 			<label for="email" class="block mb-1 text-base dark:text-gray-200"
@@ -105,7 +105,7 @@
 				type="email"
 				name="email"
 				required
-				class="w-full h-10 px-3 border rounded-md text-black"
+				class="w-full h-10 px-3 dark:bg-gray-200 rounded-md text-black"
 			/>
 		</div>
 
@@ -119,7 +119,7 @@
 					name="password"
 					type="password"
 					required
-					class="w-full h-10 px-3 border rounded-md pr-10 text-black"
+					class="w-full h-10 px-3 dark:bg-gray-200 rounded-md pr-10 text-black"
 				/>
 				<button
 					type="button"
@@ -138,7 +138,7 @@
 
 		<button
 			type="submit"
-			class="w-full h-10 bg-gray-200 dark:bg-[#202020] dark:text-gray-200 rounded-md hover:bg-gray-300"
+			class="w-full h-10 bg-gray-200 dark:bg-[#202020] dark:text-gray-200 rounded-md hover:bg-gray-300 hover:dark:bg-[#303030]"
 		>
 			{m.login_button_title()}
 		</button>

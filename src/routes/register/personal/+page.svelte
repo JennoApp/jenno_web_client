@@ -74,7 +74,7 @@
 			<input
 				type="text"
 				name="username"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.username
+				class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.username
 					? 'border border-red-500'
 					: ''}"
 				value={form?.data?.username ?? ''}
@@ -87,12 +87,12 @@
 		</div>
 
 		<!-- Email Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.register_personal_email_label()}</label>
 			<input
 				type="email"
 				name="email"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.email
+				class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
 					? 'border border-red-500'
 					: ''} "
 				value={form?.data?.email ?? ''}
@@ -105,9 +105,10 @@
 		</div>
 
 		<!-- Country Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="email" class="text-base dark:text-gray-200 font-medium">{m.register_personal_country_label()}</label>
-			<Select.Root
+
+			<!-- <Select.Root
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
 				}}
@@ -120,8 +121,14 @@
 						<Select.Item value={`${country}`}>{country}</Select.Item>
 					{/each}
 				</Select.Content>
-			</Select.Root>
-			<input hidden name="country" bind:value={selectedCountry} />
+			</Select.Root> -->
+
+      <input hidden name="country" value={
+        // selectedCountry
+        "Colombia"
+      } />
+
+      <h3>* Solo Accesible para Colombia</h3>
 
 			<label for="country">
 				{#if form?.errors?.country}
@@ -131,7 +138,7 @@
 		</div>
 
 		<!-- Password Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="password" class="text-base dark:text-gray-200 font-medium">{m.register_personal_password_label()}</label>
       <div class="relative">
 				<!-- Input de contraseña -->
@@ -139,7 +146,7 @@
 					type="password"
 					id="password"
 					name="password"
-					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
+					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
 				/>
 
 				<!-- Icono de ojo -->
@@ -160,7 +167,7 @@
 		</div>
 
 		<!-- verified Password Input -->
-		<div class="flex flex-col">
+		<div class="flex flex-col mt-2">
 			<label for="verified_password" class="text-base dark:text-gray-200 font-medium"
 				>{m.register_personal_password_confirm()}</label
 			>
@@ -170,7 +177,7 @@
 					type="password"
 					id="confirm-password"
 					name="verified_password"
-					class="h-8 w-full border text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
+					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
 				/>
 
 				<!-- Icono de ojo -->
