@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { theme } from '$lib/stores/themeStore';
-	import * as Select from '$lib/components/ui/select';
-  import * as m from '$paraglide/messages'
+    import { theme } from '$lib/stores/themeStore';
+    import * as Select from '$lib/components/ui/select';
+    import * as m from '$paraglide/messages'
 
 	function setTheme(newTheme: string) {
 		theme.set(newTheme);
@@ -23,4 +23,3 @@
 		</Select.Content>
 	</Select.Root>
 </div>
-

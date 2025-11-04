@@ -138,7 +138,7 @@
 	<!-- Shipping Submit -->
 	<div class="flex w-full justify-center mt-5">
 		<button
-			class="h-10 w-96 mt-4 border dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525] {$paymentMethod ===
+			class="h-10 w-96 mt-4 bg-gray-200 dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525] {$paymentMethod ===
 			''
 				? 'disabled:bg-black'
 				: ''}"

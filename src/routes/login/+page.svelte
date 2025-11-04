@@ -105,7 +105,7 @@
 				type="email"
 				name="email"
 				required
-				class="w-full h-10 px-3 dark:bg-gray-200 rounded-md text-black"
+				class="w-full h-10 px-3 bg-gray-200 rounded-md text-black"
 			/>
 		</div>
 
@@ -119,7 +119,7 @@
 					name="password"
 					type="password"
 					required
-					class="w-full h-10 px-3 dark:bg-gray-200 rounded-md pr-10 text-black"
+					class="w-full h-10 px-3 bg-gray-200 rounded-md pr-10 text-black"
 				/>
 				<button
 					type="button"

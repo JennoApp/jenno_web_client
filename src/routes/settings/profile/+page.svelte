@@ -3,30 +3,32 @@
 	import { Button } from '$lib/components/ui/button/index';
 	import { Input } from '$lib/components/ui/input';
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
-	import * as Select from '$lib/components/ui/select';
-	import { countryList } from '$lib/utils/countries';
+	// import * as Select from '$lib/components/ui/select';
+	// import { countryList } from '$lib/utils/countries';
 	import * as m from '$paraglide/messages';
 
-	export let data: PageServerData;
-	export let form: ActionData;
 
-	let userInfo: any = null;
-	let selectedCountry: any = '';
+	let { data, form }: { data: PageServerData, form: ActionData } = $props()
 
-	$: userInfo = $page.data.user;
+	let userInfo = $state<any>(null)
+	let selectedCountry = $state<any>('')
 
-	$: if (form?.success) {
-		toast.success('Informacion Actualizada!');
-		setTimeout(() => {
-			location.reload();
-		}, 1000);
-	}
+	userInfo = page.data.user
+
+	$effect(() => {
+		if (form?.success) {
+			toast.success('Informacion Actualizada!');
+			setTimeout(() => {
+				location.reload();
+			}, 1000);
+		}
+	})
 
 	// Debuging
-	$: console.log({ userInfo });
-	$: console.log({ data });
+	$inspect({ userInfo });
+	$inspect({ data });
 </script>
 
 <div class="flex items-center w-full md:w-11/12 h-32">
@@ -81,7 +83,7 @@
 			<input
 				type="text"
 				name="username"
-				class="h-8 border rounded-md text-black font-semibold px-2"
+				class="h-8 rounded-md bg-gray-200 text-black font-semibold px-2"
 				bind:value={userInfo.displayname}
 			/>
 		</div>
@@ -90,7 +92,7 @@
 			<input
 				type="text"
 				name="email"
-				class="h-8 border rounded-md text-black font-semibold px-2"
+				class="h-8 rounded-md bg-gray-200 text-black font-semibold px-2"
 				bind:value={userInfo.email}
 			/>
 		</div>
@@ -100,7 +102,7 @@
 			<label for="email" class="text-base dark:text-gray-200 font-medium"
 				>{m.settings_profile_account_country()}</label
 			>
-			<Select.Root
+			<!-- <Select.Root
 				onSelectedChange={(v) => {
 					selectedCountry = v?.value;
 				}}
@@ -113,8 +115,14 @@
 						<Select.Item value={`${country}`}>{country}:</Select.Item>
 					{/each}
 				</Select.Content>
-			</Select.Root>
-			<input hidden name="country" bind:value={selectedCountry} />
+			</Select.Root> -->
+
+			<input hidden name="country" value={
+			    // selectedCountry
+				"Colombia"
+			} />
+
+			<h3>* Solo Accesible para Colombia</h3>
 
 			<label for="country">
 				{#if form?.errors?.country}
@@ -127,9 +135,9 @@
 			<label for="bio" class="text-base font-medium">{m.settings_profile_account_bio()}:</label>
 			<textarea
 				name="bio"
-				class="h-20 w-80 border rounded-md text-black font-semibold px-2"
+				class="h-20 w-80 bg-gray-200 rounded-md text-black font-semibold px-2"
 				bind:value={userInfo.bio}
-			/>
+			></textarea>
 		</div>
 		<div class="hidden">
 			<div class="flex gap-5 items-center mt-5">
@@ -155,7 +163,7 @@
 					<input
 						type="text"
 						name="legal_name"
-						class="h-8 border rounded-md text-black font-semibold px-2"
+						class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2"
 						bind:value={userInfo.legalname}
 					/>
 				</div>
@@ -166,7 +174,7 @@
 					<input
 						type="text"
 						name="legal_lastname"
-						class="h-8 border rounded-md text-black font-semibold px-2"
+						class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2"
 						bind:value={userInfo.legallastname}
 					/>
 				</div>
@@ -177,7 +185,7 @@
 					<input
 						type="text"
 						name="taxid"
-						class="h-8 border rounded-md text-black font-semibold px-2"
+						class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2"
 						bind:value={userInfo.taxid}
 					/>
 				</div>

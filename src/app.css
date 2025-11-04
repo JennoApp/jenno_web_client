@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
-/* Tema base */
+/* ---------------------------------------------------
+   1️⃣  Activar modo oscuro basado en clase (.dark)
+--------------------------------------------------- */
+@custom-variant dark (&:where(.dark *));
+
+/* ---------------------------------------------------
+   2️⃣  Tema base (modo claro)
+--------------------------------------------------- */
 @theme {
-  /* Colores light mode */
   --color-background: hsl(0 0% 97%);
   --color-foreground: hsl(222.2 84% 4.9%);
   --color-primary: hsl(222.2 47.4% 11.2%);
@@ -27,37 +33,36 @@
   --font-sans: "Inter", system-ui, sans-serif;
 }
 
-/* Dark mode variants - FUERA del @theme */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: hsl(0 0% 7%);
-    --color-foreground: hsl(210 40% 98%);
-    --color-primary: hsl(210 40% 98%);
-    --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-    --color-secondary: hsl(217.2 32.6% 17.5%);
-    --color-secondary-foreground: hsl(210 40% 98%);
-    --color-muted: hsl(217.2 32.6% 17.5%);
-    --color-muted-foreground: hsl(215 20.2% 65.1%);
-    --color-border: hsl(0 0% 17.5%);
-    --color-card: hsl(222.2 84% 4.9%);
-    --color-card-foreground: hsl(210 40% 98%);
-    --color-destructive: hsl(0 62.8% 30.6%);
-    --color-accent: hsl(217.2 32.6% 17.5%);
-    --color-accent-foreground: hsl(210 40% 98%);
-  }
-}
-
-/* O si usas class-based dark mode */
+/* ---------------------------------------------------
+   3️⃣  Modo oscuro (controlado por la clase .dark)
+--------------------------------------------------- */
 .dark {
   --color-background: hsl(0 0% 7%);
   --color-foreground: hsl(210 40% 98%);
   --color-primary: hsl(210 40% 98%);
   --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  /* ... resto de colores dark */
+  --color-secondary: hsl(217.2 32.6% 17.5%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  --color-muted: hsl(217.2 32.6% 17.5%);
+  --color-muted-foreground: hsl(215 20.2% 65.1%);
+  --color-border: hsl(0 0% 17.5%);
+  --color-card: hsl(222.2 84% 4.9%);
+  --color-card-foreground: hsl(210 40% 98%);
+  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-accent: hsl(217.2 32.6% 17.5%);
+  --color-accent-foreground: hsl(210 40% 98%);
 }
 
+/* ---------------------------------------------------
+   4️⃣  Estilos base (para todos los temas)
+--------------------------------------------------- */
 @layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
+

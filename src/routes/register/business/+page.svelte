@@ -74,7 +74,7 @@
 			<input
 				type="text"
 				name="businessname"
-				class="h-8 dark:bg-gray-50 rounded-md text-black font-semibold px-2 {form?.errors?.businessname
+				class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.businessname
 					? 'border border-red-500'
 					: ''}"
 				value={form?.data?.businessname ?? ''}
@@ -94,7 +94,7 @@
 			<input
 				type="email"
 				name="email"
-				class="h-8 dark:bg-gray-50 rounded-md text-black font-semibold px-2 {form?.errors?.email
+				class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
 					? 'border border-red-500'
 					: ''} "
 				value={form?.data?.email ?? ''}
@@ -151,7 +151,7 @@
 					<input
 						type="text"
 						name="name"
-						class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold mr-2 px-2 {form?.errors?.email
+						class="h-8 bg-gray-200 rounded-md text-black font-semibold mr-2 px-2 {form?.errors?.email
 							? 'border border-red-500'
 							: ''} "
 						value={form?.data?.name ?? ''}
@@ -171,7 +171,7 @@
 					<input
 						type="text"
 						name="lastname"
-						class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
+						class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
 							? 'border border-red-500'
 							: ''} "
 						value={form?.data?.lastname ?? ''}
@@ -194,7 +194,7 @@
 					<input
 						type="string"
 						name="taxid"
-						class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.taxid
+						class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.taxid
 							? 'border border-red-500'
 							: ''} "
 						value={form?.data?.taxid ?? ''}
@@ -219,7 +219,7 @@
 					type="password"
 					id="password"
 					name="password"
-					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form
+					class="h-8 w-full bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form
 						?.errors?.password
 						? 'border border-red-500'
 						: ''}"
@@ -252,7 +252,7 @@
 					type="password"
 					id="confirm-password"
 					name="verified_password"
-					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form
+					class="h-8 w-full bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form
 						?.errors?.password
 						? 'border border-red-500'
 						: ''}"
@@ -283,14 +283,14 @@
 		/>
 		<!-- Login Submit -->
 		<button
-			class="h-10 w-full mt-4 border bg-gray-200 dark:border-[#222222] dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
+			class="h-10 w-full mt-4  bg-gray-200  dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			>{m.register_business_button_title()}</button
 		>
 	</form>
 
 	<!-- Terms & Services Info -->
 	<p class="px-8 mt-6 text-center text-sm dark:text-gray-200 text-muted-foreground">
-		<a href="/terms" class="underline underline-offset-4 hover:text-primary">
+		<a href="/terms" class="hover:text-primary">
 			{m.register_business_termsandservice()}
 		</a>
 	</p>

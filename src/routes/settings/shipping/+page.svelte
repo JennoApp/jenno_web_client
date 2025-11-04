@@ -1,18 +1,21 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import { toast } from 'svelte-sonner'
+  import { enhance } from '$app/forms';
+  import { toast } from 'svelte-sonner'
   import type { ActionData } from './$types'
-  import { page } from '$app/stores'
+  import { page } from '$app/state'
   import * as m from '$paraglide/messages'
-	import { invalidateAll } from '$app/navigation';
+  import { invalidateAll } from '$app/navigation';
 
-  export let form: ActionData
-  let userData = $page.data.user
+  let { form }: { form: ActionData } = $props()
 
-  $: if (form?.success) {
-    toast.success("Informacion guardada!!")
-    invalidateAll()
-  }
+  let userData = page.data.user
+
+  $effect(() => {
+    if (form?.success) {
+      toast.success("Informacion guardada!!")
+      invalidateAll()
+    }
+  })
 </script>
 
 <div class="flex flex-col items-center justify-center w-full mt-5">
@@ -26,7 +29,7 @@
 			<input
 				type="text"
 				name="address"
-				class="h-8 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.address
+				class="h-8 w-full bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.address
 					? 'border border-red-500'
 					: ''}"
 				value={userData?.shippingInfo?.address ?? ''}
@@ -44,7 +47,7 @@
 			<input
 				type="text"
 				name="country"
-				class="h-8 border rounded-md text-black font-semibold px-2 {form?.errors?.country
+				class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.country
 					? 'border border-red-500'
 					: ''}"
 				value={userData?.shippingInfo?.country ?? ''}

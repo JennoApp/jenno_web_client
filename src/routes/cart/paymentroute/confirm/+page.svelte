@@ -239,7 +239,7 @@
 		<!-- Cofirm Button -->
 		<!-- Shipping Submit -->
 		<button
-			class="h-10 w-10/12 mt-4 border dark:border-[#222222] bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
+			class="h-10 w-10/12 mt-4  bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			onclick={(e) => {
 				e.preventDefault();
 				handlePaymentButton();

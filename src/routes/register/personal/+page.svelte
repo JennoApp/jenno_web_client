@@ -74,7 +74,7 @@
 			<input
 				type="text"
 				name="username"
-				class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.username
+				class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.username
 					? 'border border-red-500'
 					: ''}"
 				value={form?.data?.username ?? ''}
@@ -92,7 +92,7 @@
 			<input
 				type="email"
 				name="email"
-				class="h-8 dark:bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
+				class="h-8 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.email
 					? 'border border-red-500'
 					: ''} "
 				value={form?.data?.email ?? ''}
@@ -146,7 +146,7 @@
 					type="password"
 					id="password"
 					name="password"
-					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
+					class="h-8 w-full bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
 				/>
 
 				<!-- Icono de ojo -->
@@ -177,7 +177,7 @@
 					type="password"
 					id="confirm-password"
 					name="verified_password"
-					class="h-8 w-full dark:bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
+					class="h-8 w-full bg-gray-200 text-black font-medium px-2 text-lg rounded-md pr-10 {form?.errors?.password ? 'border border-red-500': ''}"
 				/>
 
 				<!-- Icono de ojo -->
@@ -198,7 +198,7 @@
 
 		<!-- Login Submit -->
 		<button
-			class="h-10 w-full mt-4 border bg-gray-200 dark:border-[#222222] dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
+			class="h-10 w-full mt-4  bg-gray-200 dark:bg-[#202020] rounded-lg dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			>{m.register_personal_button_title()}</button
 		>
 	</form>

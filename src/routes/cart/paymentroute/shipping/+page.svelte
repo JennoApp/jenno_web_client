@@ -41,7 +41,7 @@
 				<input
 					type="text"
 					name="completeName"
-					class="h-9 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.completeName
+					class="h-9 w-full bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.completeName
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.completeName ?? ''}
@@ -57,7 +57,7 @@
 				<input
 					type="text"
 					name="document"
-					class="h-9 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.document
+					class="h-9 w-full bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.document
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.document ?? ''}
@@ -75,7 +75,7 @@
 				<input
 					type="text"
 					name="address"
-					class="h-9 w-full border rounded-md text-black font-semibold px-2 {form?.errors?.address
+					class="h-9 w-full bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.address
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.address ?? ''}
@@ -95,7 +95,7 @@
 				<input
 					type="text"
 					name="country"
-					class="h-9 border rounded-md text-black font-semibold px-2 {form?.errors?.country
+					class="h-9 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.country
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.country ?? ''}
@@ -115,7 +115,7 @@
 				<input
 					type="text"
 					name="state"
-					class="h-9 border rounded-md text-black font-semibold px-2 {form?.errors?.state
+					class="h-9 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.state
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.state ?? ''}
@@ -135,7 +135,7 @@
 				<input
 					type="text"
 					name="city"
-					class="h-9 border rounded-md text-black font-semibold px-2 {form?.errors?.city
+					class="h-9 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.city
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.city ?? ''}
@@ -155,7 +155,7 @@
 				<input
 					type="text"
 					name="postalCode"
-					class="h-9 border rounded-md text-black font-semibold px-2 {form?.errors?.postalcode
+					class="h-9 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.postalcode
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.postalCode ?? ''}
@@ -175,7 +175,7 @@
 				<input
 					type="text"
 					name="phoneNumber"
-					class="h-9 border rounded-md text-black font-semibold px-2 {form?.errors?.phoneNumber
+					class="h-9 bg-gray-200 rounded-md text-black font-semibold px-2 {form?.errors?.phoneNumber
 						? 'border border-red-501'
 						: ''}"
 					value={userData?.shippingInfo?.phoneNumber ?? ''}

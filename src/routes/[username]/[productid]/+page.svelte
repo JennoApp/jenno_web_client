@@ -46,7 +46,7 @@
 	import StarRating from '$lib/components/StarRating.svelte';
 
 	let { data: propData } = $props();
-  let data: PageServerData = $state(propData);
+    let data: PageServerData = $state(propData);
 
 
 	let userInfo: any = page.data.user;
@@ -389,7 +389,7 @@
 						<h3 class="text-lg font-medium">{option.name}:</h3>
 						<Select.Root>
 							<Select.Trigger class="w-[180px]">
-								<Select.Value placeholder={`Select ${option.name}`} />
+								<Select.Value placeholder={`seleccionar ${option.name}`} />
 							</Select.Trigger>
 							<Select.Content>
 								{#each option.optionslist as op}
