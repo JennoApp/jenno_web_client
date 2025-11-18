@@ -362,20 +362,20 @@
 								<img class="h-6 object-cover" src="/logo-light.png" alt="logo" />
 							{/if}
 
-							{#if $location_data?.data[0]?.country_module?.global?.alpha2}
+							<!-- {#if $location_data?.data[0]?.country_module?.global?.alpha2}
 								<span
 									class="absolute top-5 right-[-23px] dark:text-gray-200 font-bold h-5 w-5 text-sm flex items-center justify-center"
 									>{$location_data?.data[0]?.country_module?.global?.alpha2}</span
 								>
-							{/if}
-							<span
-								class="absolute top-2 text-gray-500 h-5 w-5 text-sm flex items-center justify-center {$location_data !==
-								undefined
-									? 'right-[-50px]'
-									: 'right-[-30px]'} hidden sm:flex"
-							>
-								beta
-							</span>
+							{/if} -->
+
+							<!-- Icono de Colombia (ubicacion) -->
+							<iconify-icon
+							    icon="twemoji:flag-colombia"
+								height="1.5rem"
+								width="1.5rem"
+								class = "ml-2"
+							></iconify-icon>
 						</div>
 					</div>
 				</button>
