@@ -12,12 +12,14 @@
 	import type { ThemeConfig } from '$lib/utils/themes';
 	import type Theme from 'quill/core/theme';
 	import { applyTheme } from '$lib/stores/customThemesStore';
+	import { handle } from '../../hooks.server';
 
 	let { data }: { data: PageServerData } = $props();
 
 	let userInfo = $derived(page.data.user);
 
 	let productsStore = $state<any>([]);
+	let originalProducts = $state<any>([]);
 	let metaStore = $state<any>();
 	let pageload = $state(1);
 	let initialLoading = $state(true);
@@ -43,9 +45,9 @@
 	// Cargar productos del Usuario
 	async function loadInitialProducts(userId: any, country?: string) {
 		await getServerUrl();
+
 		const limit: number = 20;
 		const resolvedCountry = country ?? 'Colombia';
-
 		const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
 
 		try {
@@ -60,8 +62,10 @@
 
 			const { data, meta } = await response.json();
 
-
 			productsStore = data;
+			if (selectedCategory === '') {
+				originalProducts = data;
+			}
 			metaStore = meta;
 			pageload = 1;
 		} catch (error) {
@@ -72,10 +76,6 @@
 	// Carga los datos si el resutaldo del data.Status es diferente a 500
 	$effect(() => {
 		if (dataStatus === 500) {
-			console.error('usuario no existe');
-
-
-
 			productsStore = [];
 			metaStore = [];
 		} else {
@@ -188,7 +188,6 @@
 		}
 	}
 
-
 	// Shuffle function for categories
 	function shuffleArray<T>(array: T[]): T[] {
 		return array.sort(() => Math.random() - 0.5);
@@ -196,7 +195,7 @@
 
 	let storeCategories = $derived(
 		shuffleArray(
-			Array.from(new Set(productsStore.map((product: any) => product.category).filter(Boolean)))
+			Array.from(new Set(originalProducts.map((product: any) => product.category).filter(Boolean)))
 		).slice(0, 10)
 	);
 
@@ -205,23 +204,53 @@
 
 	$effect(() => {
 		if (loadingRef) {
-			const loadingObserver = new IntersectionObserver(async (entries) => {
+			const observer = new IntersectionObserver(async (entries) => {
 				const element = entries[0];
 				if (element.isIntersecting) {
 					console.log('Cargando nuevos productos...');
 					await loadingProducts();
 				}
 			});
-			loadingObserver.observe(loadingRef);
+			observer.observe(loadingRef);
 
-			return () => {
-				loadingObserver.disconnect();
-			};
+			return () => observer.disconnect();
 		}
 	});
 
-	// Obtener la configuración del tema
-	// $: userTheme = data.userData?.theme || 'default';
+	// -------------------------------
+	//    FILTRO DE CATEGORÍAS
+	// -------------------------------
+	async function handleCategoryClick(categoryParam: string) {
+		selectedCategory = categoryParam;
+
+		if (categoryParam === '') {
+			// volver a cargar TODO como en el primer código
+			if ($location_data) await loadInitialProducts(userData._id, $location_data.data[0].country);
+			else await loadInitialProducts(userData._id);
+			return;
+		}
+
+		// cargar por categoría como en el primer código
+		try {
+			const res = await fetch(
+				`${serverUrl}/products/user/${userData._id}?page=1&limit=20&country=Colombia&category=${categoryParam}`
+			);
+			if (!res.ok) return console.error('Error al cargar categoría');
+
+			const { data: filtered, meta } = await res.json();
+
+			productsStore = filtered;
+			metaStore = meta;
+			pageload = 1;
+		} catch (error) {
+			console.error('Error filtrando categoría:', error);
+		}
+	}
+
+	// -------------------------------
+	//    TEMA DEL USUARIO
+	// -------------------------------
+
 	let userTheme = $derived(data.userData?.theme || 'ocean_blue');
 	let themeConfig = $derived(getThemeConfig(userTheme));
 
@@ -229,14 +258,6 @@
 		if (page.data.userData?.theme) {
 			applyTheme('ocean_blue');
 		}
-	});
-
-
-	$effect(() => {
-        if (selectedCategory !== '') {
-            const country = $location_data?.data?.[0]?.country || 'Colombia';
-            loadInitialProducts(data.userData._id, country);
-        }
 	});
 </script>
 
@@ -394,7 +415,7 @@
 	>
 		<!-- Botón "Todos" -->
 		<button
-		class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
+			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
     ${
 			selectedCategory === ''
 				? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
@@ -402,7 +423,7 @@
 		}`}
 			onclick={(e) => {
 				e.preventDefault();
-				selectedCategory = '';
+				handleCategoryClick('')
 			}}
 		>
 			Todos
@@ -411,15 +432,15 @@
 		<!-- Categorías de la tienda -->
 		{#each storeCategories as category}
 			<button
-			class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
+				class={`text-sm font-semibold border-none rounded-xl w-auto h-8 px-3 cursor-pointer z-10
       ${
 				selectedCategory === category
 					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 			}`}
-				onclick={async (e) => {
+				onclick={(e) => {
 					e.preventDefault();
-					selectedCategory = category;
+					handleCategoryClick(category as string)
 				}}
 			>
 				{category}
