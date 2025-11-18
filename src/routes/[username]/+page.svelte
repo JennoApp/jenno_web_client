@@ -226,6 +226,14 @@
 			applyTheme('ocean_blue');
 		}
 	});
+
+
+	$effect(() => {
+        if (selectedCategory !== undefined) {
+            const country = $location_data?.data?.[0]?.country || 'Colombia';
+            loadInitialProducts(data.userData._id, country);
+        }
+	});
 </script>
 
 <svelte:head>
@@ -405,7 +413,7 @@
 					? 'bg-[#202020] text-gray-200 dark:bg-gray-200 dark:text-black'
 					: 'bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-[#202020] dark:hover:bg-[#2a2a2a] dark:text-gray-200'
 			}`}
-				onclick={(e) => {
+				onclick={async (e) => {
 					e.preventDefault();
 					selectedCategory = category;
 				}}
