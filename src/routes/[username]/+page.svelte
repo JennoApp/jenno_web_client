@@ -17,6 +17,7 @@
 
 	let userInfo = $derived(page.data.user);
 
+	let originalProducts = $state<any>([]);
 	let productsStore = $state<any>([]);
 	let metaStore = $state<any>();
 	let pageload = $state(1);
@@ -59,6 +60,8 @@
 			}
 
 			const { data, meta } = await response.json();
+
+			originalProducts = data;
 			productsStore = data;
 			metaStore = meta;
 			pageload = 1;
@@ -72,6 +75,8 @@
 		if (dataStatus === 500) {
 			console.error('usuario no existe');
 
+
+			originalProducts = [];
 			productsStore = [];
 			metaStore = [];
 		} else {
