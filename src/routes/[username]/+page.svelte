@@ -5,14 +5,12 @@
 	import type { PageServerData } from './$types';
 	import { toast } from 'svelte-sonner';
 	import { location_data } from '$lib/stores/ipaddressStore';
-	import { onMount } from 'svelte';
 	import * as m from '$paraglide/messages';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { getThemeConfig } from '$lib/utils/themes';
 	import type { ThemeConfig } from '$lib/utils/themes';
 	import type Theme from 'quill/core/theme';
 	import { applyTheme } from '$lib/stores/customThemesStore';
-	import { handle } from '../../hooks.server';
 
 	let { data }: { data: PageServerData } = $props();
 
