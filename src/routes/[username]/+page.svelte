@@ -17,7 +17,6 @@
 
 	let userInfo = $derived(page.data.user);
 
-	let originalProducts = $state<any>([]);
 	let productsStore = $state<any>([]);
 	let metaStore = $state<any>();
 	let pageload = $state(1);
@@ -61,7 +60,7 @@
 
 			const { data, meta } = await response.json();
 
-			originalProducts = data;
+
 			productsStore = data;
 			metaStore = meta;
 			pageload = 1;
@@ -76,7 +75,7 @@
 			console.error('usuario no existe');
 
 
-			originalProducts = [];
+
 			productsStore = [];
 			metaStore = [];
 		} else {
@@ -234,7 +233,7 @@
 
 
 	$effect(() => {
-        if (selectedCategory !== undefined) {
+        if (selectedCategory !== '') {
             const country = $location_data?.data?.[0]?.country || 'Colombia';
             loadInitialProducts(data.userData._id, country);
         }
