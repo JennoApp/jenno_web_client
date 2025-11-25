@@ -71,20 +71,6 @@
 		}
 	}
 
-	// Carga los datos si el resutaldo del data.Status es diferente a 500
-	$effect(() => {
-		if (dataStatus === 500) {
-			productsStore = [];
-			metaStore = [];
-		} else {
-			if ($location_data) {
-				loadInitialProducts(data.userData._id, $location_data.data[0].country);
-			} else {
-				loadInitialProducts(data.userData._id);
-			}
-		}
-	});
-
 	const handleFollow = async (customerId: string) => {
 		await getServerUrl();
 		if (page.data.isSession) {
@@ -153,13 +139,28 @@
 	};
 
 	$effect(() => {
-		if ($location_data) {
-			loadInitialProducts(data.userData._id, $location_data.data[0].country);
+		if (dataStatus === 500) {
+			productsStore = [];
+			metaStore = [];
 			initialLoading = false;
-		} else {
-			loadInitialProducts(data.userData._id);
-			initialLoading = false;
+			return;
 		}
+
+		// País por defecto
+		let country = 'Colombia';
+
+		// Si existe location_data, usar la ubicación detectada
+		if ($location_data?.data?.[0]?.country) {
+			country = $location_data.data[0].country;
+		}
+
+		loadInitialProducts(data.userData._id, country)
+			.then(() => {
+				initialLoading = false;
+			})
+			.catch(() => {
+				initialLoading = false;
+			});
 	});
 
 	async function loadingProducts() {
@@ -421,7 +422,7 @@
 		}`}
 			onclick={(e) => {
 				e.preventDefault();
-				handleCategoryClick('')
+				handleCategoryClick('');
 			}}
 		>
 			Todos
@@ -438,7 +439,7 @@
 			}`}
 				onclick={(e) => {
 					e.preventDefault();
-					handleCategoryClick(category as string)
+					handleCategoryClick(category as string);
 				}}
 			>
 				{category}

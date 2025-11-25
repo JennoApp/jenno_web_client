@@ -103,20 +103,20 @@
 
 
 	// Recuperar los datos del store
-	$effect(() => {
-		const unsubscribeIp = ip_address.subscribe((value) => {
-			storedIp = value;
-		});
+	// $effect(() => {
+	// 	const unsubscribeIp = ip_address.subscribe((value) => {
+	// 		storedIp = value;
+	// 	});
 
-		const unsubscribeLocation = location_data.subscribe((value) => {
-			storedLocationData = value;
-		});
+	// 	const unsubscribeLocation = location_data.subscribe((value) => {
+	// 		storedLocationData = value;
+	// 	});
 
-		return () => {
-			unsubscribeIp();
-			unsubscribeLocation();
-		};
-	});
+	// 	return () => {
+	// 		unsubscribeIp();
+	// 		unsubscribeLocation();
+	// 	};
+	// });
 
 	onMount(() => {
 		setupTheme();
@@ -126,17 +126,17 @@
 	});
 
 	onMount(() => {
-		if (!storedLocationData || storedIp !== data.clientAddress) {
-			addIpAddress(data.clientAddress as string);
+		// if (!storedLocationData || storedIp !== data.clientAddress) {
+		// 	addIpAddress(data.clientAddress as string);
 
-			getLocationAccessKey().then(() => {
-				if (locationAccessKey) {
-					getLocationData(data.clientAddress as string, locationAccessKey);
-				}
-			});
-		} else {
-			console.log('Using stored location data', $state.snapshot(storedLocationData));
-		}
+		// 	getLocationAccessKey().then(() => {
+		// 		if (locationAccessKey) {
+		// 			getLocationData(data.clientAddress as string, locationAccessKey);
+		// 		}
+		// 	});
+		// } else {
+		// 	console.log('Using stored location data', $state.snapshot(storedLocationData));
+		// }
 
 		invalidateAll();
 	});
@@ -223,10 +223,10 @@
 </svelte:head>
 
 <Toaster richColors theme="dark" duration={3000} />
-<Navigation>
+<!-- <Navigation>
 	{#if $location_data?.data[0]?.country}
 		{#if $location_data.data[0].country !== 'Colombia'}
-			<!-- Pantalla de advertencia por región no soportada -->
+			<!-- Pantalla de advertencia por región no soportada ->
 			<div
 				class="fixed inset-0 flex flex-col items-center justify-center text-center px-4 bg-white dark:bg-[#121212] z-50"
 			>
@@ -256,8 +256,14 @@
 				</p>
 			</div>
 		{:else}
-			<!-- Contenido si la región es Colombia -->
+			<!-- Contenido si la región es Colombia ->
 			{@render children()}
 		{/if}
 	{/if}
+</Navigation> -->
+
+
+<!-- No tiene en cuanta la ubicacion (por defecto: Colombia) -->
+<Navigation>
+    {@render children()}
 </Navigation>

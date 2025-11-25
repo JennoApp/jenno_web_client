@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as HoverCard from '$lib/components/ui/hover-card';
 	import { toast } from 'svelte-sonner';
@@ -18,7 +18,7 @@
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { theme } from '$lib/stores/themeStore';
 	import * as Dialog from '$lib/components/ui/dialog';
-	import { location_data } from '$lib/stores/ipaddressStore';
+	// import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import { unreadConversationsCount } from '$lib/stores/conversationsStore';
 	import { get } from 'svelte/store';
