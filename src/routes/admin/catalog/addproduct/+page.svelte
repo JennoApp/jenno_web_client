@@ -154,29 +154,31 @@
 
 	onMount(async () => {
 		try {
-			isLoading = true;
-
-			// Obtener serverUrl primero
-			const url = await getServerUrl();
-
 			const productId = page.url.searchParams.get('id') as string;
 			console.log('Product ID:', productId);
 
-			if (url && productId) {
-				try {
-					const response = await fetch(`${url}/products/${productId}`);
+			if (productId) {
+				isLoading = true;
 
-					if (!response.ok) {
-						throw new Error(`HTTP error! status: ${response.status}`);
+				const url = await getServerUrl();
+				if (url) {
+					try {
+						const response = await fetch(`${url}/products/${productId}`);
+
+						if (!response.ok) {
+							throw new Error(`HTTP error! status: ${response.status}`);
+						}
+
+						const productData = await response.json();
+						product = productData;
+						console.log({ productData });
+					} catch (error) {
+						console.error('Error al cargar los datos del producto:', error);
+						toast.error('Error al cargar el producto');
 					}
-
-					const productData = await response.json();
-					product = productData;
-					console.log({ productData });
-				} catch (error) {
-					console.error('Error al cargar los datos del producto:', error);
-					toast.error('Error al cargar el producto');
 				}
+			} else {
+				await getServerUrl();
 			}
 		} catch (error) {
 			console.error('Error en onMount:', error);
