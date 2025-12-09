@@ -603,6 +603,7 @@
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_specifications()}</h3>
 						<button
+						    type="button"
 							class="bg-gray-200 dark:bg-[#303030] dark:text-white h-8 w-32 rounded-md"
 							onclick={addEspecificationsItem}
 							>{m.admin_catalog_addproduct_specifications_button()}</button
