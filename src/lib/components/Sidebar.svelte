@@ -6,16 +6,15 @@
 	import { toast } from 'svelte-sonner';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 
+	let { closeMenu = true } = $props();
 
-  let { closeMenu = true } = $props()
-
-  let currentPath = $derived(page.url.pathname.split('/').filter(Boolean).pop() || '/')
+	let currentPath = $derived(page.url.pathname.split('/').filter(Boolean).pop() || '/');
 
 	function setBgColor(path: string, currentPath: string): string {
 		return path === currentPath ? 'bg-gray-200 dark:bg-[#252525]' : '';
 	}
 
-	let pathName = $derived(page.url.pathname)
+	let pathName = $derived(page.url.pathname);
 
 	const paths = [
 		'/admin/dashboard',
@@ -26,8 +25,8 @@
 		'/admin/catalog/addproduct',
 		'/admin/customers',
 		'/admin/marketing',
-    '/admin/marketing/integrations',
-    '/admin/marketing/campaigns',
+		'/admin/marketing/integrations',
+		'/admin/marketing/campaigns'
 	];
 </script>
 

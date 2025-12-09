@@ -732,11 +732,11 @@
 									></iconify-icon>
 								{/if}
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content>
+							<DropdownMenu.Content class="bg-gray-100 dark:bg-[#202020] dark:hover:bg-[#252525] rounded-md shadow-md border-none">
 								<DropdownMenu.Item
-									href={userInfo.accountType === 'personal'
-										? `/personal/${userInfo?._id}`
-										: `/${userInfo.username}`}
+									onclick={() => userInfo.accountType === 'personal'
+										? goto(`/personal/${userInfo?._id}`)
+										: goto(`/${userInfo.username}`)}
 								>
 									{#if userInfo.profileImg !== ''}
 										<img
@@ -761,33 +761,33 @@
 								<DropdownMenu.Separator />
 								<DropdownMenu.Group>
 									{#if userInfo.accountType === 'business'}
-										<DropdownMenu.Item href="/admin/dashboard">
+										<DropdownMenu.Item onclick={() => goto("/admin/dashboard")}>
 											<span>{m.navbar_user_admin()}</span>
 										</DropdownMenu.Item>
 									{/if}
-									<DropdownMenu.Item href="/shopping">
+									<DropdownMenu.Item onclick={() => goto("/shopping")}>
 										<span>{m.navbar_user_shopping()}</span>
 									</DropdownMenu.Item>
-									<DropdownMenu.Item href="/settings/profile">
+									<DropdownMenu.Item onclick={() => goto("/settings/profile")}>
 										<span>{m.navbar_user_settings()}</span>
 									</DropdownMenu.Item>
 
 									<DropdownMenu.Sub>
 										<DropdownMenu.SubTrigger>{m.navbar_user_theme()}</DropdownMenu.SubTrigger>
-										<DropdownMenu.SubContent>
-											<DropdownMenu.Item on:click={() => setTheme('light')}
+										<DropdownMenu.SubContent class="bg-gray-100 dark:bg-[#202020] dark:hover:bg-[#252525] rounded-md shadow-md border-none">
+											<DropdownMenu.Item onclick={() => setTheme('light')}
 												>{m.nabvar_user_theme_light()}</DropdownMenu.Item
 											>
-											<DropdownMenu.Item on:click={() => setTheme('dark')}
+											<DropdownMenu.Item onclick={() => setTheme('dark')}
 												>{m.nabvar_user_theme_dark()}</DropdownMenu.Item
 											>
-											<DropdownMenu.Item on:click={() => setTheme('system')}
+											<DropdownMenu.Item onclick={() => setTheme('system')}
 												>{m.nabvar_user_theme_system()}</DropdownMenu.Item
 											>
 										</DropdownMenu.SubContent>
 									</DropdownMenu.Sub>
 
-									<DropdownMenu.Item on:click={() => logout()}>
+									<DropdownMenu.Item onclick={() => logout()}>
 										<span>{m.navbar_user_logout()}</span>
 									</DropdownMenu.Item>
 								</DropdownMenu.Group>
