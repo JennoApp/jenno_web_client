@@ -62,7 +62,7 @@
   }
 </script>
 
-<DropdownMenu.Root>
+<!-- <DropdownMenu.Root>
 	<DropdownMenu.Trigger asChild let:builder>
 		<Button variant="ghost" builders={[builder]} size="icon" class="relative w-8 h-8 p-0 hover:bg-gray-300 dark:hover:bg-[#252525]">
 			<MoreHorizontal class="w-4 h-4 dark:hover:gray-300" />
@@ -111,4 +111,58 @@
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
 	</DropdownMenu.Content>
+</DropdownMenu.Root> -->
+
+
+<!-- DROPDOWN MODERNO -->
+<DropdownMenu.Root>
+
+  <DropdownMenu.Trigger>
+    {#snippet child({ props })}
+      <Button
+        {...props}
+        variant="ghost"
+        size="icon"
+        class="w-8 h-8 p-0 hover:bg-gray-300 dark:hover:bg-[#252525]"
+      >
+        <MoreHorizontal class="w-4 h-4" />
+      </Button>
+    {/snippet}
+  </DropdownMenu.Trigger>
+
+  <DropdownMenu.Content class="w-48 z-50">
+
+    <DropdownMenu.Group>
+
+      <!-- SUBMENU DE VISIBILIDAD -->
+      <DropdownMenu.Sub>
+        <DropdownMenu.SubTrigger>Visibilidad</DropdownMenu.SubTrigger>
+
+        <DropdownMenu.SubContent>
+          <DropdownMenu.Item onclick={() => updateVisibility(id, true)}>
+            Visible
+          </DropdownMenu.Item>
+          <DropdownMenu.Item onclick={() => updateVisibility(id, false)}>
+            Ocultar
+          </DropdownMenu.Item>
+        </DropdownMenu.SubContent>
+      </DropdownMenu.Sub>
+
+      <!-- ACTUALIZAR -->
+      <DropdownMenu.Item onclick={() => goto(`/admin/catalog/addproduct?id=${id}`)}>
+        Actualizar
+      </DropdownMenu.Item>
+
+      <!-- ELIMINAR -->
+      <DropdownMenu.Item
+        class="bg-red-500 bg-opacity-60 hover:bg-red-600"
+        onclick={deleteProduct}
+      >
+        Eliminar
+      </DropdownMenu.Item>
+
+    </DropdownMenu.Group>
+
+  </DropdownMenu.Content>
+
 </DropdownMenu.Root>

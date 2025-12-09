@@ -1,26 +1,29 @@
 <script lang="ts">
+	import { cn, type WithoutChildrenOrChild } from "$lib/utils.js";
+	import DropdownMenuPortal from "./dropdown-menu-portal.svelte";
 	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
-	import { cn, flyAndScale } from "$lib/utils";
+	import type { ComponentProps } from "svelte";
 
-	type $$Props = DropdownMenuPrimitive.ContentProps;
-
-	let className: $$Props["class"] = undefined;
-	export let sideOffset: $$Props["sideOffset"] = 4;
-	export let transition: $$Props["transition"] = flyAndScale;
-	export let transitionConfig: $$Props["transitionConfig"] = undefined;
-	export { className as class };
+	let {
+		ref = $bindable(null),
+		sideOffset = 4,
+		portalProps,
+		class: className,
+		...restProps
+	}: DropdownMenuPrimitive.ContentProps & {
+		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof DropdownMenuPortal>>;
+	} = $props();
 </script>
 
-<DropdownMenuPrimitive.Content
-	{transition}
-	{transitionConfig}
-	{sideOffset}
-	class={cn(
-		"z-50 min-w-[8rem] rounded-md border border-gray-300 dark:border-[#252525] bg-white dark:bg-[#121212] p-1 text-popover-foreground shadow-md focus:outline-none",
-		className
-	)}
-	{...$$restProps}
-	on:keydown
->
-	<slot />
-</DropdownMenuPrimitive.Content>
+<DropdownMenuPortal {...portalProps}>
+	<DropdownMenuPrimitive.Content
+		bind:ref
+		data-slot="dropdown-menu-content"
+		{sideOffset}
+		class={cn(
+			"bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-end-2 data-[side=right]:slide-in-from-start-2 data-[side=top]:slide-in-from-bottom-2 max-h-(--bits-dropdown-menu-content-available-height) origin-(--bits-dropdown-menu-content-transform-origin) z-50 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border p-1 shadow-md outline-none",
+			className
+		)}
+		{...restProps}
+	/>
+</DropdownMenuPortal>
