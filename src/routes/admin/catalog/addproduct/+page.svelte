@@ -122,7 +122,7 @@
 
 	function addOptionsItem() {
 		if (optionsItems.length < 1) {
-			optionsItems = [...optionsItems, {}];
+			optionsItems = [...optionsItems, optionsItems];
 		}
 	}
 
@@ -132,7 +132,7 @@
 
 	function addEspecificationsItem() {
 		if (especificationsItems.length < 7) {
-			especificationsItems = [...especificationsItems, {}];
+			especificationsItems = [...especificationsItems, especificationsItems];
 		}
 	}
 
