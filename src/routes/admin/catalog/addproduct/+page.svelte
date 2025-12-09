@@ -10,7 +10,7 @@
 	import * as Table from '$lib/components/ui/table';
 	import { toast } from 'svelte-sonner';
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import CurrencyInput from '@canutin/svelte-currency-input';
 	import { location_data } from '$lib/stores/ipaddressStore';
@@ -18,11 +18,12 @@
 	import { browser } from '$app/environment';
 	import { additionalInfo } from '$lib/stores/additionalInfo';
 
-	export let form: ActionData;
-	let optionsItems: any[] = [];
-	let especificationsItems: any[] = [];
+	let { form }: { form: ActionData } = $props();
 
-	let QuillEditor: any;
+	let optionsItems = $state<any[]>([]);
+	let especificationsItems = $state<any[]>([]);
+
+	let QuillEditor = $state<any>(null);
 	if (browser) {
 		import('$lib/components/QuillEditor.svelte')
 			.then((mod) => {
@@ -34,7 +35,7 @@
 	}
 
 	// Obtener url del servidor
-	let serverUrl: string;
+	let serverUrl = $state<string>('');
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -46,24 +47,28 @@
 		}
 	}
 
-	$: if (form?.status === 201) {
-		console.log(`formStatus: ${form.status}`);
-		if (product) {
-			toast.success('Producto Actualizado!');
-		} else {
-			toast.success('Producto creado!');
+	$effect(() => {
+		if (form?.status === 201) {
+			console.log(`formStatus: ${form.status}`);
+			if (product) {
+				toast.success('Producto Actualizado!');
+			} else {
+				toast.success('Producto creado!');
+			}
+			goto('/admin/catalog');
 		}
-		goto('/admin/catalog');
-	}
+	});
 
-	$: if (form?.errors) {
-		console.error(form?.errors);
-		toast.error('Error al crear o actualizar el producto');
-	}
+	$effect(() => {
+		if (form?.errors) {
+			console.error(form?.errors);
+			toast.error('Error al crear o actualizar el producto');
+		}
+	});
 
-	$: console.log({ errors: form?.errors });
+	$inspect({ errors: form?.errors });
 
-	let fileList: any[] = [];
+	let fileList = $state<any[]>([]);
 
 	function handleFiles(event: any) {
 		const files = Array.from(event.target.files);
@@ -132,19 +137,20 @@
 
 	/// load product data for update
 
-	let product: any;
-	let visibility: boolean = true;
-	let isvisibilityInitialized = false;
+	let product = $state<any>(null);
+	let visibility = $state<boolean>(true);
+	let isvisibilityInitialized = $state<boolean>(false);
+	let productStatus = $derived<any>(product?.status || '');
 
-	let editorRef: any;
+	let editorRef = $state<any>(null);
 
-	$: console.log(product);
-	$: console.log($location_data);
+	$inspect(product);
+	$inspect($location_data);
 
 	onMount(async () => {
 		await getServerUrl();
 
-		const productId = $page.url.searchParams.get('id') as string;
+		const productId = page.url.searchParams.get('id') as string;
 		console.log('Product ID:', productId);
 
 		if (serverUrl && productId) {
@@ -164,28 +170,34 @@
 		additionalInfo.set(product?.additionalInfo || '');
 	});
 
-	$: if (product && product.options) {
-		optionsItems = product.options.map((option: any) => ({
-			name: option.name,
-			optionslist: option.optionslist
-		}));
-	}
+	$effect(() => {
+		if (product && product.options) {
+			optionsItems = product.options.map((option: any) => ({
+				name: option.name,
+				optionslist: option.optionslist
+			}));
+		}
+	});
 
-	$: if (product && product.especifications) {
-		especificationsItems = product.especifications.map((especification: any) => ({
+	$effect(() => {
+		if (product && product.especifications) {
+			especificationsItems = product.especifications.map((especification: any) => ({
 			title: especification.title,
 			content: especification.content
-		}));
-	}
+			}));
+		}
+	});
 
-	$: if (product && !isvisibilityInitialized) {
-		console.log({ productId: product._id });
+	$effect(() => {
+		if (product && !isvisibilityInitialized) {
+			console.log({ productId: product._id });
 		console.log({ imagesUrl: product.imgs });
 		visibility = product.visibility;
-		isvisibilityInitialized = true;
-	}
+			isvisibilityInitialized = true;
+		}
+	});
 
-	$: console.log('AdditionalInfo:', { $additionalInfo });
+	$inspect('AdditionalInfo:', { $additionalInfo });
 
 	// La función de submit manual
 	async function handleSubmit(event: SubmitEvent) {
@@ -227,8 +239,9 @@
 
 <div class="flex p-5">
 	<button
+		aria-label="Volver"
 		class="flex justify-center items-center h-10 w-10 dark:bg-[#202020] rounded-sm hover:dark:bg-[#252525]"
-		on:click={() => goto('/admin/catalog')}
+		onclick={() => goto('/admin/catalog')}
 	>
 		<iconify-icon
 			icon="material-symbols:chevron-left-rounded"
@@ -252,7 +265,7 @@
 	method="POST"
 	enctype="multipart/form-data"
 	action="?/saveProduct"
-	on:submit|preventDefault={handleSubmit}
+	onsubmit={() => handleSubmit}
 	class="flex flex-row gap-4 p-5"
 >
 	<!-- Product Id hidden -->
@@ -388,7 +401,7 @@
 					<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
 					<button
 						class="bg-gray-200 dark:text-white dark:bg-[#303030] h-8 w-32 rounded-md"
-						on:click|preventDefault={addOptionsItem}
+						onclick={addOptionsItem}
 						>{m.admin_catalog_addproduct_options_button()}</button
 					>
 				</div>
@@ -414,10 +427,11 @@
 						/>
 					</div>
 					<button
+						aria-label="Eliminar opción"
 						class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:text-white hover:bg-red-600 dark:hover:bg-red-600"
-						on:click|preventDefault={() => removeOptionItem(i)}
+						onclick={() => removeOptionItem(i)}
 					>
-						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" ></iconify-icon>
+						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem"></iconify-icon>
 					</button>
 				</Card.Content>
 			{/each}
@@ -432,7 +446,7 @@
 					<QuillEditor
 						bind:this={editorRef}
 						value={product?.additionalInfo}
-						onChange={(html) => additionalInfo.set(html)}
+						onChange={(html: any) => additionalInfo.set(html)}
 						productId={product?._id ?? ''}
 					/>
 				</Card.Content>
@@ -576,7 +590,7 @@
 					<h3 class="font-semibold">{m.admin_catalog_addproduct_specifications()}</h3>
 					<button
 						class="bg-gray-200 dark:bg-[#303030] dark:text-white h-8 w-32 rounded-md"
-						on:click|preventDefault={addEspecificationsItem}
+						onclick={addEspecificationsItem}
 						>{m.admin_catalog_addproduct_specifications_button()}</button
 					>
 				</div>
@@ -602,10 +616,11 @@
 						/>
 					</div>
 					<button
+						aria-label="Eliminar opción"
 						class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:bg-red-600 dark:hover:bg-red-600"
-						on:click|preventDefault={() => removeEspecificationItem(i)}
+						onclick={() => removeEspecificationItem(i)}
 					>
-						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem" ></iconify-icon>
+						<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem"></iconify-icon>
 					</button>
 				</Card.Content>
 			{/each}
@@ -618,12 +633,13 @@
 			<Card.Content>
 				<div>
 					<Select.Root
-						selected={{
-							value: product !== undefined ? product.status : ''
-						}}
+						type="single"
+						bind:value={productStatus}
+						name="status"
+						onValueChange={(v) => (productStatus = v)}
 					>
 						<Select.Trigger>
-							<Select.Value placeholder={m.admin_catalog_addproduct_status_select()} />
+							<Select.Label placeholder={m.admin_catalog_addproduct_status_select()} />
 						</Select.Trigger>
 						<Select.Content>
 							<Select.Group>
@@ -635,7 +651,6 @@
 								>
 							</Select.Group>
 						</Select.Content>
-						<Select.Input name="status" />
 					</Select.Root>
 				</div>
 				<label for="status">

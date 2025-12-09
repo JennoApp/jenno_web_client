@@ -143,7 +143,10 @@
 			</DropdownMenu.Item>
 
 			<!-- ELIMINAR -->
-			<DropdownMenu.Item class="bg-red-500 bg-opacity-60 hover:bg-red-600" onclick={() => deleteProduct(id)}>
+			<DropdownMenu.Item
+				class="bg-red-500 bg-opacity-60 hover:bg-red-600"
+				onclick={() => deleteProduct(id)}
+			>
 				Eliminar
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
