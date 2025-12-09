@@ -13,7 +13,7 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import CurrencyInput from '@canutin/svelte-currency-input';
-	import { location_data } from '$lib/stores/ipaddressStore';
+	// import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import { browser } from '$app/environment';
 	import { additionalInfo } from '$lib/stores/additionalInfo';
@@ -150,7 +150,7 @@
 	let editorRef = $state<any>(null);
 
 	$inspect(product);
-	$inspect($location_data);
+
 
 	onMount(async () => {
 		try {
@@ -161,6 +161,8 @@
 				isLoading = true;
 
 				const url = await getServerUrl();
+				console.log('Server URL:', url);
+
 				if (url) {
 					try {
 						const response = await fetch(`${url}/products/${productId}`);
@@ -345,7 +347,7 @@
 							name="price"
 							value={product?.price ?? 0}
 							locale="es-CO"
-							currency={$location_data.data[0].country_module.currencies[0].code}
+							currency={'COP'}
 							fractionDigits={0}
 							required
 							inputClasses={{
@@ -511,9 +513,11 @@
 						</Table.Root>
 					{:else if product !== undefined}
 						<div class="flex gap-3 mt-5">
-							{#each product.imgs as image, i}
-								<img class="h-14 w-14 rounded-md object-fill" src={image} alt={`image ${i}`} />
-							{/each}
+							{#if product && product.imgs}
+								{#each product.imgs as image, i}
+									<img class="h-14 w-14 rounded-md object-fill" src={image} alt={`image ${i}`} />
+								{/each}
+							{/if}
 						</div>
 					{/if}
 				</Card.Content>
@@ -691,7 +695,12 @@
 			</Card.Root>
 
 			<!-- Hidden Input country info -->
-			<input class="hidden" type="text" name="country" value={$location_data.data[0].country} />
+			<input
+				class="hidden"
+				type="text"
+				name="country"
+				value={'Colombia'}
+			/>
 
 			<div class="w-full flex justify-end">
 				<Button
