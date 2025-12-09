@@ -115,9 +115,12 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		{#snippet child({ props })}
-			<span {...props} role="button" class="inline-flex">
-				<!-- dentro puedes poner icono/SVG sin crear button duplicado -->
-				<svg class="w-4 h-4">...</svg>
+			<span
+				{...props}
+				class="inline-flex w-8 h-8 items-center justify-center cursor-pointer
+        rounded-md hover:bg-gray-200 dark:hover:bg-[#252525]"
+			>
+				<MoreHorizontal class="w-4 h-4" />
 			</span>
 		{/snippet}
 	</DropdownMenu.Trigger>
@@ -140,7 +143,7 @@
 			</DropdownMenu.Item>
 
 			<!-- ELIMINAR -->
-			<DropdownMenu.Item class="bg-red-500 bg-opacity-60 hover:bg-red-600" onclick={deleteProduct}>
+			<DropdownMenu.Item class="bg-red-500 bg-opacity-60 hover:bg-red-600" onclick={() => deleteProduct(id)}>
 				Eliminar
 			</DropdownMenu.Item>
 		</DropdownMenu.Group>
