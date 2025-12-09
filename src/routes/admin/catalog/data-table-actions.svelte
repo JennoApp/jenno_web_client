@@ -33,33 +33,31 @@
 		}
 	};
 
+	const updateVisibility = async (productId: string, visibility: boolean) => {
+		try {
+			await getServerUrl();
 
-  const updateVisibility = async (productId: string ,visibility: boolean) => {
-    try {
-      await getServerUrl()
+			const response = await fetch(`${serverUrl}/products/updatevisibility/${productId}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					visibility: visibility
+				})
+			});
 
-      const response = await fetch(`${serverUrl}/products/updatevisibility/${productId}`, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          visibility: visibility
-        })
-      })
+			if (response.ok) {
+				toast.success('Visibilidad actualizada correctamente');
 
-      if (response.ok) {
-        toast.success('Visibilidad actualizada correctamente')
-
-        goto(location.pathname)
-      } else {
-        toast.error('Error al actualizar visibilidad')
-      }
-
-    } catch (error) {
-      console.error('Error en la solicitud:', error)
-    }
-  }
+				goto(location.pathname);
+			} else {
+				toast.error('Error al actualizar visibilidad');
+			}
+		} catch (error) {
+			console.error('Error en la solicitud:', error);
+		}
+	};
 </script>
 
 <!-- <DropdownMenu.Root>
@@ -113,56 +111,38 @@
 	</DropdownMenu.Content>
 </DropdownMenu.Root> -->
 
-
 <!-- DROPDOWN MODERNO -->
 <DropdownMenu.Root>
+	<DropdownMenu.Trigger>
+		{#snippet child({ props })}
+			<span {...props} role="button" class="inline-flex">
+				<!-- dentro puedes poner icono/SVG sin crear button duplicado -->
+				<svg class="w-4 h-4">...</svg>
+			</span>
+		{/snippet}
+	</DropdownMenu.Trigger>
 
-  <DropdownMenu.Trigger>
-    {#snippet child({ props })}
-      <Button
-        {...props}
-        variant="ghost"
-        size="icon"
-        class="w-8 h-8 p-0 hover:bg-gray-300 dark:hover:bg-[#252525]"
-      >
-        <MoreHorizontal class="w-4 h-4" />
-      </Button>
-    {/snippet}
-  </DropdownMenu.Trigger>
+	<DropdownMenu.Content class="w-48 z-50">
+		<DropdownMenu.Group>
+			<!-- SUBMENU DE VISIBILIDAD -->
+			<DropdownMenu.Sub>
+				<DropdownMenu.SubTrigger>Visibilidad</DropdownMenu.SubTrigger>
 
-  <DropdownMenu.Content class="w-48 z-50">
+				<DropdownMenu.SubContent>
+					<DropdownMenu.Item onclick={() => updateVisibility(id, true)}>Visible</DropdownMenu.Item>
+					<DropdownMenu.Item onclick={() => updateVisibility(id, false)}>Ocultar</DropdownMenu.Item>
+				</DropdownMenu.SubContent>
+			</DropdownMenu.Sub>
 
-    <DropdownMenu.Group>
+			<!-- ACTUALIZAR -->
+			<DropdownMenu.Item onclick={() => goto(`/admin/catalog/addproduct?id=${id}`)}>
+				Actualizar
+			</DropdownMenu.Item>
 
-      <!-- SUBMENU DE VISIBILIDAD -->
-      <DropdownMenu.Sub>
-        <DropdownMenu.SubTrigger>Visibilidad</DropdownMenu.SubTrigger>
-
-        <DropdownMenu.SubContent>
-          <DropdownMenu.Item onclick={() => updateVisibility(id, true)}>
-            Visible
-          </DropdownMenu.Item>
-          <DropdownMenu.Item onclick={() => updateVisibility(id, false)}>
-            Ocultar
-          </DropdownMenu.Item>
-        </DropdownMenu.SubContent>
-      </DropdownMenu.Sub>
-
-      <!-- ACTUALIZAR -->
-      <DropdownMenu.Item onclick={() => goto(`/admin/catalog/addproduct?id=${id}`)}>
-        Actualizar
-      </DropdownMenu.Item>
-
-      <!-- ELIMINAR -->
-      <DropdownMenu.Item
-        class="bg-red-500 bg-opacity-60 hover:bg-red-600"
-        onclick={deleteProduct}
-      >
-        Eliminar
-      </DropdownMenu.Item>
-
-    </DropdownMenu.Group>
-
-  </DropdownMenu.Content>
-
+			<!-- ELIMINAR -->
+			<DropdownMenu.Item class="bg-red-500 bg-opacity-60 hover:bg-red-600" onclick={deleteProduct}>
+				Eliminar
+			</DropdownMenu.Item>
+		</DropdownMenu.Group>
+	</DropdownMenu.Content>
 </DropdownMenu.Root>

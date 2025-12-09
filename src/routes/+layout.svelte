@@ -16,6 +16,7 @@
 	import { page } from '$app/state';
 	import { io, type Socket } from 'socket.io-client';
 	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import * as Tooltip from '$lib/components/ui/tooltip/index.js';
 
 	const SOCKET_CONTEXT = 'socket';
 
@@ -101,7 +102,6 @@
 		}
 	};
 
-
 	// Recuperar los datos del store
 	// $effect(() => {
 	// 	const unsubscribeIp = ip_address.subscribe((value) => {
@@ -120,7 +120,7 @@
 
 	onMount(() => {
 		setupTheme();
-    setLanguageTag(data.locale);
+		setLanguageTag(data.locale);
 		injectAnalytics();
 		initializeSocket(page.data?.user?._id);
 	});
@@ -226,7 +226,7 @@
 <!-- <Navigation>
 	{#if $location_data?.data[0]?.country}
 		{#if $location_data.data[0].country !== 'Colombia'}
-			<!-- Pantalla de advertencia por región no soportada ->
+			<!- Pantalla de advertencia por región no soportada ->
 			<div
 				class="fixed inset-0 flex flex-col items-center justify-center text-center px-4 bg-white dark:bg-[#121212] z-50"
 			>
@@ -256,14 +256,16 @@
 				</p>
 			</div>
 		{:else}
-			<!-- Contenido si la región es Colombia ->
+			<!- Contenido si la región es Colombia ->
 			{@render children()}
 		{/if}
 	{/if}
 </Navigation> -->
 
-
 <!-- No tiene en cuanta la ubicacion (por defecto: Colombia) -->
-<Navigation>
-    {@render children()}
-</Navigation>
+
+<Tooltip.Provider>
+	<Navigation>
+		{@render children()}
+	</Navigation>
+</Tooltip.Provider>
