@@ -166,8 +166,10 @@
 		}
 	});
 
-	onMount(() => {
-		additionalInfo.set(product?.additionalInfo || '');
+	$effect(() => {
+		if (product) {
+			additionalInfo.set(product?.additionalInfo || '');
+		}
 	});
 
 	$effect(() => {
@@ -265,7 +267,7 @@
 	method="POST"
 	enctype="multipart/form-data"
 	action="?/saveProduct"
-	onsubmit={() => handleSubmit}
+	onsubmit={handleSubmit}
 	class="flex flex-row gap-4 p-5"
 >
 	<!-- Product Id hidden -->
