@@ -4,60 +4,17 @@
 		addToCart,
 		decrementCartItem,
 		removeFromCart,
-		getTotal,
-		subtotal as sub
+		getItemPrice, // ✅ Importar getItemPrice
+		subtotal,
+		totalEnvio,
+		P_goal
 	} from '$lib/stores/cartStore';
 	import * as Table from '$lib/components/ui/table';
 	import { Separator } from '$lib/components/ui/separator';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { formatPrice } from '$lib/utils/formatprice';
-	import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
-
-	/// Total reactivo basado en svelte/store
-	let total = $state(getTotal());
-
-	$effect(() => {
-		const unsubscribe = cartItems.subscribe(() => {
-			total = getTotal();
-		});
-
-	return () => {
-			unsubscribe();
-		}
-	});
-
-
-	const calculateTotalShippingFee = (cartitems: any[]) => {
-		const items = cartitems.length !== 0 ? cartitems : [];
-		let totalShippingFee: number = 0;
-
-		for (const item of items) {
-			totalShippingFee += item?.shippingfee * item?.amount;
-		}
-
-		return totalShippingFee;
-	};
-
-	//////
-	// calcular el subtotal de los productos en el carrito
-	const subtotal = $derived($cartItems.reduce((acc, product) => acc + product.price * product.amount, 0))
-
-	// Calcular el costo total de envío
-	const totalEnvio = $derived($cartItems.reduce(
-		(acc, product) => acc + product.shippingfee * product.amount,
-		0
-	))
-
-	// Calcular la comision del 3%
-	const P_goal = $derived(subtotal + totalEnvio)
-	const F_fixed = 0;
-	const F_percent = 0.03;
-
-	const P_charge = $derived((P_goal + F_fixed) / (1 - F_percent))
-
-	// const transferStripe = P_charge - P_goal
 </script>
 
 {#if $cartItems.length === 0}
@@ -90,25 +47,47 @@
 						<div class="flex w-full mx-7 justify-between">
 							<div class="flex gap-5 items-center">
 								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
+								<!-- ✅ CORRECCIÓN: Usar getItemPrice para mostrar precio correcto -->
 								<p class="text-base dark:text-white">
-									{formatPrice(cartItem.price, 'es-CO', 'COP')}
+									{formatPrice(getItemPrice(cartItem), 'es-CO', 'COP')}
 								</p>
 								<!-- Mostrar selectedOptions solo si existen -->
-								{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
-									<div class="flex gap-3">
-										<h3>{cartItem.selectedOptions[0].name}:</h3>
-										<p>{cartItem.selectedOptions[0].value}</p>
+								{#if cartItem.selectedOptions?.length || cartItem.selectedVariant}
+									{@const displayOptions = [
+										...(cartItem.selectedOptions ?? []),
+										...(cartItem.selectedVariant?.options ?? []),
+										...(cartItem.selectedVariant?.meta?.color
+											? [{ name: 'Color', value: cartItem.selectedVariant.meta.color }]
+											: [])
+									]}
+
+									<div class="flex flex-wrap gap-1 mt-1">
+										{#each displayOptions as opt}
+											<span
+												class="px-2 py-0.5 text-xs rounded-md
+               bg-blue-200 dark:bg-blue-900/40
+               text-blue-900 dark:text-blue-200"
+											>
+												<strong>{opt.name}:</strong>
+												{opt.value}
+											</span>
+										{/each}
 									</div>
 								{/if}
 							</div>
 
 							<div class="flex justify-center items-center mt-2 mr-14">
 								<button
-	                onclick={(e) => {
-                    e.preventDefault();
-										decrementCartItem(cartItem._id, cartItem.selectedOptions)
-                  }}
-									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+									onclick={(e) => {
+										e.preventDefault();
+										// ✅ CORRECCIÓN: Pasar la variante
+										decrementCartItem(
+											cartItem._id,
+											cartItem.selectedOptions ?? [],
+											cartItem.selectedVariant ?? null
+										);
+									}}
+									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary hover:bg-gray-300 dark:hover:bg-[#303030] transition-colors"
 								>
 									<!-- Minus Icon -->
 									<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -116,10 +95,21 @@
 								<span class="mx-2">{cartItem.amount}</span>
 								<button
 									onclick={(e) => {
-                    e.preventDefault();
-                    addToCart(cartItem, cartItem.selectedOptions)
-                  }}
-									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+										e.preventDefault();
+										const maxStock = cartItem.selectedVariant?.quantity ?? cartItem.quantity;
+										const canAdd = cartItem.amount < maxStock;
+										if (canAdd) {
+											addToCart(
+												cartItem,
+												cartItem.selectedOptions ?? [],
+												1,
+												cartItem.selectedVariant ?? null
+											);
+										}
+									}}
+									disabled={cartItem.amount >=
+										(cartItem.selectedVariant?.quantity ?? cartItem.quantity)}
+									class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary hover:bg-gray-300 dark:hover:bg-[#303030] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									<!-- Plus Icon -->
 									<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"></iconify-icon>
@@ -128,9 +118,13 @@
 						</div>
 						<button
 							onclick={(e) => {
-                e.preventDefault();
-                removeFromCart(cartItem._id, cartItem.selectedOptions)
-              }}
+								e.preventDefault();
+								removeFromCart(
+									cartItem._id,
+									cartItem.selectedOptions ?? [],
+									cartItem.selectedVariant ?? null
+								);
+							}}
 							class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
 						>
 							<!-- Close Icon -->
@@ -152,7 +146,7 @@
 						<Table.Head>{m.cart_order_tableheader_price()}</Table.Head>
 						<Table.Head>{m.cart_order_tableheader_quantity()}</Table.Head>
 						<!-- Mostrar selectedOptions solo si existen -->
-						{#if $cartItems.some((cartItem) => cartItem.selectedOptions && cartItem.selectedOptions.length > 0)}
+						{#if $cartItems.some((cartItem) => cartItem.selectedOptions?.length || cartItem.selectedVariant)}
 							<Table.Head>Opciones</Table.Head>
 						{/if}
 						<Table.Head>{m.cart_order_tableheader_total()}</Table.Head>
@@ -166,20 +160,41 @@
 								><a href={`/${cartItem.username}`} class="hover:underline">@{cartItem.username}</a
 								></Table.Cell
 							>
-							<Table.Cell>{formatPrice(cartItem.price, 'es-CO', 'COP')}</Table.Cell>
+							<!-- ✅ CORRECCIÓN: Usar getItemPrice -->
+							<Table.Cell>{formatPrice(getItemPrice(cartItem), 'es-CO', 'COP')}</Table.Cell>
 							<Table.Cell class="mx-3">{cartItem.amount}</Table.Cell>
-							<!-- Mostrar las opciones o una "X" si no existen -->
-							{#if $cartItems.some((cartItem) => cartItem.selectedOptions && cartItem.selectedOptions.length > 0)}
+							<!-- Mostrar las opciones o una "—" si no existen -->
+							{#if $cartItems.some((cartItem) => cartItem.selectedOptions?.length || cartItem.selectedVariant)}
 								<Table.Cell>
-									{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
-										{cartItem.selectedOptions[0].name}: {cartItem.selectedOptions[0].value}
+									{@const displayOptions = [
+										...(cartItem.selectedOptions ?? []),
+										...(cartItem.selectedVariant?.options ?? []),
+										...(cartItem.selectedVariant?.meta?.color
+											? [{ name: 'Color', value: cartItem.selectedVariant.meta.color }]
+											: [])
+									]}
+
+									{#if displayOptions.length}
+										<div class="flex flex-wrap gap-1">
+											{#each displayOptions as opt}
+												<span
+													class="px-2 py-0.5 text-xs rounded-md
+                 bg-blue-200 dark:bg-blue-900/40
+                 text-blue-900 dark:text-blue-200"
+												>
+													<strong>{opt.name}:</strong>
+													{opt.value}
+												</span>
+											{/each}
+										</div>
 									{:else}
-										<iconify-icon icon="basil:cross-solid" width="35" height="35"></iconify-icon>
+										<span class="text-gray-400 text-xs">—</span>
 									{/if}
 								</Table.Cell>
 							{/if}
+							<!-- ✅ CORRECCIÓN: Usar getItemPrice para el total -->
 							<Table.Cell
-								>{formatPrice(cartItem.price * cartItem.amount, 'es-CO', 'COP')}</Table.Cell
+								>{formatPrice(getItemPrice(cartItem) * cartItem.amount, 'es-CO', 'COP')}</Table.Cell
 							>
 						</Table.Row>
 					{/each}
@@ -189,36 +204,22 @@
 			<!-- Subtotal -->
 			<div class="flex justify-between my-1 mt-3 mr-5">
 				<h3>{m.cart_summary_subtotal()}</h3>
-				<p>{formatPrice(Number(total.toFixed(0)), 'es-CO', 'COP')}</p>
+				<!-- ✅ CORRECCIÓN: Usar el store subtotal directamente -->
+				<p>{formatPrice($subtotal, 'es-CO', 'COP')}</p>
 			</div>
-
-			<!-- Delivery -->
-			<!-- <div class="flex justify-between my-1 mr-5">
-				<div class="flex gap-1">
-					<h3>{m.cart_summary_shipment()}</h3>
-					<!- {#if $location_data !== undefined}
-            <h3>-</h3>
-            <h3 class="ml-1 font-semibold">{$location_data?.data[0].region}</h3>
-          {/if} ->
-				</div>
-				<p>{formatPrice(calculateTotalShippingFee($cartItems), 'es-CO', 'COP')}</p>
-			</div> -->
 
 			<!-- Envío -->
 			<div class="flex justify-between my-1 mr-5">
 				<div class="flex gap-1">
 					<h3 class="font-semibold">{m.cart_summary_shipment()}</h3>
-					<h3 class="ml-1 text-sm text-gray-500">
-						(El envío se coordinará manualmente y se paga contra entrega)
-					</h3>
 				</div>
-				<p class="text-gray-400 text-sm">Beta: No se calcula automáticamente</p>
+				<p class="text-gray-400 text-sm">(Se paga contra entrega)</p>
 			</div>
 
 			<!-- Comisión de Pago -->
 			<div class="flex justify-between my-1 mr-5">
 				<h3 class="font-semibold">Comisión de Pago</h3>
-				<p class="text-gray-400 text-sm">Se calculará al elegir el método de pago</p>
+				<p class="text-gray-400 text-sm">Se calculará al elegir método de pago</p>
 			</div>
 
 			<Separator class="bg-[#707070] my-2" />
@@ -226,15 +227,19 @@
 			<!-- Total -->
 			<div class="flex justify-between my-1 mr-5 mt-2">
 				<h3 class="font-bold">{m.cart_summary_total()}</h3>
-				<p class="text-gray-400 text-sm">Se calculará al confirmar el pago</p>
+				<!-- ✅ Mostrar subtotal como total preliminar -->
+				<p class="font-bold">{formatPrice($subtotal, 'es-CO', 'COP')}</p>
 			</div>
+			<p class="text-xs text-gray-500 text-right mr-5">
+				+ comisión de pago (se calculará en el siguiente paso)
+			</p>
 
 			<button
-				class="bg-gray-300 hover:bg-gray-400 dark:bg-[#303030] border-none rounded w-full h-12 font-medium dark:text-white text-base cursor-pointer hover:dark:bg-[#353535]"
+				class="bg-gray-300 hover:bg-gray-400 dark:bg-[#303030] border-none rounded w-full h-12 font-medium dark:text-white text-base cursor-pointer hover:dark:bg-[#353535] mt-3"
 				onclick={(e) => {
-          e.preventDefault();
-          goto('/cart/paymentroute/shipping')
-        }}
+					e.preventDefault();
+					goto('/cart/paymentroute/shipping');
+				}}
 			>
 				{m.cart_summary_button()}
 			</button>

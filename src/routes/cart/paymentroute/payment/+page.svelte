@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { updatePaymentMethod, paymentMethod } from '$lib/stores/paymentMethod';
+	import { onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
 
 	let enumPayments = ['paypal', 'nequi', 'mercadopago'];
@@ -28,6 +29,12 @@
 		}
 	}
 
+	onMount(() => {
+		if ($paymentMethod === '') {
+			updatePaymentMethod('mercadopago');
+		}
+	});
+
 	$inspect($paymentMethod);
 </script>
 
@@ -39,12 +46,12 @@
 				class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg hover:bg-gray-300 dark:hover:bg-[#303030]
     {$paymentMethod === 'mercadopago' ? 'border-2 border-[#202020] dark:border-gray-200' : ''}"
 				onclick={(e) => {
-          e.preventDefault();
-          selectedMercadoPagoButton()
-        }}
-        aria-label="Seleccionar Mercado Pago como método de pago"
+					e.preventDefault();
+					selectedMercadoPagoButton();
+				}}
+				aria-label="Seleccionar Mercado Pago como método de pago"
 			>
-				<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem" ></iconify-icon>
+				<iconify-icon icon="simple-icons:mercadopago" height="5rem" width="5rem"></iconify-icon>
 			</button>
 
 			<h3 class="mt-2 text-lg font-medium text-gray-700 dark:text-gray-200">Mercado Pago</h3>
@@ -65,7 +72,7 @@
 				<button
 					class="bg-gray-200 dark:bg-[#252525] w-40 h-40 rounded-lg flex items-center justify-center opacity-50 cursor-not-allowed"
 					onclick={(e) => {
-            e.preventDefault();
+						e.preventDefault();
 						toast.warning('Nequi estará disponible próximamente.');
 					}}
 				>
@@ -85,9 +92,9 @@
 						? 'border-2 border-[#202020] dark:border-gray-200'
 						: ''}"
 					onclick={(e) => {
-            e.preventDefault();
-            selectedNequiButton()
-          }}
+						e.preventDefault();
+						selectedNequiButton();
+					}}
 				>
 					<img src="https://www.jenno.com.co/nequilogo.png" alt="logo nequi" class="w-24 h-24" />
 				</button>
@@ -115,10 +122,10 @@
 						? 'border-2 border-[#202020] dark:border-gray-200'
 						: ''}"
 					onclick={(e) => {
-            e.preventDefault();
-            selectedPaypalButton()
-          }}
-          aria-label="Seleccionar PayPal como método de pago"
+						e.preventDefault();
+						selectedPaypalButton();
+					}}
+					aria-label="Seleccionar PayPal como método de pago"
 				>
 					<iconify-icon icon="logos:paypal" height="5rem" width="5rem"></iconify-icon>
 				</button>
@@ -143,9 +150,9 @@
 				? 'disabled:bg-black'
 				: ''}"
 			onclick={(e) => {
-        e.preventDefault();
-        paymentSubmit()
-      }}
+				e.preventDefault();
+				paymentSubmit();
+			}}
 		>
 			Continuar
 		</button>

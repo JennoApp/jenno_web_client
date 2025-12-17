@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* ---- tipos ---- */
 	interface Option {
 		name: string;
 		optionslist: string[];
@@ -7,6 +8,16 @@
 	interface Especification {
 		title: string;
 		content: string;
+	}
+
+	interface Variant {
+		_id?: string;
+		sku?: string;
+		price: number;
+		quantity?: number;
+		imgs?: string[];
+		options: { name: string; value: string }[];
+		meta?: any;
 	}
 
 	interface CardData {
@@ -25,8 +36,10 @@
 		additionalInfo?: string;
 		reviews?: any[];
 		shippingfee?: number;
+		variants?: Variant[];
 	}
 
+	/* ---- imports ---- */
 	import * as Dialog from '$lib/components/ui/dialog';
 	import type { PageServerData } from './$types';
 	import * as Carousel from '$lib/components/ui/carousel/index';
@@ -45,9 +58,9 @@
 	import Label from '$lib/components/Label.svelte';
 	import StarRating from '$lib/components/StarRating.svelte';
 
+	/* ---- props / estado ---- */
 	let { data: propData } = $props();
-    let data: PageServerData = $state(propData);
-
+	let data: PageServerData = $state(propData);
 
 	let userInfo: any = page.data.user;
 	let product = $derived<any>(data.product);
@@ -58,8 +71,12 @@
 	let profileImg = $state<string>('');
 	let openDialogreview = $state<boolean>(false);
 	let quantity = $state(1);
-	let selectedOptions = $state<any[]>([]);
+
+	let selectedOptions = $state<{ name: string; value: string }[]>([]);
+	let selectedVariantOptions = $state<Record<string, string>>({});
+
 	let userName = $state<string>('');
+	let matchedVariant = $state<Variant | null>(null);
 
 	// Función para sincronizar carousel
 	function syncCarousel(index: number) {
@@ -93,11 +110,12 @@
 		}
 	}
 
+	/* ---- inspección (debug) ---- */
 	$inspect('product', product);
 	$inspect('userInfo', userInfo);
 	$inspect('pathname', page.url.pathname);
 	$inspect(`/${product.username}/${product._id}`);
-	$inspect('cartItems', $cartItems);
+	$inspect('CCCCCartItems', $cartItems);
 	$inspect('selectedOptions', selectedOptions);
 
 	// calcular la calificacion
@@ -112,7 +130,7 @@
 	};
 
 	let totalStars = $derived(calculateStars(product.reviews || []));
-	$inspect('totalStars', totalStars);
+	// $inspect('totalStars', totalStars);
 
 	$effect(() => {
 		if (product?.user) {
@@ -141,7 +159,295 @@
 		});
 	});
 
-	// product
+	/* ========== LOGICA DE VARIANTS y OPTIONS ========== */
+	// obtiene nombres de las opciones que usan las variants, respetando el orden de la primera variante
+	function getVariantOptionNames(): string[] {
+		if (!product?.variants || product.variants.length === 0) return [];
+		// si la primera variant tiene orden en options, lo usamos
+		const first = product.variants[0];
+		return first.options ? first.options.map((o) => o.name) : [];
+	}
+
+	// obtén todos los valores únicos para una opción de variante
+	function getVariantValues(optionName: string): string[] {
+		if (!product?.variants) return [];
+		const set = new Set<string>();
+		for (const v of product.variants) {
+			const opt = v.options?.find((o) => o.name === optionName);
+			if (opt?.value) set.add(opt.value);
+		}
+		return Array.from(set);
+	}
+
+	function getAllVariantOptionNames(): string[] {
+		if (!product?.variants || product.variants.length === 0) return [];
+
+		const names = new Set<string>();
+
+		// Sacamos los names de options (Talla, etc.) tomando el orden de la primera variant
+		const first = product.variants[0];
+		if (first?.options) {
+			first.options.forEach((o) => names.add(o.name));
+		}
+
+		// Añadir 'Color' si alguna variant tiene meta.color
+		const hasColor = product.variants.some((v) => v.meta && v.meta.color);
+		if (hasColor) names.add('Color');
+
+		return Array.from(names);
+	}
+
+	// devuelve TODOS los valores únicos para una optionName (sin filtrar)
+	// si optionName === 'Color' mira en variant.meta.color
+	function getAllVariantValues(optionName: string): string[] {
+		if (!product?.variants) return [];
+		const set = new Set<string>();
+		for (const v of product.variants) {
+			if (optionName === 'Color') {
+				if (v.meta?.color) set.add(v.meta.color);
+			} else {
+				const opt = v.options?.find((o) => o.name === optionName);
+				if (opt?.value) set.add(opt.value);
+			}
+		}
+		return Array.from(set);
+	}
+
+	/*
+  Determina si un valor concreto de optionName es compatible con las selecciones
+  ya realizadas (selectedVariantOptions). Excluye la propia optionName de la verificación,
+  para que al seleccionar un value para esa opción no dependa de sí misma.
+*/
+	function isValueCompatibleWithSelection(optionName: string, value: string): boolean {
+		if (!product?.variants) return false;
+
+		for (const v of product.variants) {
+			// ¿esta variant tiene optionName=value?
+			let matchesThis = false;
+			if (optionName === 'Color') {
+				matchesThis = v.meta?.color === value;
+			} else {
+				const o = v.options?.find((x) => x.name === optionName);
+				matchesThis = !!(o && o.value === value);
+			}
+			if (!matchesThis) continue;
+
+			// comprobar si la variant coincide con todas las opciones seleccionadas (excepto optionName)
+			let ok = true;
+			for (const [selName, selValue] of Object.entries(selectedVariantOptions)) {
+				if (selName === optionName) continue; // ignorar la propia
+				if (selName === 'Color') {
+					if (v.meta?.color !== selValue) {
+						ok = false;
+						break;
+					}
+				} else {
+					const o2 = v.options?.find((x) => x.name === selName);
+					if (!o2 || o2.value !== selValue) {
+						ok = false;
+						break;
+					}
+				}
+			}
+			if (ok) return true; // existe al menos una variant que lo permita
+		}
+
+		return false;
+	}
+
+	function getFilteredVariantValues(optionName: string): string[] {
+		if (!product?.variants) return [];
+
+		const values = new Set<string>();
+
+		for (const v of product.variants) {
+			// ❌ descartar variants que no coincidan con lo ya seleccionado
+			let valid = true;
+
+			for (const [key, selectedValue] of Object.entries(selectedVariantOptions)) {
+				if (key === optionName) continue;
+
+				if (key === 'Color') {
+					if (v.meta?.color !== selectedValue) {
+						valid = false;
+						break;
+					}
+				} else {
+					const opt = v.options.find((o) => o.name === key);
+					if (!opt || opt.value !== selectedValue) {
+						valid = false;
+						break;
+					}
+				}
+			}
+
+			if (!valid) continue;
+
+			// ✅ agregar valores posibles
+			if (optionName === 'Color') {
+				if (v.meta?.color) values.add(v.meta.color);
+			} else {
+				const opt = v.options.find((o) => o.name === optionName);
+				if (opt?.value) values.add(opt.value);
+			}
+		}
+
+		return Array.from(values);
+	}
+
+	$effect(() => {
+		if (!product?.variants) {
+			matchedVariant = null;
+			return;
+		}
+
+		const entries = Object.entries(selectedVariantOptions);
+
+		if (entries.length === 0) {
+			matchedVariant = null;
+			return;
+		}
+
+		const found = product.variants.find((v) => {
+			for (const [key, value] of entries) {
+				if (key === 'Color') {
+					if (v.meta?.color !== value) return false;
+				} else {
+					const opt = v.options.find((o) => o.name === key);
+					if (!opt || opt.value !== value) return false;
+				}
+			}
+			return true;
+		});
+
+		matchedVariant = found ?? null;
+	});
+
+	// Inicializa selección de variantes (por defecto: primer valor disponible de cada optionName)
+	$effect(() => {
+		if (!product?.variants || product.variants.length === 0) return;
+		const names = getVariantOptionNames();
+		// si ya tiene valores, no sobrescribimos
+		let shouldInit = true;
+		for (const n of names) {
+			if (selectedVariantOptions[n]) {
+				shouldInit = false;
+				break;
+			}
+		}
+		if (shouldInit) {
+			const initial: Record<string, string> = {};
+			for (const name of names) {
+				const vals = getVariantValues(name);
+				initial[name] = vals[0] ?? '';
+			}
+			selectedVariantOptions = initial;
+		}
+	});
+
+	// busca la variant que coincida con la selección actual (si todas las opciones están presentes)
+	$effect(() => {
+		if (!product?.variants || product.variants.length === 0) {
+			matchedVariant = null;
+			return;
+		}
+
+		const names = getVariantOptionNames();
+		// Si no hay nombres, devolvemos la primera variant como default
+		if (names.length === 0) {
+			matchedVariant = product.variants[0] ?? null;
+			return;
+		}
+
+		// ¿están todas las opciones seleccionadas?
+		const allSelected = names.every((n) => !!selectedVariantOptions[n]);
+		if (!allSelected) {
+			// mostrar por defecto la primera variant
+			matchedVariant = product.variants[0] ?? null;
+			return;
+		}
+
+		const found = product.variants.find((v) =>
+			v.options.every((o) => selectedVariantOptions[o.name] === o.value)
+		);
+		matchedVariant = found ?? product.variants[0] ?? null;
+	});
+
+	// Precio mostrado: si hay variants, mostramos matchedVariant.price o first variant price; si no, product.price
+	let displayedPrice = $derived(() => {
+		if (product?.variants && product.variants.length > 0) {
+			return matchedVariant?.price ?? product.variants[0]?.price ?? product?.price ?? 0;
+		}
+		return product?.price ?? 0;
+	});
+
+	/* ---- manejadores de selección ---- */
+	function getSelectedValue(optionName: string) {
+		return selectedOptions.find((o) => o.name === optionName)?.value;
+	}
+
+	function getSelectedVariantValue(optionName: string): string | null {
+		return selectedVariantOptions[optionName] ?? null;
+	}
+
+	function handleSimpleOptionChange(optionName: string, optionValue: string) {
+		const index = selectedOptions.findIndex((o) => o.name === optionName);
+		if (index !== -1) {
+			selectedOptions = [
+				...selectedOptions.slice(0, index),
+				{ name: optionName, value: optionValue },
+				...selectedOptions.slice(index + 1)
+			];
+		} else {
+			selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }];
+		}
+	}
+
+	/*
+  Para el select de cada opción vamos a:
+  - mostrar TODOS los valores (getAllVariantValues)
+  - marcar disabled=true para aquellos que NO son compatibles con la selección actual,
+    excepto para la opción principal (primer nombre) — esa dejamos siempre enabled.
+  - si el usuario cambia una opción, reseteamos otras que queden incompatibles.
+*/
+	function handleVariantOptionChange(optionName: string, optionValue: string) {
+		// setear la opción
+		selectedVariantOptions = { ...selectedVariantOptions, [optionName]: optionValue };
+
+		// ahora: si existen otras opciones seleccionadas que queden incompatibles -> limpiarlas
+		const names = getAllVariantOptionNames();
+		for (const name of names) {
+			if (name === optionName) continue;
+			const current = selectedVariantOptions[name];
+			if (!current) continue;
+
+			// si current ya no es compatible con la nueva selección, resetearlo
+			const compatible = isValueCompatibleWithSelection(name, current);
+			if (!compatible) {
+				// quitar la clave
+				const copy = { ...selectedVariantOptions };
+				delete copy[name];
+				selectedVariantOptions = copy;
+			}
+		}
+		// matchedVariant se recalcula en tu $effect existente
+	}
+
+	function areAllSimpleOptionsSelected(
+		product: any,
+		selectedOptions: { name: string; value: string }[]
+	): boolean {
+		if (!Array.isArray(product?.options) || product.options.length === 0) {
+			return true;
+		}
+
+		const requiredOptionNames = product.options.map((o) => o.name);
+		const selectedOptionNames = selectedOptions.map((o) => o.name);
+
+		return requiredOptionNames.every((name) => selectedOptionNames.includes(name));
+	}
+
+	/* ---- añadir al carrito ---- */
 	function handleAddToCart() {
 		// Verificar si el usuario está en sesión
 		if (!userInfo || !userInfo._id) {
@@ -155,46 +461,100 @@
 			return;
 		}
 
-		if (product.options.length > 0 && selectedOptions.length === 0) {
-			toast.error('Selecciona una opcion antes de agregar al carrito.');
+		// Si hay opciones simples pero no se seleccionó ninguna, avisar
+		if (!areAllSimpleOptionsSelected(product, selectedOptions)) {
+			toast.error('Selecciona todas las opciones del producto antes de agregar al carrito.');
 			return;
 		}
-		addToCart(product, selectedOptions, quantity);
+
+		// Si hay variants, verificar que matchedVariant exista
+		let variantToSend: Variant | null = null;
+		if (product?.variants?.length > 0) {
+			variantToSend = matchedVariant;
+			if (!variantToSend) {
+				toast.error('Selecciona la variante correcta antes de agregar al carrito.');
+				return;
+			}
+
+			// Verificar stock de la variante
+			if (variantToSend.quantity !== undefined && variantToSend.quantity <= 0) {
+				toast.error('La variante seleccionada no tiene stock.');
+				return;
+			}
+		} else {
+			// Si no hay variantes, verificar el stock general del producto
+			if (product.quantity <= 0) {
+				toast.error('Este producto no tiene stock disponible.');
+				return;
+			}
+		}
+
+		// Agregar al carrito con la variante si existe
+		addToCart(product, selectedOptions, quantity, variantToSend || undefined);
+
+		toast.success('Producto agregado al carrito');
 	}
 
 	function handleBuyNow() {
 		// Verificar si el usuario está en sesión
 		if (!userInfo || !userInfo._id) {
-			toast.error('Debes iniciar sesión para agregar al carrito.');
+			toast.error('Debes iniciar sesión para continuar.');
 			return;
 		}
 
 		// Verificar si el producto está agotado
 		if (product.status === 'sold_out') {
-			toast.error('Este producto está agotado y no se puede agregar al carrito.');
+			toast.error('Este producto está agotado.');
 			return;
 		}
 
-		if (product.options.length > 0 && selectedOptions.length === 0) {
-			toast.error('Selecciona una opcion antes de agregar al carrito.');
+		// Si hay opciones simples pero no se seleccionó ninguna, avisar
+		if (!areAllSimpleOptionsSelected(product, selectedOptions)) {
+			toast.error('Selecciona todas las opciones del producto antes de continuar.');
 			return;
 		}
-		addToCart(product, selectedOptions, quantity);
+
+		// Si hay variants, verificar que matchedVariant exista
+		let variantToSend: Variant | null = null;
+		if (product?.variants?.length > 0) {
+			variantToSend = matchedVariant;
+			if (!variantToSend) {
+				toast.error('Selecciona la variante correcta antes de continuar.');
+				return;
+			}
+
+			// Verificar stock de la variante
+			if (variantToSend.quantity !== undefined && variantToSend.quantity <= 0) {
+				toast.error('La variante seleccionada no tiene stock.');
+				return;
+			}
+		} else {
+			// Si no hay variantes, verificar el stock general del producto
+			if (product.quantity <= 0) {
+				toast.error('Este producto no tiene stock disponible.');
+				return;
+			}
+		}
+
+		// Agregar al carrito con la variante si existe
+		addToCart(product, selectedOptions, quantity, variantToSend || undefined);
+
+		// Ir al carrito
 		goto('/cart');
 	}
 
-	function handleOptionChange(optionName: string, optionValue: string) {
-		const optionIndex = selectedOptions.findIndex((opt) => opt.name === optionName);
-		if (optionIndex !== -1) {
-			selectedOptions = [
-				...selectedOptions.slice(0, optionIndex),
-				{ name: optionName, value: optionValue },
-				...selectedOptions.slice(optionIndex + 1)
-			];
-		} else {
-			selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }];
-		}
-	}
+	// function handleOptionChange(optionName: string, optionValue: string) {
+	// 	const optionIndex = selectedOptions.findIndex((opt) => opt.name === optionName);
+	// 	if (optionIndex !== -1) {
+	// 		selectedOptions = [
+	// 			...selectedOptions.slice(0, optionIndex),
+	// 			{ name: optionName, value: optionValue },
+	// 			...selectedOptions.slice(optionIndex + 1)
+	// 		];
+	// 	} else {
+	// 		selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }];
+	// 	}
+	// }
 
 	function handleOpenDialgoReview() {
 		openDialogreview = true;
@@ -297,6 +657,7 @@
 		</div>
 	</div>
 
+	<!-- DETALLES -->
 	<div class="flex flex-col justify-between w-full md:w-1/2 ml-2">
 		<div class="flex justify-between">
 			<div class="mr-5">
@@ -329,7 +690,6 @@
 			{#if userName}
 				<button
 					onclick={(e) => {
-
 						goto(`/${userName}`);
 					}}
 				>
@@ -365,7 +725,10 @@
 		</div>
 
 		<!-- Precio del Producto -->
-		<h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1>
+		<!-- <h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1> -->
+
+		<!-- PRECIO: ahora reactivo -->
+		<h1 class="text-2xl mt-1">{formatPrice(displayedPrice(), 'es-CO', 'COP')}</h1>
 
 		<!-- Etiqueta condicional -->
 		{#if product.status === 'sold_out'}
@@ -377,32 +740,99 @@
 		{/if}
 
 		<!-- Product Description -->
-		<div class="h-auto max-h-[200px] w-full mt-1 rounded-md p-4 overflow-y-auto">
+		<div class="h-auto max-h-[200px] w-full mt-1 rounded-md py-3 overflow-y-auto">
 			<p>{product.description}</p>
 		</div>
 
-		<!-- Product Options -->
-		{#if product?.options}
-			{#each product.options as option}
-				{#if option?.optionslist}
-					<div class="flex gap-5 mt-5">
-						<h3 class="text-lg font-medium">{option.name}:</h3>
-						<Select.Root>
-							<Select.Trigger class="w-[180px]">
-								<Select.Value placeholder={`seleccionar ${option.name}`} />
-							</Select.Trigger>
-							<Select.Content>
-								{#each option.optionslist as op}
-									<Select.Item value={`${op}`} on:click={() => handleOptionChange(option.name, op)}
-										>{op}</Select.Item
+		<div class="mb-4">
+			<!-- --- OPCIONES SIMPLES (options) --- -->
+			{#if product?.options && product.options.length > 0}
+				<h3 class="text-lg font-medium">Opciones:</h3>
+
+				{#each product.options as option}
+					{@const values = option.values ?? option.optionslist ?? []}
+					{#if values.length > 0}
+						{@const currentValue = getSelectedValue(option.name) ?? ''}
+						{@const triggerContent = currentValue || `Seleccionar ${option.name}`}
+
+						<div class="flex gap-5 mt-2 items-center">
+							<h3 class="text-lg font-medium w-28">{option.name}:</h3>
+							<Select.Root
+								type="single"
+								value={currentValue}
+								onValueChange={(value) => handleSimpleOptionChange(option.name, value ?? '')}
+							>
+								<Select.Trigger class="w-[180px] border-gray-200 dark:border-[#303030]">
+									{triggerContent}
+								</Select.Trigger>
+								<Select.Content
+									class="bg-gray-100 dark:bg-[#202020] border-gray-200 dark:border-[#303030]"
+								>
+									{#each values as op (op)}
+										<Select.Item
+											value={op}
+											label={op}
+											onclick={() => handleSimpleOptionChange(option.name, op)}
+											class="dark:hover:bg-[#303030]"
+										>
+											{op}
+										</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</div>
+					{/if}
+				{/each}
+			{/if}
+
+			<!-- --- VARIANTES (complejas) --- -->
+			{#if product?.variants && product.variants.length > 0}
+				<div class="mt-1">
+					<h3 class="text-lg font-medium">Opciones:</h3>
+
+					{#each getAllVariantOptionNames() as optName (optName)}
+						{@const currentValue = selectedVariantOptions[optName] ?? ''}
+						{@const triggerContent = currentValue || `Seleccionar ${optName}`}
+						{@const allValues = getAllVariantValues(optName)}
+
+						{#if allValues.length > 0}
+							<div class="flex gap-5 mt-2 items-center">
+								<h4 class="w-28">{optName}:</h4>
+
+								<Select.Root
+									type="single"
+									value={currentValue}
+									onValueChange={(v) => handleVariantOptionChange(optName, v ?? '')}
+								>
+									<Select.Trigger class="w-[180px] border-gray-200 dark:border-[#303030]">
+										{triggerContent}
+									</Select.Trigger>
+
+									<Select.Content
+										class="bg-gray-100 dark:bg-[#202020] border-gray-200 dark:border-[#303030]"
 									>
-								{/each}
-							</Select.Content>
-						</Select.Root>
-					</div>
-				{/if}
-			{/each}
-		{/if}
+										{#each allValues as val (val)}
+											{@const disabled = (() => {
+												// no deshabilitamos completamente la opción "principal" (el primer nombre)
+												const names = getAllVariantOptionNames();
+												const primary = names[0];
+												if (optName === primary) return false;
+												// si no es compatible con la selección actual => disabled
+												return !isValueCompatibleWithSelection(optName, val);
+											})()}
+
+											<Select.Item value={val} label={val} {disabled} class="disabled:opacity-50">
+												{val}
+											</Select.Item>
+										{/each}
+									</Select.Content>
+								</Select.Root>
+							</div>
+						{/if}
+					{/each}
+				</div>
+			{/if}
+		</div>
 
 		<!-- Seleccionar Cantidad del Producto -->
 		<div class="flex flex-col gap-3">

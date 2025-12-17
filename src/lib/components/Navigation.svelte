@@ -21,7 +21,7 @@
 	// import { location_data } from '$lib/stores/ipaddressStore';
 	import * as m from '$paraglide/messages';
 	import { unreadConversationsCount } from '$lib/stores/conversationsStore';
-	import { get } from 'svelte/store';
+	import { derived, get } from 'svelte/store';
 	import { currentChat } from '$lib/stores/messagesStore';
 	import {
 		fetchNotifications,
@@ -32,11 +32,10 @@
 		markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
 
-
-  let { children } = $props()
+	let { children } = $props();
 
 	const { socket }: { socket: any } = getContext('socket');
-	$inspect('socket', socket);
+	// $inspect('socket', socket);
 
 	const rutasExcluidas = [
 		'',
@@ -57,6 +56,16 @@
 
 	let searchInputValue = $state('');
 	let isActiveSearchInput = $state(false);
+
+	// Estado local que sincroniza con el store del carrito
+	let localCartItems = $state<any[]>([]);
+	let localTotal = $state(0);
+
+	// Sincronizar el carrito local con el store
+	$effect(() => {
+		localCartItems = [...$cartItems];
+		localTotal = getTotal();
+	});
 
 	function activeSearchInput() {
 		isActiveSearchInput = !isActiveSearchInput;
@@ -131,16 +140,52 @@
 	};
 
 	/// Total reactivo basado en svelte/store
-	let total = $state(getTotal());
+	// let total = $state(getTotal());
 
-	const unsubscribe = cartItems.subscribe(() => {
-		total = getTotal();
-	});
+	// const unsubscribe = cartItems.subscribe(() => {
+	// 	total = getTotal();
+	// });
 
-	onDestroy(() => {
-		unsubscribe();
-	});
+	// onDestroy(() => {
+	// 	unsubscribe();
+	// });
 	///
+	// Total derivado del store
+	const total = derived(cartItems, ($ci) =>
+		$ci.reduce((acc, item) => acc + Number(item.price || 0) * Number(item.amount || 0), 0)
+	);
+
+	// reemplazo de imagen cuando falla la carga
+	function handleImageError(event: Event) {
+		const img = event.target as HTMLImageElement;
+		img.onerror = null; // evitar loop
+		img.src = '/images/placeholder.png'; // pon aquí tu placeholder real
+	}
+
+	// Helpers para acciones que necesitan parámetros estructurados
+	function onAdd(cartItem) {
+		// Si tu addToCart admite different signature; aquí asumimos (product, selectedOptions, amount?, selectedVariant?)
+		addToCart(cartItem, cartItem.selectedOptions ?? [], 1, cartItem.selectedVariant ?? null);
+	}
+
+	function onIncrement(cartItem) {
+		const maxStock = cartItem.selectedVariant?.quantity ?? cartItem.quantity;
+		if (!isMaxed(cartItem._id, maxStock, cartItem.selectedOptions, cartItem.selectedVariant)) {
+			addToCart(cartItem, cartItem.selectedOptions ?? [], 1, cartItem.selectedVariant ?? null);
+		}
+	}
+
+	function onDecrement(cartItem) {
+		decrementCartItem(
+			cartItem._id,
+			cartItem.selectedOptions ?? [],
+			cartItem.selectedVariant ?? null
+		);
+	}
+
+	function onRemove(cartItem) {
+		removeFromCart(cartItem._id, cartItem.selectedOptions ?? [], cartItem.selectedVariant ?? null);
+	}
 
 	const paths = [
 		'/login',
@@ -314,17 +359,54 @@
 	// Estado para saber si la imagen no se pudo cargar
 	let failedToLoad = $state(false);
 
-	function handleImageError() {
-		failedToLoad = true;
-	}
+	// function handleImageError() {
+	// 	failedToLoad = true;
+	// }
 
 	// Función para verificar catidad maxima de un producto en el carrito
 	// globalmente
-	function isMaxed(productId: string, maxQuantity: number): boolean {
-		const total = get(cartItems)
-			.filter((i) => i._id === productId)
-			.reduce((sum, i) => sum + i.amount, 0);
-		return total >= maxQuantity;
+	function isMaxed(
+		productId: string,
+		maxStock: number,
+		selectedOptions: any[] = [],
+		selectedVariant?: any
+	): boolean {
+		if (!maxStock || maxStock <= 0) return true;
+
+		const items = get(cartItems);
+
+		const normalizeOptions = (opts: any[] = []) =>
+			[...opts]
+				.sort((a, b) => a.name.localeCompare(b.name))
+				.map((o) => ({ name: o.name, value: o.value }));
+
+		const selectedOptionsKey = JSON.stringify(normalizeOptions(selectedOptions));
+
+		const totalAmount = items
+			.filter((item) => {
+				if (item._id !== productId) return false;
+
+				const itemOptionsKey = JSON.stringify(normalizeOptions(item.selectedOptions));
+
+				if (itemOptionsKey !== selectedOptionsKey) return false;
+
+				const variantKey1 = item.selectedVariant
+					? item.selectedVariant.sku ||
+						item.selectedVariant._id ||
+						JSON.stringify(item.selectedVariant.options || [])
+					: 'no-variant';
+
+				const variantKey2 = selectedVariant
+					? selectedVariant.sku ||
+						selectedVariant._id ||
+						JSON.stringify(selectedVariant.options || [])
+					: 'no-variant';
+
+				return variantKey1 === variantKey2;
+			})
+			.reduce((sum, item) => sum + item.amount, 0);
+
+		return totalAmount >= maxStock;
 	}
 </script>
 
@@ -370,11 +452,7 @@
 							{/if} -->
 
 							<!-- Icono de Colombia (ubicacion) -->
-							<iconify-icon
-							    icon="twemoji:flag-colombia"
-								height="1.5rem"
-								width="1.5rem"
-								class = "ml-2"
+							<iconify-icon icon="twemoji:flag-colombia" height="1.5rem" width="1.5rem" class="ml-2"
 							></iconify-icon>
 						</div>
 					</div>
@@ -600,116 +678,185 @@
 									height="1.3rem"
 									width="1.3rem"
 									class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
-								></iconify-icon>
-
+								>
+								</iconify-icon>
 								{#if $cartItems.length !== 0}
 									<span
-										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black dark:text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+										class="absolute top-[-0.2rem] right-[-0.2rem] bg-slate-400 dark:bg-gray-200 text-black text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
 									>
 										{$cartItems.length}
 									</span>
 								{/if}
 							</HoverCard.Trigger>
-							<HoverCard.Content class="flex flex-col gap-2 w-80">
+
+							<HoverCard.Content
+								class="flex flex-col gap-2 w-80 bg-gray-100 dark:bg-[#202020] border-gray-200 dark:border-[#303030]"
+							>
 								{#if $cartItems.length === 0}
-									<div class="w-full flex justify-center">
+									<div class="w-full flex justify-center py-4">
 										<h2>{m.navbar_cart_additems()}</h2>
 									</div>
 								{:else}
 									<div
 										class="flex flex-col space-y-2 max-h-[66vh] overflow-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full
-                  [&::-webkit-scrollbar-track]:bg-gray-100
-                    [&::-webkit-scrollbar-thumb]:rounded-full
-                  [&::-webkit-scrollbar-thumb]:bg-gray-300
-                  dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-                  dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+               [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300
+               dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
 									>
-										{#each $cartItems as cartItem}
+										{#each $cartItems as cartItem (cartItem._id + (cartItem.selectedOptions ? JSON.stringify(cartItem.selectedOptions) : '') + (cartItem.selectedVariant ? JSON.stringify(cartItem.selectedVariant) : ''))}
 											<div
-												class="flex flex-row gap-3 items-center rounded-sm p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
+												class="flex flex-col gap-2 rounded-sm p-3 relative bg-gray-200 dark:bg-[#252525] hover:dark:bg-[#303030] transition-colors"
 											>
-												{#if cartItem.imgs[0] && !failedToLoad}
-													<img
-														class="w-12 h-12 object-cover rounded-sm mr-2"
-														src={`${cartItem.imgs[0]}`}
-														alt={`${cartItem.productname}`}
-														onerror={(e) => {
-															e.preventDefault();
-															handleImageError();
-														}}
-													/>
-												{:else}
-													<iconify-icon
-														icon="mdi:package-variant-closed"
-														height="2rem"
-														width="2rem"
-														class="text-gray-200 bg-[#202020] rounded-md hover:bg-[#252525]"
-													></iconify-icon>
-												{/if}
-												<div class="flex">
-													<div class="flex flex-col items-start">
-														<h2 class="text-lg">{cartItem.productname}</h2>
-														<p class="text-base dark:text-white">
+												<!-- eliminar -->
+												<button
+													aria-label="Eliminar producto del carrito"
+													onclick={() => onRemove(cartItem)}
+													class="absolute top-2 right-2 dark:text-white hover:text-red-500 cursor-pointer transition-colors"
+												>
+													<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem">
+													</iconify-icon>
+												</button>
+
+												<div class="flex flex-row gap-3 items-start pr-6">
+													<!-- imagen / fallback -->
+													{#if cartItem.imgs?.[0]}
+														<img
+															class="w-16 h-16 object-cover rounded-sm flex-shrink-0"
+															src={cartItem.imgs[0]}
+															alt={cartItem.productname}
+															onerror={handleImageError}
+														/>
+													{:else}
+														<div class="flex-shrink-0">
+															<iconify-icon
+																icon="mdi:package-variant-closed"
+																height="3rem"
+																width="3rem"
+																class="text-gray-400 dark:text-gray-600"
+															>
+															</iconify-icon>
+														</div>
+													{/if}
+
+													<div class="flex-1 min-w-0">
+														<h2 class="text-base font-semibold truncate">{cartItem.productname}</h2>
+														<p class="text-sm font-medium dark:text-white mt-1">
 															{formatPrice(cartItem.price, 'es-CO', 'COP')}
 														</p>
 
-														<!-- Mostrar selectedOptions solo si existen -->
-														{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
-															<div class="flex gap-1">
-																<h3>{cartItem.selectedOptions[0].name}:</h3>
-																<p>{cartItem.selectedOptions[0].value}</p>
+														<!-- Opciones simples -->
+														{#if cartItem.selectedOptions?.length}
+															<div
+																class="mt-2 p-2 rounded-md bg-blue-100 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700"
+															>
+																<div
+																	class="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1"
+																>
+																	Opciones:
+																</div>
+																<div class="flex flex-wrap gap-1">
+																	{#each cartItem.selectedOptions as opt}
+																		<span
+																			class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40"
+																		>
+																			<strong>{opt.name}:</strong>
+																			{opt.value}
+																		</span>
+																	{/each}
+																</div>
+															</div>
+														{/if}
+
+														<!-- Variante seleccionada -->
+														{#if cartItem.selectedVariant}
+															<div
+																class="mt-2 p-2 rounded-md bg-blue-100 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700"
+															>
+																<div
+																	class="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1"
+																>
+																	Opciones:
+																</div>
+
+																<div class="flex flex-wrap gap-1">
+																	<!-- Opciones (Talla, Material, etc.) -->
+																	{#if cartItem.selectedVariant.options?.length}
+																		{#each cartItem.selectedVariant.options as opt}
+																			<span
+																				class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40"
+																			>
+																				<strong>{opt.name}:</strong>
+																				{opt.value}
+																			</span>
+																		{/each}
+																	{/if}
+
+																	<!-- Color (desde meta) -->
+																	{#if cartItem.selectedVariant.meta?.color}
+																		<span
+																			class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40"
+																		>
+																			<strong>Color:</strong>
+																			{cartItem.selectedVariant.meta.color}
+																		</span>
+																	{/if}
+																</div>
 															</div>
 														{/if}
 													</div>
+												</div>
 
-													<div class="flex w-full justify-center items-center mt-2">
+												<!-- controles -->
+												<div class="flex justify-between items-center mt-2">
+													<div class="flex items-center gap-2">
 														<button
-															onclick={(e) => {
-																e.preventDefault();
-																decrementCartItem(cartItem._id, cartItem.selectedOptions);
-															}}
-															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary"
+															aria-label="Disminuir cantidad"
+															onclick={() => onDecrement(cartItem)}
+															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary hover:bg-gray-300 dark:hover:bg-[#303030] transition-colors"
 														>
-															<!-- Minus Icon -->
-															<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"
-															></iconify-icon>
+															<iconify-icon icon="ic:round-minus" height="1.3rem" width="1.3rem">
+															</iconify-icon>
 														</button>
-														<span class="mx-2 text-black dark:text-white font-medium"
+
+														<span
+															class="mx-2 text-black dark:text-white font-medium min-w-[1.5rem] text-center"
 															>{cartItem.amount}</span
 														>
+
 														<button
-															onclick={(e) => {
-																e.preventDefault();
-																addToCart(cartItem, cartItem.selectedOptions);
-															}}
-															disabled={isMaxed(cartItem._id, cartItem.quantity)}
-															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary
-               {isMaxed(cartItem._id, cartItem.quantity) ? 'opacity-50 cursor-not-allowed' : ''}"
+															aria-label="Aumentar cantidad"
+															onclick={() => onIncrement(cartItem)}
+															disabled={isMaxed(
+																cartItem._id,
+																cartItem.selectedVariant?.quantity ?? cartItem.quantity,
+																cartItem.selectedOptions,
+																cartItem.selectedVariant
+															)}
+															class="rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary hover:bg-gray-300 dark:hover:bg-[#303030] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 														>
-															<!-- Plus Icon -->
-															<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"
-															></iconify-icon>
+															<iconify-icon icon="ic:round-plus" height="1.3rem" width="1.3rem">
+															</iconify-icon>
 														</button>
 													</div>
+
+													<div class="text-sm font-semibold">
+														{formatPrice(
+															(cartItem.price || 0) * (cartItem.amount || 0),
+															'es-CO',
+															'COP'
+														)}
+													</div>
 												</div>
-												<button
-													onclick={(e) => {
-														e.preventDefault();
-														removeFromCart(cartItem._id, cartItem.selectedOptions);
-													}}
-													class="absolute top-2 right-2 dark:text-white hover:text-primary cursor-pointer"
-												>
-													<!-- Close Icon -->
-													<iconify-icon icon="ic:round-close" height="1.5rem" width="1.5rem"
-													></iconify-icon>
-												</button>
 											</div>
 										{/each}
 									</div>
 
-									<div class="flex justify-between">
-										<a href="/cart" class="hover:underline">{m.navbar_cart_go_to_cart()}</a>
-										<h2>Subtotal: {formatPrice(total, 'es-CO', 'COP')}</h2>
+									<div
+										class="flex justify-between items-center pt-2 border-t border-gray-300 dark:border-gray-700"
+									>
+										<a href="/cart" class="text-sm font-medium hover:underline"
+											>{m.navbar_cart_go_to_cart()}</a
+										>
+										<h2 class="font-semibold">Subtotal: {formatPrice($total, 'es-CO', 'COP')}</h2>
 									</div>
 								{/if}
 							</HoverCard.Content>
@@ -732,11 +879,14 @@
 									></iconify-icon>
 								{/if}
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="bg-gray-100 dark:bg-[#202020] dark:hover:bg-[#252525] rounded-md shadow-md border-none">
+							<DropdownMenu.Content
+								class="bg-gray-100 dark:bg-[#202020] dark:hover:bg-[#252525] rounded-md shadow-md border-none"
+							>
 								<DropdownMenu.Item
-									onclick={() => userInfo.accountType === 'personal'
-										? goto(`/personal/${userInfo?._id}`)
-										: goto(`/${userInfo.username}`)}
+									onclick={() =>
+										userInfo.accountType === 'personal'
+											? goto(`/personal/${userInfo?._id}`)
+											: goto(`/${userInfo.username}`)}
 								>
 									{#if userInfo.profileImg !== ''}
 										<img
@@ -761,20 +911,22 @@
 								<DropdownMenu.Separator />
 								<DropdownMenu.Group>
 									{#if userInfo.accountType === 'business'}
-										<DropdownMenu.Item onclick={() => goto("/admin/dashboard")}>
+										<DropdownMenu.Item onclick={() => goto('/admin/dashboard')}>
 											<span>{m.navbar_user_admin()}</span>
 										</DropdownMenu.Item>
 									{/if}
-									<DropdownMenu.Item onclick={() => goto("/shopping")}>
+									<DropdownMenu.Item onclick={() => goto('/shopping')}>
 										<span>{m.navbar_user_shopping()}</span>
 									</DropdownMenu.Item>
-									<DropdownMenu.Item onclick={() => goto("/settings/profile")}>
+									<DropdownMenu.Item onclick={() => goto('/settings/profile')}>
 										<span>{m.navbar_user_settings()}</span>
 									</DropdownMenu.Item>
 
 									<DropdownMenu.Sub>
 										<DropdownMenu.SubTrigger>{m.navbar_user_theme()}</DropdownMenu.SubTrigger>
-										<DropdownMenu.SubContent class="bg-gray-100 dark:bg-[#202020] dark:hover:bg-[#252525] rounded-md shadow-md border-none">
+										<DropdownMenu.SubContent
+											class="bg-gray-100 dark:bg-[#202020] dark:hover:bg-[#252525] rounded-md shadow-md border-none"
+										>
 											<DropdownMenu.Item onclick={() => setTheme('light')}
 												>{m.nabvar_user_theme_light()}</DropdownMenu.Item
 											>

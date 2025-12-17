@@ -20,7 +20,9 @@
 
 	let { form }: { form: ActionData } = $props();
 
-	let optionsItems = $state<any[]>([]);
+	let simpleOptions = $state<any[]>([]);
+	let complexOptions = $state<any[]>([]);
+
 	let especificationsItems = $state<any[]>([]);
 
 	let isLoading = $state<boolean>(true);
@@ -38,7 +40,6 @@
 
 	// Obtener url del servidor
 	let serverUrl = $state<string>('');
-
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
@@ -120,19 +121,9 @@
 		return `${parseFloat((size / Math.pow(1024, i)).toFixed(2))} ${units[i]}`;
 	}
 
-	function addOptionsItem() {
-		if (optionsItems.length < 1) {
-			optionsItems = [...optionsItems, optionsItems];
-		}
-	}
-
-	function removeOptionItem(index: number) {
-		optionsItems = optionsItems.filter((_, i) => i != index);
-	}
-
 	function addEspecificationsItem() {
 		if (especificationsItems.length < 7) {
-			especificationsItems = [...especificationsItems, especificationsItems];
+			especificationsItems = [...especificationsItems, { title: '', content: '' }];
 		}
 	}
 
@@ -150,7 +141,6 @@
 	let editorRef = $state<any>(null);
 
 	$inspect(product);
-
 
 	onMount(async () => {
 		try {
@@ -197,10 +187,39 @@
 
 	$effect(() => {
 		if (product?.options) {
-			optionsItems = product.options.map((option: any) => ({
-				name: option.name || '',
-				optionslist: option.optionslist || ''
+			simpleOptions = product.options.map((option: any) => ({
+				name: option.name ?? '',
+				values: Array.isArray(option.values) ? option.values : []
 			}));
+		}
+	});
+
+	$effect(() => {
+		if (product?.variants && Array.isArray(product.variants)) {
+			// Agrupar variants por option name
+			const grouped: Record<string, any> = {};
+
+			product.variants.forEach((variant: any) => {
+				const optionName = variant.options?.[0]?.name || 'Default';
+
+				if (!grouped[optionName]) {
+					grouped[optionName] = {
+						name: optionName,
+						values: []
+					};
+				}
+
+				grouped[optionName].values.push({
+					label: variant.options?.[0]?.value || '',
+					price: variant.price || 0,
+					stock: variant.quantity || 0,
+					sku: variant.sku || '',
+					weight: variant.weight || null,
+					color: variant.meta?.color || ''
+				});
+			});
+
+			complexOptions = Object.values(grouped);
 		}
 	});
 
@@ -232,6 +251,22 @@
 		const html = editorRef?.getHTML() ?? '';
 		formData.set('additionalInfo', html);
 
+		// Serializar simpleOptions como "options"
+		formData.set('options', JSON.stringify(simpleOptions));
+
+		// Serializar complexOptions como "variants"
+		const variants = complexOptions.flatMap((option) =>
+			option.values.map((v) => ({
+				sku: v.sku || '',
+				price: v.price || 0,
+				quantity: v.stock || 0,
+				options: [{ name: option.name, value: v.label }],
+				weight: v.weight || null,
+				meta: { color: v.color }
+			}))
+		);
+		formData.set('variants', JSON.stringify(variants));
+
 		try {
 			const response = await fetch(form.action, {
 				method: form.method,
@@ -258,6 +293,50 @@
 			console.error('Error en handleSubmit:', error);
 			toast.error('Error al procesar la solicitud');
 		}
+	}
+
+	//////
+	function addSimpleOption() {
+		simpleOptions.push({ name: '', values: [''] });
+	}
+
+	function addComplexOption() {
+		complexOptions.push({
+			name: '',
+			values: [
+				{
+					label: '',
+					price: null,
+					stock: null,
+					sku: null,
+					weight: null,
+					color: null
+				}
+			]
+		});
+	}
+
+	function removeSimpleOption(i) {
+		simpleOptions.splice(i, 1);
+	}
+
+	function removeComplexOption(i) {
+		complexOptions.splice(i, 1);
+	}
+
+	function addSimpleValue(optionIndex) {
+		simpleOptions[optionIndex].values.push('');
+	}
+
+	function addComplexValue(optionIndex) {
+		complexOptions[optionIndex].values.push({
+			label: '',
+			price: null,
+			stock: null,
+			sku: null,
+			weight: null,
+			color: null
+		});
 	}
 </script>
 
@@ -419,34 +498,162 @@
 				<Card.Header>
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_options()}</h3>
-						<button
+						<!-- <button
 							type="button"
 							class="bg-gray-200 dark:text-white dark:bg-[#303030] h-8 w-32 rounded-md"
 							onclick={addOptionsItem}>{m.admin_catalog_addproduct_options_button()}</button
+						> -->
+					</div>
+					<div class="flex gap-4 mb-4">
+						<button
+							type="button"
+							class="bg-blue-500 text-white py-1 px-3 rounded"
+							onclick={addSimpleOption}
 						>
+							+ Opción Simple
+						</button>
+
+						<button
+							type="button"
+							class="bg-purple-500 text-white py-1 px-3 rounded"
+							onclick={addComplexOption}
+						>
+							+ Opción Compleja
+						</button>
 					</div>
 				</Card.Header>
 
-				<!-- Options List -->
-				{#each optionsItems as option, i}
-					<Card.Content class="flex gap-5 items-center">
-						<div class="flex gap-3 items-center">
-							<label for="optionname">{m.admin_catalog_addproduct_options_name()}: </label>
-							<Input type="text" name={`optionname${i}`} value={option?.name ?? ''} />
+				{#each simpleOptions as option, i}
+					<Card.Content
+						class="flex flex-col gap-4 border p-4 rounded-md bg-gray-50 dark:bg-[#1a1a1a]"
+					>
+						<!-- Nombre -->
+						<div class="flex items-center gap-3">
+							<label>Nombre (Simple):</label>
+							<Input type="text" bind:value={option.name} placeholder="Ej: Color" />
 						</div>
-						<div class="flex gap-3 w-full items-center">
-							<label for="options">{m.admin_catalog_addproduct_options_options()}:</label>
-							<Input type="text" name={`options${i}`} value={option?.optionslist ?? ''} />
+
+						<!-- Values -->
+						<div class="flex flex-col gap-2 pl-4">
+							<h4 class="font-semibold">Valores simples</h4>
+
+							{#each option.values as v, vi}
+								<div class="flex items-center gap-3">
+									<Input type="text" bind:value={option.values[vi]} placeholder="Ej: Rojo" />
+									<button
+										type="button"
+										class="bg-red-500 text-white px-2 py-1 rounded-md"
+										onclick={() => option.values.splice(vi, 1)}>X</button
+									>
+								</div>
+							{/each}
+
+							<button
+								type="button"
+								class="bg-gray-300 dark:bg-[#303030] px-3 py-1 rounded-md"
+								onclick={() => addSimpleValue(i)}>+ Agregar Valor</button
+							>
 						</div>
+
 						<button
-							aria-label="Eliminar opción"
-							class="flex items-center justify-center bg-gray-200 dark:bg-[#353535] h-8 w-14 rounded-md hover:text-white hover:bg-red-600 dark:hover:bg-red-600"
-							onclick={() => removeOptionItem(i)}
+							type="button"
+							class="mt-3 bg-red-500 text-white px-4 py-1 rounded-md"
+							onclick={() => removeSimpleOption(i)}>Eliminar opción</button
 						>
-							<iconify-icon icon="pajamas:remove" height="1.3rem" width="1.3rem"></iconify-icon>
-						</button>
 					</Card.Content>
 				{/each}
+
+				{#each complexOptions as option, i}
+					<Card.Content
+						class="flex flex-col gap-4 border p-4 rounded-md bg-gray-50 dark:bg-[#1a1a1a]"
+					>
+						<!-- Nombre -->
+						<div class="flex items-center gap-3">
+							<label>Nombre (Compleja):</label>
+							<Input type="text" bind:value={option.name} placeholder="Ej: Peso" />
+						</div>
+
+						<!-- Values -->
+						<div class="flex flex-col gap-2 pl-4">
+							<h4 class="font-semibold">Valores complejos</h4>
+
+							{#each option.values as v, vi}
+								<div
+									class="flex flex-wrap gap-3 items-center bg-white dark:bg-[#2a2a2a] p-2 rounded-md border"
+								>
+									<div>
+										<label>Label</label>
+										<Input type="text" bind:value={v.label} placeholder="Ej: 3kg" />
+									</div>
+
+									<div>
+										<label>Precio</label>
+										<Input type="number" bind:value={v.price} />
+									</div>
+
+									<div>
+										<label>Stock</label>
+										<Input type="number" bind:value={v.stock} />
+									</div>
+
+									<div>
+										<label>SKU</label>
+										<Input type="text" bind:value={v.sku} />
+									</div>
+
+									<div>
+										<label>Peso</label>
+										<Input type="number" bind:value={v.weight} />
+									</div>
+
+									<div>
+										<label>Color</label>
+										<Input type="text" bind:value={v.color} />
+									</div>
+
+									<button
+										type="button"
+										class="bg-red-500 text-white px-2 py-1 rounded-md"
+										onclick={() => option.values.splice(vi, 1)}>X</button
+									>
+								</div>
+							{/each}
+
+							<button
+								type="button"
+								class="bg-gray-300 dark:bg-[#303030] px-3 py-1 rounded-md"
+								onclick={() => addComplexValue(i)}>+ Agregar Valor</button
+							>
+						</div>
+
+						<button
+							type="button"
+							class="mt-3 bg-red-500 text-white px-4 py-1 rounded-md"
+							onclick={() => removeComplexOption(i)}>Eliminar opción</button
+						>
+					</Card.Content>
+				{/each}
+
+				<!-- Serializar simpleOptions -->
+				{#each simpleOptions as option, i}
+					<input type="hidden" name="simpleOption_{i}_name" value={option.name} />
+					<input type="hidden" name="simpleOption_{i}_values" value={option.values.join('|||')} />
+				{/each}
+				<input type="hidden" name="simpleOptionsCount" value={simpleOptions.length} />
+
+				<!-- Serializar complexOptions como variants -->
+				{#each complexOptions as option, i}
+					{#each option.values as value, vi}
+						<input type="hidden" name="variant_{i}_{vi}_optionName" value={option.name} />
+						<input type="hidden" name="variant_{i}_{vi}_label" value={value.label} />
+						<input type="hidden" name="variant_{i}_{vi}_price" value={value.price || 0} />
+						<input type="hidden" name="variant_{i}_{vi}_stock" value={value.stock || 0} />
+						<input type="hidden" name="variant_{i}_{vi}_sku" value={value.sku || ''} />
+						<input type="hidden" name="variant_{i}_{vi}_weight" value={value.weight || ''} />
+						<input type="hidden" name="variant_{i}_{vi}_color" value={value.color || ''} />
+					{/each}
+				{/each}
+				<input type="hidden" name="complexOptionsCount" value={complexOptions.length} />
 			</Card.Root>
 
 			{#if QuillEditor}
@@ -603,7 +810,7 @@
 					<div class="flex justify-between">
 						<h3 class="font-semibold">{m.admin_catalog_addproduct_specifications()}</h3>
 						<button
-						    type="button"
+							type="button"
 							class="bg-gray-200 dark:bg-[#303030] dark:text-white h-8 w-32 rounded-md"
 							onclick={addEspecificationsItem}
 							>{m.admin_catalog_addproduct_specifications_button()}</button
@@ -696,12 +903,7 @@
 			</Card.Root>
 
 			<!-- Hidden Input country info -->
-			<input
-				class="hidden"
-				type="text"
-				name="country"
-				value={'Colombia'}
-			/>
+			<input class="hidden" type="text" name="country" value={'Colombia'} />
 
 			<div class="w-full flex justify-end">
 				<Button

@@ -1,48 +1,93 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { removeTotal, cartItems } from '$lib/stores/cartStore';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { toast } from 'svelte-sonner';
 	import Progress from '$lib/components/ui/progress/progress.svelte';
 
-	// Obtener url del servidor
-	let serverUrl: string;
-	let ordersCreated = false;
+	// State reactivo con runes de Svelte 5
+	let serverUrl = $state<string>('');
+	let ordersCreated = $state(false);
+	let progressValue = $state(0);
 
-	let progressValue = 0;
+	// Derivar el usuario desde la página
+	let user = $derived(page.data.user);
+	let searchParams = $derived(page.url.searchParams);
 
 	async function getServerUrl() {
 		try {
 			const response = await fetch(`/api/server`);
 			const data = await response.json();
-
 			serverUrl = data.server_url;
 		} catch (error) {
-			console.error('Error el solicitar Server Url:', error);
+			console.error('Error al solicitar Server Url:', error);
 		}
+	}
+
+	/**
+	 * Prepara los datos de la orden dependiendo del tipo de producto
+	 * @param item - Item del carrito
+	 */
+	function prepareOrderData(
+		item: any,
+		buyerId: string,
+		buyerName: string,
+		buyerProfileImg: string
+	) {
+		// Determinar si es un producto con variante compleja o simple
+		const hasVariant = item.selectedVariant && item.selectedVariant.options;
+
+		let finalPrice: number | null;
+		let finalSelectedOptions: Array<{ name: string; value: string }>;
+
+		if (hasVariant) {
+			// Producto con variante compleja
+			finalPrice = item.selectedVariant.price;
+			finalSelectedOptions = item.selectedVariant.options || [];
+		} else {
+			// Producto simple
+			finalPrice = item.price;
+			finalSelectedOptions = item.selectedOptions || [];
+		}
+
+		return {
+			product: item,
+			buyerId,
+			sellerId: item?.user,
+			buyerName,
+			buyerProfileImg,
+			amount: item.amount,
+			price: finalPrice,
+			status: 'pending',
+			selectedOptions: finalSelectedOptions,
+			// Incluir información de la variante si existe
+			...(hasVariant && {
+				variant: {
+					sku: item.selectedVariant.sku,
+					price: item.selectedVariant.price,
+					meta: item.selectedVariant.meta
+				}
+			})
+		};
 	}
 
 	async function createOrders() {
 		const items = $cartItems;
-		const buyer = $page.data.user;
+		const buyer = user;
 
 		if (!items || items.length === 0) {
-			toast.error('El carrito esta vacio');
+			toast.error('El carrito está vacío');
 			return;
 		}
 
 		if (!buyer) {
-			toast.error('No se encotro la informacion del comprador');
+			toast.error('No se encontró la información del comprador');
 			return;
 		}
 
 		const buyerId = buyer?._id;
 		const buyerName = buyer?.username;
-		let buyerProfileImg = buyer?.profileImg;
-
-		if (buyerProfileImg == null || buyerProfileImg == undefined) {
-			buyerProfileImg = '';
-		}
+		let buyerProfileImg = buyer?.profileImg || '';
 
 		try {
 			await getServerUrl();
@@ -62,16 +107,7 @@
 
 				while (!success && attempts < maxAttempts) {
 					try {
-						const orderData = {
-							product: item,
-							buyerId,
-							sellerId: item?.user,
-							buyerName,
-							buyerProfileImg,
-							amount: item.amount,
-							status: 'pending', // Estado inicial de la orden
-							selectedOptions: item.selectedOptions
-						};
+						const orderData = prepareOrderData(item, buyerId, buyerName, buyerProfileImg);
 
 						console.log('Intentando crear orden:', orderData);
 
@@ -95,43 +131,42 @@
 						console.error(`Intento ${attempts + 1} fallido:`, error);
 						attempts++;
 						if (attempts >= maxAttempts) {
-							throw new Error(`Error al crear la orden despues de ${maxAttempts} intentos`);
+							throw new Error(`Error al crear la orden después de ${maxAttempts} intentos`);
 						}
 					}
 				}
 			}
 
-			// Forzar 100% al finalizar, por si quedó algún decimal
+			// Forzar 100% al finalizar
 			progressValue = 100;
 
-			toast.success('Todas las ordenes se han creado correctamente');
+			toast.success('Todas las órdenes se han creado correctamente');
 
-			// vaciar el carrito
+			// Vaciar el carrito
 			removeTotal();
 
-			// Recargar la pagina
+			// Recargar la página
 			location.reload();
 		} catch (error: any) {
 			toast.error(`Error: ${error.message}`);
 		}
 	}
 
-	$: if ($page.data.user && !ordersCreated) {
-		const searchParams = $page.url.searchParams;
-		if (searchParams) {
+	// Effect para manejar la creación automática de órdenes
+	$effect(() => {
+		if (user && !ordersCreated && searchParams) {
 			const mercadoPagoStatus = searchParams.get('status');
 			const paypalSuccess = searchParams.get('paymentSuccess');
 
 			if (mercadoPagoStatus === 'approved' || paypalSuccess === '1') {
 				ordersCreated = true;
 				createOrders();
-			} else {
-				console.log('No se detecta un pago exitoso');
 			}
 		}
-	}
+	});
 
-	console.log($cartItems);
+	// Log para debugging
+	$inspect('Cart Items:', $cartItems);
 </script>
 
 <div class="flex flex-col items-center justify-center h-[calc(100vh-56px)] w-full">
@@ -158,7 +193,7 @@
 
 		<button
 			class="dark:bg-[#303030] w-44 h-10 rounded-lg hover:dark:bg-[#353535] mt-8"
-			on:click={() => goto('/')}
+			onclick={() => goto('/')}
 		>
 			Volver a la tienda
 		</button>

@@ -1,178 +1,275 @@
-import { browser } from '$app/environment'
-import { derived, get, writable } from 'svelte/store'
+import { browser } from '$app/environment';
+import { derived, get, writable } from 'svelte/store';
 
 interface Product {
-  _id: string;
-  username: string;
-  productname: string;
-  description: string;
-  imgs: [string];
-  price: number;
-  quantity: number;
-  shippingfee: number
-  user: string,
-  options: [],
-  status: string,
+	_id: string;
+	username: string;
+	productname: string;
+	description: string;
+	imgs: [string];
+	price: number;
+	quantity: number;
+	shippingfee: number;
+	user: string;
+	options: [];
+	variants?: Variant[];
+	status: string;
+}
+
+interface Variant {
+	_id?: string;
+	sku?: string;
+	price: number;
+	quantity?: number;
+	imgs?: string[];
+	options: { name: string; value: string }[];
+	weight?: number;
+	meta?: any;
 }
 
 interface SelectedOption {
-  name: string
-  value: string
+	name: string;
+	value: string;
 }
 
 interface CartItem extends Product {
-  amount: number;
-  selectedOptions: SelectedOption[]
+	amount: number;
+	selectedOptions: SelectedOption[];
+	selectedVariant?: Variant;
 }
 
-export const cartItems = writable<CartItem[]>([])
+export const cartItems = writable<CartItem[]>([]);
 
 if (browser) {
-  if (localStorage.cartItems) {
-    cartItems.set(JSON.parse(localStorage.cartItems))
-  }
-  cartItems.subscribe((items) => localStorage.cartItems = JSON.stringify(items))
+	if (localStorage.cartItems) {
+		cartItems.set(JSON.parse(localStorage.cartItems));
+	}
+	cartItems.subscribe((items) => (localStorage.cartItems = JSON.stringify(items)));
 }
 
-// No solo agrega el producto al carrito sino que tambien
-// incrementa una unidad cuando este ya esta agregado
-export function addToCart(product: Product, selectedOptions: SelectedOption[] = [], quantity: number = 1) {
-  // 0) Verificamos si el producto está agotado
-  if (product.status === 'sold_out') {
-    console.warn('Este producto está agotado y no se puede agregar al carrito')
-    return
-  }
+function isSameCartItem(
+	item: CartItem,
+	productId: string,
+	selectedOptions: SelectedOption[] = [],
+	variant?: Variant
+): boolean {
+	if (item._id !== productId) return false;
 
-  // Exit if no options are selected
-  if (product.options.length > 0 && selectedOptions.length === 0) {
-    console.warn("No options selected")
-    return
-  }
+	// Comparar opciones simples (asegurar que ambos sean arrays)
+	const itemOptions = item.selectedOptions || [];
+	const newOptions = selectedOptions || [];
 
-  let items = get(cartItems)
+	const itemOptionsKey = JSON.stringify(
+		[...itemOptions].sort((a, b) => a.name.localeCompare(b.name))
+	);
+	const newOptionsKey = JSON.stringify(
+		[...newOptions].sort((a, b) => a.name.localeCompare(b.name))
+	);
 
-  const totalGlobal = items
-    .filter(i => i._id === product._id)
-    .reduce((sum, i) => sum + i.amount, 0)
+	if (itemOptionsKey !== newOptionsKey) return false;
 
-  if (totalGlobal >= product.quantity) {
-    console.warn(`Ya alcanzaste el stock máximo de ${product.quantity}`)
-    return
-  }
+	// Comparar variantes
+	const itemVariantKey = item.selectedVariant
+		? item.selectedVariant.sku ||
+			item.selectedVariant._id ||
+			JSON.stringify(item.selectedVariant.options || [])
+		: 'no-variant';
+	const newVariantKey = variant
+		? variant.sku || variant._id || JSON.stringify(variant.options || [])
+		: 'no-variant';
 
-  const remaining = product.quantity - totalGlobal
-
-  let found = false
-  const updated = items.map(i => {
-    if (
-      i._id === product._id &&
-      JSON.stringify(i.selectedOptions) === JSON.stringify(selectedOptions)
-    ) {
-      found = true
-      // sólo sumamos hasta remaining, no más
-      const addable = Math.min(quantity, remaining)
-      if (addable <= 0) {
-        console.warn('No queda stock disponible para esta variante')
-      }
-      i.amount += addable
-    }
-    return i
-  })
-
-  if (!found) {
-    const qty = Math.min(quantity, remaining)
-    if (qty <= 0) {
-      console.warn('No queda stock disponible para este producto')
-    }
-    const cartItem: CartItem = {
-      ...product,
-      amount: qty,
-      selectedOptions
-    }
-    updated.push(cartItem)
-  }
-
-  cartItems.set(updated)
+	return itemVariantKey === newVariantKey;
 }
 
-export function decrementCartItem(id: string, selectedOptions: SelectedOption[]) {
-  let items = get(cartItems)
-
-  for (let item of items) {
-    if (item._id === id && JSON.stringify(item.selectedOptions) === JSON.stringify(selectedOptions)) {
-      if (item.amount > 1) {
-        item.amount--
-      } else {
-        items = items.filter(
-          (item) => item._id !== id || JSON.stringify(item.selectedOptions) !== JSON.stringify(selectedOptions)
-        )
-      }
-      cartItems.set(items)
-      return
-    }
-  }
+// Helper para obtener precio considerando variante
+export function getItemPrice(item: CartItem): number {
+	// Prioridad: variante > producto
+	if (item.selectedVariant?.price != null && !isNaN(Number(item.selectedVariant.price))) {
+		return Number(item.selectedVariant.price);
+	}
+	if (item.price != null && !isNaN(Number(item.price))) {
+		return Number(item.price);
+	}
+	return 0;
 }
 
-export function removeFromCart(id: string, selectedOptions: SelectedOption[]) {
-  let items = get(cartItems)
+// Agregar producto al carrito con opciones simples y/o variante
+export function addToCart(
+	product: Product,
+	selectedOptions: SelectedOption[] = [],
+	quantity: number = 1,
+	variant?: Variant
+) {
+	// Verificar si el producto está agotado
+	if (product.status === 'sold_out') {
+		console.warn('Este producto está agotado y no se puede agregar al carrito');
+		return;
+	}
 
-  items = items.filter(item => item._id !== id || JSON.stringify(item.selectedOptions) !== JSON.stringify(selectedOptions))
+	// Verificar si se requieren opciones
+	if (product.options.length > 0 && selectedOptions.length === 0 && !variant) {
+		console.warn('No options selected');
+		return;
+	}
 
-  cartItems.set(items)
+	let items = get(cartItems);
+
+	// Calcular stock disponible
+	let availableStock: number;
+	if (variant) {
+		// Si hay variante, usar su stock
+		availableStock = variant.quantity ?? 0;
+	} else {
+		// Si no hay variante, usar stock del producto
+		availableStock = product.quantity;
+	}
+
+	// Calcular cuánto ya tenemos de este item específico en el carrito
+	const existingAmount = items
+		.filter((i) => isSameCartItem(i, product._id, selectedOptions, variant))
+		.reduce((sum, i) => sum + i.amount, 0);
+
+	if (existingAmount >= availableStock) {
+		console.warn(`Ya alcanzaste el stock máximo de ${availableStock}`);
+		return;
+	}
+
+	const remaining = availableStock - existingAmount;
+
+	// Buscar si ya existe el item exacto en el carrito
+	let found = false;
+	const updated = items.map((i) => {
+		if (isSameCartItem(i, product._id, selectedOptions, variant)) {
+			found = true;
+			const addable = Math.min(quantity, remaining);
+			if (addable <= 0) {
+				console.warn('No queda stock disponible para esta variante');
+			}
+			i.amount += addable;
+		}
+		return i;
+	});
+
+	if (!found) {
+		const qty = Math.min(quantity, remaining);
+		if (qty <= 0) {
+			console.warn('No queda stock disponible para este producto');
+			return;
+		}
+
+		// Crear nuevo item de carrito
+		const cartItem: CartItem = {
+			...product,
+			amount: qty,
+			selectedOptions: selectedOptions || [],
+			selectedVariant: variant
+		};
+
+		// Si hay variante, usar su precio e imágenes
+		if (variant) {
+			cartItem.price = variant.price;
+			if (variant.imgs && variant.imgs.length > 0) {
+				cartItem.imgs = variant.imgs as [string];
+			}
+		}
+
+		updated.push(cartItem);
+	}
+
+	cartItems.set(updated);
+}
+
+export function decrementCartItem(
+	id: string,
+	selectedOptions: SelectedOption[],
+	variant?: Variant
+) {
+	let items = get(cartItems);
+
+	for (let item of items) {
+		if (isSameCartItem(item, id, selectedOptions, variant)) {
+			if (item.amount > 1) {
+				item.amount--;
+			} else {
+				items = items.filter((i) => !isSameCartItem(i, id, selectedOptions, variant));
+			}
+			cartItems.set(items);
+			return;
+		}
+	}
+}
+
+export function removeFromCart(
+	id: string,
+	selectedOptions: SelectedOption[] = [],
+	variant?: Variant
+) {
+	let items = get(cartItems);
+
+	// Usar isSameCartItem para comparar correctamente con variantes
+	items = items.filter((item) => !isSameCartItem(item, id, selectedOptions, variant));
+
+	cartItems.set(items);
 }
 
 export function getTotal() {
-  let items = get(cartItems)
-  let total = 0
+	let items = get(cartItems);
+	let total = 0;
 
-  for (let item of items) {
-    total += item.price * item.amount
-  }
+	for (let item of items) {
+		// Usar precio de variante si existe
+		const price = getItemPrice(item);
+		total += price * item.amount;
+	}
 
-  return total
+	return total;
 }
 
 export function removeTotal() {
-  cartItems.set([])
+	cartItems.set([]);
 }
 
-
-// Derivados para calcular los totales sin comisión (estos se mostrarán en el carrito)
-export const subtotal = derived(cartItems, $cartItems =>
-  $cartItems.reduce((acc, product) => acc + product.price * product.amount, 0)
+// Usar precio de variante si existe
+export const subtotal = derived(cartItems, ($cartItems) =>
+	$cartItems.reduce((acc, item) => {
+		const price = getItemPrice(item);
+		return acc + price * item.amount;
+	}, 0)
 );
 
-export const totalEnvio = derived(cartItems, $cartItems =>
-  $cartItems.reduce((acc, product) => acc + product.shippingfee * product.amount, 0)
+// Manejar shippingfee que puede ser undefined/null
+export const totalEnvio = derived(cartItems, ($cartItems) =>
+	$cartItems.reduce((acc, product) => {
+		const fee = Number(product.shippingfee) || 0;
+		return acc + fee * product.amount;
+	}, 0)
 );
 
-export const P_goal = derived([subtotal, totalEnvio], ([$subtotal, $totalEnvio]) =>
-  $subtotal + $totalEnvio
+export const P_goal = derived(
+	[subtotal, totalEnvio],
+	([$subtotal, $totalEnvio]) => $subtotal + $totalEnvio
 );
 
 // Función para calcular la comisión según el método de pago
 export function computeCommission(paymentMethod: string, P_goal: number): number {
-  let config;
-  switch (paymentMethod) {
-    case 'mercadopago':
-      config = { fixed: 952, percent: 0.03915 };
-      break;
-    case 'paypal':
-      // 3.40% + $0.30 USD
-      config = { fixed: 0.30, percent: 0.034 };
-      break;
-    default:
-      config = { fixed: 0, percent: 0 };
-      break;
-  }
-  // Fórmula para calcular la comisión: se asume que se quiere que el total recibido sea P_goal,
-  // y se aplica la comisión para saber cuánto se debe cobrar adicionalmente.
-  return (P_goal + config.fixed) / (1 - config.percent) - P_goal;
+	let config;
+	switch (paymentMethod) {
+		case 'mercadopago':
+			config = { fixed: 952, percent: 0.03915 };
+			break;
+		case 'paypal':
+			// 3.40% + $0.30 USD
+			config = { fixed: 0.3, percent: 0.034 };
+			break;
+		default:
+			config = { fixed: 0, percent: 0 };
+			break;
+	}
+	// Fórmula para calcular la comisión
+	return (P_goal + config.fixed) / (1 - config.percent) - P_goal;
 }
-
 
 export function computeTotal(paymentMethod: string, P_goal: number): number {
-  const commission = computeCommission(paymentMethod, P_goal);
-  return P_goal + commission;
+	const commission = computeCommission(paymentMethod, P_goal);
+	return P_goal + commission;
 }
-

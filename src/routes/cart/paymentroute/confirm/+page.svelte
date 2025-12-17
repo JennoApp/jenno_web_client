@@ -4,8 +4,10 @@
 		cartItems,
 		computeTotal,
 		computeCommission,
-		subtotal as sub
-		// totalEnvio,
+		subtotal,
+		totalEnvio,
+		P_goal,
+		getItemPrice
 	} from '$lib/stores/cartStore';
 	import { page } from '$app/state';
 	import { Separator } from '$lib/components/ui/separator';
@@ -15,29 +17,14 @@
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
 	import { paymentMethod } from '$lib/stores/paymentMethod';
-
 	import MercadoPagoLoader from '$lib/components/MercadoPagoLoader.svelte';
 
 	let shippingData = page.data?.user?.shippingInfo;
 	let openDialogPayment = $state(false);
 
-	// Estado del carrito y calculos
-	let subtotal = $derived(
-		$cartItems.reduce((acc, product) => acc + product.price * product.amount, 0)
-	);
-	let totalEnvio = $derived(
-		$cartItems.reduce((acc, product) => acc + product.shippingfee * product.amount, 0)
-	);
-	let P_goal = $derived(subtotal + totalEnvio);
-
-	let transferAmount = $derived(computeCommission($paymentMethod, P_goal));
-
-	// total a pagar segun metodo de pago seleccionado
-	let total = $derived(computeTotal($paymentMethod, P_goal));
-
 	// Conversion a USD (solo para PayPal)
 	let exchangeRate = $state(0);
-	let usdEquivalent = $state<number>(0);
+	let usdEquivalent = $state(0);
 
 	onMount(() => {
 		if ($paymentMethod === 'paypal') {
@@ -58,19 +45,31 @@
 	}
 
 	$effect(() => {
-		if (exchangeRate && total) {
-			if ($paymentMethod === 'paypal') {
-				usdEquivalent = parseFloat(((total + 0.3) / exchangeRate).toFixed(2));
-			} else {
-				usdEquivalent = parseFloat((total / exchangeRate).toFixed(2));
-			}
-		} else {
+		const total = computeTotal($paymentMethod ?? 'mercadopago', $P_goal);
+
+		if (!exchangeRate || !total) {
 			usdEquivalent = 0;
+			return;
+		}
+
+		if ($paymentMethod === 'paypal') {
+			usdEquivalent = Number(((total + 0.3) / exchangeRate).toFixed(2));
+		} else {
+			usdEquivalent = Number((total / exchangeRate).toFixed(2));
 		}
 	});
 
-	$inspect({ exchangeRate, T: total, usdEquivalent });
-	$inspect({ user: page.data.user });
+	// Debug: ver los valores
+	$effect(() => {
+		console.log('Debug valores:', {
+			subtotal: $subtotal,
+			totalEnvio: $totalEnvio,
+			P_goal: $P_goal,
+			paymentMethod: $paymentMethod,
+			transferencia: computeCommission($paymentMethod ?? 'mercadopago', $P_goal),
+			total: computeTotal($paymentMethod ?? 'mercadopago', $P_goal)
+		});
+	});
 
 	async function payWithMercadoPago() {
 		try {
@@ -78,33 +77,45 @@
 			localStorage.removeItem('mp-preference-id');
 
 			// Construir items para la preferencia de Mercado Pago
-			const items = $cartItems.map((item) => ({
-				id: item._id,
-				title: item.productname,
-				description: item.description,
-				quantity: item.amount,
-				currency_id: 'COP',
-				unit_price: item.price
-			}));
+			const items = $cartItems.map((item) => {
+				const unitPrice = getItemPrice(item);
 
-			const PGoalAdjusted = P_goal < 20000 ? P_goal * 0.95 : P_goal;
+				// Validación fuerte: Mercado Pago necesita número > 0
+				if (!unitPrice || isNaN(unitPrice) || unitPrice <= 0) {
+					throw new Error(`Producto sin precio válido: ${item.productname} (id: ${item._id})`);
+				}
+
+				return {
+					id: item.selectedVariant?._id ?? item._id,
+					title: item.productname,
+					description: item.description ?? '',
+					quantity: Number(item.amount) || 1,
+					currency_id: 'COP',
+					unit_price: unitPrice
+				};
+			});
+
+			// Ajuste del P_goal - usar directamente $P_goal
+			const rawPgoal = Number($P_goal ?? 0);
+			const PGoalAdjusted = rawPgoal < 20000 && rawPgoal > 0 ? rawPgoal * 0.95 : rawPgoal;
 
 			// Calcular la comisión para Mercado Pago
 			const commission = computeCommission('mercadopago', PGoalAdjusted);
-
 			const commissionRounded = Math.round(commission);
 
-			// Agregar un item adicional para el costo de la transferencia (comisión)
-			items.push({
-				id: 'commission',
-				title: 'Comisión de transferencia',
-				description: 'Costo de transferencia de pago con Mercado Pago',
-				quantity: 1,
-				currency_id: 'COP',
-				unit_price: commissionRounded
-			});
+			// Agregar un item adicional para la comisión (si > 0)
+			if (commissionRounded > 0) {
+				items.push({
+					id: 'commission',
+					title: 'Comisión de transferencia',
+					description: 'Costo de transferencia de pago con Mercado Pago',
+					quantity: 1,
+					currency_id: 'COP',
+					unit_price: commissionRounded
+				});
+			}
 
-			// Crear Preferencia de Mercado Pago
+			// Llamada al endpoint
 			const response = await fetch('/api/mercadopago', {
 				method: 'POST',
 				headers: {
@@ -112,20 +123,27 @@
 				},
 				body: JSON.stringify({
 					items,
-					email: page.data.user.email
-					// firstName: $page.data.user.username,
+					email: page.data.user?.email ?? ''
 				})
 			});
 
-			const data = await response.json();
-			if (data.init_point) {
+			const data = await response.json().catch(() => null);
+
+			if (!response.ok) {
+				console.error('Error servidor MP:', response.status, data);
+				toast.error((data && data.message) || 'Error creando preferencia Mercado Pago (servidor)');
+				return;
+			}
+
+			if (data?.init_point) {
 				window.location.href = data.init_point;
 			} else {
+				console.error('MP no devolvió init_point:', data);
 				toast.error('No se pudo iniciar el pago con Mercado Pago');
 			}
-		} catch (error) {
-			console.error('Error al pagar con Mercado Pago:', JSON.stringify(error));
-			toast.error('Error al iniciar pago con Mercado Pago');
+		} catch (error: any) {
+			console.error('Error al pagar con Mercado Pago:', error);
+			toast.error(error?.message ?? 'Error al iniciar pago con Mercado Pago');
 		}
 	}
 
@@ -157,15 +175,40 @@
 						<div class="flex w-full mx-7 justify-between">
 							<div class="flex gap-5 items-center">
 								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-								<!-- Mostrar selectedOptions solo si existen -->
-								{#if cartItem.selectedOptions && cartItem.selectedOptions.length > 0}
-									<div class="flex gap-3">
-										<h3>{cartItem.selectedOptions[0].name}:</h3>
-										<p>{cartItem.selectedOptions[0].value}</p>
-									</div>
-								{/if}
+								<!-- Opciones seleccionadas (simples + variantes) -->
+								<div class="flex flex-wrap gap-1 mt-1">
+									<!-- Opciones simples -->
+									{#if cartItem.selectedOptions?.length}
+										{#each cartItem.selectedOptions as opt}
+											<span class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40">
+												<strong>{opt.name}:</strong>
+												{opt.value}
+											</span>
+										{/each}
+									{/if}
+
+									<!-- Opciones de variante (options) -->
+									{#if cartItem.selectedVariant?.options?.length}
+										{#each cartItem.selectedVariant.options as opt}
+											<span class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40">
+												<strong>{opt.name}:</strong>
+												{opt.value}
+											</span>
+										{/each}
+									{/if}
+
+									<!-- Meta de variante (ej: color) -->
+									{#if cartItem.selectedVariant?.meta}
+										{#each Object.entries(cartItem.selectedVariant.meta) as [key, value]}
+											<span class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40">
+												<strong>{key}:</strong>
+												{value}
+											</span>
+										{/each}
+									{/if}
+								</div>
 								<p class="text-base dark:text-white">
-									{formatPrice(cartItem.price, 'es-Co', 'COP')}
+									{formatPrice(getItemPrice(cartItem), 'es-Co', 'COP')}
 								</p>
 								<div class="flex gap-1">
 									<h3>Cantidad:</h3>
@@ -211,7 +254,8 @@
 			<h3 class="text-md font-semibold mt-3">{m.cart_sumary_title()}</h3>
 			<div class="flex justify-between gap-2">
 				<h3>{m.cart_summary_subtotal()}</h3>
-				<p>{formatPrice($sub, 'es-CO', 'COP')}</p>
+				<!-- ✅ Usar directamente el store con $ -->
+				<p>{formatPrice($subtotal, 'es-CO', 'COP')}</p>
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>{m.cart_summary_shipment()}</h3>
@@ -219,14 +263,18 @@
 			</div>
 			<div class="flex justify-between gap-2">
 				<h3>transferencia</h3>
-				<p>{formatPrice(transferAmount, 'es-CO', 'COP')}</p>
+				<!-- ✅ Calcular directamente con los stores -->
+				<p>
+					{formatPrice(computeCommission($paymentMethod ?? 'mercadopago', $P_goal), 'es-CO', 'COP')}
+				</p>
 			</div>
 
 			<Separator class="bg-[#707070] my-1" />
 
 			<div class="flex justify-between gap-2">
 				<h3 class="font-bold">{m.cart_summary_total()}</h3>
-				<p>{formatPrice(total, 'es-CO', 'COP')}</p>
+				<!-- ✅ Calcular directamente con los stores -->
+				<p>{formatPrice(computeTotal($paymentMethod ?? 'mercadopago', $P_goal), 'es-CO', 'COP')}</p>
 			</div>
 
 			{#if $paymentMethod === 'paypal'}
@@ -236,10 +284,9 @@
 			{/if}
 		</div>
 
-		<!-- Cofirm Button -->
-		<!-- Shipping Submit -->
+		<!-- Confirm Button -->
 		<button
-			class="h-10 w-10/12 mt-4  bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
+			class="h-10 w-10/12 mt-4 bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
 			onclick={(e) => {
 				e.preventDefault();
 				handlePaymentButton();
@@ -247,7 +294,6 @@
 		>
 			Pagar
 		</button>
-		<!-- <div class="w-10/12 mt-3" id="paypal-button-container" />     -->
 	</div>
 </div>
 
