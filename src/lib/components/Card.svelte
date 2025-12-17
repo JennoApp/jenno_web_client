@@ -6,19 +6,28 @@
 	import { getStartColor } from '$lib/utils/getstartcolor';
 	import Label from '$lib/components/Label.svelte';
 
+	interface Variant {
+		_id?: string;
+		sku?: string;
+		price: number;
+		quantity?: number;
+	}
+
 	interface CardData {
 		_id: string;
 		username: string;
 		productname: string;
-		imgs: [string];
+		imgs: string[];
 		price: number;
 		user: string;
-		reviews: [];
+		reviews: any[];
 		status: string;
 		quantity: number;
+
+		variants?: Variant[];
+		selectedVariant?: Variant | null;
 	}
 
-	import { addToCart } from '$lib/stores/cartStore';
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { toast } from 'svelte-sonner';
 
@@ -30,6 +39,30 @@
 	let serverUrl = $state<string>('');
 	let imageLoaded = $state<boolean>(false);
 	let totalStars = $state<number>(0);
+
+	const displayedPrice = $derived(() => {
+		// Si hay variante seleccionada (ej: desde carrito o navegación)
+		if (data?.selectedVariant?.price != null) {
+			return data.selectedVariant.price;
+		}
+
+		// Si hay variantes, usar el primer precio como base
+		if (data?.variants && data.variants.length > 0) {
+			return data.variants[0]?.price ?? 0;
+		}
+
+		// Precio normal del producto
+		return data?.price ?? 0;
+	});
+
+	const hasVariants = $derived(() => {
+		return Array.isArray(data?.variants) && data.variants.length > 0;
+	});
+
+	const priceHint = $derived(() => {
+		if (!hasVariants) return null;
+		return 'Precio varía según la opción';
+	});
 
 	// Obtener url del servidor
 	async function getServerUrl() {
@@ -182,9 +215,9 @@
 					<button
 						class="flex items-center"
 						onclick={(e) => {
-              e.preventDefault()
-              handleOpenDialgoReview()
-              }}
+							e.preventDefault();
+							handleOpenDialgoReview();
+						}}
 						aria-label="Ver reseñas del producto"
 					>
 						<iconify-icon
@@ -198,7 +231,7 @@
 					<button
 						class="flex items-center"
 						onclick={(e) => {
-              e.preventDefault()
+							e.preventDefault();
 							const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
 							navigator.clipboard
 								.writeText(product_link)
@@ -236,9 +269,24 @@
 					{data.productname}
 				</h3>
 
-				<p class="text-lg font-bold mt-1">
-					{formatPrice(data.price, 'es-CO', 'COP')}
-				</p>
+				<div class="mt-1">
+					<p class="text-lg font-bold leading-tight">
+						{formatPrice(displayedPrice(), 'es-CO', 'COP')}
+					</p>
+
+					{#if hasVariants()}
+						<div
+							class="flex items-center gap-1 mt-1 px-2 py-1
+								       rounded-lg border border-blue-400/40
+								       bg-blue-100/60 dark:bg-blue-950/40
+								       text-blue-800 dark:text-blue-300 text-xs font-semibold"
+						>
+							<iconify-icon icon="mdi:tag-multiple-outline" height="0.95rem" width="0.95rem"
+							></iconify-icon>
+							<span>Precio varía según la opción</span>
+						</div>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</a>
