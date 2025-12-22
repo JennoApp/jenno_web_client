@@ -123,7 +123,11 @@
 				},
 				body: JSON.stringify({
 					items,
-					email: page.data.user?.email ?? ''
+					email: page.data.user?.email ?? '',
+					first_name: page.data.user?.name ?? '',
+					last_name: page.data.user?.lastname ?? '',
+					document: page.data.user?.document ?? '',
+					documentType: page.data.user?.documentType ?? 'CC'
 				})
 			});
 
