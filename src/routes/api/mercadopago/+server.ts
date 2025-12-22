@@ -51,11 +51,17 @@ export const POST: RequestHandler = async ({ request }) => {
 						id: 'ticket'
 					}
 				],
-				included_payment_methods: [
-					{
-						id: 'pse'
-					},
-				]
+				// included_payment_methods: [
+				// 	{
+				// 		id: 'bank_transfer'
+				// 	},
+				// 	{
+				// 		id: 'credit_card'
+				// 	},
+				// 	{
+				// 		id: 'debit_card'
+				// 	}
+				// ]
 			}
 		};
 
