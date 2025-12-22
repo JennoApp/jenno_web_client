@@ -1,9 +1,4 @@
-import {
-	PRIVATE_MERCADOPAGO_ACCESS_TOKEN,
-	PRIVATE_MERCADOPAGO_BACKURL_SUCCESS,
-	PRIVATE_MERCADOPAGO_BACKURL_FAILURE,
-	PRIVATE_MERCADOPAGO_BACKURL_PENDING
-} from '$env/static/private';
+import { PRIVATE_MERCADOPAGO_ACCESS_TOKEN } from '$env/static/private';
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -25,9 +20,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const externalReference = `order_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
-		const now = new Date();
-		const expirationDateFrom = now.toISOString();
-		const expirationDateTo = new Date(now.getTime() + 10 * 60 * 1000).toISOString(); // 10 minutes from now
+		// const now = new Date();
+		// const expirationDateFrom = now.toISOString();
+		// const expirationDateTo = new Date(now.getTime() + 10 * 60 * 1000).toISOString(); // 10 minutes from now
 
 		const preferenceBody = {
 			external_reference: externalReference,
@@ -53,11 +48,13 @@ export const POST: RequestHandler = async ({ request }) => {
 					{
 						id: 'ticket'
 					}
+				],
+				included_payment_methods: [
+					{
+						id: 'bank_transfer'
+					}
 				]
-			},
-			expires: true,
-			expiration_date_from: expirationDateFrom,
-			expiration_date_to: expirationDateTo
+			}
 		};
 
 		const response = await preference.create({
