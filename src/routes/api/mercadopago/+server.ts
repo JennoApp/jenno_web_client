@@ -55,9 +55,6 @@ export const POST: RequestHandler = async ({ request }) => {
 					{
 						id: 'pse'
 					},
-					{
-						id: 'bank_transfer'
-					},
 				]
 			}
 		};
