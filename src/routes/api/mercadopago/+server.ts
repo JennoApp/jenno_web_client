@@ -6,10 +6,10 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 const client = new MercadoPagoConfig({
 	accessToken: PRIVATE_MERCADOPAGO_ACCESS_TOKEN,
-	options: {
-		timeout: 5000,
-		idempotencyKey: 'idempotencyKey'
-	}
+	// options: {
+	// 	timeout: 5000,
+	// 	idempotencyKey: 'idempotencyKey'
+	// }
 });
 
 const preference = new Preference(client);
@@ -52,7 +52,10 @@ export const POST: RequestHandler = async ({ request }) => {
 				included_payment_methods: [
 					{
 						id: 'bank_transfer'
-					}
+					},
+					{
+						id: 'pse'
+					},
 				]
 			}
 		};
