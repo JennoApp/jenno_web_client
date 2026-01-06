@@ -160,19 +160,51 @@
 	});
 
 	/* ========== LOGICA DE VARIANTS y OPTIONS ========== */
+	/* ---- NORMALIZACIÓN DE VARIANTS ---- */
+	function normalizeVariants(variants: Variant[]): Variant[] {
+		return variants.map((v) => {
+			const options = [...(v.options ?? [])];
+
+			if (v.meta?.color && !options.some((o) => o.name === 'Color')) {
+				options.push({
+					name: 'Color',
+					value: v.meta.color
+				});
+			}
+
+			// eliminar color en meta para evitar duplicados posteriores en la UI
+			const metaCopy = { ...(v.meta ?? {}) };
+			if (metaCopy.color) delete metaCopy.color;
+
+			return {
+				...v,
+				options,
+				meta: Object.keys(metaCopy).length ? metaCopy : undefined
+			};
+		});
+	}
+
+	// normalizedVariants es un $derived (es una función que debes llamar: normalizedVariants())
+	const normalizedVariants = $derived<Variant[]>(() => {
+		if (!product?.variants || product.variants.length === 0) return [];
+		return normalizeVariants(product.variants);
+	});
+
 	// obtiene nombres de las opciones que usan las variants, respetando el orden de la primera variante
 	function getVariantOptionNames(): string[] {
-		if (!product?.variants || product.variants.length === 0) return [];
-		// si la primera variant tiene orden en options, lo usamos
-		const first = product.variants[0];
+		// usa normalizedVariants()
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) return [];
+		const first = nv[0];
 		return first.options ? first.options.map((o) => o.name) : [];
 	}
 
-	// obtén todos los valores únicos para una opción de variante
+	// obtén todos los valores únicos para una opción de variante (no usado en template, pero consistente)
 	function getVariantValues(optionName: string): string[] {
-		if (!product?.variants) return [];
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) return [];
 		const set = new Set<string>();
-		for (const v of product.variants) {
+		for (const v of nv) {
 			const opt = v.options?.find((o) => o.name === optionName);
 			if (opt?.value) set.add(opt.value);
 		}
@@ -180,35 +212,24 @@
 	}
 
 	function getAllVariantOptionNames(): string[] {
-		if (!product?.variants || product.variants.length === 0) return [];
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) return [];
 
-		const names = new Set<string>();
+		const set = new Set<string>();
+		nv.forEach((v) => v.options.forEach((o) => set.add(o.name)));
 
-		// Sacamos los names de options (Talla, etc.) tomando el orden de la primera variant
-		const first = product.variants[0];
-		if (first?.options) {
-			first.options.forEach((o) => names.add(o.name));
-		}
-
-		// Añadir 'Color' si alguna variant tiene meta.color
-		const hasColor = product.variants.some((v) => v.meta && v.meta.color);
-		if (hasColor) names.add('Color');
-
-		return Array.from(names);
+		return Array.from(set);
 	}
 
 	// devuelve TODOS los valores únicos para una optionName (sin filtrar)
-	// si optionName === 'Color' mira en variant.meta.color
 	function getAllVariantValues(optionName: string): string[] {
-		if (!product?.variants) return [];
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) return [];
+
 		const set = new Set<string>();
-		for (const v of product.variants) {
-			if (optionName === 'Color') {
-				if (v.meta?.color) set.add(v.meta.color);
-			} else {
-				const opt = v.options?.find((o) => o.name === optionName);
-				if (opt?.value) set.add(opt.value);
-			}
+		for (const v of nv) {
+			const opt = v.options.find((o) => o.name === optionName);
+			if (opt?.value) set.add(opt.value);
 		}
 		return Array.from(set);
 	}
@@ -219,164 +240,81 @@
   para que al seleccionar un value para esa opción no dependa de sí misma.
 */
 	function isValueCompatibleWithSelection(optionName: string, value: string): boolean {
-		if (!product?.variants) return false;
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) return false;
 
-		for (const v of product.variants) {
-			// ¿esta variant tiene optionName=value?
-			let matchesThis = false;
-			if (optionName === 'Color') {
-				matchesThis = v.meta?.color === value;
-			} else {
-				const o = v.options?.find((x) => x.name === optionName);
-				matchesThis = !!(o && o.value === value);
-			}
-			if (!matchesThis) continue;
+		return nv.some((v) => {
+			// esta variante debe tener optionName=value
+			const matchesCurrent = v.options.some((o) => o.name === optionName && o.value === value);
+			if (!matchesCurrent) return false;
 
-			// comprobar si la variant coincide con todas las opciones seleccionadas (excepto optionName)
-			let ok = true;
-			for (const [selName, selValue] of Object.entries(selectedVariantOptions)) {
-				if (selName === optionName) continue; // ignorar la propia
-				if (selName === 'Color') {
-					if (v.meta?.color !== selValue) {
-						ok = false;
-						break;
-					}
-				} else {
-					const o2 = v.options?.find((x) => x.name === selName);
-					if (!o2 || o2.value !== selValue) {
-						ok = false;
-						break;
-					}
-				}
-			}
-			if (ok) return true; // existe al menos una variant que lo permita
-		}
-
-		return false;
+			// y debe coincidir con lo ya seleccionado
+			return Object.entries(selectedVariantOptions).every(([k, vSel]) => {
+				if (k === optionName) return true;
+				return v.options.some((o) => o.name === k && o.value === vSel);
+			});
+		});
 	}
 
 	function getFilteredVariantValues(optionName: string): string[] {
-		if (!product?.variants) return [];
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) return [];
 
 		const values = new Set<string>();
 
-		for (const v of product.variants) {
+		for (const v of nv) {
 			// ❌ descartar variants que no coincidan con lo ya seleccionado
 			let valid = true;
 
 			for (const [key, selectedValue] of Object.entries(selectedVariantOptions)) {
 				if (key === optionName) continue;
 
-				if (key === 'Color') {
-					if (v.meta?.color !== selectedValue) {
-						valid = false;
-						break;
-					}
-				} else {
-					const opt = v.options.find((o) => o.name === key);
-					if (!opt || opt.value !== selectedValue) {
-						valid = false;
-						break;
-					}
+				const opt = v.options.find((o) => o.name === key);
+				if (!opt || opt.value !== selectedValue) {
+					valid = false;
+					break;
 				}
 			}
 
 			if (!valid) continue;
 
 			// ✅ agregar valores posibles
-			if (optionName === 'Color') {
-				if (v.meta?.color) values.add(v.meta.color);
-			} else {
-				const opt = v.options.find((o) => o.name === optionName);
-				if (opt?.value) values.add(opt.value);
-			}
+			const opt = v.options.find((o) => o.name === optionName);
+			if (opt?.value) values.add(opt.value);
 		}
 
 		return Array.from(values);
 	}
 
 	$effect(() => {
-		if (!product?.variants) {
+		const nv = normalizedVariants();
+		if (!nv || nv.length === 0) {
 			matchedVariant = null;
 			return;
 		}
 
-		const entries = Object.entries(selectedVariantOptions);
+		const required = getAllVariantOptionNames();
 
-		if (entries.length === 0) {
+		// exigir selección completa
+		const allSelected = required.every((n) => !!selectedVariantOptions[n]);
+		if (!allSelected) {
 			matchedVariant = null;
 			return;
 		}
 
-		const found = product.variants.find((v) => {
-			for (const [key, value] of entries) {
-				if (key === 'Color') {
-					if (v.meta?.color !== value) return false;
-				} else {
-					const opt = v.options.find((o) => o.name === key);
-					if (!opt || opt.value !== value) return false;
-				}
-			}
-			return true;
-		});
+		const found = nv.find((variant) =>
+			variant.options.every((o) => selectedVariantOptions[o.name] === o.value)
+		);
 
 		matchedVariant = found ?? null;
 	});
 
-	// Inicializa selección de variantes (por defecto: primer valor disponible de cada optionName)
-	$effect(() => {
-		if (!product?.variants || product.variants.length === 0) return;
-		const names = getVariantOptionNames();
-		// si ya tiene valores, no sobrescribimos
-		let shouldInit = true;
-		for (const n of names) {
-			if (selectedVariantOptions[n]) {
-				shouldInit = false;
-				break;
-			}
-		}
-		if (shouldInit) {
-			const initial: Record<string, string> = {};
-			for (const name of names) {
-				const vals = getVariantValues(name);
-				initial[name] = vals[0] ?? '';
-			}
-			selectedVariantOptions = initial;
-		}
-	});
-
-	// busca la variant que coincida con la selección actual (si todas las opciones están presentes)
-	$effect(() => {
-		if (!product?.variants || product.variants.length === 0) {
-			matchedVariant = null;
-			return;
-		}
-
-		const names = getVariantOptionNames();
-		// Si no hay nombres, devolvemos la primera variant como default
-		if (names.length === 0) {
-			matchedVariant = product.variants[0] ?? null;
-			return;
-		}
-
-		// ¿están todas las opciones seleccionadas?
-		const allSelected = names.every((n) => !!selectedVariantOptions[n]);
-		if (!allSelected) {
-			// mostrar por defecto la primera variant
-			matchedVariant = product.variants[0] ?? null;
-			return;
-		}
-
-		const found = product.variants.find((v) =>
-			v.options.every((o) => selectedVariantOptions[o.name] === o.value)
-		);
-		matchedVariant = found ?? product.variants[0] ?? null;
-	});
-
-	// Precio mostrado: si hay variants, mostramos matchedVariant.price o first variant price; si no, product.price
+	// Precio mostrado: si hay variants, mostramos matchedVariant.price o null; si no, product.price
 	let displayedPrice = $derived(() => {
-		if (product?.variants && product.variants.length > 0) {
-			return matchedVariant?.price ?? product.variants[0]?.price ?? product?.price ?? 0;
+		const nv = normalizedVariants();
+		if (nv && nv.length > 0) {
+			if (!areAllVariantOptionsSelected()) return null;
+			return matchedVariant?.price ?? null;
 		}
 		return product?.price ?? 0;
 	});
@@ -410,27 +348,31 @@
     excepto para la opción principal (primer nombre) — esa dejamos siempre enabled.
   - si el usuario cambia una opción, reseteamos otras que queden incompatibles.
 */
+
 	function handleVariantOptionChange(optionName: string, optionValue: string) {
-		// setear la opción
 		selectedVariantOptions = { ...selectedVariantOptions, [optionName]: optionValue };
 
-		// ahora: si existen otras opciones seleccionadas que queden incompatibles -> limpiarlas
 		const names = getAllVariantOptionNames();
+
 		for (const name of names) {
 			if (name === optionName) continue;
 			const current = selectedVariantOptions[name];
 			if (!current) continue;
 
-			// si current ya no es compatible con la nueva selección, resetearlo
-			const compatible = isValueCompatibleWithSelection(name, current);
-			if (!compatible) {
-				// quitar la clave
+			if (!isValueCompatibleWithSelection(name, current)) {
 				const copy = { ...selectedVariantOptions };
 				delete copy[name];
 				selectedVariantOptions = copy;
 			}
 		}
-		// matchedVariant se recalcula en tu $effect existente
+
+		const baseSimple = (selectedOptions || []).filter((o) => !names.includes(o.name));
+		const variantSelectedArray = Object.entries(selectedVariantOptions).map(([k, v]) => ({
+			name: k,
+			value: v
+		}));
+
+		selectedOptions = [...baseSimple, ...variantSelectedArray];
 	}
 
 	function areAllSimpleOptionsSelected(
@@ -448,6 +390,17 @@
 	}
 
 	/* ---- añadir al carrito ---- */
+	function buildFinalSelectedOptions() {
+		const variantOptionNames = getAllVariantOptionNames();
+		const baseSimple = (selectedOptions || []).filter((o) => !variantOptionNames.includes(o.name));
+		const variantEntries = Object.entries(selectedVariantOptions).map(([k, v]) => ({
+			name: k,
+			value: v
+		}));
+		// finalSelectedOptions: simples no-variant + opciones complejas seleccionadas
+		return [...baseSimple, ...variantEntries];
+	}
+
 	function handleAddToCart() {
 		// Verificar si el usuario está en sesión
 		if (!userInfo || !userInfo._id) {
@@ -461,37 +414,42 @@
 			return;
 		}
 
-		// Si hay opciones simples pero no se seleccionó ninguna, avisar
-		if (!areAllSimpleOptionsSelected(product, selectedOptions)) {
+		// Validación opciones simples: solo si existen opciones simples en el producto
+		const hasSimpleOptions = Array.isArray(product?.options) && product.options.length > 0;
+		if (hasSimpleOptions && !areAllSimpleOptionsSelected(product, selectedOptions)) {
 			toast.error('Selecciona todas las opciones del producto antes de agregar al carrito.');
 			return;
 		}
 
-		// Si hay variants, verificar que matchedVariant exista
+		// Variants
 		let variantToSend: Variant | null = null;
-		if (product?.variants?.length > 0) {
+		const nv = normalizedVariants();
+		const hasVariants = Array.isArray(nv) && nv.length > 0;
+		if (hasVariants) {
+			// exigir selección completa de variantes
+			if (!areAllVariantOptionsSelected()) {
+				toast.error('Selecciona todas las opciones del producto antes de agregar al carrito.');
+				return;
+			}
 			variantToSend = matchedVariant;
 			if (!variantToSend) {
 				toast.error('Selecciona la variante correcta antes de agregar al carrito.');
 				return;
 			}
-
-			// Verificar stock de la variante
 			if (variantToSend.quantity !== undefined && variantToSend.quantity <= 0) {
 				toast.error('La variante seleccionada no tiene stock.');
 				return;
 			}
 		} else {
-			// Si no hay variantes, verificar el stock general del producto
-			if (product.quantity <= 0) {
+			// no hay variants: verificar stock del producto
+			if ((product.quantity ?? 0) <= 0) {
 				toast.error('Este producto no tiene stock disponible.');
 				return;
 			}
 		}
 
-		// Agregar al carrito con la variante si existe
-		addToCart(product, selectedOptions, quantity, variantToSend || undefined);
-
+		const finalSelectedOptions = buildFinalSelectedOptions();
+		addToCart(product, finalSelectedOptions, quantity, variantToSend || undefined);
 		toast.success('Producto agregado al carrito');
 	}
 
@@ -508,56 +466,52 @@
 			return;
 		}
 
-		// Si hay opciones simples pero no se seleccionó ninguna, avisar
-		if (!areAllSimpleOptionsSelected(product, selectedOptions)) {
+		// Validación opciones simples: solo si existen opciones simples en el producto
+		const hasSimpleOptions = Array.isArray(product?.options) && product.options.length > 0;
+		if (hasSimpleOptions && !areAllSimpleOptionsSelected(product, selectedOptions)) {
 			toast.error('Selecciona todas las opciones del producto antes de continuar.');
 			return;
 		}
 
-		// Si hay variants, verificar que matchedVariant exista
 		let variantToSend: Variant | null = null;
-		if (product?.variants?.length > 0) {
+		const nv = normalizedVariants();
+		const hasVariants = Array.isArray(nv) && nv.length > 0;
+		if (hasVariants) {
+			if (!areAllVariantOptionsSelected()) {
+				toast.error('Selecciona todas las opciones del producto antes de continuar.');
+				return;
+			}
 			variantToSend = matchedVariant;
 			if (!variantToSend) {
 				toast.error('Selecciona la variante correcta antes de continuar.');
 				return;
 			}
-
-			// Verificar stock de la variante
 			if (variantToSend.quantity !== undefined && variantToSend.quantity <= 0) {
 				toast.error('La variante seleccionada no tiene stock.');
 				return;
 			}
 		} else {
-			// Si no hay variantes, verificar el stock general del producto
-			if (product.quantity <= 0) {
+			if ((product.quantity ?? 0) <= 0) {
 				toast.error('Este producto no tiene stock disponible.');
 				return;
 			}
 		}
 
-		// Agregar al carrito con la variante si existe
-		addToCart(product, selectedOptions, quantity, variantToSend || undefined);
+		const finalSelectedOptions = buildFinalSelectedOptions();
+		addToCart(product, finalSelectedOptions, quantity, variantToSend || undefined);
 
 		// Ir al carrito
 		goto('/cart');
 	}
 
-	// function handleOptionChange(optionName: string, optionValue: string) {
-	// 	const optionIndex = selectedOptions.findIndex((opt) => opt.name === optionName);
-	// 	if (optionIndex !== -1) {
-	// 		selectedOptions = [
-	// 			...selectedOptions.slice(0, optionIndex),
-	// 			{ name: optionName, value: optionValue },
-	// 			...selectedOptions.slice(optionIndex + 1)
-	// 		];
-	// 	} else {
-	// 		selectedOptions = [...selectedOptions, { name: optionName, value: optionValue }];
-	// 	}
-	// }
-
 	function handleOpenDialgoReview() {
 		openDialogreview = true;
+	}
+
+	function areAllVariantOptionsSelected(): boolean {
+		const names = getAllVariantOptionNames();
+		if (!names.length) return true;
+		return names.every((n) => !!selectedVariantOptions[n]);
 	}
 </script>
 
@@ -724,11 +678,14 @@
 			{/if}
 		</div>
 
-		<!-- Precio del Producto -->
-		<!-- <h1 class="text-2xl mt-1">{formatPrice(product?.price, 'es-CO', 'COP')}</h1> -->
-
 		<!-- PRECIO: ahora reactivo -->
-		<h1 class="text-2xl mt-1">{formatPrice(displayedPrice(), 'es-CO', 'COP')}</h1>
+		<div class="mt-2 text-lg">
+			{#if displayedPrice() !== null}
+				<p>{formatPrice(displayedPrice(), 'es-CO', 'COP')}</p>
+			{:else}
+				<p class="text-gray-400">Selecciona opciones para ver el precio</p>
+			{/if}
+		</div>
 
 		<!-- Etiqueta condicional -->
 		{#if product.status === 'sold_out'}
@@ -786,7 +743,7 @@
 			{/if}
 
 			<!-- --- VARIANTES (complejas) --- -->
-			{#if product?.variants && product.variants.length > 0}
+			{#if normalizedVariants().length > 0}
 				<div class="mt-1">
 					<h3 class="text-lg font-medium">Opciones:</h3>
 
@@ -812,14 +769,9 @@
 										class="bg-gray-100 dark:bg-[#202020] border-gray-200 dark:border-[#303030]"
 									>
 										{#each allValues as val (val)}
-											{@const disabled = (() => {
-												// no deshabilitamos completamente la opción "principal" (el primer nombre)
-												const names = getAllVariantOptionNames();
-												const primary = names[0];
-												if (optName === primary) return false;
-												// si no es compatible con la selección actual => disabled
-												return !isValueCompatibleWithSelection(optName, val);
-											})()}
+											{@const disabled =
+												optName !== getAllVariantOptionNames()[0] &&
+												!isValueCompatibleWithSelection(optName, val)}
 
 											<Select.Item value={val} label={val} {disabled} class="disabled:opacity-50">
 												{val}

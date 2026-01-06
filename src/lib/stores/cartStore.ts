@@ -47,6 +47,19 @@ if (browser) {
 	cartItems.subscribe((items) => (localStorage.cartItems = JSON.stringify(items)));
 }
 
+function variantKey(variant?: Variant): string {
+	if (!variant) return 'no-variant';
+	// normalizar opciones de la variant (ordenadas por name)
+	const opts = (variant.options || [])
+		.map((o) => ({ name: String(o.name), value: String(o.value) }))
+		.sort((a, b) => a.name.localeCompare(b.name));
+	// incluir color si existe en meta
+	const metaColor = variant.meta?.color ? String(variant.meta.color) : null;
+	// preferir sku/_id si existe para mayor estabilidad
+	const id = variant.sku ?? variant._id ?? null;
+	return JSON.stringify({ id, opts, metaColor });
+}
+
 function isSameCartItem(
 	item: CartItem,
 	productId: string,
@@ -59,24 +72,19 @@ function isSameCartItem(
 	const itemOptions = item.selectedOptions || [];
 	const newOptions = selectedOptions || [];
 
-	const itemOptionsKey = JSON.stringify(
-		[...itemOptions].sort((a, b) => a.name.localeCompare(b.name))
-	);
-	const newOptionsKey = JSON.stringify(
-		[...newOptions].sort((a, b) => a.name.localeCompare(b.name))
-	);
+	const normalizeOptions = (arr: SelectedOption[]) =>
+		[...arr]
+			.map((o) => ({ name: String(o.name), value: String(o.value) }))
+			.sort((a, b) => a.name.localeCompare(b.name));
+
+	const itemOptionsKey = JSON.stringify(normalizeOptions(itemOptions));
+	const newOptionsKey = JSON.stringify(normalizeOptions(newOptions));
 
 	if (itemOptionsKey !== newOptionsKey) return false;
 
-	// Comparar variantes
-	const itemVariantKey = item.selectedVariant
-		? item.selectedVariant.sku ||
-			item.selectedVariant._id ||
-			JSON.stringify(item.selectedVariant.options || [])
-		: 'no-variant';
-	const newVariantKey = variant
-		? variant.sku || variant._id || JSON.stringify(variant.options || [])
-		: 'no-variant';
+	// Comparar variantes con clave robusta
+	const itemVariantKey = variantKey(item.selectedVariant);
+	const newVariantKey = variantKey(variant);
 
 	return itemVariantKey === newVariantKey;
 }
@@ -93,7 +101,26 @@ export function getItemPrice(item: CartItem): number {
 	return 0;
 }
 
+function normalizeName(n: string) {
+	return String(n ?? '')
+		.trim()
+		.toLowerCase();
+}
+
+// -------- helper: elimina de selectedOptions las keys que ya están en la variant ----------
+function stripVariantOptions(
+	selectedOptions: SelectedOption[] = [],
+	variant?: Variant
+): SelectedOption[] {
+	if (!variant) return selectedOptions ?? [];
+	const variantNames = new Set<string>((variant.options || []).map((o) => normalizeName(o.name)));
+	// si la variant tiene color en meta, consideramos 'color' como nombre
+	if (variant.meta?.color) variantNames.add('color');
+	return (selectedOptions || []).filter((o) => !variantNames.has(normalizeName(o.name)));
+}
+
 // Agregar producto al carrito con opciones simples y/o variante
+
 export function addToCart(
 	product: Product,
 	selectedOptions: SelectedOption[] = [],
@@ -106,8 +133,12 @@ export function addToCart(
 		return;
 	}
 
-	// Verificar si se requieren opciones
-	if (product.options.length > 0 && selectedOptions.length === 0 && !variant) {
+	// Normalizar options: si hay variant, eliminamos de selectedOptions las opciones representadas por la variante
+	const normalizedSelectedOptions = stripVariantOptions(selectedOptions, variant);
+
+	// Verificar si se requieren opciones (solo si no hay variant y el producto define opciones simples)
+	const hasSimpleOptions = Array.isArray(product.options) && product.options.length > 0;
+	if (!variant && hasSimpleOptions && normalizedSelectedOptions.length === 0) {
 		console.warn('No options selected');
 		return;
 	}
@@ -117,16 +148,14 @@ export function addToCart(
 	// Calcular stock disponible
 	let availableStock: number;
 	if (variant) {
-		// Si hay variante, usar su stock
 		availableStock = variant.quantity ?? 0;
 	} else {
-		// Si no hay variante, usar stock del producto
-		availableStock = product.quantity;
+		availableStock = product.quantity ?? 0;
 	}
 
 	// Calcular cuánto ya tenemos de este item específico en el carrito
 	const existingAmount = items
-		.filter((i) => isSameCartItem(i, product._id, selectedOptions, variant))
+		.filter((i) => isSameCartItem(i, product._id, normalizedSelectedOptions, variant))
 		.reduce((sum, i) => sum + i.amount, 0);
 
 	if (existingAmount >= availableStock) {
@@ -134,12 +163,12 @@ export function addToCart(
 		return;
 	}
 
-	const remaining = availableStock - existingAmount;
+	const remaining = Math.max(0, availableStock - existingAmount);
 
 	// Buscar si ya existe el item exacto en el carrito
 	let found = false;
 	const updated = items.map((i) => {
-		if (isSameCartItem(i, product._id, selectedOptions, variant)) {
+		if (isSameCartItem(i, product._id, normalizedSelectedOptions, variant)) {
 			found = true;
 			const addable = Math.min(quantity, remaining);
 			if (addable <= 0) {
@@ -161,13 +190,16 @@ export function addToCart(
 		const cartItem: CartItem = {
 			...product,
 			amount: qty,
-			selectedOptions: selectedOptions || [],
+			// Guardamos en selectedOptions SOLO las opciones que NO están ya en la variante
+			selectedOptions: normalizedSelectedOptions,
 			selectedVariant: variant
 		};
 
 		// Si hay variante, usar su precio e imágenes
 		if (variant) {
-			cartItem.price = variant.price;
+			if (variant.price != null && !Number.isNaN(Number(variant.price))) {
+				cartItem.price = variant.price;
+			}
 			if (variant.imgs && variant.imgs.length > 0) {
 				cartItem.imgs = variant.imgs as [string];
 			}
@@ -178,7 +210,6 @@ export function addToCart(
 
 	cartItems.set(updated);
 }
-
 export function decrementCartItem(
 	id: string,
 	selectedOptions: SelectedOption[],

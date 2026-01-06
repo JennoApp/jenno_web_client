@@ -751,44 +751,36 @@
 															{formatPrice(cartItem.price, 'es-CO', 'COP')}
 														</p>
 
-														<!-- Opciones simples -->
-														{#if cartItem.selectedOptions?.length}
-															<div
-																class="mt-2 p-2 rounded-md bg-blue-100 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700"
-															>
-																<div
-																	class="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1"
-																>
-																	Opciones:
-																</div>
-																<div class="flex flex-wrap gap-1">
-																	{#each cartItem.selectedOptions as opt}
-																		<span
-																			class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40"
-																		>
-																			<strong>{opt.name}:</strong>
-																			{opt.value}
-																		</span>
-																	{/each}
-																</div>
-															</div>
-														{/if}
+														{#if cartItem.selectedVariant || (cartItem.selectedOptions && cartItem.selectedOptions.length > 0)}
+															{@const variantOpts = cartItem.selectedVariant?.options ?? []}
+															{@const variantColor = cartItem.selectedVariant?.meta?.color
+																? [{ name: 'Color', value: cartItem.selectedVariant.meta.color }]
+																: []}
+															{@const variantArray = [...variantOpts, ...variantColor].map((o) => ({
+																name: o.name,
+																value: o.value
+															}))}
 
-														<!-- Variante seleccionada -->
-														{#if cartItem.selectedVariant}
-															<div
-																class="mt-2 p-2 rounded-md bg-blue-100 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700"
-															>
-																<div
-																	class="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1"
-																>
-																	Opciones:
-																</div>
+															{@const simple = (cartItem.selectedOptions || []).filter(
+																(s) =>
+																	!variantArray.some(
+																		(v) => v.name === s.name && v.value === s.value
+																	)
+															)}
 
-																<div class="flex flex-wrap gap-1">
-																	<!-- Opciones (Talla, Material, etc.) -->
-																	{#if cartItem.selectedVariant.options?.length}
-																		{#each cartItem.selectedVariant.options as opt}
+															{@const displayOptions = [...variantArray, ...simple]}
+
+															{#if displayOptions.length > 0}
+																<div
+																	class="mt-2 p-2 rounded-md bg-blue-100 dark:bg-blue-900/20 border border-blue-300 dark:border-blue-700"
+																>
+																	<div
+																		class="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1"
+																	>
+																		Opciones:
+																	</div>
+																	<div class="flex flex-wrap gap-1">
+																		{#each displayOptions as opt}
 																			<span
 																				class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40"
 																			>
@@ -796,19 +788,9 @@
 																				{opt.value}
 																			</span>
 																		{/each}
-																	{/if}
-
-																	<!-- Color (desde meta) -->
-																	{#if cartItem.selectedVariant.meta?.color}
-																		<span
-																			class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40"
-																		>
-																			<strong>Color:</strong>
-																			{cartItem.selectedVariant.meta.color}
-																		</span>
-																	{/if}
+																	</div>
 																</div>
-															</div>
+															{/if}
 														{/if}
 													</div>
 												</div>
