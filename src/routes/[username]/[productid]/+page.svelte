@@ -57,6 +57,7 @@
 	import { toast } from 'svelte-sonner';
 	import Label from '$lib/components/Label.svelte';
 	import StarRating from '$lib/components/StarRating.svelte';
+	import { onMount } from 'svelte';
 
 	/* ---- props / estado ---- */
 	let { data: propData } = $props();
@@ -78,9 +79,12 @@
 	let userName = $state<string>('');
 	let matchedVariant = $state<Variant | null>(null);
 
+	let mainApi = $state<any>(null);
+
 	// Función para sincronizar carousel
 	function syncCarousel(index: number) {
 		indexCarousel = index;
+		mainApi?.scrollTo(index);
 	}
 
 	// Obtener url del servidor
@@ -513,6 +517,14 @@
 		if (!names.length) return true;
 		return names.every((n) => !!selectedVariantOptions[n]);
 	}
+
+	onMount(() => {
+		if (!mainApi) return;
+
+		mainApi.on('select', () => {
+			indexCarousel = mainApi.selectedScrollSnap();
+		});
+	});
 </script>
 
 <svelte:head>
@@ -559,55 +571,62 @@
 
 <div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
 	<div class="flex flex-col w-full md:w-1/2">
-		<div class="flex justify-center items-center">
-			<Carousel.Root
-				class="w-5/6"
-				opts={{
-					align: 'start',
-					startIndex: indexCarousel
-				}}
-				bind:api
-			>
-				<Carousel.Content>
-					{#each product.imgs as image, i}
-						<Carousel.Item>
-							<div class="flex justify-center">
-								<img class="w-11/12 h-96 object-contain rounded-md" src={image} alt={`${i}`} />
-							</div>
-						</Carousel.Item>
-					{/each}
-				</Carousel.Content>
-				<Carousel.Previous />
-				<Carousel.Next />
-			</Carousel.Root>
-		</div>
-
-		<div class="flex justify-center items-center mt-5">
-			<Carousel.Root id="carousel2" class="w-full max-w-sm">
-				<Carousel.Content class="-ml-1">
-					{#each product.imgs as image, i (i)}
-						<Carousel.Item class="basis-1/3">
-							<div class="flex justify-center">
-								<button
-									class="pl-1 w-11/12 h-24"
-									onclick={(e) => {
-										e.preventDefault();
-										syncCarousel(i);
-									}}
-								>
+		<div class="flex flex-col w-full md:w-1/2">
+			<div class="flex justify-center items-center">
+				<Carousel.Root
+					class="w-5/6"
+					opts={{
+						align: 'start',
+						startIndex: indexCarousel
+					}}
+					api={(api: any) => (mainApi = api)}
+				>
+					<Carousel.Content>
+						{#each product.imgs as image, i}
+							<Carousel.Item>
+								<div class="flex justify-center">
 									<img
-										class="w-full h-24 object-cover rounded-md {i !== indexCarousel
-											? 'grayscale'
-											: 'border-2 border-[#404040]'}"
+										class="w-11/12 h-96 object-contain rounded-md"
 										src={image}
-										alt={`${i}`}
+										alt={`image-${i}`}
 									/>
-								</button>
-							</div>
-						</Carousel.Item>
-					{/each}
-				</Carousel.Content>
-			</Carousel.Root>
+								</div>
+							</Carousel.Item>
+						{/each}
+					</Carousel.Content>
+
+					<!-- Botones LATERALES -->
+					<Carousel.Previous onclick={() => mainApi?.scrollPrev()} />
+					<Carousel.Next onclick={() => mainApi?.scrollNext()} />
+				</Carousel.Root>
+			</div>
+
+			<div class="flex justify-center items-center mt-5">
+				<Carousel.Root class="w-full max-w-sm">
+					<Carousel.Content class="-ml-1">
+						{#each product.imgs as image, i (i)}
+							<Carousel.Item class="basis-1/3">
+								<div class="flex justify-center">
+									<button
+										class="pl-1 w-11/12 h-24"
+										onclick={(e) => {
+											e.preventDefault();
+											syncCarousel(i);
+										}}
+									>
+										<img
+											class="w-full h-24 object-cover rounded-md transition
+											{i !== indexCarousel ? 'grayscale opacity-60' : 'border-2 border-[#404040]'}"
+											src={image}
+											alt={`thumb-${i}`}
+										/>
+									</button>
+								</div>
+							</Carousel.Item>
+						{/each}
+					</Carousel.Content>
+				</Carousel.Root>
+			</div>
 		</div>
 	</div>
 
@@ -668,7 +687,12 @@
 								       bg-gray-200 dark:bg-[#1f1f1f]
 								       flex items-center justify-center"
 							>
-								<iconify-icon icon="bxs:store"  heigth="2.5rem" width="2.5rem" class="text-black dark:text-gray-400"></iconify-icon>
+								<iconify-icon
+									icon="bxs:store"
+									heigth="2.5rem"
+									width="2.5rem"
+									class="text-black dark:text-gray-400"
+								></iconify-icon>
 							</div>
 						{/if}
 

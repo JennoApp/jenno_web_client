@@ -1,36 +1,38 @@
 <script lang="ts">
-	import { Button, type Props, buttonVariants } from "$lib/components/ui/button/index.js";
-	import { cn } from "$lib/utils.js";
-	import { ArrowLeft } from "radix-icons-svelte";
-	import type { VariantProps } from "tailwind-variants";
+	import ArrowLeftIcon from "@lucide/svelte/icons/arrow-left";
+	import type { WithoutChildren } from "bits-ui";
 	import { getEmblaContext } from "./context.js";
+	import { cn } from "$lib/utils.js";
+	import { Button, type Props } from "$lib/components/ui/button/index.js";
 
-	type $$Props = Props;
+	let {
+		ref = $bindable(null),
+		class: className,
+		variant = "outline",
+		size = "icon",
+		...restProps
+	}: WithoutChildren<Props> = $props();
 
-	let className: $$Props["class"] = undefined;
-	export { className as class };
-	export let variant: VariantProps<typeof buttonVariants>["variant"] = "outline";
-	export let size: VariantProps<typeof buttonVariants>["size"] = "icon";
-
-	const { orientation, canScrollPrev, scrollPrev, handleKeyDown } =
-		getEmblaContext("<Carousel.Previous/>");
+	const emblaCtx = getEmblaContext("<Carousel.Previous/>");
 </script>
 
 <Button
+	data-slot="carousel-previous"
 	{variant}
 	{size}
+	aria-disabled={!emblaCtx.canScrollPrev}
 	class={cn(
-		"absolute h-8 w-8 rounded-full touch-manipulation hover:bg-gray-200 dark:hover:bg-[#252525]",
-		$orientation === "horizontal"
-			? "-left-12 top-1/2 -translate-y-1/2"
-			: "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+		"absolute size-8 rounded-full",
+		emblaCtx.orientation === "horizontal"
+			? "-start-12 top-1/2 -translate-y-1/2"
+			: "start-1/2 -top-12 -translate-x-1/2 rotate-90",
 		className
 	)}
-	disabled={!$canScrollPrev}
-	on:click={scrollPrev}
-	on:keydown={handleKeyDown}
-	{...$$restProps}
+	onclick={emblaCtx.scrollPrev}
+	onkeydown={emblaCtx.handleKeyDown}
+	{...restProps}
+	bind:ref
 >
-	<ArrowLeft class="h-4 w-4" />
+	<ArrowLeftIcon class="size-4" />
 	<span class="sr-only">Previous slide</span>
 </Button>
