@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	let { data } = $props();
 
-	export let data: any;
+	$inspect(data);
 </script>
 
 <a
@@ -22,11 +22,25 @@
 
 	<!-- Avatar -->
 	<div class="flex justify-center -mt-10 relative z-10">
-		<img
-			src={data.avatar || '/images/default-store.png'}
-			alt="Avatar tienda"
-			class="w-20 h-20 rounded-full border-4 border-white dark:border-[#121212] object-cover"
-		/>
+		{#if data.profileImg !== ""}
+			<img
+				src={data.profileImg}
+				alt="Profile"
+				class="w-20 h-20 rounded-full border-4 border-white dark:border-[#121212] object-cover"
+			/>
+		{:else}
+			<div
+				class="w-20 h-20 rounded-full border-4 border-white dark:border-[#121212]
+				       bg-gray-200 dark:bg-[#1f1f1f]
+				       flex items-center justify-center"
+			>
+				<iconify-icon
+					icon="mdi:account-circle"
+					height="5rem" width="5rem"
+					class="text-gray-400 dark:text-gray-500"
+				></iconify-icon>
+			</div>
+		{/if}
 	</div>
 
 	<!-- Info -->
