@@ -57,7 +57,7 @@
 	import { toast } from 'svelte-sonner';
 	import Label from '$lib/components/Label.svelte';
 	import StarRating from '$lib/components/StarRating.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	/* ---- props / estado ---- */
 	let { data: propData } = $props();
@@ -525,6 +525,100 @@
 			indexCarousel = mainApi.selectedScrollSnap();
 		});
 	});
+
+	// APIs
+	let thumbsApi = $state<any>(null);
+
+	// setApi callbacks (shadcn-svelte pattern)
+	function setMainApi(api: any) {
+		mainApi = api;
+		attachMainListeners();
+		// inicializar índice si ya hay snaps
+		tryInitIndexFromMain();
+	}
+
+	function setThumbsApi(api: any) {
+		thumbsApi = api;
+		// opcional: sincronizar thumbs al index actual
+		if (thumbsApi && typeof indexCarousel === 'number') {
+			thumbsApi.scrollTo(indexCarousel);
+		}
+	}
+
+	// inicializar index seguro
+	function tryInitIndexFromMain() {
+		if (!mainApi) return;
+		if (typeof mainApi.selectedScrollSnap === 'function') {
+			indexCarousel = mainApi.selectedScrollSnap();
+		}
+	}
+
+	// listeners
+	let removeMainSelectListener: (() => void) | null = null;
+	function attachMainListeners() {
+		if (!mainApi) return;
+
+		// quitar listener viejo
+		if (removeMainSelectListener) {
+			try {
+				removeMainSelectListener();
+			} catch {}
+			removeMainSelectListener = null;
+		}
+
+		// register listener and keep a remover if API provides
+		if (typeof mainApi.on === 'function') {
+			const handler = () => {
+				try {
+					indexCarousel = mainApi.selectedScrollSnap();
+					// mantener thumbs en vista
+					if (thumbsApi && typeof thumbsApi.scrollTo === 'function') {
+						thumbsApi.scrollTo(indexCarousel);
+					}
+				} catch (err) {
+					// ignore
+				}
+			};
+
+			mainApi.on('select', handler);
+
+			// crear función para remover: algunos apis devuelven "off" distinto,
+			// intentamos usar `off` si existe, sino removemos con guard.
+			removeMainSelectListener = () => {
+				try {
+					if (typeof mainApi.off === 'function') mainApi.off('select', handler);
+				} catch {}
+			};
+		} else {
+			// fallback polling (muy raro)
+			tryInitIndexFromMain();
+		}
+	}
+
+	onDestroy(() => {
+		if (removeMainSelectListener) removeMainSelectListener();
+	});
+
+	// navegación
+	function goPrev() {
+		try {
+			mainApi?.scrollPrev?.();
+		} catch {}
+	}
+	function goNext() {
+		try {
+			mainApi?.scrollNext?.();
+		} catch {}
+	}
+	function scrollTo(i: number) {
+		try {
+			mainApi?.scrollTo?.(i);
+			// actualizar índice inmediatamente para UI responsiva
+			indexCarousel = i;
+			// sync thumbs view
+			thumbsApi?.scrollTo?.(i);
+		} catch {}
+	}
 </script>
 
 <svelte:head>
@@ -571,51 +665,82 @@
 
 <div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
 	<div class="flex flex-col w-full md:w-1/2">
-		<div class="flex justify-center items-center">
+		<!-- MAIN CAROUSEL -->
+		<div class="flex justify-center items-center relative">
 			<Carousel.Root
 				class="w-5/6"
-				opts={{
-					align: 'start',
-					startIndex: indexCarousel
-				}}
-				api={(api: any) => (mainApi = api)}
+				opts={{ align: 'center', startIndex: indexCarousel }}
+				setApi={setMainApi}
 			>
 				<Carousel.Content>
-					{#each product.imgs as image, i}
+					{#each product.imgs as image, i (i)}
 						<Carousel.Item>
 							<div class="flex justify-center">
 								<img
 									class="w-11/12 h-96 object-contain rounded-md"
 									src={image}
 									alt={`image-${i}`}
+									loading="lazy"
 								/>
 							</div>
 						</Carousel.Item>
 					{/each}
 				</Carousel.Content>
 
-				<!-- Botones LATERALES -->
-				<Carousel.Previous onclick={() => mainApi?.scrollPrev()} />
-				<Carousel.Next onclick={() => mainApi?.scrollNext()} />
+				<!-- Botones personalizados (garantizados a funcionar) -->
+				<button
+					type="button"
+					onclick={goPrev}
+					class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/60 p-2 rounded-full shadow"
+					aria-label="Anterior"
+				>
+					<!-- icono simple -->
+					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 19l-7-7 7-7"
+						/>
+					</svg>
+				</button>
+
+				<button
+					type="button"
+					onclick={goNext}
+					class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/60 p-2 rounded-full shadow"
+					aria-label="Siguiente"
+				>
+					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 5l7 7-7 7"
+						/>
+					</svg>
+				</button>
 			</Carousel.Root>
 		</div>
 
+		<!-- THUMBNAILS -->
 		<div class="flex justify-center items-center mt-5">
-			<Carousel.Root class="w-full max-w-sm">
+			<Carousel.Root class="w-full max-w-sm" setApi={setThumbsApi} opts={{ align: 'start' }}>
 				<Carousel.Content class="-ml-1">
 					{#each product.imgs as image, i (i)}
 						<Carousel.Item class="basis-1/3">
 							<div class="flex justify-center">
 								<button
+									type="button"
 									class="pl-1 w-11/12 h-24"
-									onclick={(e) => {
-										e.preventDefault();
-										syncCarousel(i);
-									}}
+									onclick={() => scrollTo(i)}
+									aria-label={`Ir a imagen ${i + 1}`}
 								>
 									<img
-										class="w-full h-24 object-cover rounded-md transition
-											{i !== indexCarousel ? 'grayscale opacity-60' : 'border-2 border-[#404040]'}"
+										class="w-full h-24 object-cover rounded-md transition-transform duration-150 ease-out {i !==
+										indexCarousel
+											? 'grayscale opacity-60'
+											: 'border-2 border-[#404040] scale-105'}"
 										src={image}
 										alt={`thumb-${i}`}
 									/>
