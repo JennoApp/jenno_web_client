@@ -571,62 +571,60 @@
 
 <div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
 	<div class="flex flex-col w-full md:w-1/2">
-		<div class="flex flex-col w-full md:w-1/2">
-			<div class="flex justify-center items-center">
-				<Carousel.Root
-					class="w-5/6"
-					opts={{
-						align: 'start',
-						startIndex: indexCarousel
-					}}
-					api={(api: any) => (mainApi = api)}
-				>
-					<Carousel.Content>
-						{#each product.imgs as image, i}
-							<Carousel.Item>
-								<div class="flex justify-center">
+		<div class="flex justify-center items-center">
+			<Carousel.Root
+				class="w-5/6"
+				opts={{
+					align: 'start',
+					startIndex: indexCarousel
+				}}
+				api={(api: any) => (mainApi = api)}
+			>
+				<Carousel.Content>
+					{#each product.imgs as image, i}
+						<Carousel.Item>
+							<div class="flex justify-center">
+								<img
+									class="w-11/12 h-96 object-contain rounded-md"
+									src={image}
+									alt={`image-${i}`}
+								/>
+							</div>
+						</Carousel.Item>
+					{/each}
+				</Carousel.Content>
+
+				<!-- Botones LATERALES -->
+				<Carousel.Previous onclick={() => mainApi?.scrollPrev()} />
+				<Carousel.Next onclick={() => mainApi?.scrollNext()} />
+			</Carousel.Root>
+		</div>
+
+		<div class="flex justify-center items-center mt-5">
+			<Carousel.Root class="w-full max-w-sm">
+				<Carousel.Content class="-ml-1">
+					{#each product.imgs as image, i (i)}
+						<Carousel.Item class="basis-1/3">
+							<div class="flex justify-center">
+								<button
+									class="pl-1 w-11/12 h-24"
+									onclick={(e) => {
+										e.preventDefault();
+										syncCarousel(i);
+									}}
+								>
 									<img
-										class="w-11/12 h-96 object-contain rounded-md"
-										src={image}
-										alt={`image-${i}`}
-									/>
-								</div>
-							</Carousel.Item>
-						{/each}
-					</Carousel.Content>
-
-					<!-- Botones LATERALES -->
-					<Carousel.Previous onclick={() => mainApi?.scrollPrev()} />
-					<Carousel.Next onclick={() => mainApi?.scrollNext()} />
-				</Carousel.Root>
-			</div>
-
-			<div class="flex justify-center items-center mt-5">
-				<Carousel.Root class="w-full max-w-sm">
-					<Carousel.Content class="-ml-1">
-						{#each product.imgs as image, i (i)}
-							<Carousel.Item class="basis-1/3">
-								<div class="flex justify-center">
-									<button
-										class="pl-1 w-11/12 h-24"
-										onclick={(e) => {
-											e.preventDefault();
-											syncCarousel(i);
-										}}
-									>
-										<img
-											class="w-full h-24 object-cover rounded-md transition
+										class="w-full h-24 object-cover rounded-md transition
 											{i !== indexCarousel ? 'grayscale opacity-60' : 'border-2 border-[#404040]'}"
-											src={image}
-											alt={`thumb-${i}`}
-										/>
-									</button>
-								</div>
-							</Carousel.Item>
-						{/each}
-					</Carousel.Content>
-				</Carousel.Root>
-			</div>
+										src={image}
+										alt={`thumb-${i}`}
+									/>
+								</button>
+							</div>
+						</Carousel.Item>
+					{/each}
+				</Carousel.Content>
+			</Carousel.Root>
 		</div>
 	</div>
 
