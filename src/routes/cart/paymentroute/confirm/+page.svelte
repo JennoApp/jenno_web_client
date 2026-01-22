@@ -21,6 +21,7 @@
 
 	let shippingData = page.data?.user?.shippingInfo;
 	let openDialogPayment = $state(false);
+	let isCreatingPreference = $state(false);
 
 	// Conversion a USD (solo para PayPal)
 	let exchangeRate = $state(0);
@@ -71,39 +72,78 @@
 		});
 	});
 
+	/**
+	 * Construye la representación de items que el backend espera.
+	 * Incluye selectedOptions, selectedVariant (si existe), imgs, sellerId, unit_price redondeado.
+	 */
+	function buildPreferenceItems() {
+		return $cartItems.map((item) => {
+			const unitPrice = getItemPrice(item);
+
+			if (!unitPrice || isNaN(unitPrice) || unitPrice <= 0) {
+				throw new Error(`Producto sin precio válido: ${item.productname} (id: ${item._id})`);
+			}
+
+			return {
+				// id que identifica el producto/variant
+				id: item.selectedVariant?._id ?? item._id,
+				title: item.productname,
+				description: item.description ?? '',
+				quantity: Number(item.amount) || 1,
+				currency_id: 'COP',
+				unit_price: Math.round(Number(unitPrice)),
+				// snapshot útil para crear órdenes en backend
+				selectedOptions: item.selectedOptions ?? [],
+				selectedVariant: item.selectedVariant ?? null,
+				imgs: item.imgs ?? [],
+				sellerId: item.user ?? item.username ?? null,
+				// opcional: incluir product snapshot si lo necesitas
+				productSnapshot: {
+					_id: item._id,
+					price: item.price,
+					productname: item.productname
+				}
+			};
+		});
+	}
+
 	async function payWithMercadoPago() {
 		try {
+			// UI guard
+			isCreatingPreference = true;
+
 			localStorage.removeItem('mercadopago_preference_id');
 			localStorage.removeItem('mp-preference-id');
 
-			// Construir items para la preferencia de Mercado Pago
-			const items = $cartItems.map((item) => {
-				const unitPrice = getItemPrice(item);
+			// Validación básica
+			if (!$cartItems || $cartItems.length === 0) {
+				toast.error('El carrito está vacío');
+				isCreatingPreference = false;
+				return;
+			}
 
-				// Validación fuerte: Mercado Pago necesita número > 0
-				if (!unitPrice || isNaN(unitPrice) || unitPrice <= 0) {
-					throw new Error(`Producto sin precio válido: ${item.productname} (id: ${item._id})`);
-				}
+			// Construir items con snapshot
+			const items = buildPreferenceItems(); // lanza si hay item con precio inválido
 
-				return {
-					id: item.selectedVariant?._id ?? item._id,
-					title: item.productname,
-					description: item.description ?? '',
-					quantity: Number(item.amount) || 1,
-					currency_id: 'COP',
-					unit_price: unitPrice
-				};
-			});
+			// Build buyer snapshot (envíalo para que backend lo guarde con el Payment)
+			const buyer = {
+				_id: page.data.user?._id ?? null,
+				email: page.data.user?.email ?? '',
+				name: page.data.user?.name ?? page.data.user?.username ?? '',
+				lastname: page.data.user?.lastname ?? '',
+				document: page.data.user?.document ?? '',
+				documentType: page.data.user?.documentType ?? 'CC',
+				username: page.data.user?.username ?? '',
+				profileImg: page.data.user?.profileImg ?? ''
+			};
 
-			// Ajuste del P_goal - usar directamente $P_goal
+			// Ajuste del P_goal (misma lógica que ya tienes en backend/otros cálculos)
 			const rawPgoal = Number($P_goal ?? 0);
 			const PGoalAdjusted = rawPgoal < 20000 && rawPgoal > 0 ? rawPgoal * 0.95 : rawPgoal;
 
-			// Calcular la comisión para Mercado Pago
+			// Calcular la comisión y añadirla como item si aplica
 			const commission = computeCommission('mercadopago', PGoalAdjusted);
 			const commissionRounded = Math.round(commission);
-
-			// Agregar un item adicional para la comisión (si > 0)
 			if (commissionRounded > 0) {
 				items.push({
 					id: 'commission',
@@ -111,43 +151,64 @@
 					description: 'Costo de transferencia de pago con Mercado Pago',
 					quantity: 1,
 					currency_id: 'COP',
-					unit_price: commissionRounded
+					unit_price: commissionRounded,
+					selectedOptions: [],
+					selectedVariant: null,
+					imgs: [],
+					sellerId: null,
+					productSnapshot: { _id: 'commission', price: commissionRounded, productname: 'Comisión' }
 				});
 			}
 
-			// Llamada al endpoint
-			const response = await fetch('/api/mercadopago', {
+			// Llamada al nuevo endpoint del backend que crea Payment + preference
+			// Ajusta la ruta si tu backend la expone en otro path.
+			const response = await fetch('/api/payments/mercadopago/preference', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					items,
-					email: page.data.user?.email ?? '',
-					first_name: page.data.user?.name ?? '',
-					last_name: page.data.user?.lastname ?? '',
-					document: page.data.user?.document ?? '',
-					documentType: page.data.user?.documentType ?? 'CC'
+					buyer
 				})
 			});
 
 			const data = await response.json().catch(() => null);
 
 			if (!response.ok) {
-				console.error('Error servidor MP:', response.status, data);
-				toast.error((data && data.message) || 'Error creando preferencia Mercado Pago (servidor)');
+				console.error('Error servidor MP (backend):', response.status, data);
+				toast.error(
+					(data && (data.message || data.error)) ||
+						'Error creando preferencia Mercado Pago (servidor)'
+				);
+				isCreatingPreference = false;
 				return;
 			}
 
-			if (data?.init_point) {
-				window.location.href = data.init_point;
+			// backend devuelve initPoint, externalReference, paymentId
+			if (data?.initPoint) {
+				// opcional: guardar preference/payment ids en localStorage para debugging o seguimiento
+				try {
+					if (data.preferenceId)
+						localStorage.setItem('mercadopago_preference_id', data.preferenceId);
+					if (data.externalReference)
+						localStorage.setItem('mp-external-reference', data.externalReference);
+					if (data.paymentId) localStorage.setItem('mp-payment-id', data.paymentId);
+				} catch (e) {
+					/* ignore storage errors */
+				}
+
+				// redirigir al init_point de MercadoPago
+				window.location.href = data.initPoint;
 			} else {
-				console.error('MP no devolvió init_point:', data);
+				console.error('MP no devolvió initPoint:', data);
 				toast.error('No se pudo iniciar el pago con Mercado Pago');
 			}
 		} catch (error: any) {
 			console.error('Error al pagar con Mercado Pago:', error);
 			toast.error(error?.message ?? 'Error al iniciar pago con Mercado Pago');
+		} finally {
+			isCreatingPreference = false;
 		}
 	}
 

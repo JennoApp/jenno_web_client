@@ -31,6 +31,9 @@
 		unreadNotificationsCount,
 		markNotificationsAsRead
 	} from '$lib/stores/notificationsStore';
+	import * as Select from '$lib/components/ui/select/index.js';
+
+	let searchType: 'products' | 'stores' = $state('products');
 
 	let { children } = $props();
 
@@ -97,46 +100,60 @@
 	}
 
 	const handleSearch = async () => {
-		if (searchInputValue.trim() !== '') {
-			try {
-				const username = page.url.pathname.split('/')[1];
+		if (searchInputValue.trim() === '') return;
 
-				if (!rutasExcluidas.includes(username)) {
-					const userId = await getUserId(username);
+		try {
+			const username = page.url.pathname.split('/')[1];
 
-					const queryParams = new URLSearchParams({
-						query: searchInputValue,
-						id: userId
-					}).toString();
+			// Decidir el nombre del parámetro según el tipo
+			const searchParamKey = searchType === 'products' ? 'search' : 'stores';
 
-					setSearch(searchInputValue);
-					dialogOpen = false;
-					goto(`/${username}/search?${queryParams}`);
-					searchInputValue = '';
-				} else {
-					setSearch(searchInputValue);
-					dialogOpen = false;
-					goto(`/search`);
-					searchInputValue = '';
-				}
-			} catch (error) {
-				console.error('Error al obtener el ID del usuario:', error);
+			if (!rutasExcluidas.includes(username)) {
+				// PERFIL / TIENDA
+				const userId = await getUserId(username);
+
+				const queryParams = new URLSearchParams({
+					[searchParamKey]: searchInputValue,
+					id: userId
+				}).toString();
+
+				setSearch(searchInputValue);
+				dialogOpen = false;
+
+				goto(`/${username}/search?${queryParams}`);
+				searchInputValue = '';
+			} else {
+				// BÚSQUEDA GLOBAL
+				const queryParams = new URLSearchParams({
+					[searchParamKey]: searchInputValue
+				}).toString();
+
+				setSearch(searchInputValue);
+				dialogOpen = false;
+
+				goto(`/search?${queryParams}`);
+				searchInputValue = '';
 			}
+		} catch (error) {
+			console.error('Error al obtener el ID del usuario:', error);
 		}
 	};
 
 	const handleGlobalSearch = () => {
-		if (searchInputValue.trim() !== '') {
-			setSearch(searchInputValue);
+		if (searchInputValue.trim() === '') return;
 
-			const queryParams = new URLSearchParams({
-				query: searchInputValue.trim()
-			}).toString();
+		// mismo criterio que handleSearch
+		const searchParamKey = searchType === 'products' ? 'search' : 'stores';
 
-			dialogOpen = false;
-			goto(`/search?${queryParams}`);
-			searchInputValue = '';
-		}
+		const queryParams = new URLSearchParams({
+			[searchParamKey]: searchInputValue.trim()
+		}).toString();
+
+		setSearch(searchInputValue);
+		dialogOpen = false;
+
+		goto(`/search?${queryParams}`);
+		searchInputValue = '';
 	};
 
 	/// Total reactivo basado en svelte/store
@@ -489,12 +506,42 @@
 							autocomplete="off"
 							bind:value={searchInputValue}
 						/>
-						<div
+						<!-- <div
 							class="grid place-items-center text-2xl dark:text-white w-16 h-full bg-gray-200 dark:bg-[#202020] border border-gray-200 dark:border-[#222222] rounded-r-2xl"
 						>
 							<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
 							></iconify-icon>
-						</div>
+						</div> -->
+
+						{#if rutasExcluidas.includes(page.url.pathname.split('/')[1])}
+							<Select.Root type="single" bind:value={searchType}>
+								<Select.Trigger
+									class="h-4 px-3 text-sm bg-gray-100 dark:bg-[#121212]
+											border-y border-gray-200 dark:border-[#222222]
+											dark:text-gray-200 rounded-none"
+								>
+									{searchType === 'products' ? 'Productos' : 'Tiendas'}
+								</Select.Trigger>
+
+								<Select.Content>
+									<Select.Item value="products">Productos</Select.Item>
+									<Select.Item value="stores">Tiendas</Select.Item>
+								</Select.Content>
+							</Select.Root>
+						{/if}
+
+						<!-- ICONO SEARCH -->
+						<button
+							aria-label="Buscar"
+							type="submit"
+							class="grid place-items-center text-2xl dark:text-white w-14 h-10
+										bg-gray-200 dark:bg-[#202020]
+										border border-gray-200 dark:border-[#222222]
+										rounded-r-2xl"
+						>
+							<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
+							></iconify-icon>
+						</button>
 					</form>
 
 					{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1]) && searchInputValue.length > 1}
@@ -530,13 +577,15 @@
 								></iconify-icon>
 							</button>
 						</Dialog.Trigger>
-						<Dialog.Content class="top-10 w-full m-0 px-0 py-1">
+						<Dialog.Content
+							class="top-10 h-10 w-full m-0 px-0 py-0 border-none"
+						>
 							<form
 								onsubmit={(e) => {
 									e.preventDefault();
 									handleSearch();
 								}}
-								class="flex w-full"
+								class="flex md:w-[600px] h-10"
 							>
 								{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1])}
 									<div
@@ -558,15 +607,45 @@
 									autocomplete="off"
 									bind:value={searchInputValue}
 								/>
-								<div
+								<!-- <div
 									class="grid place-items-center text-2xl dark:text-white w-16 h-full bg-gray-200 dark:bg-[#202020] border border-gray-200 dark:border-[#222222] rounded-r-2xl"
+								>
+									<iconify-icon icon="material-symbols:search-rounded" height="1.5rem" width="1.5rem"
+									></iconify-icon>
+								</div> -->
+
+								{#if rutasExcluidas.includes(page.url.pathname.split('/')[1])}
+									<Select.Root type="single" bind:value={searchType}>
+										<Select.Trigger
+											class="h-4 px-3 text-sm bg-gray-100 dark:bg-[#121212]
+													border-y border-gray-200 dark:border-[#222222]
+													dark:text-gray-200 rounded-none"
+										>
+											{searchType === 'products' ? 'Productos' : 'Tiendas'}
+										</Select.Trigger>
+
+										<Select.Content>
+											<Select.Item value="products">Productos</Select.Item>
+											<Select.Item value="stores">Tiendas</Select.Item>
+										</Select.Content>
+									</Select.Root>
+								{/if}
+
+								<!-- ICONO SEARCH -->
+								<button
+									aria-label="Buscar"
+									type="submit"
+									class="grid place-items-center text-2xl dark:text-white w-14 h-10
+												bg-gray-200 dark:bg-[#202020]
+												border border-gray-200 dark:border-[#222222]
+												rounded-r-2xl"
 								>
 									<iconify-icon
 										icon="material-symbols:search-rounded"
 										height="1.5rem"
 										width="1.5rem"
 									></iconify-icon>
-								</div>
+								</button>
 							</form>
 
 							{#if !rutasExcluidas.includes(page.url.pathname.split('/')[1]) && searchInputValue.length > 1}

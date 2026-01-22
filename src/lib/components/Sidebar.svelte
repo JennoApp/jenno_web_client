@@ -310,7 +310,7 @@
 					{/if}
 				</Tooltip.Root> -->
 
-				<Tooltip.Root>
+				<!-- <Tooltip.Root>
 					<Tooltip.Trigger>
 						<a
 							href="/following"
@@ -338,7 +338,7 @@
 							<h3>{m.sidebar_following()}</h3>
 						</Tooltip.Content>
 					{/if}
-				</Tooltip.Root>
+				</Tooltip.Root> -->
 			</ul>
 		</div>
 	</nav>
