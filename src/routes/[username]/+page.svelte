@@ -324,8 +324,8 @@
 						width={400}
 					/>
 				{:else}
-					<div class="flex justify-center items-center h-32 w-32 bg-[#202020] rounded-full">
-						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="text-[#707070]">
+					<div class="flex justify-center items-center h-32 w-32 bg-gray-200 dark:bg-[#202020] rounded-full">
+						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="dark:text-gray-400">
 						</iconify-icon>
 					</div>
 				{/if}
@@ -481,7 +481,7 @@
 		<!-- Lista de productos -->
 		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-5 gap-5 grid-flow-row">
 			{#each productsStore as productData}
-				<Card data={productData} />
+				<Card data={productData} currentUsername={userData.username} />
 			{/each}
 		</div>
 	{/if}

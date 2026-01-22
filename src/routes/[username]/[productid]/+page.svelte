@@ -642,35 +642,61 @@
 			</div>
 
 			{#if userName}
-				<button
-					onclick={(e) => {
-						goto(`/${userName}`);
-					}}
-				>
+				<button type="button" onclick={() => goto(`/${userName}`)} class="group">
 					<div
-						class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md dark:bg-[#202020] dark:hover:bg-[#252525]"
+						class="flex flex-col items-center justify-center gap-2
+						       min-w-40 max-w-56 px-3 py-3
+						       rounded-xl
+						       border border-gray-200 dark:border-[#222222]
+						       bg-white dark:bg-[#181818]
+						       hover:bg-gray-50 dark:hover:bg-[#202020]
+						       transition-all duration-150
+						       cursor-pointer"
 					>
+						<!-- Avatar -->
 						{#if profileImg}
 							<img
-								class="w-14 h-14 object-cover rounded-full"
+								class="w-14 h-14 object-cover rounded-full
+								       ring-2 ring-transparent group-hover:ring-black dark:group-hover:ring-white
+								       transition"
 								src={profileImg}
 								alt={product?.username}
-								height={20}
-								width={20}
 							/>
 						{:else}
-							<div class="flex justify-center items-center h-14 w-14 bg-[#151515] rounded-full">
-								<iconify-icon icon="bxs:store" height="2rem" width="2rem" class="text-[#707070]"
-								></iconify-icon>
+							<div
+								class="w-14 h-14 rounded-full
+								       bg-gray-200 dark:bg-[#1f1f1f]
+								       flex items-center justify-center"
+							>
+								<iconify-icon icon="bxs:store"  heigth="2.5rem" width="2.5rem" class="text-black dark:text-gray-400"></iconify-icon>
 							</div>
 						{/if}
-						<h2 class="text-lg font-semibold">{userName}</h2>
+
+						<!-- Nombre -->
+						<h2
+							class="text-sm font-semibold text-center truncate max-w-full
+							       text-gray-900 dark:text-gray-100"
+							title={userName}
+						>
+							{userName}
+						</h2>
+
+						<!-- hint sutil -->
+						<span
+							class="text-xs text-gray-500 dark:text-gray-400
+							       opacity-0 group-hover:opacity-100 transition"
+						>
+							Ver tienda →
+						</span>
 					</div>
 				</button>
 			{:else}
-				<!-- Skeleton loader -->
+				<!-- Skeleton -->
 				<div
-					class="flex flex-col items-center justify-center p-1 gap-2 min-w-40 max-w-56 h-full rounded-md animate-pulse dark:bg-[#202020]"
+					class="flex flex-col items-center justify-center gap-2
+					       min-w-40 max-w-56 px-3 py-3
+					       rounded-xl animate-pulse
+					       bg-[#202020]"
 				>
 					<div class="h-14 w-14 rounded-full bg-[#2a2a2a]"></div>
 					<div class="h-4 w-24 rounded bg-[#2a2a2a]"></div>

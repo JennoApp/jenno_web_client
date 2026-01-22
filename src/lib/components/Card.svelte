@@ -31,7 +31,7 @@
 	import { formatPrice } from '$lib/utils/formatprice';
 	import { toast } from 'svelte-sonner';
 
-	let { data }: { data: CardData } = $props();
+	let { data, currentUsername }: { data: CardData; currentUsername: string } = $props();
 
 	let profileImg = $state('');
 	let openDialogreview = $state(false);
@@ -62,6 +62,10 @@
 	const priceHint = $derived(() => {
 		if (!hasVariants) return null;
 		return 'Precio varía según la opción';
+	});
+
+	const isOwnProduct = $derived(() => {
+		return currentUsername && data?.username === currentUsername;
 	});
 
 	// Obtener url del servidor
@@ -130,11 +134,17 @@
 	}
 
 	$effect(() => {
-		loadProfileImg();
+		if (!isOwnProduct()) {
+			loadProfileImg();
+		}
 	});
 
 	$effect(() => {
-		getUserName(data.user);
+		if (!isOwnProduct()) {
+			getUserName(data.user);
+		} else {
+			userName = data.username;
+		}
 	});
 
 	$effect(() => {
@@ -147,49 +157,53 @@
 		<div
 			class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
 		>
-			<!-- Header -->
-			<div class="flex w-full h-12 px-4 items-center justify-between">
-				<div class="flex items-center space-x-2">
-					{#if profileImg !== ''}
-						<img
-							class="h-8 w-8 object-cover rounded-full"
-							src={profileImg}
-							alt="logo"
-							onload={handleImageLoaded}
-						/>
-					{:else}
-						<div
-							class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
+			{#if !isOwnProduct()}
+				<!-- Header -->
+				<div class="flex w-full h-12 px-4 items-center justify-between">
+					<div class="flex items-center space-x-2">
+						{#if profileImg !== ''}
+							<img
+								class="h-8 w-8 object-cover rounded-full"
+								src={profileImg}
+								alt="logo"
+								onload={handleImageLoaded}
+							/>
+						{:else}
+							<div
+								class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
+							>
+								<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.3rem" width="1.3rem"
+								></iconify-icon>
+							</div>
+						{/if}
+						<button
+							onclick={(e) => {
+								e.preventDefault();
+								goto(`/${userName}`);
+							}}
+							class="truncate font-medium max-w-[200px]"
 						>
-							<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.3rem" width="1.3rem"
-							></iconify-icon>
-						</div>
-					{/if}
-					<button
-						onclick={(e) => {
-							e.preventDefault();
-							goto(`/${userName}`);
-						}}
-						class="truncate font-medium max-w-[200px]"
-					>
-						<h4>
-							{userName}
-						</h4>
-					</button>
-				</div>
+							<h4>
+								{userName}
+							</h4>
+						</button>
+					</div>
 
-				<!--  ####################### -->
-				<div class="hidden">
-					<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
-					<iconify-icon
-						class="mr-1 cursor-pointer"
-						icon="mdi:dots-vertical"
-						height="1.5rem"
-						width="1.5rem"
-					></iconify-icon>
+					<!--  ####################### -->
+					<div class="hidden">
+						<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
+						<iconify-icon
+							class="mr-1 cursor-pointer"
+							icon="mdi:dots-vertical"
+							height="1.5rem"
+							width="1.5rem"
+						></iconify-icon>
+					</div>
+					<!-- ######################### -->
 				</div>
-				<!-- ######################### -->
-			</div>
+			{:else}
+				<div class="mt-1"></div>
+			{/if}
 
 			<!-- Image -->
 			<div class="flex justify-center px-4">

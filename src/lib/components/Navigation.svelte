@@ -577,9 +577,7 @@
 								></iconify-icon>
 							</button>
 						</Dialog.Trigger>
-						<Dialog.Content
-							class="top-10 h-10 w-full m-0 px-0 py-0 border-none"
-						>
+						<Dialog.Content class="top-10 h-10 w-full m-0 px-0 py-0 border-none">
 							<form
 								onsubmit={(e) => {
 									e.preventDefault();
@@ -944,7 +942,7 @@
 										icon="mdi:user"
 										height="1.5rem"
 										width="1.5rem"
-										class="text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-[#202020] rounded-full hover:bg-[#252525]"
+										class="dark:text-gray-200 flex justify-center items-center h-9 w-9 ml-1 bg-gray-200 dark:bg-[#202020] rounded-full hover:bg-gray-300 dark:hover:bg-[#252525]"
 									></iconify-icon>
 								{/if}
 							</DropdownMenu.Trigger>
@@ -968,7 +966,7 @@
 											icon="mdi:user"
 											height="1.5rem"
 											width="1.5rem"
-											class="flex justify-center items-center text-gray-200 h-14 w-14 ml-1 bg-background rounded-full"
+											class="flex justify-center items-center dark:text-gray-200 h-14 w-14 ml-1 bg-background rounded-full"
 										></iconify-icon>
 									{/if}
 									<div class="flex flex-col justify-center ml-2">
