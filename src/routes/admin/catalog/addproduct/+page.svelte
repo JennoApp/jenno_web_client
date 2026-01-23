@@ -136,7 +136,7 @@
 	let product = $state<any>(null);
 	let visibility = $state<boolean>(true);
 	let isvisibilityInitialized = $state<boolean>(false);
-	let productStatus = $derived<any>(product?.status || '');
+	let productStatus = $derived<any>(product?.status || 'in_stock');
 
 	let editorRef = $state<any>(null);
 
@@ -860,10 +860,10 @@
 							name="status"
 							onValueChange={(v) => (productStatus = v)}
 						>
-							<Select.Trigger>
-								<Select.Label placeholder={m.admin_catalog_addproduct_status_select()} />
+							<Select.Trigger class="border border-gray-300 dark:border-[#404040]">
+								{productStatus == "in_stock" ? "disponible": "agotado"}
 							</Select.Trigger>
-							<Select.Content>
+							<Select.Content class="bg-white ">
 								<Select.Group>
 									<Select.Item value="in_stock"
 										>{m.admin_catalog_addproduct_status_select_instock()}</Select.Item

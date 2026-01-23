@@ -1038,7 +1038,7 @@
 		<h2 class="text-xl font-bold">{m.product_page_specifications()}</h2>
 
 		<Table.Root class="mt-7 overflow-x-auto">
-			<Table.Header class="bg-gray-200 dark:bg-[#202020] h-14">
+			<Table.Header class="bg-gray-200 dark:bg-[#202020] h-14 hover:bg-gray-300 dark:hover:bg-[#252525]">
 				<Table.Row>
 					{#each product.especifications as especification}
 						<Table.Head>{especification.title}</Table.Head>
@@ -1046,7 +1046,7 @@
 				</Table.Row>
 			</Table.Header>
 			<Table.Body>
-				<Table.Row class="h-14 bg-none hover:bg-none font-base">
+				<Table.Row class="h-14 bg-none hover:bg-none font-base hover:bg-gray-200 dark:hover:bg-[#252525]">
 					{#each product.especifications as especification}
 						<Table.Cell>{especification.content}</Table.Cell>
 					{/each}
