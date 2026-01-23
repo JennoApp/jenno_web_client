@@ -125,13 +125,13 @@
 		{/snippet}
 	</DropdownMenu.Trigger>
 
-	<DropdownMenu.Content class="w-48 z-50">
+	<DropdownMenu.Content class="w-48 z-50 bg-gray-100 dark:bg-[#202020] border border-gray-200 dark:border-[#252525]">
 		<DropdownMenu.Group>
 			<!-- SUBMENU DE VISIBILIDAD -->
 			<DropdownMenu.Sub>
 				<DropdownMenu.SubTrigger>Visibilidad</DropdownMenu.SubTrigger>
 
-				<DropdownMenu.SubContent>
+				<DropdownMenu.SubContent class="bg-gray-100 dark:bg-[#202020] border border-gray-200 dark:border-[#252525]">
 					<DropdownMenu.Item onclick={() => updateVisibility(id, true)}>Visible</DropdownMenu.Item>
 					<DropdownMenu.Item onclick={() => updateVisibility(id, false)}>Ocultar</DropdownMenu.Item>
 				</DropdownMenu.SubContent>
