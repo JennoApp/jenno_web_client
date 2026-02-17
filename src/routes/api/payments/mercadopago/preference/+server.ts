@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-
-const BACKEND_URL = 'http://localhost:4000'; // cambia si es prod
+import { PRIVATE_SERVER_URL } from '$env/static/private';
 
 export const POST: RequestHandler = async ({ request, fetch }) => {
 	try {
@@ -11,7 +10,7 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 			return json({ error: 'items y buyer son requeridos' }, { status: 400 });
 		}
 
-		const response = await fetch(`${BACKEND_URL}/payments/mercadopago/preference`, {
+		const response = await fetch(`${PRIVATE_SERVER_URL}/payments/mercadopago/preference`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
