@@ -122,7 +122,7 @@
 		setupTheme();
 		setLanguageTag(data.locale);
 		injectAnalytics();
-		initializeSocket(page.data?.user?._id);
+		//initializeSocket(page.data?.user?._id);
 	});
 
 	onMount(() => {
