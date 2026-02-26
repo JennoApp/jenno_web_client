@@ -1,6 +1,6 @@
-import { redirect } from '@sveltejs/kit'
+import type { PageServerLoad } from './$types';
 
-
-export function load() {
-  throw redirect(307, '/?reload=1')
-}
+export const load: PageServerLoad = async ({ url }) => {
+  const external = url.searchParams.get('external') ?? '';
+  return { external };
+};
