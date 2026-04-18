@@ -433,7 +433,7 @@
 		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-7">
 			<!-- Left -->
 			<div class="flex items-center">
-				<div class="hidden md:block lg:block">
+				<!-- <div class="hidden md:block lg:block">
 					<button
 						class="flex justify-center items-center text-gray-500 dark:text-white text-xl mr-6"
 						onclick={(e) => {
@@ -444,7 +444,7 @@
 					>
 						<iconify-icon icon="ion:menu" height="1.5rem" width="1.5rem"></iconify-icon>
 					</button>
-				</div>
+				</div> -->
 
 				<button
 					onclick={(e) => {
@@ -1039,15 +1039,15 @@
 		</div>
 	</nav>
 
-	<div class="flex justify-center relative top-[50px]">
-		<div class="hidden md:block lg:block">
+	<div class="flex justify-around relative top-[50px] mx-auto">
+		<!-- <div class="hidden md:block lg:block">
 			<Sidebar closeMenu={isClose} />
-		</div>
+		</div> -->
 
 		<main
 			class={!isClose
-				? 'relative top-0 md:left-20 w-full md:w-[calc(100%-208px)] px-3'
-				: 'relative top-0 md:left-7 w-full md:w-[calc(100%-80px)] px-3'}
+				? 'relative top-0 w-full px-3'
+				: 'relative top-0 w-full px-3'}
 		>
 			{@render children()}
 		</main>
