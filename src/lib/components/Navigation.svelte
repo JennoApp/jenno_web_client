@@ -430,7 +430,7 @@
 {#if !paths.includes(page.url.pathname)}
 	<!-- Navbar -->
 	<nav class="fixed z-50 w-full">
-		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-7">
+		<div class="flex items-center justify-between bg-[#f7f7f7] dark:bg-[#121212] h-14 px-4 md:px-5">
 			<!-- Left -->
 			<div class="flex items-center">
 				<!-- <div class="hidden md:block lg:block">
@@ -1014,9 +1014,9 @@
 						</DropdownMenu.Root>
 					</div>
 				{:else}
-					<div class="flex justify-center items-center space-x-2">
+					<div class="flex justify-center items-center">
 						<button
-							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
+							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
 							onclick={(e) => {
 								e.preventDefault();
 								goto('/login');
@@ -1025,7 +1025,7 @@
 							{m.navbar_button_login()}
 						</button>
 						<button
-							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 md:mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
+							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 mr-0 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
 							onclick={(e) => {
 								e.preventDefault();
 								goto('/register');
@@ -1039,15 +1039,15 @@
 		</div>
 	</nav>
 
-	<div class="flex justify-around relative top-[50px] mx-auto">
+	<div class="flex justify-around relative top-[50px]">
 		<!-- <div class="hidden md:block lg:block">
 			<Sidebar closeMenu={isClose} />
 		</div> -->
 
 		<main
 			class={!isClose
-				? 'relative top-0 w-full px-3'
-				: 'relative top-0 w-full px-3'}
+				? 'relative top-0 w-full px-5'
+				: 'relative top-0 w-full px-5'}
 		>
 			{@render children()}
 		</main>
