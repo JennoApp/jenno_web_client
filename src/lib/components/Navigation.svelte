@@ -425,6 +425,10 @@
 
 		return totalAmount >= maxStock;
 	}
+
+	let isAdminRoute = $derived(
+		page.url.pathname === '/admin' || page.url.pathname.startsWith('/admin/')
+	);
 </script>
 
 {#if !paths.includes(page.url.pathname)}
@@ -1040,15 +1044,15 @@
 	</nav>
 
 	<div class="flex justify-around relative top-[50px]">
-		<!-- <div class="hidden md:block lg:block">
-			<Sidebar closeMenu={isClose} />
-		</div> -->
+		{#if isAdminRoute}
+			<aside
+				class={`hidden md:block shrink-0 transition-all duration-300 ${isClose ? 'w-16' : 'w-64'}`}
+			>
+				<Sidebar closeMenu={isClose} />
+			</aside>
+		{/if}
 
-		<main
-			class={!isClose
-				? 'relative top-0 w-full px-5'
-				: 'relative top-0 w-full px-5'}
-		>
+		<main class={!isClose ? 'relative top-0 w-full px-5' : 'relative top-0 w-full px-5'}>
 			{@render children()}
 		</main>
 
