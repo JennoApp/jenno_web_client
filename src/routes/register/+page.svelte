@@ -1,82 +1,87 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
-  import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
+	import { toast } from 'svelte-sonner';
 	import { onMount } from 'svelte';
 
-  let googleLoaded = $state(false)
-  let serverUrl = $state('')
+	let googleLoaded = $state(false);
+	let serverUrl = $state('');
 
-  // 1) Carga la librería de Google Identity
-  onMount(async () => {
-    if (!browser) return;
+	// 1) Carga la librería de Google Identity
+	onMount(async () => {
+		if (!browser) return;
 
-    // 1.a) Busca la URL de tu backend
-    await getServerUrl();
+		// 1.a) Busca la URL de tu backend
+		await getServerUrl();
 
-    // 1.b) Inserta el script de Google
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      googleLoaded = true;
-      /* 2) Inicializa el botón de Google */
-      // @ts-ignore
-      window.google?.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: handleCredentialResponse
-      });
-      // @ts-ignore
-      window.google?.accounts.id.renderButton(
-        document.getElementById('google-btn'),
-        { theme: 'outline', size: 'large' }
-      );
-    };
-    document.head.appendChild(script);
-  });
+		// 1.b) Inserta el script de Google
+		const script = document.createElement('script');
+		script.src = 'https://accounts.google.com/gsi/client';
+		script.async = true;
+		script.defer = true;
+		script.onload = () => {
+			googleLoaded = true;
+			/* 2) Inicializa el botón de Google */
+			// @ts-ignore
+			window.google?.accounts.id.initialize({
+				client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+				callback: handleCredentialResponse
+			});
+			// @ts-ignore
+			window.google?.accounts.id.renderButton(document.getElementById('google-btn'), {
+				theme: 'outline',
+				size: 'large'
+			});
+		};
+		document.head.appendChild(script);
+	});
 
-  $inspect(getServerUrl())
+	$inspect(getServerUrl());
 
-  // Helper para obtener la URL del servidor desde tu endpoint /api/server
-  async function getServerUrl() {
-    try {
-      const res = await fetch('/api/server');
-      if (!res.ok) throw new Error('No se pudo obtener server_url');
-      const data = await res.json();
-      serverUrl = data.server_url;
-    } catch (err) {
-      console.error('Error al obtener la URL del servidor:', err);
-      toast.error('No se pudo conectar con el servidor');
-    }
-  }
+	// Helper para obtener la URL del servidor desde tu endpoint /api/server
+	async function getServerUrl() {
+		try {
+			const res = await fetch('/api/server');
+			if (!res.ok) throw new Error('No se pudo obtener server_url');
+			const data = await res.json();
+			serverUrl = data.server_url;
+		} catch (err) {
+			console.error('Error al obtener la URL del servidor:', err);
+			toast.error('No se pudo conectar con el servidor');
+		}
+	}
 
-  // 3) Cuando Google nos devuelve el id_token
-  async function handleCredentialResponse(response: any) {
-    const idToken = response.credential;
-    try {
-      const res = await fetch(`/api/auth/google/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken })
-      });
+	// 3) Cuando Google nos devuelve el id_token
+	async function handleCredentialResponse(response: any) {
+		const idToken = response.credential;
+		try {
+			const res = await fetch(`/api/auth/google/login`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ idToken })
+			});
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || 'Login fallido');
-      }
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data.message || 'Login fallido');
+			}
 
-      goto('/', { replaceState: true }).then(() => {
-        location.reload();
-      });
-    } catch (err: any) {
-      console.error('Error de login Google:', err);
-      toast.error(err.message || 'Error al ingresar con Google');
-    }
-  }
+			goto('/', { replaceState: true }).then(() => {
+				location.reload();
+			});
+		} catch (err: any) {
+			console.error('Error de login Google:', err);
+			toast.error(err.message || 'Error al ingresar con Google');
+		}
+	}
+
+	// redirige la pagina a Personal register
+	onMount(() => {
+		goto('/register/personal', { replaceState: true });
+	});
 </script>
 
-<div class="relative flex flex-col lg:flex-row w-full h-screen">
+<div class="hidden relative flex flex-col lg:flex-row w-full h-screen">
 	<!-- Separador vertical en desktop -->
 	<div class="hidden lg:block divider-vertical"></div>
 
@@ -90,9 +95,9 @@
 			class="bg-gray-200 dark:bg-[#252525] hover:bg-gray-300 dark:hover:bg-[#272727]
              h-16 w-10/12 rounded-md mb-4 text-lg font-medium transition"
 			onclick={(e) => {
-        e.preventDefault();
-        goto('/register/personal')
-        }}
+				e.preventDefault();
+				goto('/register/personal');
+			}}
 		>
 			Registro con Email
 		</button>
@@ -128,9 +133,9 @@
 			class="bg-gray-200 dark:bg-[#252525] hover:bg-gray-300 dark:hover:bg-[#272727]
              h-16 w-10/12 rounded-md mb-4 text-lg font-medium transition"
 			onclick={(e) => {
-        e.preventDefault();
-        goto('/register/business')
-      }}
+				e.preventDefault();
+				goto('/register/business');
+			}}
 		>
 			Registro con Email
 		</button>
@@ -142,7 +147,7 @@
 				<li class="dark:text-white">Llega a más clientes.</li>
 			</ul>
 			<div class="flex gap-3 border border-gray-400 dark:border-[#161616] mt-4 p-3 rounded-md">
-				<iconify-icon icon="ic:round-warning" class="text-yellow-500" ></iconify-icon>
+				<iconify-icon icon="ic:round-warning" class="text-yellow-500"></iconify-icon>
 				<p class="dark:text-white text-sm">
 					Se requiere información legal de la empresa para completar el registro.
 				</p>

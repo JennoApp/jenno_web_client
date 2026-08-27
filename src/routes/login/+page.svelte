@@ -92,82 +92,189 @@
 	<meta name="description" content="Inicia sesión en Jenno" />
 </svelte:head>
 
-<div class="flex flex-col items-center justify-center h-screen w-full px-4">
-	<h1 class="text-3xl font-semibold dark:text-gray-200 mb-8">{m.login_title()}</h1>
+<div class="min-h-screen w-full flex items-center justify-center px-4 py-10">
+	<div class="w-full max-w-md">
 
-	<!-- Formulario  Email -->
-	<form method="POST" action="?/login" class="w-full max-w-md space-y-4" use:enhance>
-		<div>
-			<label for="email" class="block mb-1 text-base dark:text-gray-200"
-				>{m.login_email_label()}</label
-			>
-			<input
-				type="email"
-				name="email"
-				required
-				class="w-full h-10 px-3 bg-gray-200 rounded-md text-black"
-			/>
+		<!-- Header -->
+		<div class="text-center mb-8">
+			<h1 class="text-3xl font-semibold dark:text-gray-200 tracking-tight">
+				{m.login_title()}
+			</h1>
+
+			<p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+				Inicia sesión para continuar comprando y descubrir productos.
+			</p>
 		</div>
 
-		<div>
-			<label for="password" class="block mb-1 text-base dark:text-gray-200"
-				>{m.login_password_label()}</label
-			>
-			<div class="relative">
-				<input
-					id="password"
-					name="password"
-					type="password"
-					required
-					class="w-full h-10 px-3 bg-gray-200 rounded-md pr-10 text-black"
-				/>
-				<button
-					type="button"
-					class="absolute inset-y-0 right-2 flex items-center"
-					on:click={togglePasswordVisibility}
-				>
-					<span id="eyeIcon">👁️</span>
-				</button>
-			</div>
-			<div class="text-right mt-1">
-				<a href="/forgotpassword" class="text-sm text-gray-400 hover:underline">
-					{m.login_password_forget()}
-				</a>
-			</div>
-		</div>
-
-		<button
-			type="submit"
-			class="w-full h-10 bg-gray-200 dark:bg-[#202020] dark:text-gray-200 rounded-md hover:bg-gray-300 hover:dark:bg-[#303030]"
+		<!-- Card -->
+		<div
+			class="w-full rounded-2xl
+			       border border-gray-200 dark:border-[#303030]
+			       bg-white dark:bg-[#161616]
+			       p-6 sm:p-8 shadow-sm"
 		>
-			{m.login_button_title()}
-		</button>
-	</form>
 
-	<!-- Separador “o” -->
-	<div class="flex items-center w-1/2 my-4">
-		<div class="flex-grow h-px bg-gray-400"></div>
-		<span class="px-3 text-gray-500 dark:text-gray-400">O inicia sesión con Google</span>
-		<div class="flex-grow h-px bg-gray-400"></div>
+			<!-- Google -->
+			<div class="flex flex-col items-center">
+				<div
+					id="google-btn"
+					class="w-full flex justify-center"
+				></div>
+
+				<p class="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
+					Inicia sesión con tu cuenta de Google
+				</p>
+			</div>
+
+			<!-- Separador -->
+			<div class="flex items-center w-full my-6">
+				<div class="flex-1 h-px bg-gray-300 dark:bg-[#303030]"></div>
+
+				<span class="px-4 text-xs text-gray-500 dark:text-gray-400">
+					o continúa con email
+				</span>
+
+				<div class="flex-1 h-px bg-gray-300 dark:bg-[#303030]"></div>
+			</div>
+
+			<!-- Formulario -->
+			<form
+				method="POST"
+				action="?/login"
+				class="flex flex-col gap-4 w-full"
+				use:enhance
+			>
+
+				<!-- Email -->
+				<div class="flex flex-col gap-1.5">
+					<label
+						for="email"
+						class="text-sm dark:text-gray-200 font-medium"
+					>
+						{m.login_email_label()}
+					</label>
+
+					<input
+						id="email"
+						type="email"
+						name="email"
+						required
+						autocomplete="email"
+						class="h-10 w-full
+						       bg-gray-200 dark:bg-[#202020]
+						       rounded-lg
+						       text-black dark:text-gray-200
+						       font-medium px-3
+						       outline-none
+						       border border-transparent
+						       focus:border-gray-400
+						       dark:focus:border-gray-500"
+					/>
+				</div>
+
+				<!-- Password -->
+				<div class="flex flex-col gap-1.5">
+					<label
+						for="password"
+						class="text-sm dark:text-gray-200 font-medium"
+					>
+						{m.login_password_label()}
+					</label>
+
+					<div class="relative">
+						<input
+							id="password"
+							name="password"
+							type="password"
+							required
+							autocomplete="current-password"
+							class="w-full h-10
+							       bg-gray-200 dark:bg-[#202020]
+							       rounded-lg
+							       text-black dark:text-gray-200
+							       font-medium
+							       px-3 pr-11
+							       outline-none
+							       border border-transparent
+							       focus:border-gray-400
+							       dark:focus:border-gray-500"
+						/>
+
+						<button
+							type="button"
+							class="absolute right-3 top-1/2 -translate-y-1/2"
+							onclick={togglePasswordVisibility}
+							aria-label="Mostrar u ocultar contraseña"
+						>
+							<span id="eyeIcon">👁️</span>
+						</button>
+					</div>
+
+					<!-- Forgot password -->
+					<div class="text-right mt-1">
+						<a
+							href="/forgotpassword"
+							class="text-xs text-gray-500 dark:text-gray-400
+							       hover:text-gray-800 dark:hover:text-gray-200
+							       hover:underline"
+						>
+							{m.login_password_forget()}
+						</a>
+					</div>
+				</div>
+
+				<!-- Login -->
+				<button
+					type="submit"
+					class="h-11 w-full mt-2
+					       bg-gray-200 dark:bg-[#202020]
+					       rounded-lg
+					       dark:text-gray-200
+					       font-semibold
+					       hover:bg-gray-300
+					       dark:hover:bg-[#252525]
+					       transition"
+				>
+					{m.login_button_title()}
+				</button>
+			</form>
+
+			<!-- Google note -->
+			<p class="mt-5 text-center text-xs text-gray-500 dark:text-gray-400">
+				Si te registraste con Google, inicia sesión nuevamente con Google.
+			</p>
+
+			<!-- Register -->
+			<div class="mt-6 pt-6 border-t border-gray-200 dark:border-[#303030]">
+				<p class="text-center text-sm text-gray-500 dark:text-gray-400">
+					¿No tienes cuenta?
+
+					<a
+						href="/register"
+						class="font-semibold dark:text-gray-200 hover:underline ml-1"
+					>
+						{m.login_goto_register()}
+					</a>
+				</p>
+			</div>
+
+			<!-- Terms -->
+			<p
+				class="mt-5 text-center text-xs leading-relaxed
+				       text-gray-500 dark:text-gray-400"
+			>
+				{m.login_termsandservice()}
+
+				<a
+					href="/terms"
+					class="font-medium hover:underline hover:text-primary ml-1"
+				>
+					Términos y condiciones
+				</a>
+			</p>
+
+		</div>
+
 	</div>
-
-
-  <!-- Botón Google -->
-		<div id="google-btn" class="w-10/12 flex justify-center mb-6"></div>
-		<p class="text-sm text-gray-600 dark:text-gray-400 mb-8 text-center">
-      * Si te registraste con Google, ingresa de nuevo con Google (sin contraseña).
-		</p>
-
-	<p class="mt-4 text-sm dark:text-gray-200">
-		¿No tienes cuenta?&nbsp;
-		<a href="/register" class="text-blue-600 hover:underline">
-			{m.login_goto_register()}
-		</a>
-	</p>
-
-	<p class="mt-6 text-xs dark:text-gray-400">
-		<a href="/terms" class="hover:underline hover:text-primary">
-			{m.login_termsandservice()}
-		</a>
-	</p>
 </div>
+
