@@ -16,7 +16,7 @@
 	let googleLoaded = $state(false);
 	let serverUrl = $state('');
 
-    // FORM SUCCESS
+	// FORM SUCCESS
 	$effect(() => {
 		if (form?.success) {
 			toast.success('Usuario creado!');
@@ -130,7 +130,7 @@
 		}
 	}
 
-    // PASSWORD VISIBILITY
+	// PASSWORD VISIBILITY
 	function togglePasswordVisibility() {
 		const passwordInput = document.getElementById('password') as HTMLInputElement;
 		const eyeIcon = document.getElementById('eyeIcon');
@@ -168,12 +168,14 @@
 
 <svelte:head>
 	<title>Crear cuenta</title>
-	<meta name="description" content="Crea tu cuenta personal para comprar productos y descubrir nuevas tiendas." />
+	<meta
+		name="description"
+		content="Crea tu cuenta personal para comprar productos y descubrir nuevas tiendas."
+	/>
 </svelte:head>
 
 <div class="min-h-screen w-full flex items-center justify-center px-4 py-10">
 	<div class="w-full max-w-md">
-
 		<!-- Header -->
 		<div class="text-center mb-8">
 			<h1 class="text-3xl font-semibold dark:text-gray-200 tracking-tight">
@@ -192,13 +194,9 @@
 			       bg-white dark:bg-[#161616]
 			       p-6 sm:p-8 shadow-sm"
 		>
-
 			<!-- Registro con Google -->
 			<div class="flex flex-col items-center">
-				<div
-					id="google-btn"
-					class="w-full flex justify-center"
-				></div>
+				<div id="google-btn" class="w-full flex justify-center"></div>
 
 				<p class="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
 					Regístrate con tu cuenta de Google en un solo clic
@@ -209,27 +207,16 @@
 			<div class="flex items-center w-full my-6">
 				<div class="flex-1 h-px bg-gray-300 dark:bg-[#303030]"></div>
 
-				<span class="px-4 text-xs text-gray-500 dark:text-gray-400">
-					o continúa con email
-				</span>
+				<span class="px-4 text-xs text-gray-500 dark:text-gray-400"> o continúa con email </span>
 
 				<div class="flex-1 h-px bg-gray-300 dark:bg-[#303030]"></div>
 			</div>
 
 			<!-- Form -->
-			<form
-				method="POST"
-				action="?/personal"
-				use:enhance
-				class="flex flex-col gap-4 w-full"
-			>
-
+			<form method="POST" action="?/personal" use:enhance class="flex flex-col gap-4 w-full">
 				<!-- Username -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="username"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="username" class="text-sm dark:text-gray-200 font-medium">
 						{m.register_personal_username_label()}
 					</label>
 
@@ -248,9 +235,7 @@
 						       border border-transparent
 						       focus:border-gray-400
 						       dark:focus:border-gray-500
-						       {form?.errors?.username
-								? 'border-red-500'
-								: ''}"
+						       {form?.errors?.username ? 'border-red-500' : ''}"
 					/>
 
 					{#if form?.errors?.username}
@@ -262,10 +247,7 @@
 
 				<!-- Email -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="email"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="email" class="text-sm dark:text-gray-200 font-medium">
 						{m.register_personal_email_label()}
 					</label>
 
@@ -284,9 +266,7 @@
 						       border border-transparent
 						       focus:border-gray-400
 						       dark:focus:border-gray-500
-						       {form?.errors?.email
-								? 'border-red-500'
-								: ''}"
+						       {form?.errors?.email ? 'border-red-500' : ''}"
 					/>
 
 					{#if form?.errors?.email}
@@ -298,10 +278,7 @@
 
 				<!-- Country -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="country"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="country" class="text-sm dark:text-gray-200 font-medium">
 						{m.register_personal_country_label()}
 					</label>
 
@@ -317,12 +294,7 @@
 						🇨🇴 Colombia
 					</div>
 
-					<input
-						type="hidden"
-						id="country"
-						name="country"
-						value="Colombia"
-					/>
+					<input type="hidden" id="country" name="country" value="Colombia" />
 
 					<span class="text-xs text-gray-500 dark:text-gray-400">
 						Actualmente disponible únicamente para Colombia.
@@ -337,10 +309,7 @@
 
 				<!-- Password -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="password"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="password" class="text-sm dark:text-gray-200 font-medium">
 						{m.register_personal_password_label()}
 					</label>
 
@@ -359,9 +328,7 @@
 							       border border-transparent
 							       focus:border-gray-400
 							       dark:focus:border-gray-500
-							       {form?.errors?.password
-									? 'border-red-500'
-									: ''}"
+							       {form?.errors?.password ? 'border-red-500' : ''}"
 						/>
 
 						<button
@@ -383,10 +350,7 @@
 
 				<!-- Confirm Password -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="confirm-password"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="confirm-password" class="text-sm dark:text-gray-200 font-medium">
 						{m.register_personal_password_confirm()}
 					</label>
 
@@ -405,9 +369,7 @@
 							       border border-transparent
 							       focus:border-gray-400
 							       dark:focus:border-gray-500
-							       {form?.errors?.verified_password
-									? 'border-red-500'
-									: ''}"
+							       {form?.errors?.verified_password ? 'border-red-500' : ''}"
 						/>
 
 						<button
@@ -430,18 +392,18 @@
 				<!-- Botón de registro -->
 				<button
 					type="submit"
-					class="h-11 w-full mt-2
-					       bg-gray-200 dark:bg-[#202020]
-					       rounded-lg
-					       dark:text-gray-200
-					       font-semibold
-					       hover:bg-gray-300
-					       dark:hover:bg-[#252525]
-					       transition"
+					class="h-11 w-full rounded-xl
+                    bg-gray-900 dark:bg-white
+                    text-white dark:text-black
+                    font-semibold
+                    shadow-sm
+                    hover:bg-gray-700 dark:hover:bg-gray-200
+                    hover:shadow-md
+                    transition-all duration-200
+                    active:scale-[0.99]"
 				>
 					{m.register_personal_button_title()}
 				</button>
-
 			</form>
 
 			<!-- Terms -->
@@ -452,34 +414,17 @@
 			>
 				{m.register_personal_termsandservice()}
 
-				<a
-					href="/terms"
-					class="font-medium hover:underline hover:text-primary"
-				>
+				<a href="/terms" class="font-medium hover:underline hover:text-primary">
 					Términos y condiciones
 				</a>
 			</p>
-
 		</div>
 
 		<!-- Login -->
 		<p class="mt-5 text-center text-sm text-gray-500 dark:text-gray-400">
 			¿Ya tienes una cuenta?
 
-			<a
-				href="/login"
-				class="font-semibold dark:text-gray-200 hover:underline"
-			>
-				Inicia sesión
-			</a>
+			<a href="/login" class="font-semibold dark:text-gray-200 hover:underline"> Inicia sesión </a>
 		</p>
-
 	</div>
 </div>
-
-
-
-
-
-
-

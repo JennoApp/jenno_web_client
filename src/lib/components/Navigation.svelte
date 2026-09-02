@@ -1018,9 +1018,16 @@
 						</DropdownMenu.Root>
 					</div>
 				{:else}
-					<div class="flex justify-center items-center">
+					<div class="flex gap-3 justify-center items-center">
 						<button
-							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 mr-5 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
+							class="h-9 px-4 rounded-lg
+                            border border-gray-300 dark:border-[#383838]
+                            bg-transparent
+                            text-sm font-semibold
+                            text-gray-700 dark:text-gray-200
+                            hover:bg-gray-100 dark:hover:bg-[#202020]
+                            transition-all duration-200
+                            active:scale-[0.98]"
 							onclick={(e) => {
 								e.preventDefault();
 								goto('/login');
@@ -1029,7 +1036,15 @@
 							{m.navbar_button_login()}
 						</button>
 						<button
-							class="bg-gray-200 dark:bg-[#202020] dark:text-gray-200 w-24 sm:w-28 h-10 px-2 mr-0 rounded-md text-sm font-semibold cursor-pointer hover:bg-gray-300 dark:hover:bg-[#303030]"
+							class="h-9 px-4 rounded-lg
+                            bg-gray-900 dark:bg-white
+                            text-sm font-semibold
+                            text-white dark:text-black
+                            shadow-sm
+                            hover:bg-gray-700 dark:hover:bg-gray-200
+                            hover:shadow-md
+                            transition-all duration-200
+                            active:scale-[0.98]"
 							onclick={(e) => {
 								e.preventDefault();
 								goto('/register');

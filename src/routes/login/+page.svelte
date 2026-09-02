@@ -94,7 +94,6 @@
 
 <div class="min-h-screen w-full flex items-center justify-center px-4 py-10">
 	<div class="w-full max-w-md">
-
 		<!-- Header -->
 		<div class="text-center mb-8">
 			<h1 class="text-3xl font-semibold dark:text-gray-200 tracking-tight">
@@ -113,13 +112,9 @@
 			       bg-white dark:bg-[#161616]
 			       p-6 sm:p-8 shadow-sm"
 		>
-
 			<!-- Google -->
 			<div class="flex flex-col items-center">
-				<div
-					id="google-btn"
-					class="w-full flex justify-center"
-				></div>
+				<div id="google-btn" class="w-full flex justify-center"></div>
 
 				<p class="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
 					Inicia sesión con tu cuenta de Google
@@ -130,27 +125,16 @@
 			<div class="flex items-center w-full my-6">
 				<div class="flex-1 h-px bg-gray-300 dark:bg-[#303030]"></div>
 
-				<span class="px-4 text-xs text-gray-500 dark:text-gray-400">
-					o continúa con email
-				</span>
+				<span class="px-4 text-xs text-gray-500 dark:text-gray-400"> o continúa con email </span>
 
 				<div class="flex-1 h-px bg-gray-300 dark:bg-[#303030]"></div>
 			</div>
 
 			<!-- Formulario -->
-			<form
-				method="POST"
-				action="?/login"
-				class="flex flex-col gap-4 w-full"
-				use:enhance
-			>
-
+			<form method="POST" action="?/login" class="flex flex-col gap-4 w-full" use:enhance>
 				<!-- Email -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="email"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="email" class="text-sm dark:text-gray-200 font-medium">
 						{m.login_email_label()}
 					</label>
 
@@ -174,10 +158,7 @@
 
 				<!-- Password -->
 				<div class="flex flex-col gap-1.5">
-					<label
-						for="password"
-						class="text-sm dark:text-gray-200 font-medium"
-					>
+					<label for="password" class="text-sm dark:text-gray-200 font-medium">
 						{m.login_password_label()}
 					</label>
 
@@ -226,14 +207,14 @@
 				<!-- Login -->
 				<button
 					type="submit"
-					class="h-11 w-full mt-2
-					       bg-gray-200 dark:bg-[#202020]
-					       rounded-lg
-					       dark:text-gray-200
-					       font-semibold
-					       hover:bg-gray-300
-					       dark:hover:bg-[#252525]
-					       transition"
+					class="h-11 w-full rounded-xl
+                    border border-gray-300 dark:border-[#3a3a3a]
+                    bg-transparent
+                    text-gray-800 dark:text-gray-200
+                    font-semibold
+                    hover:bg-gray-100 dark:hover:bg-[#202020]
+                    transition-all duration-200
+                    active:scale-[0.99]"
 				>
 					{m.login_button_title()}
 				</button>
@@ -249,10 +230,7 @@
 				<p class="text-center text-sm text-gray-500 dark:text-gray-400">
 					¿No tienes cuenta?
 
-					<a
-						href="/register"
-						class="font-semibold dark:text-gray-200 hover:underline ml-1"
-					>
+					<a href="/register" class="font-semibold dark:text-gray-200 hover:underline ml-1">
 						{m.login_goto_register()}
 					</a>
 				</p>
@@ -265,16 +243,10 @@
 			>
 				{m.login_termsandservice()}
 
-				<a
-					href="/terms"
-					class="font-medium hover:underline hover:text-primary ml-1"
-				>
+				<a href="/terms" class="font-medium hover:underline hover:text-primary ml-1">
 					Términos y condiciones
 				</a>
 			</p>
-
 		</div>
-
 	</div>
 </div>
-
