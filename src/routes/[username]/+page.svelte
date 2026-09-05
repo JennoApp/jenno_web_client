@@ -312,95 +312,85 @@
 	{#await userData}
 		<p>Waiting...</p>
 	{:then user}
-		<!-- user Information -->
-		<div class="flex flex-col md:flex-row gap-3 mt-5 w-full">
-			<div class="flex justify-center md:w-3/12">
-				{#if user?.profileImg}
-					<img
-						class="w-32 h-32 object-cover rounded-full"
-						src={user?.profileImg}
-						alt={user?.username}
-						height={400}
-						width={400}
-					/>
-				{:else}
-					<div class="flex justify-center items-center h-32 w-32 bg-gray-200 dark:bg-[#202020] rounded-full">
-						<iconify-icon icon="bxs:store" height="3.5rem" width="3.5rem" class="dark:text-gray-400">
-						</iconify-icon>
+		<!-- Store profile card -->
+		<div class="w-full mt-6 px-4">
+			<div
+				class="w-full max-w-6xl mx-auto rounded-2xl border border-gray-200 dark:border-[#303030] bg-white dark:bg-[#161616] shadow-sm p-5 sm:p-6"
+			>
+				<div class="flex flex-col sm:flex-row sm:items-center gap-5">
+					<!-- Profile image -->
+					<div class="flex justify-center sm:justify-start shrink-0">
+						{#if user?.profileImg}
+							<img
+								class="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-full border border-gray-200 dark:border-[#303030]"
+								src={user?.profileImg}
+								alt={user?.username}
+								height={400}
+								width={400}
+							/>
+						{:else}
+							<div
+								class="flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gray-100 dark:bg-[#202020]"
+							>
+								<iconify-icon
+									icon="bxs:store"
+									height="3rem"
+									width="3rem"
+									class="text-gray-500 dark:text-gray-400"
+								></iconify-icon>
+							</div>
+						{/if}
 					</div>
-				{/if}
-			</div>
 
-			<div class="mx-5 md:w-5/12">
-				<div class="flex flex-col gap-3 items-center md:items-start">
-					<h2 class="text-2xl font-medium text-center md:text-left">{user?.displayname}</h2>
-					<p class="flex flex-wrap text-center md:text-left">
-						{user?.bio !== undefined ? user?.bio : ''}
-					</p>
-				</div>
-			</div>
+					<!-- Store information -->
+					<div class="flex-1 min-w-0 text-center sm:text-left">
+						<div class="flex flex-col gap-1">
+							<h2
+								class="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900 dark:text-white truncate"
+							>
+								{user?.displayname}
+							</h2>
 
-			<div class="flex flex-col items-center gap-5 md:w-4/12">
-				<!-- Verifica que el usuario actual no sea el mismo que el usuario en sesión -->
-				{#if user?._id === data?.user?._id}
-					<!-- Botón de Compartir Tienda para el dueño -->
-					<button
-						class="w-[80%] mx-auto flex items-center justify-center bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525] p-2 rounded-md"
-						onclick={(e) => {
-							e.preventDefault();
-							const tienda = user?.username;
-							const store_link = `https://www.jenno.com.co/${tienda}`;
-							navigator.clipboard
-								.writeText(store_link)
-								.then(() => {
-									toast.success('Enlace copiado al portapapeles');
-								})
-								.catch((err) => {
-									toast.error('Error al copiar el enlace. Inténtalo nuevamente');
-								});
-						}}
-					>
-						<span class="text-black dark:text-gray-200">Compartir Tienda</span>
-					</button>
-				{:else}
-					<div class="flex items-center gap-5 ml-10">
-						<div class="hidden">
-							{#if isFollowing}
-								<Button
-									class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-								>
-									<span class="text-black dark:text-gray-200">Siguiendo</span>
-								</Button>
-							{:else}
-								<Button
-									on:click={() => handleFollow(user?._id)}
-									class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-								>
-									<span class="text-black dark:text-gray-200">Seguir</span>
-								</Button>
-							{/if}
+							<p class="text-sm text-gray-500 dark:text-gray-400">
+								@{user?.username}
+							</p>
 						</div>
 
-						<Button
-							class="bg-gray-200 dark:bg-[#202020] hover:bg-gray-300 dark:hover:bg-[#252525]"
-							on:click={createConversation}
-						>
-							<span class="text-black dark:text-gray-200">Enviar Mensaje</span>
-						</Button>
+						{#if user?.bio}
+							<p class="mt-3 max-w-2xl text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+								{user.bio}
+							</p>
+						{/if}
 					</div>
-				{/if}
 
-				<div class="hidden">
-					<div class="flex gap-10">
-						<div class="text-center">
-							<span class="text-lg font-semibold dark:text-gray-200">{user?.followers.length}</span>
-							<span class="block text-sm text-gray-500">{m.shop_page_followers()}</span>
+					<!-- Actions -->
+					{#if user?._id === data?.user?._id}
+						<div class="shrink-0 w-full sm:w-auto">
+							<button
+								type="button"
+								class="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border border-gray-300 dark:border-[#383838] bg-transparent text-sm font-semibold text-gray-800 dark:text-gray-200 transition-all duration-200 hover:bg-gray-100 dark:hover:bg-[#202020] active:scale-[0.98]"
+								onclick={(e) => {
+									e.preventDefault();
+
+									const tienda = user?.username;
+									const store_link = `https://www.jenno.com.co/${tienda}`;
+
+									navigator.clipboard
+										.writeText(store_link)
+										.then(() => {
+											toast.success('Enlace de la tienda copiado');
+										})
+										.catch(() => {
+											toast.error('Error al copiar el enlace. Inténtalo nuevamente');
+										});
+								}}
+							>
+								<iconify-icon icon="lucide:share-2" height="1rem" width="1rem"></iconify-icon>
+
+								<span>Compartir Tienda</span>
+							</button>
 						</div>
-						<div class="text-center">
-							<span class="text-lg font-semibold dark:text-gray-200">{user?.following.length}</span>
-							<span class="block text-sm text-gray-500">{m.shop_page_following()}</span>
-						</div>
-					</div>
+					{/if}
 				</div>
 			</div>
 		</div>
@@ -479,7 +469,9 @@
 		</div>
 	{:else}
 		<!-- Lista de productos -->
-		<div class="grid grid-cols-2 sm:grid-cols-3 sm:mx-0 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 max-w-[1600px] mx-auto gap-3 mt-7">
+		<div
+			class="grid grid-cols-2 sm:grid-cols-3 sm:mx-0 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 max-w-[1600px] mx-auto gap-3 mt-7"
+		>
 			{#each productsStore as productData}
 				<Card data={productData} currentUsername={userData.username} />
 			{/each}
