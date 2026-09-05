@@ -153,191 +153,352 @@
 </script>
 
 {#if data && data._id && userName}
-	<a href={`/${userName}/${data._id}`}>
+	<a href={`/${userName}/${data._id}`} class="block w-full h-full">
 		<div
-			class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-white dark:bg-[#202020] dark:text-gray-200 shadow-lg shadow-gray-300 dark:shadow-none hover:dark:bg-[#252525] overflow-hidden"
+			class="group relative flex h-[355px] w-full flex-col
+			       overflow-hidden rounded-xl
+			       border border-gray-200 dark:border-[#303030]
+			       bg-white dark:bg-[#202020]
+			       transition-all duration-200
+			       hover:-translate-y-0.5
+			       hover:shadow-md
+			       dark:hover:bg-[#252525]"
 		>
-			{#if !isOwnProduct()}
-				<!-- Header -->
-				<div class="flex w-full h-12 px-4 items-center justify-between">
-					<div class="flex items-center space-x-2">
+			<!-- =====================================================
+			     IMAGEN
+			====================================================== -->
+
+			<div
+				class="relative w-full aspect-square shrink-0 overflow-hidden
+				       bg-gray-100 dark:bg-[#181818]"
+			>
+				<img
+					src={data.imgs?.[0]}
+					alt={data.productname}
+					class="h-full w-full object-cover
+					       transition-transform duration-300
+					       group-hover:scale-[1.02]"
+				/>
+
+				<!-- Estado del producto -->
+				{#if data.status === 'sold_out'}
+					<div
+						class="absolute left-2 top-2
+						       rounded-md
+						       bg-red-500
+						       px-2 py-1
+						       text-[10px]
+						       font-semibold
+						       text-white"
+					>
+						Agotado
+					</div>
+				{:else if data.quantity <= 10}
+					<div
+						class="absolute left-2 top-2
+						       rounded-md
+						       bg-yellow-500
+						       px-2 py-1
+						       text-[10px]
+						       font-semibold
+						       text-black"
+					>
+						Últimas unidades
+					</div>
+				{/if}
+			</div>
+
+			<!-- =====================================================
+			     CONTENIDO
+			====================================================== -->
+
+			<div class="flex min-h-0 flex-1 flex-col px-2 py-1.5">
+				<!-- =================================================
+				     TIENDA + ACCIONES
+				================================================== -->
+
+				<div
+					class="flex h-6 w-full items-center justify-between gap-1"
+					onclick={(e) => e.preventDefault()}
+				>
+					<!-- Tienda -->
+					<div class="flex min-w-0 flex-1 items-center">
 						{#if profileImg !== ''}
 							<img
-								class="h-8 w-8 object-cover rounded-full"
 								src={profileImg}
-								alt="logo"
+								alt={userName}
+								class="h-4 w-4 shrink-0 rounded-full object-cover"
 								onload={handleImageLoaded}
 							/>
 						{:else}
 							<div
-								class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030] flex items-center justify-center"
+								class="flex h-5 w-5 shrink-0 items-center justify-center
+								       rounded-full
+								       bg-gray-100 dark:bg-[#303030]"
 							>
-								<iconify-icon class="text-[#454545]" icon="bxs:store" height="1.3rem" width="1.3rem"
+								<iconify-icon
+									icon="bxs:store"
+									height="0.75rem"
+									width="0.75rem"
+									class="text-gray-400 dark:text-gray-500"
 								></iconify-icon>
 							</div>
 						{/if}
+
 						<button
+							type="button"
+							class="ml-1 min-w-0 truncate
+							       text-left
+							       text-xs font-medium
+							       text-gray-500 dark:text-gray-400
+							       hover:text-gray-900
+							       dark:hover:text-gray-200
+							       hover:underline"
 							onclick={(e) => {
 								e.preventDefault();
+								e.stopPropagation();
 								goto(`/${userName}`);
 							}}
-							class="truncate font-medium max-w-[200px]"
 						>
-							<h4>
-								{userName}
-							</h4>
+							@{userName}
 						</button>
 					</div>
 
-					<!--  ####################### -->
-					<div class="hidden">
-						<!-- oculto los simbolos para agregar funcionalidad posteriormente -->
-						<iconify-icon
-							class="mr-1 cursor-pointer"
-							icon="mdi:dots-vertical"
-							height="1.5rem"
-							width="1.5rem"
-						></iconify-icon>
+					<!-- =============================================
+					     ACCIONES
+					============================================== -->
+
+					<div class="flex shrink-0 items-center gap-0.5">
+						<!-- Rating -->
+						<div
+							class="flex h-6 items-center gap-1
+							       rounded-md
+							       px-1.5"
+						>
+							<iconify-icon
+								class={getStartColor(totalStars)}
+								icon="mdi:star"
+								height="0.8rem"
+								width="0.8rem"
+							></iconify-icon>
+
+							{#if totalStars !== 0}
+								<span
+									class="text-[10px]
+									       font-medium
+									       dark:text-gray-200"
+								>
+									{totalStars}
+								</span>
+							{/if}
+						</div>
+
+						<!-- Reviews -->
+						<button
+							type="button"
+							class="flex h-6 w-6 items-center justify-center
+							       rounded-md
+							       text-gray-400
+							       transition
+							       hover:bg-gray-100
+							       hover:text-gray-700
+							       dark:hover:bg-[#303030]
+							       dark:hover:text-gray-200"
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								handleOpenDialgoReview();
+							}}
+							aria-label="Ver reseñas"
+						>
+							<iconify-icon icon="material-symbols-light:reviews" height="0.95rem" width="0.95rem"
+							></iconify-icon>
+						</button>
+
+						<!-- Share -->
+						<button
+							type="button"
+							class="flex h-6 w-6 items-center justify-center
+							       rounded-md
+							       text-gray-400
+							       transition
+							       hover:bg-gray-100
+							       hover:text-gray-700
+							       dark:hover:bg-[#303030]
+							       dark:hover:text-gray-200"
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+
+								const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
+
+								navigator.clipboard
+									.writeText(product_link)
+									.then(() => {
+										toast.success('Enlace copiado al portapapeles');
+									})
+									.catch(() => {
+										toast.error('Error al copiar el enlace. Intentelo nuevamente');
+									});
+							}}
+							aria-label="Compartir producto"
+						>
+							<iconify-icon icon="bitcoin-icons:share-filled" height="0.95rem" width="0.95rem"
+							></iconify-icon>
+						</button>
 					</div>
-					<!-- ######################### -->
-				</div>
-			{:else}
-				<div class="mt-1"></div>
-			{/if}
-
-			<!-- Image -->
-			<div class="flex justify-center px-4">
-				<img class="h-52 w-full object-contain rounded-md" src={data.imgs[0]} alt="producto" />
-			</div>
-
-			<!-- Social -->
-			<div class="flex items-center justify-between w-full h-8 mt-1 px-4">
-				<div class="flex gap-2 items-center text-2xl text-center">
-					<div
-						class="flex gap-1 items-center justify-center bg-gray-200 dark:bg-[#303030] px-1 rounded-lg"
-					>
-						<iconify-icon
-							class={getStartColor(totalStars)}
-							icon="mdi:star"
-							height="1.5rem"
-							width="1.5rem"
-						></iconify-icon>
-						{#if totalStars !== 0}
-							<span class="text-sm font-medium">{totalStars}</span>
-						{/if}
-					</div>
-					<button
-						class="flex items-center"
-						onclick={(e) => {
-							e.preventDefault();
-							handleOpenDialgoReview();
-						}}
-						aria-label="Ver reseñas del producto"
-					>
-						<iconify-icon
-							class="text-[#707070] dark:text-white"
-							icon="material-symbols-light:reviews"
-							height="1.5rem"
-							width="1.5rem"
-						></iconify-icon>
-					</button>
-
-					<button
-						class="flex items-center"
-						onclick={(e) => {
-							e.preventDefault();
-							const product_link = `https://www.jenno.com.co/${data.username}/${data._id}`;
-							navigator.clipboard
-								.writeText(product_link)
-								.then(() => {
-									toast.success('Enlace copiado al portapapeles');
-								})
-								.catch((err) => {
-									toast.error('Error al copiar el enlace. Intentelo nuevamente');
-								});
-						}}
-						aria-label="Compartir producto"
-					>
-						<iconify-icon
-							class="text-[#707070] dark:text-white"
-							icon="bitcoin-icons:share-filled"
-							height="1.5rem"
-							width="1.5rem"
-						></iconify-icon>
-					</button>
 				</div>
 
-				<div>
-					<!-- Etiqueta condicional -->
-					{#if data.status === 'sold_out'}
-						<Label text="Agotado" color="bg-red-600" />
-					{:else if data.quantity <= 10}
-						<Label text="Últimas unidades" color="bg-yellow-600" />
-					{/if}
-				</div>
-			</div>
+				<!-- =================================================
+				     INFORMACIÓN DEL PRODUCTO
+				================================================== -->
 
-			<!-- Info -->
-			<div class="px-4 py-3">
-				<h3 class="text-base font-semibold line-clamp-2 leading-tight">
-					{data.productname}
-				</h3>
+				<div class="mt-2 min-h-0">
+					<!-- Nombre -->
+					<h3
+						class="line-clamp-2
+						       text-sm
+						       font-semibold
+						       leading-tight
+						       text-gray-800
+						       dark:text-gray-200"
+					>
+						{data.productname}
+					</h3>
 
-				<div class="mt-1">
-					<p class="text-lg font-bold leading-tight">
+					<!-- Precio -->
+					<p
+						class="mt-1
+						       text-base
+						       font-bold
+						       leading-tight
+						       text-gray-900
+						       dark:text-gray-100"
+					>
 						{formatPrice(displayedPrice(), 'es-CO', 'COP')}
 					</p>
-
-					{#if hasVariants()}
-						<div
-							class="flex items-center gap-1 mt-1 px-2 py-1
-								       rounded-lg border border-blue-400/40
-								       bg-blue-100/60 dark:bg-blue-950/40
-								       text-blue-800 dark:text-blue-300 text-xs font-semibold"
-						>
-							<iconify-icon icon="mdi:tag-multiple-outline" height="0.95rem" width="0.95rem"
-							></iconify-icon>
-							<span>Precio varía según la opción</span>
-						</div>
-					{/if}
 				</div>
+
+				<!-- =================================================
+				     INFORMACIÓN ADICIONAL
+				================================================== -->
+
+				{#if hasVariants()}
+					<div
+						class="mt-auto
+						       flex h-7 shrink-0
+						       items-center gap-1.5
+						       rounded-md
+						       border border-gray-300
+						       dark:border-[#3a3a3a]
+						       bg-gray-100
+						       dark:bg-[#2a2a2a]
+						       px-2"
+					>
+						<iconify-icon
+							icon="mdi:tag-multiple-outline"
+							height="0.8rem"
+							width="0.8rem"
+							class="shrink-0
+							       text-gray-500
+							       dark:text-gray-400"
+						></iconify-icon>
+
+						<span
+							class="truncate
+							       text-[10px]
+							       font-medium
+							       text-gray-500
+							       dark:text-gray-400"
+						>
+							Precio según opción
+						</span>
+					</div>
+				{:else}
+					<!--
+						Espacio reservado.
+						Mantiene todas las cards con la misma altura.
+					-->
+					<div class="mt-auto h-7 shrink-0"></div>
+				{/if}
 			</div>
 		</div>
 	</a>
 {:else}
+	<!-- =========================================================
+	     SKELETON
+	========================================================== -->
+
 	<div
-		class="flex flex-col justify-between w-full max-w-sm mx-auto h-[400px] rounded-xl bg-gray-100 dark:bg-[#1e1e1e] shadow-lg shadow-gray-300 dark:shadow-none overflow-hidden animate-pulse"
+		class="flex h-[355px] w-full flex-col
+		       overflow-hidden rounded-xl
+		       border border-gray-200 dark:border-[#303030]
+		       bg-gray-100 dark:bg-[#1e1e1e]
+		       animate-pulse"
 	>
-		<!-- Header -->
-		<div class="flex w-full h-12 px-4 items-center justify-between">
-			<div class="flex items-center space-x-2">
-				<div class="h-8 w-8 rounded-full bg-gray-300 dark:bg-[#303030]"></div>
-				<div class="h-4 w-32 bg-gray-300 dark:bg-[#303030] rounded"></div>
+		<!-- Imagen -->
+		<div
+			class="aspect-square w-full shrink-0
+			       bg-gray-300 dark:bg-[#303030]"
+		></div>
+
+		<!-- Contenido -->
+		<div class="flex flex-1 flex-col px-3 py-2.5">
+			<!-- Tienda + acciones -->
+			<div class="flex h-6 items-center justify-between">
+				<div class="flex items-center gap-2">
+					<div
+						class="h-5 w-5 rounded-full
+						       bg-gray-300 dark:bg-[#303030]"
+					></div>
+
+					<div
+						class="h-3 w-20 rounded
+						       bg-gray-300 dark:bg-[#303030]"
+					></div>
+				</div>
+
+				<div class="flex items-center gap-1">
+					<div
+						class="h-6 w-12 rounded-md
+						       bg-gray-300 dark:bg-[#303030]"
+					></div>
+
+					<div
+						class="h-6 w-6 rounded-md
+						       bg-gray-300 dark:bg-[#303030]"
+					></div>
+
+					<div
+						class="h-6 w-6 rounded-md
+						       bg-gray-300 dark:bg-[#303030]"
+					></div>
+				</div>
 			</div>
-			<div class="h-5 w-5 bg-gray-300 dark:bg-[#303030] rounded-full hidden"></div>
-		</div>
 
-		<!-- Image -->
-		<div class="flex justify-center px-4">
-			<div class="h-52 w-full rounded-md bg-gray-300 dark:bg-[#303030]"></div>
-		</div>
-
-		<!-- Social -->
-		<div class="flex items-center justify-between w-full h-8 mt-1 px-4">
-			<div class="flex gap-2 items-center text-2xl text-center">
+			<!-- Producto -->
+			<div class="mt-2 space-y-2">
 				<div
-					class="flex gap-1 items-center justify-center bg-gray-300 dark:bg-[#303030] px-2 py-1 rounded-lg w-16 h-6"
+					class="h-3 w-full rounded
+					       bg-gray-300 dark:bg-[#303030]"
 				></div>
-				<div class="w-6 h-6 rounded bg-gray-300 dark:bg-[#303030]"></div>
-				<div class="w-6 h-6 rounded bg-gray-300 dark:bg-[#303030]"></div>
-			</div>
-			<div class="w-24 h-6 rounded bg-gray-300 dark:bg-[#303030]"></div>
-		</div>
 
-		<!-- Info -->
-		<div class="px-4 py-3 space-y-2">
-			<div class="h-4 w-full rounded bg-gray-300 dark:bg-[#303030]"></div>
-			<div class="h-4 w-1/2 rounded bg-gray-300 dark:bg-[#303030]"></div>
+				<div
+					class="h-3 w-3/5 rounded
+					       bg-gray-300 dark:bg-[#303030]"
+				></div>
+
+				<div
+					class="mt-2 h-4 w-1/3 rounded
+					       bg-gray-300 dark:bg-[#303030]"
+				></div>
+			</div>
+
+			<!-- Espacio reservado inferior -->
+			<div
+				class="mt-auto h-7 w-full rounded-md
+				       bg-gray-300 dark:bg-[#303030]"
+			></div>
 		</div>
 	</div>
 {/if}
