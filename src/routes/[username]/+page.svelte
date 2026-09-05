@@ -479,7 +479,7 @@
 		</div>
 	{:else}
 		<!-- Lista de productos -->
-		<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 m-5 gap-5 grid-flow-row">
+		<div class="grid grid-cols-2 sm:grid-cols-3 sm:mx-0 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 max-w-[1600px] mx-auto gap-3 mt-7">
 			{#each productsStore as productData}
 				<Card data={productData} currentUsername={userData.username} />
 			{/each}

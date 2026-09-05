@@ -83,7 +83,7 @@
 		<p class="text-red-700 dark:text-red-300">Error al cargar productos: {error}</p>
 	</div>
 {:else if products.length > 0}
-	<div class="grid lg:grid-cols-4 sm:grid-cols-2 md:grid-cols-3 m-10 gap-5 grid-flow-row">
+	<div class="grid grid-cols-2 sm:grid-cols-3 sm:mx-0 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 max-w-[1600px] mx-auto gap-3 mt-7">
 		{#each products as productData (productData._id || productData.id)}
 			<Card data={productData} />
 		{/each}
