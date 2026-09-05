@@ -33,7 +33,7 @@
 		await getServerUrl();
 
 		const country = page.url.searchParams.get('country') || 'Colombia';
-		const limit = 24;
+		const limit = 20;
 		const nextPage = pageload + 1;
 		let endpoint = '';
 
@@ -67,7 +67,7 @@
 		await getServerUrl();
 		// Obtenemos el país desde la URL o usamos 'Colombia' por defecto
 		const country = page.url.searchParams.get('country') || 'Colombia';
-		const limit = 24;
+		const limit = 20;
 
 		// La categoría en este caso es '' (Todos)
 		const categoryParam = '';
