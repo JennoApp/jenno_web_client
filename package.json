@@ -64,6 +64,7 @@
     "clsx": "2.1.1",
     "cmdk-sv": "0.0.18",
     "d3-scale": "4.0.2",
+    "embla-carousel-autoplay": "8.6.0",
     "embla-carousel-svelte": "8.6.0",
     "iconify-icon": "2.1.0",
     "jsonwebtoken": "9.0.2",

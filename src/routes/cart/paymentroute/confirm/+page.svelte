@@ -224,141 +224,404 @@
 
 <MercadoPagoLoader />
 
-<div class="flex flex-col lg:flex-row md:w-3/5 lg:w-10/12 mx-auto mt-5">
-	<div class="lg:w-3/5 p-3">
-		{#each $cartItems as cartItem}
-			{#if cartItem?.username && cartItem?._id}
-				<a href={`/${cartItem.username}/${cartItem._id}`} class="cursor-default">
+<div class="w-full flex justify-center px-4 py-6">
+	<div class="w-full max-w-6xl">
+		<div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+			<!-- =====================================================
+			     PRODUCTOS
+			====================================================== -->
+
+			<div class="lg:col-span-3">
+				<div
+					class="rounded-2xl
+					       border border-gray-200 dark:border-[#303030]
+					       bg-white dark:bg-[#161616]
+					       shadow-sm"
+				>
+					<!-- Header -->
 					<div
-						class="flex gap-3 items-center rounded-lg mb-3 p-3 relative bg-gray-200 dark:bg-[#202020] hover:dark:bg-[#252525]"
+						class="px-5 py-4
+						       border-b border-gray-200 dark:border-[#303030]"
 					>
-						<img
-							class="w-12 h-12 object-cover rounded-sm mr-2"
-							src={`${cartItem.imgs[0]}`}
-							alt={cartItem.productname}
-						/>
-						<div class="flex w-full mx-7 justify-between">
-							<div class="flex gap-5 items-center">
-								<h2 class="text-lg font-semibold">{cartItem.productname}</h2>
-								<!-- Opciones seleccionadas (simples + variantes) -->
-								<div class="flex flex-wrap gap-1 mt-1">
-									<!-- Opciones simples -->
-									{#if cartItem.selectedOptions?.length}
-										{#each cartItem.selectedOptions as opt}
-											<span class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40">
-												<strong>{opt.name}:</strong>
-												{opt.value}
-											</span>
-										{/each}
-									{/if}
+						<h2 class="text-lg font-semibold dark:text-gray-200">Productos</h2>
 
-									<!-- Opciones de variante (options) -->
-									{#if cartItem.selectedVariant?.options?.length}
-										{#each cartItem.selectedVariant.options as opt}
-											<span class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40">
-												<strong>{opt.name}:</strong>
-												{opt.value}
-											</span>
-										{/each}
-									{/if}
+						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+							Revisa los productos y las cantidades de tu pedido.
+						</p>
+					</div>
 
-									<!-- Meta de variante (ej: color) -->
-									{#if cartItem.selectedVariant?.meta}
-										{#each Object.entries(cartItem.selectedVariant.meta) as [key, value]}
-											<span class="px-2 py-0.5 text-xs rounded-md bg-blue-200 dark:bg-blue-900/40">
-												<strong>{key}:</strong>
-												{value}
-											</span>
-										{/each}
-									{/if}
+					<!-- Lista -->
+					<div class="p-4 sm:p-5">
+						{#each $cartItems as cartItem}
+							{#if cartItem?.username && cartItem?._id}
+								<a href={`/${cartItem.username}/${cartItem._id}`} class="block mb-3 last:mb-0">
+									<div
+										class="group flex gap-4 items-center
+										       rounded-xl
+										       border border-transparent
+										       bg-gray-100 dark:bg-[#202020]
+										       p-3
+										       transition-all duration-200
+										       hover:border-gray-300
+										       dark:hover:border-[#404040]
+										       hover:bg-gray-200
+										       dark:hover:bg-[#252525]"
+									>
+										<!-- Imagen -->
+										<div class="shrink-0">
+											{#if cartItem.imgs?.[0]}
+												<img
+													class="w-16 h-16 object-cover rounded-lg"
+													src={cartItem.imgs[0]}
+													alt={cartItem.productname}
+												/>
+											{:else}
+												<div
+													class="w-16 h-16 rounded-lg
+													       bg-gray-200 dark:bg-[#303030]
+													       flex items-center justify-center"
+												>
+													<iconify-icon
+														icon="mdi:package-variant-closed"
+														height="1.8rem"
+														width="1.8rem"
+														class="text-gray-400 dark:text-gray-500"
+													></iconify-icon>
+												</div>
+											{/if}
+										</div>
+
+										<!-- Información -->
+										<div class="flex-1 min-w-0">
+											<div class="flex justify-between gap-4">
+												<div class="min-w-0">
+													<h3
+														class="text-sm sm:text-base
+														       font-semibold
+														       truncate
+														       dark:text-gray-200"
+													>
+														{cartItem.productname}
+													</h3>
+
+													<!-- Opciones -->
+													{#if cartItem.selectedOptions?.length || cartItem.selectedVariant?.options?.length || cartItem.selectedVariant?.meta}
+														<div class="flex flex-wrap gap-1 mt-2">
+															{#if cartItem.selectedOptions?.length}
+																{#each cartItem.selectedOptions as opt}
+																	<span
+																		class="px-2 py-0.5
+																		       text-[11px]
+																		       rounded-md
+																		       bg-gray-200
+																		       dark:bg-[#303030]
+																		       text-gray-600
+																		       dark:text-gray-300"
+																	>
+																		<strong>{opt.name}:</strong>
+																		{opt.value}
+																	</span>
+																{/each}
+															{/if}
+
+															{#if cartItem.selectedVariant?.options?.length}
+																{#each cartItem.selectedVariant.options as opt}
+																	<span
+																		class="px-2 py-0.5
+																		       text-[11px]
+																		       rounded-md
+																		       bg-gray-200
+																		       dark:bg-[#303030]
+																		       text-gray-600
+																		       dark:text-gray-300"
+																	>
+																		<strong>{opt.name}:</strong>
+																		{opt.value}
+																	</span>
+																{/each}
+															{/if}
+
+															{#if cartItem.selectedVariant?.meta}
+																{#each Object.entries(cartItem.selectedVariant.meta) as [key, value]}
+																	<span
+																		class="px-2 py-0.5
+																		       text-[11px]
+																		       rounded-md
+																		       bg-gray-200
+																		       dark:bg-[#303030]
+																		       text-gray-600
+																		       dark:text-gray-300"
+																	>
+																		<strong>{key}:</strong>
+																		{value}
+																	</span>
+																{/each}
+															{/if}
+														</div>
+													{/if}
+												</div>
+
+												<!-- Precio -->
+												<p
+													class="shrink-0
+													       text-sm sm:text-base
+													       font-semibold
+													       dark:text-gray-200"
+												>
+													{formatPrice(getItemPrice(cartItem), 'es-CO', 'COP')}
+												</p>
+											</div>
+
+											<!-- Cantidad -->
+											<div
+												class="flex items-center gap-2
+												       mt-2
+												       text-xs
+												       text-gray-500
+												       dark:text-gray-400"
+											>
+												<span>Cantidad</span>
+
+												<span
+													class="px-2 py-0.5
+													       rounded-md
+													       bg-gray-200
+													       dark:bg-[#303030]
+													       font-medium"
+												>
+													{cartItem.amount}
+												</span>
+											</div>
+										</div>
+									</div>
+								</a>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<!-- =====================================================
+			     RESUMEN
+			====================================================== -->
+
+			<div class="lg:col-span-2">
+				<div
+					class="rounded-2xl
+					       border border-gray-200 dark:border-[#303030]
+					       bg-white dark:bg-[#161616]
+					       shadow-sm
+					       lg:sticky lg:top-20"
+				>
+					<!-- Header -->
+					<div
+						class="px-5 py-4
+						       border-b border-gray-200 dark:border-[#303030]"
+					>
+						<h2 class="text-lg font-semibold dark:text-gray-200">Resumen del pedido</h2>
+
+						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+							Comprueba la información antes de realizar el pago.
+						</p>
+					</div>
+
+					<div class="p-5">
+						<!-- ==================================================
+						     ENVÍO
+						=================================================== -->
+
+						<div>
+							<div class="flex items-center justify-between mb-3">
+								<h3 class="text-sm font-semibold dark:text-gray-200">Información de envío</h3>
+
+								<a
+									href="/cart/paymentroute/shipping"
+									class="text-xs
+									       text-gray-500
+									       dark:text-gray-400
+									       hover:text-gray-900
+									       dark:hover:text-white
+									       hover:underline"
+								>
+									Editar
+								</a>
+							</div>
+
+							<div
+								class="rounded-xl
+								       bg-gray-100 dark:bg-[#202020]
+								       p-4
+								       space-y-2"
+							>
+								<div class="flex justify-between gap-4">
+									<span class="text-xs text-gray-500 dark:text-gray-400"> Dirección </span>
+
+									<span
+										class="text-xs font-medium
+										       text-right
+										       dark:text-gray-200"
+									>
+										{shippingData?.address}
+									</span>
 								</div>
-								<p class="text-base dark:text-white">
-									{formatPrice(getItemPrice(cartItem), 'es-Co', 'COP')}
-								</p>
-								<div class="flex gap-1">
-									<h3>Cantidad:</h3>
-									<span class="mx-2">{cartItem.amount}</span>
+
+								<div class="flex justify-between gap-4">
+									<span class="text-xs text-gray-500 dark:text-gray-400"> Ciudad </span>
+
+									<span
+										class="text-xs font-medium
+										       text-right
+										       dark:text-gray-200"
+									>
+										{shippingData?.city}
+									</span>
+								</div>
+
+								<div class="flex justify-between gap-4">
+									<span class="text-xs text-gray-500 dark:text-gray-400"> Departamento </span>
+
+									<span
+										class="text-xs font-medium
+										       text-right
+										       dark:text-gray-200"
+									>
+										{shippingData?.state}
+									</span>
+								</div>
+
+								<div class="flex justify-between gap-4">
+									<span class="text-xs text-gray-500 dark:text-gray-400"> Código postal </span>
+
+									<span
+										class="text-xs font-medium
+										       text-right
+										       dark:text-gray-200"
+									>
+										{shippingData?.postalCode}
+									</span>
+								</div>
+
+								<div class="flex justify-between gap-4">
+									<span class="text-xs text-gray-500 dark:text-gray-400"> Teléfono </span>
+
+									<span
+										class="text-xs font-medium
+										       text-right
+										       dark:text-gray-200"
+									>
+										{shippingData?.phoneNumber}
+									</span>
 								</div>
 							</div>
 						</div>
+
+						<!-- Divider -->
+						<div class="h-px bg-gray-200 dark:bg-[#303030] my-5"></div>
+
+						<!-- ==================================================
+						     TOTAL
+						=================================================== -->
+
+						<div class="space-y-3">
+							<div class="flex justify-between gap-4">
+								<span class="text-sm text-gray-500 dark:text-gray-400">
+									{m.cart_summary_subtotal()}
+								</span>
+
+								<span class="text-sm font-medium dark:text-gray-200">
+									{formatPrice($subtotal, 'es-CO', 'COP')}
+								</span>
+							</div>
+
+							<div class="flex justify-between gap-4">
+								<span class="text-sm text-gray-500 dark:text-gray-400">
+									{m.cart_summary_shipment()}
+								</span>
+
+								<span class="text-sm font-medium dark:text-gray-200 text-right">
+									Contra entrega
+								</span>
+							</div>
+
+							<div class="flex justify-between gap-4">
+								<span class="text-sm text-gray-500 dark:text-gray-400"> Transferencia </span>
+
+								<span class="text-sm font-medium dark:text-gray-200">
+									{formatPrice(
+										computeCommission($paymentMethod ?? 'mercadopago', $P_goal),
+										'es-CO',
+										'COP'
+									)}
+								</span>
+							</div>
+						</div>
+
+						<!-- Divider -->
+						<div class="h-px bg-gray-200 dark:bg-[#303030] my-5"></div>
+
+						<!-- Total -->
+						<div class="flex items-end justify-between gap-4">
+							<div>
+								<p class="text-xs text-gray-500 dark:text-gray-400">Total a pagar</p>
+
+								<h3 class="text-2xl font-bold mt-1 dark:text-gray-100">
+									{formatPrice(
+										computeTotal($paymentMethod ?? 'mercadopago', $P_goal),
+										'es-CO',
+										'COP'
+									)}
+								</h3>
+							</div>
+
+							{#if $paymentMethod === 'paypal'}
+								<span
+									class="text-xs text-gray-500
+									       dark:text-gray-400
+									       text-right"
+								>
+									USD ${usdEquivalent.toFixed(2)}
+								</span>
+							{/if}
+						</div>
+
+						<!-- ==================================================
+						     PAY
+						=================================================== -->
+
+						<button
+							type="button"
+							onclick={(e) => {
+								e.preventDefault();
+								handlePaymentButton();
+							}}
+							class="mt-6 h-12 w-full
+							       rounded-xl
+							       bg-gray-900 dark:bg-white
+							       text-white dark:text-black
+							       font-semibold
+							       shadow-sm
+							       hover:bg-gray-700
+							       dark:hover:bg-gray-200
+							       hover:shadow-md
+							       transition-all duration-200
+							       active:scale-[0.99]"
+						>
+							<span class="flex items-center justify-center gap-2">
+								Pagar pedido
+								<span aria-hidden="true">→</span>
+							</span>
+						</button>
+
+						<p
+							class="mt-3 text-center text-[11px]
+							       text-gray-500 dark:text-gray-400"
+						>
+							Al continuar, confirmas que la información de tu pedido es correcta.
+						</p>
 					</div>
-				</a>
-			{/if}
-		{/each}
-	</div>
-
-	<div class="flex flex-col items-center lg:w-2/5 h-full mx-2">
-		<div class="bg-gray-200 dark:bg-[#202020] w-full lg:w-10/12 h-5/6 m-3 p-3 rounded-lg">
-			<h3 class="text-md font-semibold">{m.cart_paymentroute_shipping_title()}</h3>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_paymentroute_shipping_address()}:</h3>
-				<p>{shippingData?.address}</p>
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_paymentroute_shipping_country()}:</h3>
-				<p>{shippingData?.country}</p>
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_paymentroute_shipping_state()}:</h3>
-				<p>{shippingData?.state}</p>
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_paymentroute_shipping_city()}:</h3>
-				<p>{shippingData?.city}</p>
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_paymentroute_shipping_postal()}:</h3>
-				<p>{shippingData?.postalCode}</p>
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_paymentroute_shipping_phone()}:</h3>
-				<p>{shippingData?.phoneNumber}</p>
-			</div>
-
-			<!-- Order Summary -->
-			<h3 class="text-md font-semibold mt-3">{m.cart_sumary_title()}</h3>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_summary_subtotal()}</h3>
-				<!-- ✅ Usar directamente el store con $ -->
-				<p>{formatPrice($subtotal, 'es-CO', 'COP')}</p>
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>{m.cart_summary_shipment()}</h3>
-				(El envío se paga contra entrega)
-			</div>
-			<div class="flex justify-between gap-2">
-				<h3>transferencia</h3>
-				<!-- ✅ Calcular directamente con los stores -->
-				<p>
-					{formatPrice(computeCommission($paymentMethod ?? 'mercadopago', $P_goal), 'es-CO', 'COP')}
-				</p>
-			</div>
-
-			<Separator class="bg-[#707070] my-1" />
-
-			<div class="flex justify-between gap-2">
-				<h3 class="font-bold">{m.cart_summary_total()}</h3>
-				<!-- ✅ Calcular directamente con los stores -->
-				<p>{formatPrice(computeTotal($paymentMethod ?? 'mercadopago', $P_goal), 'es-CO', 'COP')}</p>
-			</div>
-
-			{#if $paymentMethod === 'paypal'}
-				<div class="flex flex-row-reverse">
-					<h3 class="text-gray-400">Equivalente en Dolares: ${usdEquivalent.toFixed(2)}</h3>
 				</div>
-			{/if}
+			</div>
 		</div>
-
-		<!-- Confirm Button -->
-		<button
-			class="h-10 w-10/12 mt-4 bg-gray-200 dark:bg-[#202020] rounded-lg font-medium dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#252525]"
-			onclick={(e) => {
-				e.preventDefault();
-				handlePaymentButton();
-			}}
-		>
-			Pagar
-		</button>
 	</div>
 </div>
 

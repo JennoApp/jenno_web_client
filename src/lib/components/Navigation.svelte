@@ -741,7 +741,11 @@
 							</HoverCard.Content>
 						</HoverCard.Root>
 
-						<div class="relative">
+                        <!-- =================== -->
+                        <!-- Sistema de mensajes -->
+                        <!-- =================== -->
+
+						<!-- <div class="relative">
 							<a href="/chat">
 								<iconify-icon
 									icon="mdi:conversation"
@@ -758,7 +762,7 @@
 									</span>
 								{/if}
 							</a>
-						</div>
+						</div> -->
 
 						<HoverCard.Root openDelay={100}>
 							<HoverCard.Trigger href="/cart" class="relative">

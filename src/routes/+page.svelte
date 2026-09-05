@@ -4,10 +4,9 @@
 	import { page } from '$app/state';
 	import { removeTotal } from '$lib/stores/cartStore';
 	import { toast } from 'svelte-sonner';
-
+	import HeroCarousel from '$lib/components/HeroCarousel.svelte';
 
 	let { data }: { data: PageServerData } = $props();
-
 
 	let products = $state<any[]>(data.products);
 	let meta = $state<any>(data.meta);
@@ -17,7 +16,6 @@
 	let randomCategories = $state<string[]>([]);
 	let selectedCategory = $state<string | null>(page.url.searchParams.get('category') || '');
 	let loadingRef = $state<HTMLElement>();
-
 
 	// Obtener url del servidor
 	async function getServerUrl() {
@@ -30,7 +28,6 @@
 			console.error('Error al solicitar Server Url');
 		}
 	}
-
 
 	const loadingProducts = async () => {
 		await getServerUrl();
@@ -66,7 +63,6 @@
 		}
 	};
 
-
 	async function loadInitialProducts() {
 		await getServerUrl();
 		// Obtenemos el país desde la URL o usamos 'Colombia' por defecto
@@ -95,7 +91,6 @@
 		}
 	}
 
-
 	// Cargar las Categorias aleatorias
 	async function getRandomCategories() {
 		try {
@@ -112,7 +107,6 @@
 			console.error('Error al solicitar las categorias aleatorias');
 		}
 	}
-
 
 	// Funcion para manejar el click en una categoria
 	async function handleCategoryClick(categoryParam: string) {
@@ -142,7 +136,6 @@
 		}
 	}
 
-
 	// Observer para el scroll infinito
 	$effect(() => {
 		if (loadingRef) {
@@ -154,18 +147,16 @@
 			});
 			loadingObserver.observe(loadingRef);
 
-      // Limpiar el observer al desmontar el componente
-      return () => {
-        loadingObserver.disconnect()
-      }
+			// Limpiar el observer al desmontar el componente
+			return () => {
+				loadingObserver.disconnect();
+			};
 		}
 	});
-
 
 	$effect(() => {
 		getRandomCategories();
 	});
-
 
 	$effect(() => {
 		const urlParams = page.url.searchParams;
@@ -176,8 +167,7 @@
 		}
 	});
 
-
-  // Effect para manejar parámetros URL - ordersCreated
+	// Effect para manejar parámetros URL - ordersCreated
 	$effect(() => {
 		const params = page.url.searchParams;
 		const ordersCreated = params.get('ordersCreated');
@@ -199,11 +189,17 @@
 	});
 </script>
 
-
 <svelte:head>
 	<title>Jenno</title>
 </svelte:head>
 
+<!-- ==========================================
+	     HERO / PROMOCIONES
+	=========================================== -->
+
+<div class="mt-14">
+	<HeroCarousel />
+</div>
 
 <!-- Barra de categorias -->
 <div
@@ -237,7 +233,7 @@
 </div>
 
 <div
-	class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-5 mt-14 gap-3 grid-flow-row sm:mx-0"
+	class="grid grid-cols-2 sm:grid-cols-3 sm:mx-0 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 max-w-[1600px] mx-auto gap-3 mt-7"
 >
 	{#each products as productData}
 		<Card data={productData} />
