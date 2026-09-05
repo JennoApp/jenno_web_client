@@ -1032,7 +1032,149 @@
 	</div>
 </div>
 
-<!-- Especificaciones del producto -->
+<!-- Información del producto -->
+<div class="flex flex-col gap-8 px-4 sm:px-6 lg:px-10 mt-12 mb-14">
+	<!-- ESPECIFICACIONES -->
+	{#if product.especifications?.length}
+		<section
+			class="w-full rounded-2xl border border-gray-200 dark:border-[#303030] bg-white dark:bg-[#161616] shadow-sm overflow-hidden"
+		>
+			<!-- Header -->
+			<div
+				class="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-200 dark:border-[#303030]"
+			>
+				<div>
+					<h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+						{m.product_page_specifications()}
+					</h2>
+
+					<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+						Características y detalles del producto
+					</p>
+				</div>
+			</div>
+
+			<!-- Specifications -->
+			<div class="overflow-x-auto">
+				<Table.Root class="w-full">
+					<Table.Header>
+						<Table.Row class="border-b border-gray-200 dark:border-[#303030]">
+							{#each product.especifications as especification}
+								<Table.Head
+									class="h-12 px-5 sm:px-6 text-sm font-semibold text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-[#202020]"
+								>
+									{especification.title}
+								</Table.Head>
+							{/each}
+						</Table.Row>
+					</Table.Header>
+
+					<Table.Body>
+						<Table.Row class="border-none hover:bg-transparent">
+							{#each product.especifications as especification}
+								<Table.Cell
+									class="h-14 px-5 sm:px-6 text-sm text-gray-700 dark:text-gray-300 align-middle"
+								>
+									{especification.content}
+								</Table.Cell>
+							{/each}
+						</Table.Row>
+					</Table.Body>
+				</Table.Root>
+			</div>
+		</section>
+	{/if}
+
+	<!-- INFORMACIÓN ADICIONAL -->
+	{#if product.additionalInfo}
+		<section
+			class="w-full rounded-2xl border border-gray-200 dark:border-[#303030] bg-white dark:bg-[#161616] shadow-sm overflow-hidden"
+		>
+			<!-- Header -->
+			<div
+				class="flex items-center gap-3 px-5 sm:px-6 py-4 border-b border-gray-200 dark:border-[#303030]"
+			>
+				<div
+					class="flex items-center justify-center w-9 h-9 rounded-lg bg-gray-100 dark:bg-[#202020]"
+				>
+					<iconify-icon
+						icon="lucide:info"
+						height="1.1rem"
+						width="1.1rem"
+						class="text-gray-600 dark:text-gray-300"
+					></iconify-icon>
+				</div>
+
+				<div>
+					<h2 class="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+						Información Adicional
+					</h2>
+
+					<p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+						Información proporcionada por la tienda
+					</p>
+				</div>
+			</div>
+
+			<!-- Rich content -->
+			<div class="px-5 sm:px-6 py-6 sm:py-8">
+				<div
+					class="
+						prose prose-base max-w-none
+						dark:prose-invert
+
+						prose-p:text-gray-700
+						dark:prose-p:text-gray-300
+
+						prose-p:leading-relaxed
+						prose-p:my-3
+
+						prose-headings:text-gray-900
+						dark:prose-headings:text-white
+
+						prose-headings:font-semibold
+
+						prose-h3:text-lg
+						prose-h4:text-base
+
+						prose-ul:list-disc
+						prose-ul:pl-6
+
+						prose-ol:list-decimal
+						prose-ol:pl-6
+
+						prose-li:my-1
+						prose-li:text-gray-700
+						dark:prose-li:text-gray-300
+
+						prose-strong:text-gray-900
+						dark:prose-strong:text-white
+
+						prose-a:text-gray-900
+						dark:prose-a:text-white
+						prose-a:underline
+
+						prose-blockquote:border-l-4
+						prose-blockquote:border-gray-300
+						dark:prose-blockquote:border-[#404040]
+						prose-blockquote:text-gray-600
+						dark:prose-blockquote:text-gray-400
+
+						prose-img:rounded-xl
+						prose-img:max-w-full
+						prose-img:h-auto
+						prose-img:mx-auto
+						prose-img:my-6
+					"
+				>
+					{@html product.additionalInfo}
+				</div>
+			</div>
+		</section>
+	{/if}
+</div>
+
+<!-- Especificaciones del producto
 {#if product.especifications.length !== 0}
 	<div class="flex flex-col m-10 mt-14">
 		<h2 class="text-xl font-bold">{m.product_page_specifications()}</h2>
@@ -1056,7 +1198,7 @@
 	</div>
 {/if}
 
-<!-- Informacion Adicional -->
+<!- Informacion Adicional ->
 {#if product.additionalInfo}
 	<div class="flex flex-col m-10 mt-14">
 		<h2 class="text-xl font-bold mb-6">Información Adicional</h2>
@@ -1071,7 +1213,7 @@
 			{@html product.additionalInfo}
 		</div>
 	</div>
-{/if}
+{/if} -->
 
 <div class="flex flex-col m-10 mt-10">
 	<h2 class="text-xl font-bold">{m.product_page_more_products()}</h2>
