@@ -663,371 +663,460 @@
 	<meta name="twitter:image:alt" content="Imagen del producto {data.product?.productname}" />
 </svelte:head>
 
-<div class="flex flex-col md:flex-row gap-5 md:gap-3 p-7">
-	<div class="flex flex-col w-full md:w-1/2">
-		<!-- MAIN CAROUSEL -->
-		<div class="flex justify-center items-center relative">
-			<Carousel.Root
-				class="w-5/6"
-				opts={{ align: 'center', startIndex: indexCarousel }}
-				setApi={setMainApi}
-			>
-				<Carousel.Content>
-					{#each product.imgs as image, i (i)}
-						<Carousel.Item>
-							<div class="flex justify-center">
-								<img
-									class="w-11/12 h-96 object-contain rounded-md"
-									src={image}
-									alt={`image-${i}`}
-									loading="lazy"
-								/>
-							</div>
-						</Carousel.Item>
-					{/each}
-				</Carousel.Content>
-
-				<!-- Botones personalizados (garantizados a funcionar) -->
-				<button
-					type="button"
-					onclick={goPrev}
-					class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/60 p-2 rounded-full shadow"
-					aria-label="Anterior"
+<!-- PRODUCTO -->
+<div class="w-full min-w-0 overflow-x-hidden">
+	<div class="flex flex-col gap-8 md:flex-row md:gap-8 lg:gap-10 px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+		<!-- GALERÍA -->
+		<div class="flex w-full min-w-0 flex-col md:w-1/2">
+			<!-- MAIN CAROUSEL -->
+			<div class="relative flex w-full min-w-0 items-center justify-center">
+				<Carousel.Root
+					class="w-full min-w-0 max-w-xl px-7 sm:px-8"
+					opts={{ align: 'center', startIndex: indexCarousel }}
+					setApi={setMainApi}
 				>
-					<!-- icono simple -->
-					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M15 19l-7-7 7-7"
-						/>
-					</svg>
-				</button>
+					<Carousel.Content class="ml-0">
+						{#each product.imgs as image, i (i)}
+							<Carousel.Item class="pl-0">
+								<div class="flex w-full justify-center">
+									<img
+										class="h-72 w-full max-w-md rounded-xl object-contain sm:h-80 md:h-96"
+										src={image}
+										alt={`image-${i + 1}`}
+										loading="lazy"
+									/>
+								</div>
+							</Carousel.Item>
+						{/each}
+					</Carousel.Content>
 
-				<button
-					type="button"
-					onclick={goNext}
-					class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/60 p-2 rounded-full shadow"
-					aria-label="Siguiente"
+					<!-- Previous -->
+					<button
+						type="button"
+						onclick={goPrev}
+						class="absolute left-0 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition hover:bg-white dark:bg-[#202020]/90 dark:hover:bg-[#252525] sm:left-1 sm:h-10 sm:w-10"
+						aria-label="Anterior"
+					>
+						<svg
+							class="h-4 w-4 sm:h-5 sm:w-5"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M15 19l-7-7 7-7"
+							/>
+						</svg>
+					</button>
+
+					<!-- Next -->
+					<button
+						type="button"
+						onclick={goNext}
+						class="absolute right-0 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition hover:bg-white dark:bg-[#202020]/90 dark:hover:bg-[#252525] sm:right-1 sm:h-10 sm:w-10"
+						aria-label="Siguiente"
+					>
+						<svg
+							class="h-4 w-4 sm:h-5 sm:w-5"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 5l7 7-7 7"
+							/>
+						</svg>
+					</button>
+				</Carousel.Root>
+			</div>
+
+			<!-- THUMBNAILS -->
+			<div class="mt-4 flex w-full min-w-0 justify-center">
+				<Carousel.Root
+					class="w-full max-w-sm min-w-0 px-1"
+					setApi={setThumbsApi}
+					opts={{ align: 'start' }}
 				>
-					<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M9 5l7 7-7 7"
-						/>
-					</svg>
-				</button>
-			</Carousel.Root>
-		</div>
-
-		<!-- THUMBNAILS -->
-		<div class="flex justify-center items-center mt-5">
-			<Carousel.Root class="w-full max-w-sm" setApi={setThumbsApi} opts={{ align: 'start' }}>
-				<Carousel.Content class="-ml-1">
-					{#each product.imgs as image, i (i)}
-						<Carousel.Item class="basis-1/3">
-							<div class="flex justify-center">
+					<Carousel.Content class="-ml-2">
+						{#each product.imgs as image, i (i)}
+							<Carousel.Item class="basis-1/3 pl-2">
 								<button
 									type="button"
-									class="pl-1 w-11/12 h-24"
+									class="flex h-20 w-full min-w-0 items-center justify-center sm:h-24"
 									onclick={() => scrollTo(i)}
 									aria-label={`Ir a imagen ${i + 1}`}
 								>
 									<img
-										class="w-full h-24 object-cover rounded-md transition-transform duration-150 ease-out {i !==
-										indexCarousel
-											? 'grayscale opacity-60'
-											: 'border-2 border-[#404040] scale-105'}"
+										class="h-full w-full rounded-lg object-cover transition-all duration-150 ease-out
+											{i !== indexCarousel
+											? 'grayscale opacity-50'
+											: 'border-2 border-[#404040] scale-[1.02] opacity-100'}"
 										src={image}
-										alt={`thumb-${i}`}
+										alt={`thumb-${i + 1}`}
 									/>
 								</button>
-							</div>
-						</Carousel.Item>
-					{/each}
-				</Carousel.Content>
-			</Carousel.Root>
+							</Carousel.Item>
+						{/each}
+					</Carousel.Content>
+				</Carousel.Root>
+			</div>
 		</div>
-	</div>
 
-	<!-- DETALLES -->
-	<div class="flex flex-col justify-between w-full md:w-1/2 ml-2">
-		<div class="flex justify-between">
-			<div class="mr-5">
-				<h1 class="text-3xl">{product?.productname}</h1>
-				<h2 class="text-base font-medium text-[#707070]">
-					{product?.category.charAt(0).toUpperCase() + product?.category.slice(1)}
-				</h2>
-
-				<div class="flex gap-5 items-center mt-1">
-					<div class="flex gap-2 items-center">
-						<StarRating rating={totalStars} />
-						{#if totalStars !== 0}
-							<span class="text-base font-semibold">{totalStars}</span>
-						{/if}
-					</div>
-
-					<button
-						onclick={(e) => {
-							e.preventDefault();
-							handleOpenDialgoReview();
-						}}
+		<!-- DETALLES -->
+		<div class="flex w-full min-w-0 flex-col md:w-1/2">
+			<!-- PRODUCTO + TIENDA -->
+			<div class="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+				<!-- Información principal -->
+				<div class="min-w-0 flex-1">
+					<h1
+						class="break-words text-2xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-3xl"
 					>
-						<h3 class="dark:text-[#707070] font-semibold underline cursor-pointer">
+						{product?.productname}
+					</h1>
+
+					<h2 class="mt-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+						{product?.category.charAt(0).toUpperCase() + product?.category.slice(1)}
+					</h2>
+
+					<!-- Rating -->
+					<div class="mt-3 flex min-w-0 flex-wrap items-center gap-3">
+						<div class="flex items-center gap-2">
+							<StarRating rating={totalStars} />
+
+							{#if totalStars !== 0}
+								<span class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+									{totalStars}
+								</span>
+							{/if}
+						</div>
+
+						<button
+							type="button"
+							onclick={(e) => {
+								e.preventDefault();
+								handleOpenDialgoReview();
+							}}
+							class="text-sm font-semibold text-gray-600 underline underline-offset-2 transition hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+						>
 							{m.product_page_reviews()}
-						</h3>
-					</button>
+						</button>
+					</div>
 				</div>
+
+				<!-- TIENDA -->
+				{#if userName}
+					<button
+						type="button"
+						onclick={() => goto(`/${userName}`)}
+						class="group w-full shrink-0 sm:w-40"
+					>
+						<div
+							class="flex w-full min-w-0 flex-row items-center gap-3 rounded-xl
+								border border-gray-200 bg-white px-3 py-3 text-left
+								transition-all duration-150 hover:bg-gray-50
+								dark:border-[#303030] dark:bg-[#181818] dark:hover:bg-[#202020]
+								sm:flex-col sm:justify-center sm:text-center"
+						>
+							<!-- Avatar -->
+							{#if profileImg}
+								<img
+									class="h-12 w-12 shrink-0 rounded-full object-cover transition
+										group-hover:ring-2 group-hover:ring-gray-900
+										dark:group-hover:ring-white sm:h-14 sm:w-14"
+									src={profileImg}
+									alt={product?.username}
+								/>
+							{:else}
+								<div
+									class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full
+										bg-gray-100 dark:bg-[#202020] sm:h-14 sm:w-14"
+								>
+									<iconify-icon
+										icon="bxs:store"
+										height="2.25rem"
+										width="2.25rem"
+										class="text-gray-700 dark:text-gray-400"
+									></iconify-icon>
+								</div>
+							{/if}
+
+							<!-- Nombre -->
+							<div class="min-w-0 flex-1 sm:w-full">
+								<h2
+									class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100"
+									title={userName}
+								>
+									{userName}
+								</h2>
+
+								<span class="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
+									Ver tienda →
+								</span>
+							</div>
+						</div>
+					</button>
+				{:else}
+					<!-- Skeleton -->
+					<div
+						class="flex w-full shrink-0 animate-pulse flex-row items-center gap-3 rounded-xl
+							bg-gray-100 px-3 py-3 dark:bg-[#202020] sm:w-40 sm:flex-col"
+					>
+						<div class="h-12 w-12 shrink-0 rounded-full bg-gray-200 dark:bg-[#2a2a2a]"></div>
+						<div class="h-4 w-24 rounded bg-gray-200 dark:bg-[#2a2a2a]"></div>
+					</div>
+				{/if}
 			</div>
 
-			{#if userName}
-				<button type="button" onclick={() => goto(`/${userName}`)} class="group">
-					<div
-						class="flex flex-col items-center justify-center gap-2
-						       min-w-40 max-w-56 px-3 py-3
-						       rounded-xl
-						       border border-gray-200 dark:border-[#222222]
-						       bg-white dark:bg-[#181818]
-						       hover:bg-gray-50 dark:hover:bg-[#202020]
-						       transition-all duration-150
-						       cursor-pointer"
-					>
-						<!-- Avatar -->
-						{#if profileImg}
-							<img
-								class="w-14 h-14 object-cover rounded-full
-								       ring-2 ring-transparent group-hover:ring-black dark:group-hover:ring-white
-								       transition"
-								src={profileImg}
-								alt={product?.username}
-							/>
-						{:else}
-							<div
-								class="w-14 h-14 rounded-full
-								       bg-gray-200 dark:bg-[#1f1f1f]
-								       flex items-center justify-center"
-							>
-								<iconify-icon
-									icon="bxs:store"
-									heigth="2.5rem"
-									width="2.5rem"
-									class="text-black dark:text-gray-400"
-								></iconify-icon>
-							</div>
-						{/if}
+			<!-- PRECIO -->
+			<div class="mt-5 border-t border-gray-200 pt-5 dark:border-[#303030]">
+				{#if displayedPrice() !== null}
+					<p class="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+						{formatPrice(displayedPrice(), 'es-CO', 'COP')}
+					</p>
+				{:else}
+					<p class="text-sm text-gray-500 dark:text-gray-400">
+						Selecciona opciones para ver el precio
+					</p>
+				{/if}
+			</div>
 
-						<!-- Nombre -->
-						<h2
-							class="text-sm font-semibold text-center truncate max-w-full
-							       text-gray-900 dark:text-gray-100"
-							title={userName}
-						>
-							{userName}
-						</h2>
+			<!-- ESTADO -->
+			<div class="mt-4">
+				{#if product.status === 'sold_out'}
+					<Label text="Agotado" color="bg-red-600" />
+				{:else if product.status === 'on_sale'}
+					<Label text="En oferta" color="bg-green-600" />
+				{:else if product.quantity <= 10}
+					<Label text="Últimas unidades" color="bg-yellow-600" />
+				{/if}
+			</div>
 
-						<!-- hint sutil -->
-						<span
-							class="text-xs text-gray-500 dark:text-gray-400
-							       opacity-0 group-hover:opacity-100 transition"
-						>
-							Ver tienda →
-						</span>
-					</div>
-				</button>
-			{:else}
-				<!-- Skeleton -->
-				<div
-					class="flex flex-col items-center justify-center gap-2
-					       min-w-40 max-w-56 px-3 py-3
-					       rounded-xl animate-pulse
-					       bg-[#202020]"
-				>
-					<div class="h-14 w-14 rounded-full bg-[#2a2a2a]"></div>
-					<div class="h-4 w-24 rounded bg-[#2a2a2a]"></div>
-				</div>
-			{/if}
-		</div>
+			<!-- DESCRIPCIÓN -->
+			<div
+				class="mt-4 max-h-48 w-full min-w-0 overflow-y-auto overflow-x-hidden rounded-xl bg-gray-50 p-4 dark:bg-[#181818]"
+			>
+				<p class="break-words text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+					{product.description}
+				</p>
+			</div>
 
-		<!-- PRECIO: ahora reactivo -->
-		<div class="mt-2 text-lg">
-			{#if displayedPrice() !== null}
-				<p>{formatPrice(displayedPrice(), 'es-CO', 'COP')}</p>
-			{:else}
-				<p class="text-gray-400">Selecciona opciones para ver el precio</p>
-			{/if}
-		</div>
+			<!-- OPCIONES -->
+			<div class="mt-5 min-w-0">
+				<!-- OPCIONES SIMPLES -->
+				{#if product?.options && product.options.length > 0}
+					<h3 class="text-base font-semibold text-gray-900 dark:text-white">Opciones</h3>
 
-		<!-- Etiqueta condicional -->
-		{#if product.status === 'sold_out'}
-			<Label text="Agotado" color="bg-red-600" />
-		{:else if product.status === 'on_sale'}
-			<Label text="En oferta" color="bg-green-600" />
-		{:else if product.quantity <= 10}
-			<Label text="Últimas unidades" color="bg-yellow-600" />
-		{/if}
+					<div class="mt-3 flex flex-col gap-3">
+						{#each product.options as option}
+							{@const values = option.values ?? option.optionslist ?? []}
 
-		<!-- Product Description -->
-		<div class="h-auto max-h-[200px] w-full mt-1 rounded-md py-3 overflow-y-auto">
-			<p>{product.description}</p>
-		</div>
+							{#if values.length > 0}
+								{@const currentValue = getSelectedValue(option.name) ?? ''}
+								{@const triggerContent = currentValue || `Seleccionar ${option.name}`}
 
-		<div class="mb-4">
-			<!-- --- OPCIONES SIMPLES (options) --- -->
-			{#if product?.options && product.options.length > 0}
-				<h3 class="text-lg font-medium">Opciones:</h3>
+								<div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+									<h3 class="shrink-0 text-sm font-medium text-gray-700 dark:text-gray-300 sm:w-28">
+										{option.name}
+									</h3>
 
-				{#each product.options as option}
-					{@const values = option.values ?? option.optionslist ?? []}
-					{#if values.length > 0}
-						{@const currentValue = getSelectedValue(option.name) ?? ''}
-						{@const triggerContent = currentValue || `Seleccionar ${option.name}`}
-
-						<div class="flex gap-5 mt-2 items-center">
-							<h3 class="text-lg font-medium w-28">{option.name}:</h3>
-							<Select.Root
-								type="single"
-								value={currentValue}
-								onValueChange={(value) => handleSimpleOptionChange(option.name, value ?? '')}
-							>
-								<Select.Trigger class="w-[180px] border-gray-200 dark:border-[#303030]">
-									{triggerContent}
-								</Select.Trigger>
-								<Select.Content
-									class="bg-gray-100 dark:bg-[#202020] border-gray-200 dark:border-[#303030]"
-								>
-									{#each values as op (op)}
-										<Select.Item
-											value={op}
-											label={op}
-											onclick={() => handleSimpleOptionChange(option.name, op)}
-											class="dark:hover:bg-[#303030]"
-										>
-											{op}
-										</Select.Item>
-									{/each}
-								</Select.Content>
-							</Select.Root>
-						</div>
-					{/if}
-				{/each}
-			{/if}
-
-			<!-- --- VARIANTES (complejas) --- -->
-			{#if normalizedVariants().length > 0}
-				<div class="mt-1">
-					<h3 class="text-lg font-medium">Opciones:</h3>
-
-					{#each getAllVariantOptionNames() as optName (optName)}
-						{@const currentValue = selectedVariantOptions[optName] ?? ''}
-						{@const triggerContent = currentValue || `Seleccionar ${optName}`}
-						{@const allValues = getAllVariantValues(optName)}
-
-						{#if allValues.length > 0}
-							<div class="flex gap-5 mt-2 items-center">
-								<h4 class="w-28">{optName}:</h4>
-
-								<Select.Root
-									type="single"
-									value={currentValue}
-									onValueChange={(v) => handleVariantOptionChange(optName, v ?? '')}
-								>
-									<Select.Trigger class="w-[180px] border-gray-200 dark:border-[#303030]">
-										{triggerContent}
-									</Select.Trigger>
-
-									<Select.Content
-										class="bg-gray-100 dark:bg-[#202020] border-gray-200 dark:border-[#303030]"
+									<Select.Root
+										type="single"
+										value={currentValue}
+										onValueChange={(value) => handleSimpleOptionChange(option.name, value ?? '')}
 									>
-										{#each allValues as val (val)}
-											{@const disabled =
-												optName !== getAllVariantOptionNames()[0] &&
-												!isValueCompatibleWithSelection(optName, val)}
+										<Select.Trigger
+											class="h-11 w-full max-w-full rounded-xl border-gray-200 dark:border-[#303030] sm:w-[180px]"
+										>
+											<span class="truncate">
+												{triggerContent}
+											</span>
+										</Select.Trigger>
 
-											<Select.Item value={val} label={val} {disabled} class="disabled:opacity-50">
-												{val}
-											</Select.Item>
-										{/each}
-									</Select.Content>
-								</Select.Root>
-							</div>
-						{/if}
-					{/each}
-				</div>
-			{/if}
-		</div>
+										<Select.Content
+											class="max-w-[calc(100vw-2rem)] border-gray-200 bg-gray-100 dark:border-[#303030] dark:bg-[#202020]"
+										>
+											{#each values as op (op)}
+												<Select.Item
+													value={op}
+													label={op}
+													onclick={() => handleSimpleOptionChange(option.name, op)}
+													class="dark:hover:bg-[#303030]"
+												>
+													{op}
+												</Select.Item>
+											{/each}
+										</Select.Content>
+									</Select.Root>
+								</div>
+							{/if}
+						{/each}
+					</div>
+				{/if}
 
-		<!-- Seleccionar Cantidad del Producto -->
-		<div class="flex flex-col gap-3">
-			<!-- Advertencia de stock bajo -->
-			{#if product.quantity <= 10}
-				<span class="mt-1 text-sm text-red-600 dark:text-red-400">
-					* Sólo quedan {product.quantity} unidades
-				</span>
-			{/if}
-			<div class="flex mt-1 gap-3">
-				<div
-					class="flex items-center justify-around w-2/5 border border-gray-300 dark:border-[#202020] rounded-md"
-				>
+				<!-- VARIANTES -->
+				{#if normalizedVariants().length > 0}
+					<div class="mt-5">
+						<h3 class="text-base font-semibold text-gray-900 dark:text-white">Opciones</h3>
+
+						<div class="mt-3 flex flex-col gap-3">
+							{#each getAllVariantOptionNames() as optName (optName)}
+								{@const currentValue = selectedVariantOptions[optName] ?? ''}
+								{@const triggerContent = currentValue || `Seleccionar ${optName}`}
+								{@const allValues = getAllVariantValues(optName)}
+
+								{#if allValues.length > 0}
+									<div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+										<h4
+											class="shrink-0 text-sm font-medium text-gray-700 dark:text-gray-300 sm:w-28"
+										>
+											{optName}
+										</h4>
+
+										<Select.Root
+											type="single"
+											value={currentValue}
+											onValueChange={(v) => handleVariantOptionChange(optName, v ?? '')}
+										>
+											<Select.Trigger
+												class="h-11 w-full max-w-full rounded-xl border-gray-200 dark:border-[#303030] sm:w-[180px]"
+											>
+												<span class="truncate">
+													{triggerContent}
+												</span>
+											</Select.Trigger>
+
+											<Select.Content
+												class="max-w-[calc(100vw-2rem)] border-gray-200 bg-gray-100 dark:border-[#303030] dark:bg-[#202020]"
+											>
+												{#each allValues as val (val)}
+													{@const disabled =
+														optName !== getAllVariantOptionNames()[0] &&
+														!isValueCompatibleWithSelection(optName, val)}
+
+													<Select.Item
+														value={val}
+														label={val}
+														{disabled}
+														class="disabled:opacity-50"
+													>
+														{val}
+													</Select.Item>
+												{/each}
+											</Select.Content>
+										</Select.Root>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					</div>
+				{/if}
+			</div>
+
+			<!-- CANTIDAD + COMPRA -->
+			<div class="mt-6 flex flex-col gap-3">
+				<!-- Stock -->
+				{#if product.quantity <= 10}
+					<span class="text-sm font-medium text-red-600 dark:text-red-400">
+						* Sólo quedan {product.quantity} unidades
+					</span>
+				{/if}
+
+				<!-- Quantity + Add -->
+				<div class="flex w-full min-w-0 flex-col gap-3 sm:flex-row">
+					<!-- Quantity -->
+					<div
+						class="flex h-12 w-full items-center justify-between rounded-xl
+							border border-gray-300 bg-white dark:border-[#303030] dark:bg-[#181818]
+							sm:w-2/5"
+					>
+						<button
+							type="button"
+							onclick={(e) => {
+								e.preventDefault();
+								quantity = Math.max(1, quantity - 1);
+							}}
+							class="flex h-full w-10 shrink-0 items-center justify-center rounded-lg
+								text-gray-700 transition hover:bg-gray-100 disabled:opacity-50
+								dark:text-white dark:hover:bg-[#202020]"
+							disabled={quantity <= 1}
+							aria-label="Disminuir cantidad"
+						>
+							<iconify-icon icon="ic:round-minus" height="1.35rem" width="1.35rem"></iconify-icon>
+						</button>
+
+						<input
+							type="number"
+							bind:value={quantity}
+							min="1"
+							max={product.quantity}
+							class="min-w-0 flex-1 bg-transparent text-center text-lg font-semibold
+								text-gray-900 outline-none appearance-none dark:text-white"
+							onblur={(e) => {
+								let v = parseInt(e?.target?.value);
+
+								if (isNaN(v) || v < 1) {
+									v = 1;
+								} else if (v > product.quantity) {
+									v = product.quantity;
+								}
+
+								quantity = v;
+							}}
+						/>
+
+						<button
+							type="button"
+							onclick={(e) => {
+								e.preventDefault();
+								quantity = Math.min(product.quantity, quantity + 1);
+							}}
+							class="flex h-full w-10 shrink-0 items-center justify-center rounded-lg
+								text-gray-700 transition hover:bg-gray-100 disabled:opacity-50
+								dark:text-white dark:hover:bg-[#202020]"
+							disabled={quantity >= product.quantity}
+							aria-label="Aumentar cantidad"
+						>
+							<iconify-icon icon="ic:round-plus" height="1.35rem" width="1.35rem"></iconify-icon>
+						</button>
+					</div>
+
+					<!-- Add to cart -->
 					<button
+						type="button"
 						onclick={(e) => {
 							e.preventDefault();
-							quantity = Math.max(1, quantity - 1);
+							handleAddToCart();
 						}}
-						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary disabled:opacity-50"
-						disabled={quantity <= 1}
+						class="h-12 w-full rounded-xl bg-gray-900 px-4 text-sm font-semibold text-white
+							transition-all duration-200 hover:bg-gray-800 active:scale-[0.99]
+							dark:bg-white dark:text-black dark:hover:bg-gray-200
+							sm:flex-1"
 					>
-						<!-- Minus Icon -->
-						<iconify-icon icon="ic:round-minus" height="1.5rem" width="1.5rem"></iconify-icon>
-					</button>
-					<input
-						type="number"
-						bind:value={quantity}
-						min="1"
-						max={product.quantity}
-						class="mx-2 text-xl font-semibold text-center w-16 bg-transparent outline-none appearance-none"
-						onblur={(e) => {
-							let v = parseInt(e?.target?.value);
-							if (isNaN(v) || v < 1) {
-								v = 1;
-							} else if (v > product.quantity) {
-								v = product.quantity;
-							}
-							quantity = v;
-						}}
-					/>
-					<!-- <span class="mx-2 text-xl font-semibold">{quantity}</span> -->
-					<button
-						onclick={(e) => {
-							e.preventDefault();
-							quantity = Math.min(product.quantity, quantity + 1);
-						}}
-						class="flex flex-col justify-center items-center rounded-sm dark:text-white p-1 cursor-pointer hover:text-primary disabled:opacity-50"
-						disabled={quantity >= product.quantity}
-					>
-						<!-- Plus Icon -->
-						<iconify-icon icon="ic:round-plus" height="1.5rem" width="1.5rem"></iconify-icon>
+						{m.card_button_addtocart()}
 					</button>
 				</div>
+
+				<!-- Buy now -->
 				<button
+					type="button"
 					onclick={(e) => {
 						e.preventDefault();
-						handleAddToCart();
+						handleBuyNow();
 					}}
-					class="dark:bg-[#202020] border-none rounded w-3/5 h-12 bg-gray-200 dark:text-gray-200 text-black text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#252525]"
-					>{m.card_button_addtocart()}</button
+					class="h-12 w-full rounded-xl border border-gray-300 bg-transparent px-4
+						text-sm font-semibold text-gray-900 transition-all duration-200
+						hover:bg-gray-100 active:scale-[0.99]
+						dark:border-[#383838] dark:text-white dark:hover:bg-[#202020]"
 				>
+					{m.card_button_buynow()}
+				</button>
 			</div>
-			<button
-				onclick={(e) => {
-					e.preventDefault();
-					handleBuyNow();
-				}}
-				class="bg-gray-200 dark:bg-gray-200 border-none rounded w-full h-12 text-[#202020] text-base cursor-pointer hover:bg-gray-300 dark:hover:bg-[#202020] dark:hover:text-white"
-				>{m.card_button_buynow()}</button
-			>
 		</div>
 	</div>
 </div>
