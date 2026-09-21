@@ -16,7 +16,7 @@
 	import * as m from '$paraglide/messages';
 	import PaymentButtons from '$lib/components/paymentButtons.svelte';
 	import { onMount } from 'svelte';
-	import { paymentMethod } from '$lib/stores/paymentMethod';
+	import { paymentMethod, updatePaymentMethod } from '$lib/stores/paymentMethod';
 	import MercadoPagoLoader from '$lib/components/MercadoPagoLoader.svelte';
 
 	let shippingData = page.data?.user?.shippingInfo;
@@ -28,6 +28,13 @@
 	let usdEquivalent = $state(0);
 
 	onMount(() => {
+		// Mercado Pago es el método de pago por defecto
+		if (!$paymentMethod) {
+			updatePaymentMethod('mercadopago');
+			return;
+		}
+
+		// PayPal necesita la tasa de cambio
 		if ($paymentMethod === 'paypal') {
 			fetchExchangeRate();
 		}
